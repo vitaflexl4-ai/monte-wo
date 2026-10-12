@@ -1,0 +1,6 @@
+import test from 'node:test';import assert from 'node:assert/strict';import {calculate,exercises} from '../public/scoring.js';
+const base={exercise:'bench',weight:80,reps:5,bodyweight:80,sex:'male',unit:'kg'};
+test('retired demo preserves educational Epley estimate but returns no score or rank',()=>{const r=calculate(base);assert.ok(Math.abs(r.oneRM-93.333333333)<1e-7);assert.equal(r.rankId,null);assert.equal(r.score,null);assert.equal(r.status,'draft')});
+test('practice disciplines exactly match launch and one rep is actual load',()=>{assert.deepEqual(Object.keys(exercises),['bench','squat','deadlift','curl']);assert.equal(calculate({...base,reps:1}).oneRM,80)});
+test('practice kg/lb equivalent and no profile change generates rank',()=>{const a=calculate(base),b=calculate({...base,unit:'lb',weight:80/.45359237,bodyweight:80/.45359237});assert.ok(Math.abs(a.oneRM-b.oneRM*.45359237)<1e-8);for(const bodyweight of [30,80,300])assert.equal(calculate({...base,bodyweight}).rankId,null)});
+test('practice bad values rejected',()=>{for(const update of [{reps:0},{reps:31},{reps:1.5},{weight:-2},{weight:NaN},{bodyweight:0},{sex:'unknown'},{exercise:'press'},{unit:'stone'}])assert.throws(()=>calculate({...base,...update}))});

@@ -1,0 +1,22 @@
+// Monte Wo DEMO v0.1. These parameters are design assumptions, not population standards.
+import {ranks,rankForScore} from './ranks.js';
+export {ranks} from './ranks.js';
+export const exercises = {
+ bench:{male:2.15,female:1.45,key:'bench-press'},
+ squat:{male:2.75,female:2.05,key:'back-squat'},
+ deadlift:{male:3.2,female:2.45,key:'deadlift'},
+ press:{male:1.4,female:.95,key:'overhead-press'}
+};
+export function calculate({exercise,weight,reps,bodyweight,sex,unit='kg'}) {
+ if(!exercises[exercise] || !['male','female'].includes(sex) || !['kg','lb'].includes(unit)) throw new Error('Invalid reference');
+ const factor = unit === 'lb' ? .45359237 : 1;
+ const w = Number(weight)*factor, bw=Number(bodyweight)*factor, r=Number(reps);
+ if(!Number.isFinite(w)||!Number.isFinite(bw)||w<.999||w>600.01||bw<29.99||bw>300.01||!Number.isInteger(r)||r<1||r>30) throw new Error('Invalid inputs');
+ const oneRM=r===1?w:w*(1+r/30);
+ const anchor=sex==='female'?65:80;
+ const threshold=exercises[exercise][sex]*anchor*Math.pow(bw/anchor,2/3);
+ const score=Math.max(1,Math.min(1000,Math.round(900*oneRM/threshold)));
+ const rankIndex=ranks.indexOf(rankForScore(score));
+ const next=ranks[rankIndex+1];
+ return {oneRM:oneRM/factor,score,rankIndex,nextPoints:next?next.min-score:0,threshold,unit};
+}

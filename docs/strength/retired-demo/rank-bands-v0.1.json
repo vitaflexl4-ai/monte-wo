@@ -1,0 +1,164 @@
+[
+  {
+    "id": "debitan",
+    "name": "Debitan",
+    "min": 1,
+    "max": 199,
+    "color": "#c1c9d3",
+    "icon": "/assets/ranks/debitan.webp",
+    "artwork": {
+      "source": "01_Debitan.png",
+      "crop": [
+        29,
+        119,
+        254,
+        304
+      ],
+      "missingTopPadding": 0
+    }
+  },
+  {
+    "id": "bati",
+    "name": "Bati",
+    "min": 200,
+    "max": 299,
+    "color": "#efa55e",
+    "icon": "/assets/ranks/bati.webp",
+    "artwork": {
+      "source": "02_Bati.png",
+      "crop": [
+        20,
+        122,
+        244,
+        305
+      ],
+      "missingTopPadding": 0
+    }
+  },
+  {
+    "id": "solid",
+    "name": "Solid",
+    "min": 300,
+    "max": 399,
+    "color": "#a0ceff",
+    "icon": "/assets/ranks/solid.webp",
+    "artwork": {
+      "source": "03_Solid.png",
+      "crop": [
+        0,
+        121,
+        222,
+        304
+      ],
+      "missingTopPadding": 0
+    }
+  },
+  {
+    "id": "fo",
+    "name": "Fò",
+    "min": 400,
+    "max": 499,
+    "color": "#4aaaff",
+    "icon": "/assets/ranks/fo.webp",
+    "artwork": {
+      "source": "04_Fo.png",
+      "crop": [
+        29,
+        15,
+        254,
+        235
+      ],
+      "missingTopPadding": 0
+    }
+  },
+  {
+    "id": "avanse",
+    "name": "Avanse",
+    "min": 500,
+    "max": 599,
+    "color": "#2bdcde",
+    "icon": "/assets/ranks/avanse.webp",
+    "artwork": {
+      "source": "05_Avanse.png",
+      "crop": [
+        19,
+        48,
+        242,
+        242
+      ],
+      "missingTopPadding": 0
+    }
+  },
+  {
+    "id": "met",
+    "name": "Mèt",
+    "min": 600,
+    "max": 699,
+    "color": "#bb71fa",
+    "icon": "/assets/ranks/met.webp",
+    "artwork": {
+      "source": "06_Met.png",
+      "crop": [
+        0,
+        45,
+        220,
+        239
+      ],
+      "missingTopPadding": 0
+    }
+  },
+  {
+    "id": "chanpyon",
+    "name": "Chanpyon",
+    "min": 700,
+    "max": 799,
+    "color": "#ffac45",
+    "icon": "/assets/ranks/chanpyon.webp",
+    "artwork": {
+      "source": "07_Chanpyon.png",
+      "crop": [
+        29,
+        0,
+        253,
+        166
+      ],
+      "missingTopPadding": 37
+    }
+  },
+  {
+    "id": "titan",
+    "name": "Titan",
+    "min": 800,
+    "max": 899,
+    "color": "#ff4055",
+    "icon": "/assets/ranks/titan.webp",
+    "artwork": {
+      "source": "08_Titan.png",
+      "crop": [
+        20,
+        0,
+        244,
+        164
+      ],
+      "missingTopPadding": 38
+    }
+  },
+  {
+    "id": "lejand",
+    "name": "Lejand",
+    "min": 900,
+    "max": 1000,
+    "color": "#f7d354",
+    "icon": "/assets/ranks/lejand.webp",
+    "artwork": {
+      "source": "09_Lejand.png",
+      "crop": [
+        0,
+        0,
+        222,
+        158
+      ],
+      "missingTopPadding": 42
+    }
+  }
+]

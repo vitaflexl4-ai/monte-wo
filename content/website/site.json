@@ -1,0 +1,20 @@
+{
+  "brand": "MONTE WO",
+  "operator": "VitaFlex Business Group",
+  "email": "Montewo@vitaflexbusinessgroup.com",
+  "publicOrigin": "",
+  "defaultLocale": "en",
+  "locales": ["en", "ht", "fr"],
+  "navigation": [
+    {"path":"/tools/", "label":"Free Tools", "key":"freeTools"},
+    {"path":"/strength/", "label":"Strength Index", "key":"navRanks"},
+    {"path":"/app/", "label":"The App", "key":"navApp"},
+    {"path":"/exercises/", "label":"Exercises", "key":"navExercises"}
+  ],
+  "cta":{"path":"/waitlist/", "label":"Join the Waitlist", "key":"joinWaitlist"},
+  "ui":{
+    "en":{"open":"Open navigation", "close":"Close navigation"},
+    "ht":{"open":"Louvri meni an", "close":"Fèmen meni an"},
+    "fr":{"open":"Ouvrir le menu", "close":"Fermer le menu"}
+  }
+}

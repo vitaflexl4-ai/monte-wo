@@ -1,0 +1,32 @@
+{
+  "id": "deadlift-standard-draft-1",
+  "discipline": "deadlift",
+  "version": "draft-1",
+  "title": "MONTE Standard \u2014 Barbell Deadlift",
+  "variation": "conventional-deadlift",
+  "equipment": [
+    "raw-barbell"
+  ],
+  "checks": [
+    {
+      "id": "setup",
+      "text": "Conventional stance only in this launch draft: hands outside legs, bar starts stationary on floor. Full-size plates with nominal 450 mm diameter; no blocks, deficit, trap bar or sumo comparisons."
+    },
+    {
+      "id": "control",
+      "text": "Lift without straps, hitching, supporting the bar on thighs, assistance or intentional downward movement before lockout. Belt and chalk allowed. No supportive suit."
+    },
+    {
+      "id": "finish",
+      "text": "Stand erect with hips and knees extended and shoulders in a stable upright position, without exaggerated leaning back."
+    },
+    {
+      "id": "lower",
+      "text": "Keep both hands on the bar while returning it under control. Dropping or losing control invalidates the attempt. Footage shows floor, knees, hips and completion."
+    }
+  ],
+  "safety": "Do not attempt a dangerous maximum for a rank. Use conservative loads, appropriate safety equipment and competent spotting. Pain or an unclear camera angle is not a reason to repeat a dangerous lift. Ranking is optional.",
+  "evidence": "Continuous unedited footage showing setup, complete attempt and finish; load markings and total load, date/identity linkage and bodyweight/category attestation must be reviewable. Additional angles may be required. No automated form or identity certification.",
+  "status": "draft",
+  "visualExamples": "Pending qualified review; no fabricated example footage is supplied."
+}

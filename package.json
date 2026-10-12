@@ -1,0 +1,35 @@
+{
+  "name": "monte-wo-vitaflex",
+  "version": "0.5.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "wrangler pages dev public --ip 0.0.0.0 --port 8080",
+    "deploy": "wrangler pages deploy public --project-name vitaflex-monte-wo --branch main",
+    "test": "node --test tests/*.test.js",
+    "test:browser": "node tests/browser.mjs",
+    "db:local": "wrangler d1 migrations apply montewo-local-tests --local --config wrangler.local.toml",
+    "dev:waitlist": "wrangler pages dev public --d1 DB --binding LOCAL_DEVELOPMENT=true --ip 0.0.0.0 --port 8081 --inspector-port 9230",
+    "waitlist:remove": "node scripts/waitlist-admin.mjs",
+    "test:phase1": "node tests/phase1.mjs",
+    "test:phase2": "node tests/phase2.mjs",
+    "test:ranks": "node tests/ranks.mjs",
+    "test:portable": "node tests/portable.mjs",
+    "build": "python3 scripts/build_tools.py && python3 scripts/build_library.py && python3 scripts/build_strength.py && python3 scripts/build_lab.py && python3 scripts/build_website.py",
+    "test:library": "node tests/library.mjs",
+    "test:strength": "node --test tests/strength*.test.js",
+    "test:strength-browser": "node tests/strength-browser.mjs",
+    "build:lab": "python3 scripts/build_lab.py",
+    "test:lab": "node --test tests/lab.test.js",
+    "test:lab-browser": "node tests/lab-browser.mjs",
+    "test:lab-portable": "node tests/portable.mjs --lab",
+    "export:lab": "python3 scripts/export_preview.py --lab",
+    "build:website": "npm run build",
+    "test:website": "node tests/website-browser.mjs",
+    "export:website": "python3 scripts/export_preview.py --website"
+  },
+  "devDependencies": {
+    "wrangler": "^4.0.0",
+    "@playwright/test": "^1.50.0"
+  }
+}

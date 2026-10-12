@@ -1,0 +1,11 @@
+# Local database tests only. Do not deploy this configuration.
+name = "montewo-local-tests"
+compatibility_date = "2025-01-01"
+pages_build_output_dir = "public"
+[[d1_databases]]
+binding = "DB"
+database_name = "montewo-local-tests"
+database_id = "DB"
+migrations_dir = "migrations"
+[vars]
+LOCAL_DEVELOPMENT = "true"

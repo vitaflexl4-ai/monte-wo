@@ -1,0 +1,39 @@
+# Monte Wo by Vitaflex — deployable Cloudflare Pages website.
+# No Cloudflare account resources are required for local preview.
+name = "vitaflex-monte-wo"
+compatibility_date = "2025-01-01"
+pages_build_output_dir = "public"
+
+# OPTIONAL: Create the R2 bucket, then uncomment these three lines.
+# npx wrangler r2 bucket create monte-wo-workout-gifs
+# [[r2_buckets]]
+# binding = "WORKOUT_GIFS_BUCKET"
+# bucket_name = "monte-wo-workout-gifs"
+
+# WAITLIST: Create the D1 database and replace the commented ID with the returned ID.
+# npx wrangler d1 create monte-wo-waitlist
+# [[d1_databases]]
+# binding = "DB"
+# database_name = "monte-wo-waitlist"
+# database_id = "PASTE_THE_ID_FROM_CLOUDFLARE_HERE"
+# migrations_dir = "migrations"
+
+# Set TURNSTILE_SITE_KEY as a production variable in Cloudflare Pages settings.
+# Set TURNSTILE_SECRET and RATE_LIMIT_SALT as encrypted secrets (never in this file).
+# Without the binding and all three values, signup safely stays unavailable.
+
+# Public Turnstile site key; never put the secret key in source.
+# [vars]
+# TURNSTILE_SITE_KEY = "PASTE_YOUR_PUBLIC_SITE_KEY_HERE"
+
+# OPTIONAL RESTRICTED STRENGTH INDEX PILOT — disabled until configured and reviewed.
+# Reuse DB above; apply migration 0002_strength_index.sql after 0001.
+# Configure RANKING_ENABLED, RANKING_ACCESS_ISSUER and RANKING_ACCESS_AUD in Pages.
+# Protect private /api/strength routes with Cloudflare Access; /config and /catalog
+# may be public readiness/methodology exceptions (neither returns athlete data).
+# [[r2_buckets]]
+# binding = "RANKING_EVIDENCE"
+# bucket_name = "montewo-private-performance-evidence"
+# Keep this bucket private and separate from WORKOUT_GIFS_BUCKET.
+# Publishing stays OFF. Only after independent review, configure
+# RANKING_PUBLISH_ENABLED=true and RANKING_APPROVED_DIGESTS with approved hashes.
