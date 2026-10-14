@@ -16,9 +16,10 @@ Legend: ✅ done in repo · 🟡 prepared, needs owner input · ⛔ missing / ow
 | Question | Answer for v0.1.0 | Evidence |
 |---|---|---|
 | Does the app collect or share user data? | **No.** No accounts, no analytics SDK, no crash reporting SDK, no ads, no third-party SDKs besides the Capacitor runtime. The demo food log is in-memory and discarded on close. | `tests/native-browser.mjs` asserts zero network writes; `AndroidManifest.xml` has only INTERNET; no `NS*UsageDescription` keys |
-| Network access? | Yes (INTERNET permission) but **no endpoint is reachable in-app**: `/api/*` is served by the local bundle server and returns 404; pages show "nothing has been submitted". | `scripts/native_preview.mjs` emulation + browser test |
+| Network access? | Yes (INTERNET permission) but **no endpoint is reachable in a default build**: `NATIVE_API_ORIGIN` is empty, so `/api/*` resolves to the local bundle server (404) and the ranking page says "not configured for this app build"; the waitlist says "use the website". A build with `NATIVE_API_ORIGIN` set **plus** `NATIVE_CLIENTS_ENABLED=true` on the server adds sign-in and private records → disclosures change (see below). | `tests/native.test.js`, `tests/native-browser.mjs` |
 | Device data stored? | `localStorage` only for preferences already used by the web (e.g. language, calculator inputs on tool pages). No identifiers. | web code unchanged |
 | Permissions | Android: INTERNET. iOS: none. Camera is **not** requested (the food-scan button opens a dialog that explains the camera is not connected). | test-enforced |
+| URL scheme / deep link | `com.vitaflex.montewo://auth` is registered on both platforms for the sign-in return only; it carries a short-lived single-use code, never a token or personal data. | `AndroidManifest.xml`, `Info.plist`, `server/native.js` |
 | Encryption export compliance (Apple) | Uses only standard HTTPS/no proprietary crypto → `ITSAppUsesNonExemptEncryption = NO` can be declared (add key to Info.plist before submission) | 🟡 owner to confirm |
 
 **Play Data safety form (v0.1.0):** "No data collected", "No data shared", no security-practices claims needed beyond "data encrypted in transit: N/A". **Apple App Privacy (v0.1.0):** "Data Not Collected".

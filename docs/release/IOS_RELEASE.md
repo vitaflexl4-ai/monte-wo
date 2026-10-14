@@ -62,6 +62,8 @@ xcrun altool --upload-app   -f build/export/App.ipa -t ios --apiKey YOUR_ASC_KEY
 
 Runs on `macos-latest`: `npm ci` → `npm run build` → `npm run build:native` → `npx cap sync ios` → unsigned `xcodebuild … -sdk iphonesimulator build`. It proves the committed project compiles against the current web build; it references **no secrets** and does not archive or upload. Automating signed archives later (fastlane `match`/`gym`, or Xcode Cloud) needs the account holder's certificates/API keys stored as GitHub secrets — decide only after the first manual release.
 
+Run history: run `38496917039` (triggered by the `[build-native]` push on 2026-10-13) **succeeded** — the committed Xcode project, SPM packages and the native bundle compile for the iOS Simulator on `macos-latest`. This is compile evidence only (unsigned, no archive, no device, no App Review).
+
 ## 6. App Review readiness — honest assessment
 
 | Guideline | Current state | Action |
@@ -77,4 +79,5 @@ Runs on `macos-latest`: `npm ci` → `npm run build` → `npm run build:native` 
 ## 7. Verification before any upload
 
 * `npm test` + `npm run test:native-browser` (executed in this step; details in `RELEASE_STATUS.md`).
+* Sign-in handoff (bundle built with `NATIVE_API_ORIGIN`, server with `NATIVE_CLIENTS_ENABLED=true` + Access prerequisites): Rankings → "Load my ranking workspace" opens an in-app Safari tab (`@capacitor/browser`) → Access login → `com.vitaflex.montewo://auth?…` returns to the app → private workspace loads. `xcrun simctl openurl booted "com.vitaflex.montewo://auth?code=x&state=y"` must only show "Sign-in could not be completed".
 * On a simulator/device: Dashboard opens as root; tab bar + More drawer; Settings → Privacy → brand link returns to Dashboard; demo food logger; airplane mode works; safe-area insets look right on notch devices (`public/dashboard.css` uses `env(safe-area-inset-*)` and the shell sets `viewport-fit=cover` — visually confirm on a device; not yet device-verified).

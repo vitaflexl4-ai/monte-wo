@@ -1,6 +1,10 @@
 # MONTE WO — web deployment (Cloudflare Pages + Functions)
 
-**Nothing was deployed by this work.** This document records the exact, already-existing deployment path and what must be true before using it. All Cloudflare actions are owner actions requiring explicit authorization.
+**No deployment command was run by this work.** However, the Pages project **`vitaflex-monte-wo` is already connected to this GitHub repository by the owner** (observed on 2026-10-13: every push to `arena/7a19420f-monte-wo` produces a *preview* deployment at `https://arena-7a19420f-monte-wo.vitaflex-monte-wo.pages.dev`, built by Cloudflare from the pushed commit). Consequences the owner must keep in mind:
+
+* **Merging to `main` is a production deployment** of the website + Functions. Open/merge the pull request only when that is intended (the native work is harmless to the site: all new API behaviour is behind `NATIVE_CLIENTS_ENABLED`, default off; migration 0003 is applied only when the owner runs it).
+* Preview deployments are public URLs of the branch state; they carry the same honest "not connected" states and no secrets.
+* This document records the already-existing deployment path and what must be true before relying on it. All other Cloudflare actions (bindings, variables, Access, DNS) remain owner actions requiring explicit authorization.
 
 ## 1. What gets deployed
 
@@ -15,8 +19,9 @@
 2. **Bindings** (only if the corresponding feature is wanted now): `DB` (D1) with migrations applied in order; `WORKOUT_GIFS_BUCKET`; `RANKING_EVIDENCE` (private). Without them the site stays fully functional and the waitlist/Strength Index honestly report "unavailable".
 3. **Variables/secrets** as in `.env.example`. Secrets only via Pages encrypted secrets — never in `wrangler.toml`, Git or client code.
 4. **Cloudflare Access** application on `/api/strength/*` (self-hosted app; public exceptions for `/api/strength/config` and `/api/strength/catalog`) before `RANKING_ENABLED=true`. Leave `RANKING_PUBLISH_ENABLED` false.
-5. Review `public/_headers` (security headers / caching) and `public/_redirects` as currently committed.
-6. Do **not** touch `flex-ai-db`, other VitaFlex projects, or DNS as part of this deployment.
+5. **Native clients (optional, later):** `NATIVE_CLIENTS_ENABLED=true`, migration `0003_native_auth_codes.sql`, Access public exception for `/api/strength/native-token`, Access CORS allowing `https://localhost` and `capacitor://localhost` with headers `cf-access-token, content-type` — see `ARCHITECTURE.md` §6. Until then the apps work offline and say so.
+6. Review `public/_headers` (security headers / caching) and `public/_redirects` as currently committed.
+7. Do **not** touch `flex-ai-db`, other VitaFlex projects, or DNS as part of this deployment.
 
 ## 3. Commands
 
@@ -29,7 +34,7 @@ npx wrangler login                                 # account holder
 npm run deploy                                     # = wrangler pages deploy public --project-name vitaflex-monte-wo --branch main
 ```
 
-Alternative (recommended for traceability): connect the GitHub repository to the Pages project with build command `npm ci && npm run build` and output directory `public`, Node 22, Python 3 available in the Pages build image; set `SITE_ORIGIN` as a build variable. Either path produces identical output (the build is byte-for-byte reproducible — verified twice in this step).
+Already in place (observed): the GitHub repository is connected to the Pages project with build command `npm ci && npm run build` and output directory `public`, Node 22, Python 3 available in the Pages build image; set `SITE_ORIGIN` as a build variable. Either path produces identical output (the build is byte-for-byte reproducible — verified twice in this step).
 
 ## 4. Post-deployment verification (manual, owner)
 

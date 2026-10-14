@@ -1,4 +1,5 @@
 import {authenticate,role} from './auth.js';
+import {nativeEnabled,isNativeOrigin,trustedOrigin,issueNativeCode,exchangeNativeCode} from '../native.js';
 import {StrengthError,requireThat,text,exactKeys,validateProfile,validatePerformance,validateModel,evaluate,DISCIPLINES,bestDiscipline} from './engine.js';
 const uid=()=>crypto.randomUUID(),json=(data,status=200)=>new Response(JSON.stringify(data),{status,headers:{'Content-Type':'application/json','Cache-Control':'private, no-store','X-Content-Type-Options':'nosniff','Vary':'Cf-Access-Jwt-Assertion'}});
 const stable=x=>Array.isArray(x)?'['+x.map(stable).join(',')+']':x&&typeof x==='object'?'{'+Object.keys(x).sort().map(k=>JSON.stringify(k)+':'+stable(x[k])).join(',')+'}':JSON.stringify(x);
@@ -21,10 +22,29 @@ export async function handleStrength({request,env},deps={}){
  const url=new URL(request.url),route=url.pathname.slice('/api/strength'.length)||'/';const db=env.DB;let actor;
  if(route==='/catalog'&&request.method==='GET'){if(env.RANKING_ENABLED!=='true'||!db)return json({available:false,disciplines:[]});try{return json({available:true,disciplines:await Promise.all(DISCIPLINES.map(d=>config(db,d)))})}catch{return json({available:false,disciplines:[]},503)}}
  if(route==='/config'&&request.method==='GET')return json({available:env.RANKING_ENABLED==='true'&&!!db&&!!env.RANKING_ACCESS_ISSUER&&!!env.RANKING_ACCESS_AUD,authentication:'Cloudflare Access with server-provisioned roles',officialStandards:'Consult methodology versions. Bundled launch standards are DRAFT — NOT OFFICIAL.'});
+ if(route==='/native-token'){
+  if(!nativeEnabled(env)||!db)return json({error:'native-clients-disabled'},404);
+  if(request.method!=='POST')return new Response(null,{status:405,headers:{Allow:'POST'}});
+  if(!isNativeOrigin(env,request.headers.get('Origin')))return json({error:'origin-rejected'},403);
+  try{const b=await body(request);exactKeys(b,['code','verifier']);const {subject,token}=await exchangeNativeCode(db,b.code,b.verifier);
+   const who=await db.prepare('SELECT id FROM mw_principals WHERE subject=?').bind(subject).first();await audit(db,who,'native-token-exchanged','/native-token','ok','single-use code redeemed').run();
+   const exp=JSON.parse(new TextDecoder().decode(Uint8Array.from(atob(token.split('.')[1].replace(/-/g,'+').replace(/_/g,'/')),c=>c.charCodeAt(0)))).exp;
+   return json({token,expiresAt:exp,header:'cf-access-token'});
+  }catch(e){return json({error:e instanceof StrengthError?e.code:'invalid-code'},e instanceof StrengthError?e.status:400)}
+ }
  try{
-  actor=await authenticate(request,env,deps.fetcher||fetch);
+  const principal=await authenticate(request,env,deps.fetcher||fetch);actor={id:principal.id,role:principal.role};  // subject/token never echoed in responses
+  if(route==='/native-login'&&request.method==='GET'){
+   // Reached through the system browser behind Cloudflare Access: hand a single-use code (never the token) back to the app.
+   if(!nativeEnabled(env))return json({error:'native-clients-disabled'},404);
+   const issued=await issueNativeCode(db,principal,principal.token,url.searchParams.get('state'),url.searchParams.get('challenge'));
+   await audit(db,actor,'native-login-code-issued','/native-login','ok','expires '+issued.expiresAt).run();
+   const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+   const html=`<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex"><title>Return to MONTE WO</title><style>body{font:16px/1.5 system-ui,sans-serif;background:#090c13;color:#f4f6fb;margin:0;display:grid;place-items:center;min-height:100vh;padding:24px;box-sizing:border-box}a.button{display:inline-block;padding:14px 22px;border-radius:12px;background:#f0b429;color:#090c13;font-weight:700;text-decoration:none}main{max-width:420px;text-align:center}small{opacity:.7}</style></head><body><main><h1>Signed in</h1><p>Return to the MONTE WO app to finish signing in. This link works once and expires in 2 minutes.</p><p><a class="button" href="${esc(issued.returnUrl)}">Open MONTE WO</a></p><small>If nothing happens, open the app manually and tap Sign in again.</small></main><script>location.replace(${JSON.stringify(issued.returnUrl)})</script></body></html>`;
+   return new Response(html,{status:200,headers:{'Content-Type':'text/html; charset=utf-8','Cache-Control':'private, no-store','X-Content-Type-Options':'nosniff','Referrer-Policy':'no-referrer'}});
+  }
   requireThat(['GET','POST'].includes(request.method),'method-not-allowed',405);
-  if(request.method==='POST')requireThat(request.headers.get('Origin')===url.origin,'origin-rejected',403);
+  if(request.method==='POST')requireThat(trustedOrigin(request,env,url),'origin-rejected',403);
   const window=Math.floor(Date.now()/3600000);const limit=await db.prepare('INSERT INTO mw_rate_limits(actor_id,window,attempts) VALUES(?,?,1) ON CONFLICT(actor_id) DO UPDATE SET window=excluded.window,attempts=CASE WHEN mw_rate_limits.window=excluded.window THEN mw_rate_limits.attempts+1 ELSE 1 END RETURNING attempts').bind(actor.id,window).first();requireThat(limit.attempts<=500,'rate-limit',429);
   if(/\/(rank|override|award)(\/|$)/.test(route)){await audit(db,actor,'manual-rank-denied',route,'denied','Ranks can only result from qualifying performance.').run();return json({error:'manual-rank-awards-forbidden'},403)}
   if(route==='/me'&&request.method==='GET'){

@@ -43,9 +43,10 @@ res=await page.goto(BASE+'/about/',{waitUntil:'load'});assert.equal(res.status()
 res=await page.goto(BASE+'/about/index.html',{waitUntil:'load'});assert.equal(res.status(),200);assert.match(await page.title(),/^About Monte Wo/);
 
 // 6. Backend-dependent pages degrade honestly without an API origin (no crash, no fake success).
-await page.goto(BASE+'/waitlist/index.html',{waitUntil:'load'});await page.locator('#waitlist-status').filter({hasText:/Nothing has been submitted|not active yet/}).waitFor({timeout:8000});
+await page.goto(BASE+'/waitlist/index.html',{waitUntil:'load'});await page.locator('#waitlist-status').filter({hasText:/not available inside the app yet/}).waitFor({timeout:8000});
 assert.equal(await page.locator('#waitlist-submit').isDisabled(),true,'waitlist submit stays disabled without the API');
 await page.goto(BASE+'/strength/index.html',{waitUntil:'load'});await page.waitForTimeout(800);assert.equal(await page.locator('#admin-link').isHidden(),true,'reviewer link stays hidden (excluded from the bundle)');
+await page.locator('details.foundation-pilot summary').click();await page.locator('#connect-ranking').click();await page.locator('#strength-status').filter({hasText:/not configured for this app build/}).waitFor({timeout:4000});assert.equal(await page.locator('#account-workspace').isHidden(),true,'no private workspace without an API origin');
 
 assert.deepEqual(writes,[],'no network writes during the whole run');assert.ok(apiCalls.every(u=>/\/api\/(waitlist\/config|strength\/(config|catalog|me))$/.test(u)),'only read-only readiness probes reached /api/: '+apiCalls.join(', '));
 assert.deepEqual(swAttempts,[],'the bundle never even requests /sw.js');

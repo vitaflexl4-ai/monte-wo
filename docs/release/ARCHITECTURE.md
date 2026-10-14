@@ -68,14 +68,26 @@ brand-assets/, exercise-packages/   approved brand + rank artwork, exercise medi
 
 `mw_principals` (operator-provisioned identities + roles) · `mw_profiles` (immutable revisions) · `mw_disciplines` · `mw_rank_definitions` (9) · `mw_rulebooks` / `mw_models` (immutable versions, draft until published) · `mw_publications` · `mw_performances` (immutable submissions) · `mw_evidence` (private R2 keys, SHA-256) · `mw_reviews` · `mw_results` · `mw_rank_history` · `mw_audit` · `mw_rate_limits`. Waitlist tables from `0001_waitlist.sql`: `waitlist`, `waitlist_rate_limits`. Schema, invariants and operations: `docs/strength/OPERATIONS.md`, `docs/strength/METHODOLOGY.md`.
 
-## 6. Native ↔ API: the design still to approve (not implemented)
+## 6. Native ↔ API: implemented behind a flag (default OFF)
 
-1. **API origin injection** — the native bundle needs an absolute API origin (`https://<confirmed production domain>`); the production origin is still unconfirmed (`docs/website/OPERATIONS.md` §"Production origin"). Proposed: `scripts/build_native.py` reads `NATIVE_API_ORIGIN` and writes it into the injected marker (`window.__MW_NATIVE`), and the three fetch sites (`site.js`, `strength.js`, `app.js`) prefix it.
-2. **Origin policy** — allow exactly `https://localhost` (Android) and `capacitor://localhost` (iOS) as additional trusted origins for POST + CORS with credentials disabled; keep same-origin for the web.
-3. **Authentication** — Cloudflare Access cookies do not flow from a WebView origin. Options: (a) Access-for-SaaS/OIDC login in the system browser with PKCE, token sent as `Cf-Access-Jwt-Assertion` header; (b) first-party token issuance by a new `/api/auth/*` endpoint. Either is a governance change (new principal provisioning path) and needs owner approval.
-4. **Evidence upload from device** — camera/file plugins + permission disclosures (Play Data safety / Apple privacy labels change from "no data" to "user content, health & fitness").
+Approved direction: proceed flag-gated and tested, with no Cloudflare changes performed from here. Everything below is **inert until the owner sets `NATIVE_CLIENTS_ENABLED=true`** on the Pages project; with the flag off the API behaves byte-for-byte as before (asserted by `tests/native-api.test.js` test 1 and the unchanged 27 Strength Index tests).
 
-Until 1–3 are approved and built, the native apps are **offline product shells**: honest, functional for the Step-1 scope, not connectable to accounts or rankings.
+| Piece | Where | Behaviour |
+|---|---|---|
+| API origin in the bundle | `scripts/build_native.py` → `window.__MW_NATIVE={platform,appId,scheme,apiOrigin}` in every page; recorded in `native-build.json` | `NATIVE_API_ORIGIN` must be a bare `https://` origin or the build aborts. Empty (default) ⇒ the app says "Ranking services are not configured for this app build. Nothing has been sent." |
+| Trusted origins | `server/native.js` `NATIVE_ORIGINS` = `https://localhost` (Android WebView) and `capacitor://localhost` (iOS WKWebView) | accepted for POST/CORS **only** when the flag is on; web stays same-origin; no `Access-Control-Allow-Credentials`, exact-origin echo, `Vary: Origin` |
+| CORS / preflight | `functions/api/[[route]].js` (`OPTIONS` → 204 with allow-list; responses wrapped) | strangers get no CORS headers at all |
+| Token transport | `server/strength/auth.js` via `bearerToken()` | web: `Cf-Access-Jwt-Assertion` (edge-injected). Native: the same self-hosted Access JWT sent as `cf-access-token` (Cloudflare Access validates it at the edge and injects the assertion); `Authorization: Bearer` also read for local tests. Verification (RS256 via Access JWKS, audience, expiry, issuer) is unchanged — no new identity provider, no new principal provisioning path. |
+| Sign-in handoff | `GET /api/strength/native-login?state&challenge` (behind Access) → `com.vitaflex.montewo://auth?code&state` → `POST /api/strength/native-token {code,verifier}` | PKCE S256; code is single-use, 120 s, bound to the challenge **and** to the token's hash; the JWT itself never appears in a URL; both steps audited (`native-login-code-issued`, `native-token-exchanged`). The exchange endpoint is public by design (404 `native-clients-disabled` when the flag is off, 403 for non-native origins). |
+| Client | `public/strength.js` (native branch only), `@capacitor/app` (deep-link `appUrlOpen`/`getLaunchUrl`), `@capacitor/browser` (system browser tab) | token kept in `localStorage['mw-native-token']`, cleared on 401; requests use `credentials:'omit'`. The waitlist is intentionally **not** exposed inside the app ("use the website", nothing submitted). |
+| Deep link registration | `android/app/src/main/AndroidManifest.xml` (VIEW/BROWSABLE, scheme `com.vitaflex.montewo`, host `auth`), `ios/App/App/Info.plist` (`CFBundleURLTypes`) | custom scheme, not Universal/App Links (those need the production domain; see §"Later") |
+| Storage | `migrations/0003_native_auth_codes.sql` → `mw_native_auth_codes` | operational only — no achievement/standards tables touched |
+
+**Owner actions before turning it on** (none performed here): apply migration 0003; add a Cloudflare Access *public* exception for `/api/strength/native-token` (same style as `/config` and `/catalog`); allow the two native origins in the Access application's CORS settings (or set "bypass OPTIONS requests to origin") with headers `cf-access-token, content-type`; set `NATIVE_CLIENTS_ENABLED=true`; rebuild the native bundle with `NATIVE_API_ORIGIN=https://<production origin>`.
+
+**Not verified (needs the real edge):** that Cloudflare Access accepts `cf-access-token` for a self-hosted application exactly as documented and that its CORS settings pass the preflight; the first run against the deployed Pages preview + Access app will prove or disprove it in minutes (`ANDROID_RELEASE.md` §6 device checklist).
+
+**Later:** evidence upload from the device (camera/file plugins ⇒ privacy-label changes), Universal/App Links once the domain is fixed, and sign-out UX.
 
 ## 7. Change inventory of this step (all reversible)
 

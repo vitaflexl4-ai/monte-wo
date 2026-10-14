@@ -1,8 +1,16 @@
 import {handleStrength} from '../../server/strength/api.js';
 import {handleWaitlist} from '../../server/waitlist.js';
+import {preflight,withCors} from '../../server/native.js';
 // Cloudflare Pages Function: optional R2 delivery, same-origin for offline caching.
 // Restricted Strength Index pilot is gated separately; no native workout-sync endpoint.
-export async function onRequest({request,env}) {
+export async function onRequest(context) {
+ // Native (Capacitor) clients: CORS preflight + response headers only for allow-listed native
+ // origins and only when NATIVE_CLIENTS_ENABLED="true" (server/native.js); otherwise unchanged.
+ const {request,env}=context;
+ if(request.method==='OPTIONS')return preflight(request,env);
+ return withCors(await route(context),request,env);
+}
+async function route({request,env}) {
  const url=new URL(request.url);
  if(url.pathname==='/api/strength'||url.pathname.startsWith('/api/strength/'))return handleStrength({request,env});
  if(url.pathname.startsWith('/api/waitlist'))return handleWaitlist({request,env});

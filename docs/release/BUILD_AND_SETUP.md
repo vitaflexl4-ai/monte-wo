@@ -29,6 +29,7 @@ Never hand-edit generated HTML under `public/`; change `content/` or `scripts/` 
 
 * **Cloudflare Pages bindings**: `DB` (D1), `WORKOUT_GIFS_BUCKET` (R2, public media), `RANKING_EVIDENCE` (R2, **private**).
 * **Pages variables**: `TURNSTILE_SITE_KEY`, `RANKING_ENABLED` (keep `false`), `RANKING_ACCESS_ISSUER`, `RANKING_ACCESS_AUD`, `RANKING_PUBLISH_ENABLED` (`false`), `RANKING_APPROVED_DIGESTS`.
+* **Native clients**: `NATIVE_CLIENTS_ENABLED` (Pages variable, keep `false` until the Access prerequisites in `ARCHITECTURE.md` §6 exist) and `NATIVE_API_ORIGIN` (build-time only, read by `scripts/build_native.py`; bare `https://` origin baked into the app bundle).
 * **Pages encrypted secrets**: `TURNSTILE_SECRET`, `RATE_LIMIT_SALT`.
 * **Android release (env, never files)**: `MONTE_WO_VERSION_NAME`, `MONTE_WO_VERSION_CODE`, `ANDROID_KEYSTORE_PATH`, `ANDROID_KEYSTORE_PASSWORD`, `ANDROID_KEY_ALIAS`, `ANDROID_KEY_PASSWORD` (CI: `ANDROID_KEYSTORE_BASE64` secret decoded at run time).
 * Nothing is read from a `.env` file by the web/API tier; `wrangler.toml` keeps all bindings commented out until the owner provisions them.
@@ -62,7 +63,7 @@ Install Playwright's browser once with `npx playwright install chromium` (not po
 
 ## 6. Database: migrations, schema, backup and recovery
 
-* Migrations: `migrations/0001_waitlist.sql` (waitlist + rate limits) then `migrations/0002_strength_index.sql` (Strength Index; append-only achievement/audit tables with triggers rejecting UPDATE/DELETE). Local: `npm run db:local`. Production: `npx wrangler d1 migrations apply <actual-db-name> --remote` **only after a backup, review and explicit authorization** — never run against `flex-ai-db`; `monte-wo-waitlist` stays waitlist-only unless the owner decides to reuse it for 0002 as `wrangler.toml` suggests.
+* Migrations: `migrations/0001_waitlist.sql` (waitlist + rate limits), `migrations/0002_strength_index.sql` (Strength Index; append-only achievement/audit tables with triggers rejecting UPDATE/DELETE), then `migrations/0003_native_auth_codes.sql` (one operational table for the native sign-in handoff; no product tables touched). Local: `npm run db:local`. Production: `npx wrangler d1 migrations apply <actual-db-name> --remote` **only after a backup, review and explicit authorization** — never run against `flex-ai-db`; `monte-wo-waitlist` stays waitlist-only unless the owner decides to reuse it for 0002 as `wrangler.toml` suggests.
 * Schema documentation: table list in `ARCHITECTURE.md` §5, invariants and roles in `docs/strength/OPERATIONS.md`, method in `docs/strength/METHODOLOGY.md`.
 * Backup (D1): `npx wrangler d1 export <db-name> --remote --output backups/<date>.sql` (SQL dump; store encrypted, off-repo) and Cloudflare D1 Time Travel (`npx wrangler d1 time-travel info <db-name>` / `restore --timestamp=<ISO>` within the retention window). Backups contain personal data (emails) — treat as confidential.
 * Backup (R2 evidence): private bucket; copy with an S3-compatible client using a least-privilege, bucket-scoped token into another **private** location; never into the public media bucket or Git.
@@ -80,8 +81,11 @@ Install Playwright's browser once with `npx playwright install chromium` (not po
 | `GET /admin/queue`, `POST /reviews` | role reviewer/admin; no self-approval | evidence review |
 | `GET /admin/standards`, `GET /admin/audit`, `POST /admin/models|rulebooks`, `POST …/:id/publish` | role admin; publisher ≠ author; digest allow-list; `RANKING_PUBLISH_ENABLED` | methodology governance |
 | any `/rank`, `/award`, `/override` | always rejected + audited | no arbitrary rank awards |
+| `GET /api/strength/native-login?state&challenge` | verified Access JWT; flag `NATIVE_CLIENTS_ENABLED=true` | issues a single-use PKCE-bound code and redirects to `com.vitaflex.montewo://auth` (native sign-in handoff) |
+| `POST /api/strength/native-token` `{code,verifier}` | public route (needs an Access public exception) + native `Origin`; flag on, else 404 | exchanges the code for the caller's own Access JWT to be sent back as `cf-access-token` |
+| `OPTIONS /api/*` | none | 204 preflight; CORS headers only for `https://localhost` / `capacitor://localhost` and only when the flag is on |
 
-Everything under `/api/strength/*` fails closed when `RANKING_ENABLED` is not `true` or Access is unconfigured. Full semantics: `docs/strength/OPERATIONS.md` §API.
+Everything under `/api/strength/*` fails closed when `RANKING_ENABLED` is not `true` or Access is unconfigured. Native clients are refused entirely unless `NATIVE_CLIENTS_ENABLED=true` (`ARCHITECTURE.md` §6). Full semantics: `docs/strength/OPERATIONS.md` §API.
 
 ## 8. Asset inventory, licenses, attribution, media storage
 

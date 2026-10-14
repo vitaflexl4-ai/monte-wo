@@ -96,10 +96,33 @@ test('native bundle is deterministic, opens in the app shell and keeps all pages
   assert.ok(!/href="\/["#?]/.test(text),path.relative(bundle,f)+' still links to the bare root');
  }
  assert.ok(fs.readFileSync(path.join(bundle,'site.js'),'utf8').includes("location.href='/delete-account/index.html#clear-device'"));
- for(const f of html)assert.ok(fs.readFileSync(f,'utf8').startsWith('<!doctype html>')&&fs.readFileSync(f,'utf8').includes('<head><script>window.__MW_NATIVE=true</script>'),path.relative(bundle,f)+' must carry the native marker first in <head>');
+ const marker='<head><script>window.__MW_NATIVE={"apiOrigin":"","appId":"'+config.appId+'","platform":"capacitor","scheme":"'+config.appId+'"}</script>';
+ for(const f of html)assert.ok(fs.readFileSync(f,'utf8').startsWith('<!doctype html>')&&fs.readFileSync(f,'utf8').includes(marker),path.relative(bundle,f)+' must carry the native marker first in <head>');
+ assert.equal(manifest.apiOrigin,null,'default build has no API origin (honest offline shell)');
  for(const js of ['dashboard.js','app.js','site.js'])assert.ok(/'serviceWorker' in navigator&&!window\.__MW_NATIVE/.test(fs.readFileSync(path.join(bundle,js),'utf8')),js+' must skip service-worker registration natively');
  assert.ok(!read('public/index.html').includes('__MW_NATIVE')&&!read('public/dashboard/index.html').includes('__MW_NATIVE'),'web pages stay untouched');
- for(const js of ['site.js','strength.js'])assert.ok(/fetch\('\/api\//.test(fs.readFileSync(path.join(bundle,js),'utf8')),'API routes must not be rewritten');
+ for(const js of ['site.js','strength.js']){const t=fs.readFileSync(path.join(bundle,js),'utf8');assert.ok(/'\/api\/(waitlist|strength)/.test(t)&&!/\/api\/[a-z]+\/index\.html/.test(t),js+': API routes must not be rewritten')}
+});
+
+test('native bundle: API origin is injected only from NATIVE_API_ORIGIN and must be a bare https origin',()=>{
+ execFileSync('python3',['scripts/build_native.py'],{cwd:root,stdio:'pipe',env:{...process.env,NATIVE_API_ORIGIN:'https://api.example.test/'}});
+ const index=fs.readFileSync(path.join(bundle,'index.html'),'utf8');assert.ok(index.includes('"apiOrigin":"https://api.example.test"'),'origin baked in without trailing slash');
+ assert.equal(JSON.parse(fs.readFileSync(path.join(bundle,'native-build.json'),'utf8')).apiOrigin,'https://api.example.test');
+ for(const bad of ['http://api.example.test','https://api.example.test/api','https://user:pw@api.example.test','https://api.example.test:8443','not-a-url'])assert.throws(()=>execFileSync('python3',['scripts/build_native.py'],{cwd:root,stdio:'pipe',env:{...process.env,NATIVE_API_ORIGIN:bad}}),bad+' must be rejected');
+ buildNative();assert.ok(fs.readFileSync(path.join(bundle,'index.html'),'utf8').includes('"apiOrigin":""'),'default restored');
+ const example=read('.env.example');for(const v of ['NATIVE_API_ORIGIN=','NATIVE_CLIENTS_ENABLED=false'])assert.ok(example.includes(v),v);
+});
+
+test('native sign-in return deep link is registered on both platforms and the App/Browser plugins are synced',()=>{
+ const manifest=read('android/app/src/main/AndroidManifest.xml');
+ assert.match(manifest,/<action android:name="android.intent.action.VIEW" \/>[\s\S]*?<category android:name="android.intent.category.BROWSABLE" \/>[\s\S]*?<data android:scheme="@string\/custom_url_scheme" android:host="auth" \/>/,'Android VIEW intent filter for <scheme>://auth');
+ assert.ok(read('android/app/src/main/res/values/strings.xml').includes(`<string name="custom_url_scheme">${config.appId}</string>`));
+ const plist=read('ios/App/App/Info.plist');assert.ok(plist.includes('<key>CFBundleURLSchemes</key>')&&plist.includes(`<string>${config.appId}</string>`),'iOS URL scheme');
+ const plugins=JSON.parse(read('android/app/src/main/assets/capacitor.plugins.json')).map(p=>p.pkg).sort();assert.deepEqual(plugins,['@capacitor/app','@capacitor/browser']);
+ const swift=read('ios/App/CapApp-SPM/Package.swift');assert.ok(swift.includes('CapacitorApp')&&swift.includes('CapacitorBrowser'));
+ const pkg=JSON.parse(read('package.json'));for(const d of ['@capacitor/app','@capacitor/browser','@capacitor/core','@capacitor/android','@capacitor/ios'])assert.match(pkg.dependencies[d],/^\d+\.\d+\.\d+$/,d+' pinned exactly');
+ const js=read('public/strength.js');assert.ok(js.includes("'cf-access-token'")&&js.includes('/native-login?state=')&&js.includes("'/native-token'")&&js.includes("appUrlOpen"),'native sign-in flow wired in strength.js');
+ assert.ok(!/credentials:'include'/.test(js),'never cookie-based across origins');
 });
 
 test('native bundle preserves product rules: four disciplines, nine ranks, no combined rank',()=>{

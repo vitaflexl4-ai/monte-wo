@@ -18,6 +18,7 @@
     "build": "python3 scripts/build_tools.py && python3 scripts/build_library.py && python3 scripts/build_strength.py && python3 scripts/build_lab.py && python3 scripts/build_website.py && python3 scripts/build_dashboard.py",
     "test:library": "node tests/library.mjs",
     "test:strength": "node --test tests/strength*.test.js",
+    "test:native-api": "node --test tests/native-api.test.js",
     "test:strength-browser": "node tests/strength-browser.mjs",
     "build:lab": "python3 scripts/build_lab.py",
     "test:lab": "node --test tests/lab.test.js",
@@ -45,6 +46,8 @@
   },
   "dependencies": {
     "@capacitor/android": "8.5.3",
+    "@capacitor/app": "8.1.2",
+    "@capacitor/browser": "8.0.5",
     "@capacitor/core": "8.5.3",
     "@capacitor/ios": "8.5.3"
   }

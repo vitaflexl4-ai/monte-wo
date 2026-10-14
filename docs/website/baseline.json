@@ -1,5 +1,5 @@
 {
-  "package-lock.json": "f43924b31d79e5354b9083ab89bebd8357240b8248239c8608f3d132bae66d9e",
+  "package-lock.json": "df23932df18342429556671f5ed8ff657b70f560f0bc726700455dd4981fedcd",
   "README.md": "5540b99bcdf9be71b463abc745e63529fb30eafe1891c20aa18309ce4e3f61d3",
   ".gitignore": "6080a20a8f2082fd908c0fb68784de0457e2df1697005e41a8f08224c2f7666b",
   "package.json": "4aaa592841534f0fb9588a30ef9b737fbeb9039a1c157d6a72892b4fc8cbd976",
@@ -24,7 +24,7 @@
   "tests/waitlist.test.js": "0f8e0a28bc47ccdd713e30a3bac8a986417917120fd77797d78429b47cb12926",
   "tests/tools.test.js": "c7d55c4c2ce1b3eaf4ccd4ccc6fc89c8f5df63b43445912e23d2a58771e2a76b",
   "tests/r2.test.js": "2b9203c91422fb788caf709b7ab3c594f57d3716a14a21238ff6959ae1e08d51",
-  "server/waitlist.js": "7a543cefe5fc02559e6f5333ffceb1e3e1608a8a4346509cbb907477dcd7050d",
+  "server/waitlist.js": "f78319186860430afe3f9f361b0dfa42f8193a6b67c10f06a9d9646848a5d6fb",
   "exercise-packages/README.md": "be98ca221d2157654d4eb8e49d56c425cb152d097ebf6268fecc19b246d78a09",
   "content/exercises.json": "77f2ca2c7f337c6733e629f9c6de8361bddf9017cc5942e38f993f8942c3dfae",
   "scripts/build_library.py": "30e9e8044b79dd17d72cbb3de904e1276af73496d655e92039379bd775aadfbc",
@@ -168,10 +168,10 @@
   "content/strength/deadlift-standard-draft-1.json": "cffb2e1be3ca1e023086a95629d331a9f02e94a494750925c3d8dcb00784c498",
   "content/strength/curl-standard-draft-1.json": "0e9cbd06244f8099e665770c66161d4d256cbd8a86a265111e4c83530f2e0cf5",
   "content/strength/squat-model-draft-1.json": "6acb6a9f14f92ea48df77f29a5b6b1d6e56eae8b5fb4127dcf775f9ba1d64a81",
-  "functions/api/[[route]].js": "6f8328107d8cd9a9a96204b6d6d8f45f4f29099b1145ee5b997f0ce280142186",
-  "server/strength/auth.js": "7281b0d9bfde05c33708e2a70931bfc5cc91de423a3f32769d3ab4037f8d677e",
+  "functions/api/[[route]].js": "a9350d0d92d722b297828c4c59b1f9243a1aa334cb71d2f544de25aca7293e64",
+  "server/strength/auth.js": "fb44ef9174a1d924cd5f8c7119caeff10f6dd69e520619d51905f7357c2f0069",
   "server/strength/engine.js": "53389d09d5d1cd467989c487b2ce6897b7102e63669ef98079a88fd0da6f11f4",
-  "server/strength/api.js": "fc47a283f8f64b86397bca5e70f70f75cb4c1457eafccb979bbe81909db5e26f",
+  "server/strength/api.js": "ca1a23ebe7b5b4ff370db696b4df9b006eb0516b6eb4d62b7bcd0c4214840707",
   "tests/fixtures/strength-fixtures.js": "57356d4cc844280a324c7c2cba36c62b11724be15879a0d0673da02244255954",
   "tests/fixtures/d1_sqlite.py": "7ce78057103bf91644afd42503e8f8ce219452ba3fdbc4166b5fc3c128e142ea"
 }
