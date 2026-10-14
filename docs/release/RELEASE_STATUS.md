@@ -1,7 +1,7 @@
 # MONTE WO — release status
 
 _Last updated: 2026-10-13 (second pass: native↔API plumbing, CI fix-forward) · branch `arena/7a19420f-monte-wo` · base `main@b6c66da` (+ Step 1 `f47e994`, native packaging `1bf6431`)._
-**Overall: NOT store-ready. Web deployable (pending owner authorization and domain; branch previews already auto-publish). iOS project compiles in CI (simulator, unsigned); Android CI failed at the SDK step and a fix is pushed (outcome pending at the time of writing). Native ↔ API connectivity is implemented behind `NATIVE_CLIENTS_ENABLED` (off) and unverified against the real Cloudflare edge. Signing, store accounts, store assets and privacy forms remain owner-gated.**
+**Overall: NOT store-ready — but both native projects now build in CI from a clean checkout: Android `bundleRelease` produced an (unsigned) `.aab` artifact and the iOS project compiles for the simulator. Web deployable (pending owner authorization and domain; branch previews already auto-publish). Native ↔ API connectivity is implemented behind `NATIVE_CLIENTS_ENABLED` (off) and unverified against the real Cloudflare edge. Signing, store accounts, store assets, privacy forms and device testing remain owner-gated.**
 
 ## 1. Completed in this step (evidence in repo)
 
@@ -39,17 +39,17 @@ Preserved untouched: brand assets, rank artwork and names, exercise assets, the 
 | Browser: website 49 routes × 320–1440 px, tools, library, ranks, strength, lab, dashboard shell | `npm run test:website`, `test:browser`, `test:phase2`, `test:library`, `test:ranks`, `test:strength-browser`, `test:lab-browser`, `test:dashboard-browser` against `wrangler pages dev` on :8080 | **all PASS** (after the JS guard change) |
 | Browser: packaged app, phone viewport, Capacitor routing emulation (launch → tab bar → More drawer → demo food logger → Settings → Privacy page → brand link back to Dashboard → extension-less path → waitlist/strength degrade honestly; zero network writes; no service worker; no camera) | `npm run test:native-browser` against `npm run preview:native` on :3000 | **PASS** |
 | Browser engine used | Chromium 153 (`@sparticuz/chromium`, sandbox-provided) via `PLAYWRIGHT_BROWSERS_PATH` | note: not Playwright's pinned Chromium 156; the suites are engine-agnostic |
-| **GitHub Actions — iOS** | runs `38496917039` and `38498479106` (`iOS build check`, macos-latest, triggered by the authorized `[build-native]` pushes; the second includes the App/Browser plugins and URL scheme) | **SUCCESS ×2** — the committed Xcode project + SPM packages compile against the native bundle for the iOS Simulator (unsigned; compile evidence only) |
-| **GitHub Actions — Android** | runs `38496436798`, `38496917064` | **FAILED** — first: workflow YAML parse error (fixed, test-guarded); second: failed at the `android-actions/setup-android@v3` license step (job logs not downloadable from this sandbox). Fixed forward: preinstalled SDK + `sdkmanager --licenses` → run `38498479114` passed the SDK step and failed at `npm test` (the documented pre-existing `INTER-LICENSE.txt` baseline item, §4 item 8); the test step now tolerates exactly that item and fails on anything else — next run pending |
+| **GitHub Actions — iOS** | runs `38496917039`, `38498479106`, `38498829064`, `38499331971` (`iOS build check`, macos-latest, triggered by the authorized `[build-native]` pushes; from the second on including the App/Browser plugins and URL scheme) | **SUCCESS ×4** — the committed Xcode project + SPM packages compile against the native bundle for the iOS Simulator (unsigned; compile evidence only) |
+| **GitHub Actions — Android** | final run `38499331981` on `2ba8b04` (`Build .aab`, ubuntu-latest, 2 min 14 s): checkout → Node 22 → Java 21 → preinstalled SDK + licenses → `npm ci` → `npm run build` → unit tests → `build:native` + `cap sync android` → `./gradlew bundleRelease` → signature report → artifact | **SUCCESS** — artifact `monte-wo-android-0.1.0-1` (4.6 MB, unsigned: no keystore secret, as the job warns; expires 2026-10-28) + `unit-test-tap-log`. Fix-forward history: `38496436798` YAML parse error; `38496917064` `android-actions/setup-android@v3` license step; `38498479114` `npm test` exit 1 (documented INTER-LICENSE item); `38498830071`/`38499117521` a new test read the gitignored `capacitor.plugins.json` (CI-only ENOENT, fixed). **Not inspected from the sandbox:** the `.aab` contents (artifact download is blocked here, like job logs) — owner: download from the run page and check with `bundletool`/`unzip -l` |
 
 ## 3. NOT verified (cannot be done here) — assumptions, clearly separated
 
 | Item | Why not | How to verify |
 |---|---|---|
-| Android compiles / `.aab` builds | no JDK/Android SDK in sandbox; `dl.google.com`, `services.gradle.org` unreachable | owner: `cd android && ./gradlew bundleRelease`, or run the manual workflow (`Actions → Android release bundle`) |
-| iOS compiles / archives | no macOS/Xcode | owner Mac: Xcode → Archive; or manual workflow `iOS build check` (unsigned simulator build) |
+| ~~Android compiles / `.aab` builds~~ **now verified in CI** (unsigned); local build still not possible in the sandbox | — | owner: `cd android && ./gradlew bundleRelease`, or run the manual workflow (`Actions → Android release bundle`) |
+| ~~iOS compiles~~ **verified in CI (simulator, unsigned)**; archive/signing not verified | no macOS/Xcode here; no signing identity | owner Mac: Xcode → Archive (`IOS_RELEASE.md` §4) |
 | Behaviour inside real WebViews (Android System WebView / WKWebView), safe areas, keyboard, back button | emulation only | device test checklist in `ANDROID_RELEASE.md` §6 / `IOS_RELEASE.md` §7 |
-| Android workflow green | last run failed at the SDK step (see §2); fix pushed, outcome pending | `gh run list --branch arena/7a19420f-monte-wo` / Actions tab; fix forward |
+| Contents/installability of the CI `.aab` | artifact not downloadable from the sandbox | owner: download `monte-wo-android-0.1.0-1` from run `38499331981`, `bundletool build-apks --mode=universal` (needs signing) and install on a device |
 | Cloudflare Access accepts `cf-access-token` + CORS preflight for the native origins | needs the real edge + owner's Access application; cannot be emulated offline | after the owner applies `ARCHITECTURE.md` §6 prerequisites: one sign-in from a debug build against the Pages preview |
 | Native sign-in flow on a device (system browser → deep link → token exchange) | no device/emulator here; unit + browser tests cover the server and the JS logic only | checklists in `ANDROID_RELEASE.md` §6 / `IOS_RELEASE.md` §7 |
 | Capacitor 8 toolchain assumptions (JDK 21, Xcode 16.x+) | from Capacitor requirements knowledge, not re-checked online (sandbox has no access to capacitorjs.com) | confirm against Capacitor 8 docs when installing tools |
@@ -101,7 +101,7 @@ SITE_ORIGIN=https://<confirmed-domain> npm run build && npm run deploy
 
 ## 6. Next steps (proposed order)
 
-1. Confirm the Android workflow is green after the SDK fix (`gh run list --branch arena/7a19420f-monte-wo`); download the unsigned `.aab`/debug artifact and install on a device → device checklist.
+1. Download the unsigned `.aab` from run `38499331981` (or build locally), sign/convert with `bundletool`, install on a device → device checklist (`ANDROID_RELEASE.md` §6).
 2. Owner: production domain → `SITE_ORIGIN`/`NATIVE_API_ORIGIN`; Access prerequisites for native clients (§4 item 3); then one real sign-in from a debug build proves the `cf-access-token` assumption.
 3. Replace template icons/splash with brand-derived assets; capture store screenshots; fill Data safety / App Privacy forms (change from "no data" once connected builds ship).
 4. Developer accounts + signing material + GitHub secrets → signed `.aab`, Xcode archive.
