@@ -15,7 +15,7 @@
     "test:phase2": "node tests/phase2.mjs",
     "test:ranks": "node tests/ranks.mjs",
     "test:portable": "node tests/portable.mjs",
-    "build": "python3 scripts/build_tools.py && python3 scripts/build_library.py && python3 scripts/build_strength.py && python3 scripts/build_lab.py && python3 scripts/build_website.py",
+    "build": "python3 scripts/build_tools.py && python3 scripts/build_library.py && python3 scripts/build_strength.py && python3 scripts/build_lab.py && python3 scripts/build_website.py && python3 scripts/build_dashboard.py",
     "test:library": "node tests/library.mjs",
     "test:strength": "node --test tests/strength*.test.js",
     "test:strength-browser": "node tests/strength-browser.mjs",
@@ -26,7 +26,10 @@
     "export:lab": "python3 scripts/export_preview.py --lab",
     "build:website": "npm run build",
     "test:website": "node tests/website-browser.mjs",
-    "export:website": "python3 scripts/export_preview.py --website"
+    "export:website": "python3 scripts/export_preview.py --website",
+    "build:dashboard": "python3 scripts/build_dashboard.py",
+    "test:dashboard": "node --test tests/dashboard.test.js",
+    "test:dashboard-browser": "node tests/dashboard-browser.mjs"
   },
   "devDependencies": {
     "wrangler": "^4.0.0",

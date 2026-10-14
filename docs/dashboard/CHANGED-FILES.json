@@ -1,0 +1,47 @@
+{
+  "comparison": "main at b6c66da (base of branch arena/7a19420f-monte-wo), App Foundation Step 1",
+  "added": [
+    "content/dashboard/en.json",
+    "docs/dashboard/CHANGED-FILES.json",
+    "docs/dashboard/STEP-1-REPORT.md",
+    "docs/dashboard/screenshots/01-desktop-dashboard.png",
+    "docs/dashboard/screenshots/02-desktop-panels-interacting.png",
+    "docs/dashboard/screenshots/03-camera-viewfinder-mockup.png",
+    "docs/dashboard/screenshots/04-desktop-rankings-placeholder.png",
+    "docs/dashboard/screenshots/05-phone-dashboard-tabbar.png",
+    "docs/dashboard/screenshots/06-phone-muscle-view-selected.png",
+    "docs/dashboard/screenshots/07-phone-food-logger.png",
+    "docs/dashboard/screenshots/08-phone-more-drawer.png",
+    "docs/dashboard/screenshots/09-tablet-standards.png",
+    "public/dashboard.css",
+    "public/dashboard.js",
+    "public/dashboard/index.html",
+    "public/dashboard/manifest.webmanifest",
+    "scripts/build_dashboard.py",
+    "tests/dashboard-browser.mjs",
+    "tests/dashboard.test.js"
+  ],
+  "modified": [
+    "README.md",
+    "package.json",
+    "public/app/index.html",
+    "public/sw.js",
+    "scripts/build_website.py",
+    "scripts/export_preview.py"
+  ],
+  "deleted": [],
+  "generated": [
+    "public/app/index.html",
+    "public/dashboard/index.html",
+    "public/dashboard/manifest.webmanifest",
+    "public/sw.js"
+  ],
+  "untouched_by_policy": [
+    "public/assets/**",
+    "content/strength/**",
+    "functions/**",
+    "migrations/**",
+    "wrangler.toml",
+    "public/_headers"
+  ]
+}
