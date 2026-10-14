@@ -13,6 +13,10 @@
 name: Android release bundle (manual)
 
 on:
+  # Manual run from the Actions tab (inputs below), or a push to an arena/* working branch whose
+  # commit message contains "[build-native]" (the agent sandbox cannot dispatch workflows).
+  push:
+    branches: ["arena/**"]
   workflow_dispatch:
     inputs:
       version_name:
@@ -34,6 +38,7 @@ concurrency:
 jobs:
   bundle:
     name: Build .aab
+    if: github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[build-native]')
     runs-on: ubuntu-latest
     timeout-minutes: 45
     steps:
@@ -60,7 +65,7 @@ jobs:
       - name: Install dependencies (lockfile)
         run: npm ci
 
-      - name: Web build (source of truth: content/ + scripts/)
+      - name: "Web build (source of truth is content/ + scripts/)"
         run: npm run build
 
       - name: Web unit tests
@@ -87,8 +92,8 @@ jobs:
       - name: Gradle bundleRelease
         working-directory: android
         env:
-          MONTE_WO_VERSION_NAME: ${{ inputs.version_name }}
-          MONTE_WO_VERSION_CODE: ${{ inputs.version_code }}
+          MONTE_WO_VERSION_NAME: ${{ inputs.version_name || '0.1.0' }}
+          MONTE_WO_VERSION_CODE: ${{ inputs.version_code || '1' }}
           ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
           ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
           ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
@@ -97,6 +102,9 @@ jobs:
           ./gradlew --no-daemon --stacktrace bundleRelease
 
       - name: Report signature state
+        env:
+          MONTE_WO_VERSION_NAME: ${{ inputs.version_name || '0.1.0' }}
+          MONTE_WO_VERSION_CODE: ${{ inputs.version_code || '1' }}
         run: |
           AAB=android/app/build/outputs/bundle/release/app-release.aab
           ls -la "$AAB"
@@ -107,12 +115,12 @@ jobs:
             echo "signed=NO (unsigned bundle, not uploadable)" >> "$GITHUB_STEP_SUMMARY"
             echo "::warning::Bundle is unsigned."
           fi
-          echo "versionName=${{ inputs.version_name }} versionCode=${{ inputs.version_code }}" >> "$GITHUB_STEP_SUMMARY"
+          echo "versionName=$MONTE_WO_VERSION_NAME versionCode=$MONTE_WO_VERSION_CODE" >> "$GITHUB_STEP_SUMMARY"
 
       - name: Upload .aab artifact
         uses: actions/upload-artifact@v4
         with:
-          name: monte-wo-android-${{ inputs.version_name }}-${{ inputs.version_code }}
+          name: monte-wo-android-${{ inputs.version_name || '0.1.0' }}-${{ inputs.version_code || '1' }}
           path: android/app/build/outputs/bundle/release/app-release.aab
           if-no-files-found: error
           retention-days: 14

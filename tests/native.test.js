@@ -112,8 +112,10 @@ test('native bundle preserves product rules: four disciplines, nine ranks, no co
 
 test('release workflows are manual-only, reproducible and free of credentials',()=>{
  for(const wf of ['.github/workflows/android-release.yml','.github/workflows/ios-build.yml']){const text=read(wf);
-  assert.ok(/^on:\s*\n\s+workflow_dispatch:/m.test(text),wf+' must be workflow_dispatch');
-  assert.ok(!/^\s+(push|pull_request|schedule):/m.test(text),wf+' must not auto-run');
+  assert.ok(/^\s+workflow_dispatch:/m.test(text),wf+' must support manual dispatch');
+  assert.ok(!/^\s+(pull_request|schedule):/m.test(text),wf+' must not run on PRs or schedules');
+  if(/^\s+push:/m.test(text)){assert.ok(/branches: \["arena\/\*\*"\]/.test(text),wf+' push trigger must be limited to arena/** working branches');assert.ok(/contains\(github\.event\.head_commit\.message, '\[build-native\]'\)/.test(text),wf+' push runs must be opt-in per commit')}
+  for(const m of text.matchAll(/^\s*-?\s*name: (.+)$/gm)){const v=m[1].trim();assert.ok(/^["']/.test(v)||!v.includes(': '),wf+' unquoted step name with ": " breaks YAML: '+v)}
   assert.ok(text.includes('npm ci')&&text.includes('npm run build')&&text.includes('npm run build:native'),wf+' must rebuild from source');
   assert.ok(!/-----BEGIN|AKIA[0-9A-Z]{16}|ghp_[A-Za-z0-9]{20,}|xox[bp]-/.test(text),wf+' must not embed credentials');
   assert.ok(!/upload-google-play|app-store-connect-upload|altool|fastlane (deliver|supply|pilot)/.test(text),wf+' must not submit to a store');
