@@ -101,4 +101,4 @@ if(dialog&&scan){
 }
 
 // ---------------------------------------------------------------- offline shell (same worker the public site installs)
-if('serviceWorker' in navigator){window.addEventListener('load',()=>{navigator.serviceWorker.register('/sw.js').catch(()=>{/* Private/embedded browsers may not allow installation. */})})}
+if('serviceWorker' in navigator&&!window.__MW_NATIVE){window.addEventListener('load',()=>{navigator.serviceWorker.register('/sw.js').catch(()=>{/* Private/embedded browsers may not allow installation. */})})}

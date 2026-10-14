@@ -71,6 +71,6 @@ if(signup){
  window.addEventListener('online',()=>{if(!config?.available)loadConfig();else{ready();message('You’re back online. Complete the form to join.')}});
  loadConfig();
 }
-if('serviceWorker' in navigator)window.addEventListener('load',()=>{navigator.serviceWorker.register('/sw.js').catch(()=>{})});
+if('serviceWorker' in navigator&&!window.__MW_NATIVE)window.addEventListener('load',()=>{navigator.serviceWorker.register('/sw.js').catch(()=>{})});
 
 applyRankVisuals();

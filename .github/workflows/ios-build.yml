@@ -1,0 +1,60 @@
+# MONTE WO — iOS project build check (Capacitor shell around the web build).
+#
+# Manual trigger only. This job proves that the committed Xcode project compiles against
+# the current web build on a macOS runner (unsigned, iOS Simulator). It does NOT archive,
+# sign or upload: App Store distribution requires the account holder's certificates,
+# provisioning profile and App Store Connect access, and is done from Xcode or with the
+# commands in docs/release/IOS_RELEASE.md. No secret is referenced by this workflow.
+name: iOS build check (manual)
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  simulator-build:
+    name: Compile App (iOS Simulator, unsigned)
+    runs-on: macos-latest
+    timeout-minutes: 60
+    steps:
+      - name: Check out
+        uses: actions/checkout@v4
+
+      - name: Node 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies (lockfile)
+        run: npm ci
+
+      - name: Web build + native bundle + Capacitor sync
+        run: |
+          npm run build
+          npm run build:native
+          npx cap sync ios
+          cat build/native/native-build.json
+
+      - name: Xcode version
+        run: xcodebuild -version
+
+      - name: Build for iOS Simulator (no code signing)
+        working-directory: ios/App
+        run: |
+          xcodebuild \
+            -project App.xcodeproj \
+            -scheme App \
+            -configuration Debug \
+            -sdk iphonesimulator \
+            -destination 'generic/platform=iOS Simulator' \
+            -derivedDataPath "$RUNNER_TEMP/DerivedData" \
+            CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO \
+            build | tail -n 60
+
+      - name: Summary
+        run: |
+          echo "iOS project compiled for the Simulator (unsigned)." >> "$GITHUB_STEP_SUMMARY"
+          echo "Archive/upload steps are manual: see docs/release/IOS_RELEASE.md." >> "$GITHUB_STEP_SUMMARY"

@@ -29,10 +29,23 @@
     "export:website": "python3 scripts/export_preview.py --website",
     "build:dashboard": "python3 scripts/build_dashboard.py",
     "test:dashboard": "node --test tests/dashboard.test.js",
-    "test:dashboard-browser": "node tests/dashboard-browser.mjs"
+    "test:dashboard-browser": "node tests/dashboard-browser.mjs",
+    "build:native": "python3 scripts/build_native.py",
+    "native:sync": "python3 scripts/build_native.py && npx cap sync",
+    "native:android": "python3 scripts/build_native.py && npx cap sync android && npx cap open android",
+    "native:ios": "python3 scripts/build_native.py && npx cap sync ios && npx cap open ios",
+    "test:native": "node --test tests/native.test.js",
+    "preview:native": "node scripts/native_preview.mjs",
+    "test:native-browser": "node tests/native-browser.mjs"
   },
   "devDependencies": {
-    "wrangler": "^4.0.0",
-    "@playwright/test": "^1.50.0"
+    "@capacitor/cli": "8.5.3",
+    "@playwright/test": "^1.50.0",
+    "wrangler": "^4.0.0"
+  },
+  "dependencies": {
+    "@capacitor/android": "8.5.3",
+    "@capacitor/core": "8.5.3",
+    "@capacitor/ios": "8.5.3"
   }
 }

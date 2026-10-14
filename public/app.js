@@ -88,4 +88,4 @@ function setLanguage(next){
 }
 $('#language').addEventListener('change',e=>setLanguage(e.target.value));
 setLanguage(lang);runCalculator(false);
-if('serviceWorker' in navigator){window.addEventListener('load',()=>{navigator.serviceWorker.register('/sw.js').catch(()=>{/* Private/embedded browsers may not allow installation. */})})}
+if('serviceWorker' in navigator&&!window.__MW_NATIVE){window.addEventListener('load',()=>{navigator.serviceWorker.register('/sw.js').catch(()=>{/* Private/embedded browsers may not allow installation. */})})}

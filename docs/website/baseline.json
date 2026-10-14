@@ -1,8 +1,8 @@
 {
-  "package-lock.json": "01fc14dcd43201c328ec7493220288f3c0d4d311804714d1bbb3b6978c6c1864",
+  "package-lock.json": "f43924b31d79e5354b9083ab89bebd8357240b8248239c8608f3d132bae66d9e",
   "README.md": "5540b99bcdf9be71b463abc745e63529fb30eafe1891c20aa18309ce4e3f61d3",
   ".gitignore": "6080a20a8f2082fd908c0fb68784de0457e2df1697005e41a8f08224c2f7666b",
-  "package.json": "9a0bc12d32460bb82e3e66c6448746760a25ed6fdf84735dea4da55ab34b2cf6",
+  "package.json": "4aaa592841534f0fb9588a30ef9b737fbeb9039a1c157d6a72892b4fc8cbd976",
   "wrangler.toml": "cd8435e7291ebdd2c533d6f04abd2d55b5c3d9dca64c684d9ebda814f1f0fd05",
   "wrangler.local.toml": "ab9c074e97b4995547f2457a4f1e55d5867d6a2cf0f5c471b7178bf96628aa2c",
   "tests/library.mjs": "2a929bf3656c16ae066c7939ed2e81d4bd5ab161e6388ae4d74a78fead17b7b2",
