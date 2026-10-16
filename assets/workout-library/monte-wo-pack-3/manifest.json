@@ -1,0 +1,297 @@
+[
+  {
+    "id": "lateral-raise",
+    "name_en": "Dumbbell lateral raise",
+    "name_ht": null,
+    "category": "Shoulders",
+    "equipment": "Dumbbells",
+    "primary_muscles": [
+      "Side shoulders"
+    ],
+    "secondary_muscles": [
+      "Traps"
+    ],
+    "demo_key": "exercises/lateral-raise/demo.mp4",
+    "loop_key": "exercises/lateral-raise/loop.mp4",
+    "poster_key": "exercises/lateral-raise/poster.jpg",
+    "demo_duration_s": 21.5,
+    "loop_duration_s": 4.3,
+    "width": 720,
+    "height": 936,
+    "fps": 30,
+    "reps_in_demo": 5,
+    "demo_bytes": 437384,
+    "loop_bytes": 90561
+  },
+  {
+    "id": "jumping-jacks",
+    "name_en": "Jumping jacks",
+    "name_ht": null,
+    "category": "Cardio",
+    "equipment": "Bodyweight",
+    "primary_muscles": [
+      "Full body"
+    ],
+    "secondary_muscles": [
+      "Shoulders",
+      "Calves"
+    ],
+    "demo_key": "exercises/jumping-jacks/demo.mp4",
+    "loop_key": "exercises/jumping-jacks/loop.mp4",
+    "poster_key": "exercises/jumping-jacks/poster.jpg",
+    "demo_duration_s": 21.5,
+    "loop_duration_s": 4.3,
+    "width": 720,
+    "height": 936,
+    "fps": 30,
+    "reps_in_demo": 5,
+    "demo_bytes": 695376,
+    "loop_bytes": 142167
+  },
+  {
+    "id": "chest-fly",
+    "name_en": "Standing chest fly",
+    "name_ht": null,
+    "category": "Chest",
+    "equipment": "Dumbbells",
+    "primary_muscles": [
+      "Chest"
+    ],
+    "secondary_muscles": [
+      "Front shoulders"
+    ],
+    "demo_key": "exercises/chest-fly/demo.mp4",
+    "loop_key": "exercises/chest-fly/loop.mp4",
+    "poster_key": "exercises/chest-fly/poster.jpg",
+    "demo_duration_s": 21.5,
+    "loop_duration_s": 4.3,
+    "width": 720,
+    "height": 936,
+    "fps": 30,
+    "reps_in_demo": 5,
+    "demo_bytes": 361907,
+    "loop_bytes": 76582
+  },
+  {
+    "id": "dumbbell-press-front",
+    "name_en": "Dumbbell shoulder press (front view)",
+    "name_ht": null,
+    "category": "Shoulders",
+    "equipment": "Dumbbells",
+    "primary_muscles": [
+      "Shoulders",
+      "Triceps"
+    ],
+    "secondary_muscles": [
+      "Traps"
+    ],
+    "demo_key": "exercises/dumbbell-press-front/demo.mp4",
+    "loop_key": "exercises/dumbbell-press-front/loop.mp4",
+    "poster_key": "exercises/dumbbell-press-front/poster.jpg",
+    "demo_duration_s": 21.5,
+    "loop_duration_s": 4.3,
+    "width": 720,
+    "height": 936,
+    "fps": 30,
+    "reps_in_demo": 5,
+    "demo_bytes": 453877,
+    "loop_bytes": 93201
+  },
+  {
+    "id": "alternating-curl",
+    "name_en": "Alternating dumbbell curl",
+    "name_ht": null,
+    "category": "Arms",
+    "equipment": "Dumbbells",
+    "primary_muscles": [
+      "Biceps"
+    ],
+    "secondary_muscles": [
+      "Forearms"
+    ],
+    "demo_key": "exercises/alternating-curl/demo.mp4",
+    "loop_key": "exercises/alternating-curl/loop.mp4",
+    "poster_key": "exercises/alternating-curl/poster.jpg",
+    "demo_duration_s": 21.5,
+    "loop_duration_s": 4.3,
+    "width": 720,
+    "height": 936,
+    "fps": 30,
+    "reps_in_demo": 5,
+    "demo_bytes": 369227,
+    "loop_bytes": 76691
+  },
+  {
+    "id": "hammer-curl",
+    "name_en": "Hammer curl",
+    "name_ht": null,
+    "category": "Arms",
+    "equipment": "Dumbbells",
+    "primary_muscles": [
+      "Biceps",
+      "Forearms"
+    ],
+    "secondary_muscles": [],
+    "demo_key": "exercises/hammer-curl/demo.mp4",
+    "loop_key": "exercises/hammer-curl/loop.mp4",
+    "poster_key": "exercises/hammer-curl/poster.jpg",
+    "demo_duration_s": 21.5,
+    "loop_duration_s": 4.3,
+    "width": 720,
+    "height": 936,
+    "fps": 30,
+    "reps_in_demo": 5,
+    "demo_bytes": 385668,
+    "loop_bytes": 81346
+  },
+  {
+    "id": "sumo-squat",
+    "name_en": "Sumo squat",
+    "name_ht": null,
+    "category": "Legs",
+    "equipment": "Bodyweight",
+    "primary_muscles": [
+      "Quadriceps",
+      "Inner thighs"
+    ],
+    "secondary_muscles": [
+      "Glutes",
+      "Calves"
+    ],
+    "demo_key": "exercises/sumo-squat/demo.mp4",
+    "loop_key": "exercises/sumo-squat/loop.mp4",
+    "poster_key": "exercises/sumo-squat/poster.jpg",
+    "demo_duration_s": 21.5,
+    "loop_duration_s": 4.3,
+    "width": 720,
+    "height": 936,
+    "fps": 30,
+    "reps_in_demo": 5,
+    "demo_bytes": 667694,
+    "loop_bytes": 137191
+  },
+  {
+    "id": "lateral-lunge",
+    "name_en": "Lateral lunge",
+    "name_ht": null,
+    "category": "Legs",
+    "equipment": "Bodyweight",
+    "primary_muscles": [
+      "Quadriceps",
+      "Glutes"
+    ],
+    "secondary_muscles": [
+      "Inner thighs",
+      "Calves"
+    ],
+    "demo_key": "exercises/lateral-lunge/demo.mp4",
+    "loop_key": "exercises/lateral-lunge/loop.mp4",
+    "poster_key": "exercises/lateral-lunge/poster.jpg",
+    "demo_duration_s": 21.5,
+    "loop_duration_s": 4.3,
+    "width": 720,
+    "height": 936,
+    "fps": 30,
+    "reps_in_demo": 5,
+    "demo_bytes": 809026,
+    "loop_bytes": 164755
+  },
+  {
+    "id": "side-bend",
+    "name_en": "Standing side bend",
+    "name_ht": null,
+    "category": "Core",
+    "equipment": "Bodyweight",
+    "primary_muscles": [
+      "Obliques"
+    ],
+    "secondary_muscles": [
+      "Abs"
+    ],
+    "demo_key": "exercises/side-bend/demo.mp4",
+    "loop_key": "exercises/side-bend/loop.mp4",
+    "poster_key": "exercises/side-bend/poster.jpg",
+    "demo_duration_s": 21.5,
+    "loop_duration_s": 4.3,
+    "width": 720,
+    "height": 936,
+    "fps": 30,
+    "reps_in_demo": 5,
+    "demo_bytes": 708746,
+    "loop_bytes": 144431
+  },
+  {
+    "id": "wide-grip-pull-up",
+    "name_en": "Wide-grip pull-up",
+    "name_ht": null,
+    "category": "Back",
+    "equipment": "Bodyweight",
+    "primary_muscles": [
+      "Lats"
+    ],
+    "secondary_muscles": [
+      "Biceps",
+      "Shoulders",
+      "Traps"
+    ],
+    "demo_key": "exercises/wide-grip-pull-up/demo.mp4",
+    "loop_key": "exercises/wide-grip-pull-up/loop.mp4",
+    "poster_key": "exercises/wide-grip-pull-up/poster.jpg",
+    "demo_duration_s": 21.5,
+    "loop_duration_s": 4.3,
+    "width": 720,
+    "height": 936,
+    "fps": 30,
+    "reps_in_demo": 5,
+    "demo_bytes": 494565,
+    "loop_bytes": 101694
+  },
+  {
+    "id": "wide-lat-pulldown",
+    "name_en": "Wide-grip lat pulldown",
+    "name_ht": null,
+    "category": "Back",
+    "equipment": "Cable machine",
+    "primary_muscles": [
+      "Lats"
+    ],
+    "secondary_muscles": [
+      "Biceps",
+      "Traps"
+    ],
+    "demo_key": "exercises/wide-lat-pulldown/demo.mp4",
+    "loop_key": "exercises/wide-lat-pulldown/loop.mp4",
+    "poster_key": "exercises/wide-lat-pulldown/poster.jpg",
+    "demo_duration_s": 21.5,
+    "loop_duration_s": 4.3,
+    "width": 720,
+    "height": 936,
+    "fps": 30,
+    "reps_in_demo": 5,
+    "demo_bytes": 626103,
+    "loop_bytes": 128807
+  },
+  {
+    "id": "standing-side-leg-raise",
+    "name_en": "Standing side leg raise",
+    "name_ht": null,
+    "category": "Legs",
+    "equipment": "Bodyweight",
+    "primary_muscles": [
+      "Glutes",
+      "Outer thighs"
+    ],
+    "secondary_muscles": [],
+    "demo_key": "exercises/standing-side-leg-raise/demo.mp4",
+    "loop_key": "exercises/standing-side-leg-raise/loop.mp4",
+    "poster_key": "exercises/standing-side-leg-raise/poster.jpg",
+    "demo_duration_s": 21.5,
+    "loop_duration_s": 4.3,
+    "width": 720,
+    "height": 936,
+    "fps": 30,
+    "reps_in_demo": 5,
+    "demo_bytes": 536966,
+    "loop_bytes": 110461
+  }
+]
