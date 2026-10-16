@@ -1,45 +1,105 @@
-
-<!-- Montewo AI Workout Section -->
-<div style="font-family: Arial, sans-serif; max-width: 500px; margin: 20px auto; padding: 20px; border: 1px solid #ddd; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); background: white;">
-    <h2 style="color: #333; margin-top: 0;">🏋️ Montewo AI Workout</h2>
-    
-    <label style="font-size: 12px; color: #666;">Enter Free Gemini API Key:</label>
-    <input type="password" id="geminiKey" placeholder="Paste your API key here" style="width: 100%; padding: 10px; margin: 5px 0 15px 0; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box;">
-
-    <label style="font-size: 14px; font-weight: bold; color: #333;">What is your fitness goal?</label>
-    <input type="text" id="userGoal" placeholder="e.g., 3 day full body hypertrophy, home workout" style="width: 100%; padding: 10px; margin: 5px 0; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box;">
-    
-    <button onclick="askMontewoAI()" style="width: 100%; padding: 12px; background: #007bff; color: white; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; margin-top: 5px;">Generate Routine</button>
-
-    <div id="aiOutput" style="margin-top: 15px; padding: 10px; background: #f9f9f9; border-left: 4px solid #007bff; font-size: 14px; line-height: 1.5; white-space: pre-wrap; display: none;"></div>
-</div>
-
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><title>Monte Wo Muscle Map</title>
+<style>
+:root{--bg:#050912;--text:#EAF0FA;--muted:#8FA0BC;--blue:#5B9DFF;--line:rgba(90,150,255,.24);color-scheme:dark;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#050912}}
+:root[data-theme="dark"]{--bg:#050912}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}*{box-sizing:border-box}
+body{margin:0;background:radial-gradient(80% 60% at 50% 0,#0B1730,var(--bg));color:var(--text);font-family:"Inter","Helvetica Neue",Arial,sans-serif;display:flex;justify-content:center;padding:clamp(12px,3vw,36px);min-height:100vh}
+.panel{width:100%;max-width:1000px;border:1px solid var(--line);border-radius:22px;background:linear-gradient(180deg,#0A1222,#070D18);padding:clamp(14px,2.5vw,26px);box-shadow:0 0 40px -12px rgba(60,120,255,.35)}
+header{display:flex;align-items:center;gap:14px;padding-bottom:14px;border-bottom:1px solid var(--line)}
+header svg{width:38px;height:38px;flex:none}h1{margin:0;font-size:clamp(20px,3.4vw,26px);letter-spacing:-.01em}header p{margin:2px 0 0;color:var(--muted);font-size:14px}
+.pill{margin-left:auto;display:flex;align-items:center;gap:8px;border:1px solid var(--line);border-radius:999px;padding:8px 14px;font-size:13px;white-space:nowrap}.pill i,.st i{width:7px;height:7px;border-radius:50%;background:var(--blue);display:inline-block}
+.stage{position:relative;display:grid;grid-template-columns:minmax(160px,1fr) minmax(230px,300px) minmax(160px,1fr);gap:18px;margin-top:10px}
+.col{display:flex;flex-direction:column;padding:26px 0}.l{justify-content:space-between}.r{gap:clamp(44px,13vh,96px)}
+.fig svg{display:block;width:100%;height:auto;max-height:600px}
+.lines{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:1}
+.ln path{fill:none;stroke:rgba(110,165,255,.38);stroke-width:1.3;transition:stroke .2s}.ln circle{fill:var(--c)}.ln.on path{stroke:var(--c);stroke-width:1.8}
+.b{fill:#0B1424;stroke:#2C4B7C;stroke-opacity:.6;stroke-width:1.4}
+.m{transition:opacity .2s,filter .2s;cursor:pointer}
+.m .f{fill:var(--c);fill-opacity:.5;stroke:var(--c);stroke-opacity:.95;stroke-width:1.2;stroke-linejoin:round;transition:fill-opacity .2s}
+.m.lock .f{fill:#1A2538;fill-opacity:.7;stroke:#4B5B7A;stroke-opacity:.7}
+.m.on{filter:drop-shadow(0 0 9px var(--c))}.m.on .f{fill-opacity:.82}.m.lock.on .f{fill-opacity:.9}
+.stage.hov .m:not(.on){opacity:.4}
+.card{position:relative;z-index:2;display:grid;grid-template-columns:40px 1fr auto;grid-template-rows:auto auto;gap:6px 12px;align-items:center;text-align:left;font:inherit;color:inherit;cursor:pointer;padding:14px;border-radius:14px;background:linear-gradient(135deg,rgba(22,38,68,.9),rgba(8,14,26,.95));border:1px solid var(--line);border-color:color-mix(in srgb,var(--c) 55%,transparent);transition:box-shadow .2s,transform .2s}
+.card:hover,.card.on{box-shadow:0 0 0 1px var(--c),0 0 22px -4px var(--c);transform:translateY(-2px)}
+.card:focus-visible{outline:2px solid var(--blue);outline-offset:3px}
+.ic svg{width:34px;height:34px;stroke:#DCE6F8;fill:none;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.tx b{display:block;font-size:17px;margin-bottom:6px}
+.chip{display:inline-flex;align-items:center;gap:6px;border-radius:8px;padding:3px 9px 3px 6px;font-size:11px;font-weight:700;letter-spacing:.06em;color:var(--c);background:color-mix(in srgb,var(--c) 16%,#0B1220);border:1px solid color-mix(in srgb,var(--c) 45%,transparent)}
+.gem{width:15px;height:15px}.st{grid-column:1/3;display:flex;align-items:center;gap:8px;color:var(--muted);font-size:12px}.st i{background:#6E7F9E;width:6px;height:6px}.ch{color:var(--muted);font-size:20px}
+.ladder{margin-top:8px;border:1px solid var(--line);border-radius:16px;padding:16px 10px 10px;background:rgba(8,14,26,.6)}
+.rks{display:flex;justify-content:space-between;gap:6px;overflow-x:auto;padding-bottom:8px}
+.rk{flex:1 0 64px;display:flex;flex-direction:column;align-items:center;gap:6px;font-size:12.5px;color:#DCE6F8}.rk svg{width:38px;height:38px}
+.foot{margin:6px 0 0;padding-top:10px;border-top:1px solid var(--line);text-align:center;color:var(--muted);font-size:10.5px;letter-spacing:.22em}
+.note{text-align:center;color:var(--muted);font-size:12.5px;margin:12px 0 0}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+.stage[data-v="f"] [data-v="b"],.stage[data-v="b"] [data-v="f"]{display:none}
+.tog{display:flex;justify-content:center;gap:4px;margin:14px auto 0;padding:4px;width:max-content;border:1px solid var(--line);border-radius:999px;background:rgba(8,14,26,.6)}
+.tog button{font:inherit;font-size:13px;font-weight:600;color:var(--muted);background:none;border:0;border-radius:999px;padding:7px 22px;cursor:pointer}
+.tog button[aria-pressed="true"]{color:var(--text);background:rgba(91,157,255,.22);box-shadow:inset 0 0 0 1px var(--blue)}
+.tog button:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
+@media (max-width:700px){.stage{grid-template-columns:1fr 1fr;grid-template-areas:"f f" "l r"}.fig{grid-area:f}.l{grid-area:l;gap:12px;justify-content:flex-start}.r{grid-area:r;gap:12px}.col{padding:0}.lines{display:none}.pill{display:none}.card{grid-template-columns:34px 1fr}.ch{display:none}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style></head><body><section class="panel" aria-labelledby="t">
+<header><svg viewBox="0 0 40 40" fill="none" stroke="#DCE6F8" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 30l6-18 6 10 4-6 8 14"/><path d="M5 34h30"/></svg>
+<div><h1 id="t">Muscle Map</h1><p>Track your strength. Unlock your potential.</p></div><div class="pill"><i></i>Not Connected</div></header>
+<div class="tog" role="group" aria-label="Body view"><button type="button" data-v="f" aria-pressed="true">Front</button><button type="button" data-v="b" aria-pressed="false">Back</button></div>
+<div class="stage" id="stage" data-v="f"><svg class="lines" id="lines" aria-hidden="true"></svg>
+<div class="col l" id="cl"></div>
+<div class="fig"><svg id="fig" viewBox="0 0 420 640" aria-hidden="true"><defs><clipPath id="hd"><ellipse cx="210" cy="58" rx="26" ry="32"/></clipPath>
+<linearGradient id="tl" x1="0" x2="1"><stop offset=".5" stop-color="#00209F"/><stop offset=".5" stop-color="#D21034"/></linearGradient></defs>
+<g class="b"><path d="M238 50Q256 80 260 132L248 134Q246 88 234 54Z" fill="url(#tl)" stroke="none"/><path d="M238 52Q272 92 282 144L270 148Q264 100 236 58Z" fill="url(#tl)" stroke="none"/>
+<ellipse cx="210" cy="58" rx="26" ry="32"/><path d="M198 88L196 108H224L222 88Z"/><path d="M196 104Q152 112 118 136L136 152Q172 132 210 130Q248 132 284 152L302 136Q268 112 224 104Z"/>
+<path d="M138 150Q210 126 282 150L262 306Q210 322 158 306Z"/><path d="M170 300Q210 322 250 300L256 336Q210 350 164 336Z"/></g>
+<g clip-path="url(#hd)"><rect x="180" y="34" width="60" height="12" fill="#00209F"/><rect x="180" y="46" width="60" height="12" fill="#D21034"/><rect data-v="f" x="199" y="37" width="22" height="18" rx="1.5" fill="#fff"/><path data-v="f" d="M210 52V43M210 43Q205 40 203 43M210 43Q215 40 217 43" stroke="#1E7B34" stroke-width="1.6" fill="none"/></g>
+<circle cx="236" cy="48" r="5" fill="#D21034"/><g id="mg"></g>
+<circle class="an" data-v="f" data-a="arms" cx="112" cy="224" r="3" fill="none"/><circle class="an" data-v="f" data-a="chest" cx="250" cy="168" r="3" fill="none"/><circle class="an" data-v="f" data-a="core" cx="232" cy="240" r="3" fill="none"/><circle class="an" data-v="f" data-a="legs" cx="178" cy="410" r="3" fill="none"/>
+<circle class="an" data-v="b" data-a="arms" cx="112" cy="224" r="3" fill="none"/><circle class="an" data-v="b" data-a="back" cx="256" cy="200" r="3" fill="none"/><circle class="an" data-v="b" data-a="core" cx="222" cy="250" r="3" fill="none"/><circle class="an" data-v="b" data-a="legs" cx="178" cy="410" r="3" fill="none"/></svg></div>
+<div class="col r" id="cr"></div></div>
+<div class="ladder"><div class="rks" id="rks"></div><p class="foot">9 RANKS &nbsp;·&nbsp; 5 DISCIPLINES &nbsp;·&nbsp; 1 JOURNEY</p></div>
+<p class="note">App preview. Example ranks shown. Ranks climb from Debitan to Lejand.</p><div class="sr" id="live" aria-live="polite"></div></section>
 <script>
-async function askMontewoAI() {
-    const key = document.getElementById('geminiKey').value;
-    const goal = document.getElementById('userGoal').value;
-    const outputBox = document.getElementById('aiOutput');
-
-    if (!key) { alert('Please paste your free Gemini API key first!'); return; }
-    if (!goal) { alert('Please enter a goal!'); return; }
-
-    outputBox.style.display = "block";
-    outputBox.innerText = "✨ Montewo AI is crafting your workout routine...";
-
-    try {
-        const response = await fetch(`https://googleapis.com{key}`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-                contents: [{ parts: [{ text: `You are the elite Montewo AI Fitness Engine. Create a professional, clear, step-by-step workout routine with sets, reps, and rest schemes for this goal: ${goal}` }] }]
-            })
-        });
-        
-        const data = await response.json();
-        const workoutText = data.candidates[0].content.parts[0].text;
-        outputBox.innerText = workoutText;
-    } catch (error) {
-        outputBox.innerText = "❌ Error generating workout. Please make sure your API key is active and correct.";
-    }
-}
-</script>
+const RK=[['debitan','DEBITAN','#FF9A3D'],['bati','BATI','#B87333'],['solid','SOLID','#C4CAD6'],['fo','FÔ','#F6C33A'],['avanse','AVANSE','#2FD8B6'],['met','MÈT','#3D8EFF'],['chanpyon','CHANPYON','#B25CFF'],['titan','TITAN','#F0413F'],['lejand','LEJAND','#9FB7E6']];
+const R={chest:'fo',core:'met',legs:'bati',arms:'chanpyon',back:'avanse'};
+const rk=id=>id==='locked'?['locked','LOCKED','#5A6781']:RK.find(r=>r[0]===id);
+const gem=(c,cl='gem')=>`<svg class="${cl}" viewBox="0 0 32 32" aria-hidden="true"><path d="M16 2l12 6v14l-12 8-12-8V8z" fill="${c}" fill-opacity=".25" stroke="${c}" stroke-width="2.4"/><path d="M16 9l6 3v7l-6 4-6-4v-7z" fill="${c}"/></svg>`;
+const lockI=`<svg class="gem" viewBox="0 0 16 16" aria-hidden="true"><rect x="3" y="7" width="10" height="7" rx="1.5" fill="#8896B3"/><path d="M5 7V5a3 3 0 0 1 6 0v2" fill="none" stroke="#8896B3" stroke-width="1.8"/></svg>`;
+const mir=d=>d.replace(/([MLQ])([\d\s.,-]+)/g,(m,c,n)=>c+n.trim().split(/[\s,]+/).map((v,i)=>i%2?v:420-v).join(' '));
+const P={arms:['M120 134Q98 140 94 172Q98 192 116 190Q132 174 136 150Z','M108 194Q94 224 98 254Q112 266 126 252Q134 220 126 194Z','M98 260Q88 296 86 334Q100 346 112 334Q122 298 124 260Z','M86 338Q80 356 90 366Q104 366 110 350Q110 340 108 336Z'],
+chest:['M208 134Q170 128 140 148Q130 176 146 198Q176 208 208 198Z'],
+core:['M178 202Q164 246 172 298L186 300L186 208Z',...[202,226,250,274].map(y=>`M187 ${y}Q197 ${y-2} 207 ${y}L207 ${y+21}Q197 ${y+23} 187 ${y+21}Z`)],
+legs:['M174 334Q158 400 166 458Q186 468 202 456Q210 396 208 342Z','M166 462Q164 476 172 482Q190 484 200 476Q202 466 200 460Z','M168 484Q158 530 168 584Q182 592 192 584Q202 530 198 486Z','M166 590Q150 608 160 620L198 620Q200 602 192 590Z']};
+const PB={arms:P.arms,
+back:['M206 108Q182 116 148 142Q176 166 207 190Z','M150 154Q146 200 168 252Q178 262 186 256L186 204Q172 190 150 154Z'],
+core:['M191 194L207 190L207 300L189 298Q184 246 191 194Z','M168 262Q166 284 172 296L186 296L186 264Z'],
+legs:['M168 304Q164 326 168 338Q190 346 208 342L208 312Q188 316 168 304Z','M172 348Q160 404 168 458Q186 466 202 456Q208 402 208 350Z',P.legs[1],'M168 488Q150 520 164 556Q176 580 192 584Q204 540 198 490Z',P.legs[3]]};
+const M=[{id:'arms',n:'Arms',s:'l',i:'<path d="M3 17h3M22 17h3M6 12v10M22 12v10M9 9v16M19 9v16M9 17h10"/>'},
+{id:'legs',n:'Legs',s:'l',i:'<path d="M9 4h10l-1 9-1.5 12h-3L13 15l-1 10H9L9 4z"/>'},
+{id:'chest',v:'f',n:'Chest',s:'r',i:'<path d="M14 7C9 5 4 8 4 14c1 5 6 7 10 5 4 2 9 0 10-5 0-6-5-9-10-7zM14 7v12"/>'},
+{id:'back',v:'b',n:'Back',s:'r',i:'<path d="M5 5l9 4 9-4-3 12-6 7-6-7z"/>'},
+{id:'core',n:'Core',s:'r',i:'<path d="M8 4h5v5H8zM15 4h5v5h-5zM8 11h5v5H8zM15 11h5v5h-5zM9 18h4v5H9zM15 18h4v5h-4z"/>'}];
+const stage=document.getElementById('stage'),lines=document.getElementById('lines'),live=document.getElementById('live');
+document.getElementById('mg').innerHTML=[['f',P],['b',PB]].map(([v,S])=>M.filter(m=>S[m.id]).map(m=>`<g class="m" data-m="${m.id}" data-v="${v}">${S[m.id].map(d=>`<path class="f" d="${d}"/><path class="f" d="${mir(d)}"/>`).join('')}</g>`).join('')).join('');
+M.forEach(m=>document.getElementById(m.s==='l'?'cl':'cr').insertAdjacentHTML('beforeend',`<button class="card" type="button" data-m="${m.id}"${m.v?` data-v="${m.v}"`:''}><span class="ic"><svg viewBox="0 0 28 28">${m.i}</svg></span><span class="tx"><b>${m.n}</b><span class="chip"></span></span><span class="ch">›</span><span class="st"><i></i>Not connected</span></button>`));
+document.getElementById('rks').innerHTML=RK.map(r=>`<div class="rk">${gem(r[2],'')}${r[1][0]+r[1].slice(1).toLowerCase()}</div>`).join('');
+let hov=null,sel=null,view='f';
+const q=s=>stage.querySelector(s);
+function paint(){M.forEach(m=>{const [,t,c]=rk(R[m.id]),lock=R[m.id]==='locked';
+ stage.querySelectorAll(`.m[data-m="${m.id}"],.card[data-m="${m.id}"]`).forEach(e=>{e.style.setProperty('--c',c);e.classList.toggle('lock',lock)});
+ q(`.card[data-m="${m.id}"] .chip`).innerHTML=(lock?lockI:gem(c))+t});draw();act()}
+function draw(){const sr=stage.getBoundingClientRect();lines.innerHTML=M.filter(m=>!m.v||m.v===view).map(m=>{const cr=q(`.card[data-m="${m.id}"]`).getBoundingClientRect(),ar=q(`.an[data-a="${m.id}"][data-v="${view}"]`).getBoundingClientRect();
+ const x1=(m.s==='l'?cr.right:cr.left)-sr.left,y1=cr.top+cr.height/2-sr.top,ax=ar.left+ar.width/2-sr.left,ay=ar.top+ar.height/2-sr.top,k=m.s==='l'?24:-24;
+ return `<g class="ln${(hov||sel)===m.id?' on':''}" data-m="${m.id}" style="--c:${rk(R[m.id])[2]}"><path d="M${x1} ${y1}L${x1+k} ${y1}L${ax} ${ay}"/><circle cx="${ax}" cy="${ay}" r="4.5"/></g>`}).join('')}
+function act(){const id=hov||sel;stage.classList.toggle('hov',!!id);stage.querySelectorAll('.m,.card,.ln').forEach(e=>e.classList.toggle('on',e.dataset.m===id));
+ if(id){const m=M.find(x=>x.id===id);live.textContent=R[id]==='locked'?`${m.n}: locked`:`${m.n}: ${rk(R[id])[1]}`}}
+stage.addEventListener('pointerover',e=>{const g=e.target.closest('[data-m]');hov=g&&g.dataset.m;act()});
+stage.addEventListener('pointerleave',()=>{hov=null;act()});
+stage.addEventListener('focusin',e=>{const g=e.target.closest('[data-m]');hov=g&&g.dataset.m;act()});
+stage.addEventListener('focusout',()=>{hov=null;act()});
+stage.addEventListener('click',e=>{const g=e.target.closest('[data-m]');if(!g)return;sel=g.dataset.m!==sel?g.dataset.m:null;act();const d={type:'muscleselect',muscle:sel,rank:sel&&R[sel],view};dispatchEvent(new CustomEvent('muscleselect',{detail:d}));try{parent.postMessage(d,'*')}catch(_){}});
+new ResizeObserver(draw).observe(stage);addEventListener('load',draw);
+function setView(v){view=v;stage.dataset.v=v;hov=sel=null;document.querySelectorAll('.tog button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.v===v));draw();act();live.textContent=v==='f'?'Front view':'Back view'}
+document.querySelector('.tog').addEventListener('click',e=>{const b=e.target.closest('button');if(b)setView(b.dataset.v)});
+window.MonteWoMuscleMap={set(o){Object.assign(R,o);paint()},view:setView};
+paint();
+</script></body></html>
