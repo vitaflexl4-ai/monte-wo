@@ -1,0 +1,20 @@
+[
+  {
+    "label": "phone",
+    "passed": true,
+    "errors": [],
+    "failed": []
+  },
+  {
+    "label": "ipad",
+    "passed": true,
+    "errors": [],
+    "failed": []
+  },
+  {
+    "label": "desktop",
+    "passed": true,
+    "errors": [],
+    "failed": []
+  }
+]

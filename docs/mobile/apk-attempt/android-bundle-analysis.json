@@ -1,0 +1,8 @@
+[
+  {
+    "mapSha256": "2d505711a81abe80236ea190e51dd0b3261ebb97a59805b49f272b20ceef23a3",
+    "sourceEntries": 2928,
+    "affectedPackagesPresent": [],
+    "scope": "Android JavaScript export only, not a native binary or all EAS service dependencies"
+  }
+]

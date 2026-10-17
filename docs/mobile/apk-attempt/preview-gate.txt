@@ -1,0 +1,22 @@
+
+> @monte-wo/mobile@0.1.0 eas-build-pre-install
+> node scripts/check-build-security.cjs
+
+{
+  "allowed": true,
+  "exception": "Owner-approved internal Android APK testing only; 2026-10-15",
+  "remaining": {
+    "info": 0,
+    "low": 0,
+    "moderate": 0,
+    "high": 15,
+    "critical": 0,
+    "total": 15
+  },
+  "advisoryRoots": [
+    "braces",
+    "node-forge"
+  ],
+  "publicReleaseAuthorized": false
+}
+WARNING: high-severity findings remain. This is NOT public-release approval or a clean audit.

@@ -1,0 +1,30 @@
+[
+  {
+    "name": "phone",
+    "passed": true,
+    "realPinnedDemoAndLoopPlayback": true,
+    "closeStopsPlayback": true,
+    "errors": []
+  },
+  {
+    "name": "ipad",
+    "passed": true,
+    "realPinnedDemoAndLoopPlayback": true,
+    "closeStopsPlayback": true,
+    "errors": []
+  },
+  {
+    "name": "desktop",
+    "passed": true,
+    "realPinnedDemoAndLoopPlayback": true,
+    "closeStopsPlayback": true,
+    "errors": []
+  },
+  {
+    "name": "explicit-test-fixtures-and-load-fallback",
+    "passed": true,
+    "verifiedRingRendering": true,
+    "unknownClearsStaleValues": true,
+    "failedContentFallback": true
+  }
+]

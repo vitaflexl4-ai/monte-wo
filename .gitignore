@@ -34,3 +34,25 @@ playwright-report/
 coverage/
 .DS_Store
 *.log
+
+# Mobile signing and generated dependencies
+*.jks
+*.keystore
+*.p12
+*.mobileprovision
+credentials.json
+.expo/
+apps/mobile/android/
+apps/mobile/ios/
+apps/mobile/web-build/
+
+apps/mobile/native-export/
+__pycache__/
+
+# Reproducible local media/probe cache; never a source handoff.
+.cache/
+
+# Disposable regression screenshots; keep compact result JSON instead.
+docs/mobile/**/qa/*.png
+docs/mobile/**/*-qa/*.png
+docs/website/**/qa/*.png

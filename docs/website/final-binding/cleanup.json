@@ -1,0 +1,651 @@
+{
+  "removed": [
+    {
+      "path": "redesign-browser-run.log",
+      "bytes": 262
+    },
+    {
+      "path": "mobile-lock-current.log",
+      "bytes": 323
+    },
+    {
+      "path": "workout-root-install.log",
+      "bytes": 225
+    },
+    {
+      "path": "redesign-node-install.log",
+      "bytes": 232
+    },
+    {
+      "path": "zip-tests-verification.log",
+      "bytes": 22825
+    },
+    {
+      "path": "workout-ffmpeg-install.log",
+      "bytes": 2382
+    },
+    {
+      "path": "website-origin-build.log",
+      "bytes": 793
+    },
+    {
+      "path": "strength-tests.log",
+      "bytes": 10327
+    },
+    {
+      "path": "workout-browser-tests.log",
+      "bytes": 520
+    },
+    {
+      "path": "workout-web-export-final.log",
+      "bytes": 6347
+    },
+    {
+      "path": "eas-ios.log",
+      "bytes": 246
+    },
+    {
+      "path": "mobile-post-install-check.log",
+      "bytes": 1959
+    },
+    {
+      "path": "library-browser-setup.log",
+      "bytes": 9190
+    },
+    {
+      "path": "zip-build-verification.log",
+      "bytes": 906
+    },
+    {
+      "path": "workout-mobile-install.log",
+      "bytes": 336
+    },
+    {
+      "path": "mobile-prebuild.log",
+      "bytes": 240
+    },
+    {
+      "path": "website-browser-setup.log",
+      "bytes": 9190
+    },
+    {
+      "path": "workout-extracted-tests.log",
+      "bytes": 4897
+    },
+    {
+      "path": "workout-browser-tests-final.log",
+      "bytes": 520
+    },
+    {
+      "path": "root-install.log",
+      "bytes": 225
+    },
+    {
+      "path": "website-build.log",
+      "bytes": 906
+    },
+    {
+      "path": "mobile-install-current.log",
+      "bytes": 561
+    },
+    {
+      "path": "workout-format.log",
+      "bytes": 174
+    },
+    {
+      "path": "eas-apk.log",
+      "bytes": 246
+    },
+    {
+      "path": "workout-extracted-install.log",
+      "bytes": 335
+    },
+    {
+      "path": "redesign-mobile-install.log",
+      "bytes": 336
+    },
+    {
+      "path": "mobile-web-export.log",
+      "bytes": 1080
+    },
+    {
+      "path": "mobile-ci-after-fix.log",
+      "bytes": 335
+    },
+    {
+      "path": "workout-unit-tests.log",
+      "bytes": 4703
+    },
+    {
+      "path": "mobile-remove-unused.log",
+      "bytes": 342
+    },
+    {
+      "path": "strength-browser-setup.log",
+      "bytes": 21320
+    },
+    {
+      "path": "mobile-prebuild-current.log",
+      "bytes": 240
+    },
+    {
+      "path": "workout-redesign-regression.log",
+      "bytes": 262
+    },
+    {
+      "path": "website-browser.log",
+      "bytes": 420
+    },
+    {
+      "path": "mobile-commit.log",
+      "bytes": 3938
+    },
+    {
+      "path": "apk-handoff-ci.log",
+      "bytes": 335
+    },
+    {
+      "path": "mobile-doctor-current.log",
+      "bytes": 78
+    },
+    {
+      "path": "workout-node-install.log",
+      "bytes": 233
+    },
+    {
+      "path": "workout-web-export.log",
+      "bytes": 6347
+    },
+    {
+      "path": "android-aab.log",
+      "bytes": 634
+    },
+    {
+      "path": "playwright-phase1.log",
+      "bytes": 21321
+    },
+    {
+      "path": "apk-handoff-tests.log",
+      "bytes": 1960
+    },
+    {
+      "path": "redesign-native-export.log",
+      "bytes": 1331
+    },
+    {
+      "path": "mobile-sdk-check.log",
+      "bytes": 28
+    },
+    {
+      "path": "node-setup.log",
+      "bytes": 232
+    },
+    {
+      "path": "workout-existing-browser.log",
+      "bytes": 104
+    },
+    {
+      "path": "workout-unit-tests-final.log",
+      "bytes": 4896
+    },
+    {
+      "path": "mobile-preview-gate.log",
+      "bytes": 498
+    },
+    {
+      "path": "mobile-native-export.log",
+      "bytes": 1016
+    },
+    {
+      "path": "website-invalid-origin.log",
+      "bytes": 689
+    },
+    {
+      "path": "redesign-extracted-install.log",
+      "bytes": 335
+    },
+    {
+      "path": "redesign-root-tests.log",
+      "bytes": 22827
+    },
+    {
+      "path": "format.log",
+      "bytes": 142
+    },
+    {
+      "path": "android-build.log",
+      "bytes": 1108
+    },
+    {
+      "path": "android-verification-setup.log",
+      "bytes": 31064
+    },
+    {
+      "path": "playwright-deps.log",
+      "bytes": 14545
+    },
+    {
+      "path": "redesign-browsers.log",
+      "bytes": 12626
+    },
+    {
+      "path": "functions-build.log",
+      "bytes": 224
+    },
+    {
+      "path": "redesign-root-install.log",
+      "bytes": 225
+    },
+    {
+      "path": "mobile-browser.log",
+      "bytes": 104
+    },
+    {
+      "path": "release-verifier-help.log",
+      "bytes": 352
+    },
+    {
+      "path": "apk-monitor-setup.log",
+      "bytes": 17193
+    },
+    {
+      "path": "redesign-web-export.log",
+      "bytes": 1725
+    },
+    {
+      "path": "mobile-android-review.log",
+      "bytes": 979
+    },
+    {
+      "path": "workout-native-export-final.log",
+      "bytes": 4071
+    },
+    {
+      "path": "web-tests.log",
+      "bytes": 22825
+    },
+    {
+      "path": "eas-android.log",
+      "bytes": 2056
+    },
+    {
+      "path": "workout-import.log",
+      "bytes": 1496
+    },
+    {
+      "path": "workout-playwright-install.log",
+      "bytes": 13966
+    },
+    {
+      "path": "workout-root-tests.log",
+      "bytes": 22821
+    },
+    {
+      "path": "redesign-extracted-tests.log",
+      "bytes": 3248
+    },
+    {
+      "path": "mobile-production-gate.log",
+      "bytes": 189
+    },
+    {
+      "path": "workout-native-export.log",
+      "bytes": 4071
+    },
+    {
+      "path": "redesign-safety-tests.log",
+      "bytes": 3247
+    },
+    {
+      "path": "mobile-dependency-remediation.log",
+      "bytes": 334
+    },
+    {
+      "path": "mobile-build-safety.log",
+      "bytes": 1806
+    },
+    {
+      "path": "mobile-dedupe.log",
+      "bytes": 331
+    },
+    {
+      "path": "redesign-browser-deps.log",
+      "bytes": 94246
+    },
+    {
+      "path": "poster-browser.log",
+      "bytes": 108
+    },
+    {
+      "path": "rank-browser-setup.log",
+      "bytes": 21321
+    },
+    {
+      "path": "apk-regression-tests.log",
+      "bytes": 22812
+    },
+    {
+      "path": "redesign-root-tests-final.log",
+      "bytes": 22824
+    },
+    {
+      "path": "playwright-install.log",
+      "bytes": 6777
+    },
+    {
+      "path": "playwright-setup.log",
+      "bytes": 9190
+    },
+    {
+      "path": "mobile-api-tests.log",
+      "bytes": 3726
+    },
+    {
+      "path": "ios-local.log",
+      "bytes": 89
+    },
+    {
+      "path": "expo-doctor.log",
+      "bytes": 78
+    },
+    {
+      "path": "monte-wo/docs/website/cockpit/qa/desktop-nutrition.png",
+      "bytes": 208305
+    },
+    {
+      "path": "monte-wo/docs/website/cockpit/qa/ipad-cockpit.png",
+      "bytes": 555411
+    },
+    {
+      "path": "monte-wo/docs/website/cockpit/qa/phone-cockpit.png",
+      "bytes": 235295
+    },
+    {
+      "path": "monte-wo/docs/website/cockpit/qa/desktop-arms-grid.png",
+      "bytes": 288466
+    },
+    {
+      "path": "monte-wo/docs/website/cockpit/qa/ipad-nutrition.png",
+      "bytes": 176185
+    },
+    {
+      "path": "monte-wo/docs/website/cockpit/qa/phone-nutrition.png",
+      "bytes": 138273
+    },
+    {
+      "path": "monte-wo/docs/website/cockpit/qa/desktop-cockpit.png",
+      "bytes": 699186
+    },
+    {
+      "path": "monte-wo/docs/mobile/qa/downloads-390.png",
+      "bytes": 184258
+    },
+    {
+      "path": "monte-wo/docs/mobile/qa/home-390.png",
+      "bytes": 141203
+    },
+    {
+      "path": "monte-wo/docs/mobile/redesign-qa/phone-map.png",
+      "bytes": 126914
+    },
+    {
+      "path": "monte-wo/docs/mobile/redesign-qa/redesign-native-export.log",
+      "bytes": 1331
+    },
+    {
+      "path": "monte-wo/docs/mobile/redesign-qa/phone-welcome.png",
+      "bytes": 209153
+    },
+    {
+      "path": "monte-wo/docs/mobile/redesign-qa/redesign-root-tests.log",
+      "bytes": 22827
+    },
+    {
+      "path": "monte-wo/docs/mobile/redesign-qa/redesign-web-export.log",
+      "bytes": 1725
+    },
+    {
+      "path": "monte-wo/docs/mobile/redesign-qa/redesign-safety-tests.log",
+      "bytes": 3247
+    },
+    {
+      "path": "monte-wo/docs/mobile/redesign-qa/ipad-home.png",
+      "bytes": 347633
+    },
+    {
+      "path": "monte-wo/docs/mobile/workout-library/qa/desktop-dashboard.png",
+      "bytes": 196715
+    },
+    {
+      "path": "monte-wo/docs/mobile/workout-library/qa/ipad-library.png",
+      "bytes": 206912
+    },
+    {
+      "path": "monte-wo/docs/mobile/workout-library/qa/phone-library.png",
+      "bytes": 93320
+    },
+    {
+      "path": "monte-wo/docs/mobile/workout-library/qa/desktop-library.png",
+      "bytes": 200295
+    },
+    {
+      "path": "monte-wo/docs/mobile/workout-library/qa/ipad-demo.png",
+      "bytes": 329790
+    },
+    {
+      "path": "monte-wo/docs/mobile/workout-library/qa/phone-demo.png",
+      "bytes": 119460
+    },
+    {
+      "path": "monte-wo/docs/mobile/workout-library/qa/desktop-demo.png",
+      "bytes": 253001
+    },
+    {
+      "path": "monte-wo/docs/mobile/workout-library/qa/ipad-dashboard.png",
+      "bytes": 345471
+    },
+    {
+      "path": "monte-wo/docs/mobile/workout-library/qa/phone-dashboard.png",
+      "bytes": 131264
+    },
+    {
+      "path": "monte-wo/docs/mobile/workout-library/logs/root-tests.log",
+      "bytes": 22821
+    },
+    {
+      "path": "monte-wo/docs/mobile/workout-library/logs/redesign-browser.log",
+      "bytes": 262
+    },
+    {
+      "path": "monte-wo/docs/mobile/workout-library/logs/mobile-tests.log",
+      "bytes": 4896
+    },
+    {
+      "path": "monte-wo/docs/mobile/workout-library/logs/existing-browser.log",
+      "bytes": 104
+    },
+    {
+      "path": "monte-wo/docs/mobile/workout-library/logs/native-export.log",
+      "bytes": 4071
+    },
+    {
+      "path": "monte-wo/docs/mobile/workout-library/grid-qa/ipad-grid.png",
+      "bytes": 363838
+    },
+    {
+      "path": "monte-wo/docs/mobile/workout-library/grid-qa/desktop-grid.png",
+      "bytes": 200295
+    },
+    {
+      "path": "monte-wo/docs/mobile/workout-library/grid-qa/phone-grid.png",
+      "bytes": 93320
+    },
+    {
+      "path": "monte-wo/docs/mobile/workout-library/grid-qa/logs/root-tests.log",
+      "bytes": 22820
+    },
+    {
+      "path": "monte-wo/docs/mobile/workout-library/grid-qa/logs/media-regression.log",
+      "bytes": 520
+    },
+    {
+      "path": "monte-wo/docs/mobile/workout-library/grid-qa/logs/mobile-tests.log",
+      "bytes": 6105
+    },
+    {
+      "path": "monte-wo/docs/mobile/workout-library/grid-qa/logs/existing-browser.log",
+      "bytes": 104
+    },
+    {
+      "path": "monte-wo/docs/mobile/workout-library/grid-qa/logs/design-regression.log",
+      "bytes": 262
+    },
+    {
+      "path": "monte-wo/docs/mobile/workout-library/grid-qa/logs/native-export.log",
+      "bytes": 4071
+    },
+    {
+      "path": "monte-wo/docs/mobile/premium-muscle-map/qa/ipad-front.png",
+      "bytes": 375647
+    },
+    {
+      "path": "monte-wo/docs/mobile/premium-muscle-map/qa/ipad-back.png",
+      "bytes": 364210
+    },
+    {
+      "path": "monte-wo/docs/mobile/premium-muscle-map/qa/phone-back.png",
+      "bytes": 129088
+    },
+    {
+      "path": "monte-wo/docs/mobile/premium-muscle-map/qa/phone-front.png",
+      "bytes": 123711
+    },
+    {
+      "path": "monte-wo/docs/mobile/premium-muscle-map/qa/desktop-front.png",
+      "bytes": 249013
+    },
+    {
+      "path": "monte-wo/docs/mobile/premium-muscle-map/qa/desktop-back.png",
+      "bytes": 255622
+    },
+    {
+      "path": "monte-wo/docs/website/cockpit/qa/library-regression.txt",
+      "bytes": 204
+    },
+    {
+      "path": "monte-wo/docs/website/cockpit/qa/build.txt",
+      "bytes": 987
+    },
+    {
+      "path": "monte-wo/docs/website/cockpit/qa/mobile-tests.txt",
+      "bytes": 7619
+    },
+    {
+      "path": "monte-wo/docs/website/cockpit/qa/website-regression.txt",
+      "bytes": 420
+    },
+    {
+      "path": "monte-wo/docs/website/cockpit/qa/root-tests.txt",
+      "bytes": 24430
+    },
+    {
+      "path": "monte-wo/docs/mobile/premium-muscle-map/qa/unit-tests.txt",
+      "bytes": 7620
+    },
+    {
+      "path": "monte-wo/docs/mobile/premium-muscle-map/qa/existing-browser.txt",
+      "bytes": 104
+    },
+    {
+      "path": "monte-wo/docs/mobile/premium-muscle-map/qa/root-tests.txt",
+      "bytes": 22827
+    },
+    {
+      "path": "monte-wo/docs/mobile/qa/logs/mobile-browser.txt",
+      "bytes": 104
+    },
+    {
+      "path": "monte-wo/docs/mobile/qa/logs/web-tests.txt",
+      "bytes": 22825
+    },
+    {
+      "path": "monte-wo/docs/mobile/qa/logs/eas-ios.txt",
+      "bytes": 246
+    },
+    {
+      "path": "monte-wo/docs/mobile/qa/logs/mobile-web-export.txt",
+      "bytes": 1080
+    },
+    {
+      "path": "monte-wo/docs/mobile/qa/logs/expo-doctor.txt",
+      "bytes": 78
+    },
+    {
+      "path": "monte-wo/docs/mobile/qa/logs/website-browser.txt",
+      "bytes": 420
+    },
+    {
+      "path": "monte-wo/docs/mobile/qa/logs/eas-android.txt",
+      "bytes": 2056
+    },
+    {
+      "path": "monte-wo/docs/mobile/qa/logs/eas-apk.txt",
+      "bytes": 246
+    },
+    {
+      "path": "monte-wo/docs/mobile/qa/logs/mobile-uuid-tree.txt",
+      "bytes": 162
+    },
+    {
+      "path": "monte-wo/docs/mobile/qa/logs/android-build.txt",
+      "bytes": 1108
+    },
+    {
+      "path": "monte-wo/docs/mobile/qa/logs/ios-local.txt",
+      "bytes": 89
+    },
+    {
+      "path": "monte-wo/docs/mobile/qa/logs/poster-browser.txt",
+      "bytes": 108
+    },
+    {
+      "path": "monte-wo/docs/mobile/qa/logs/mobile-native-export.txt",
+      "bytes": 1016
+    },
+    {
+      "path": "monte-wo/docs/mobile/qa/logs/android-aab.txt",
+      "bytes": 634
+    },
+    {
+      "path": "monte-wo/docs/mobile/qa/logs/website-build.txt",
+      "bytes": 906
+    },
+    {
+      "path": "monte-wo/docs/mobile/qa/logs/mobile-api-tests.txt",
+      "bytes": 3726
+    },
+    {
+      "path": "monte-wo/docs/mobile/qa/logs/functions-build.txt",
+      "bytes": 224
+    },
+    {
+      "path": "monte-wo/docs/mobile/qa/logs/mobile-prebuild.txt",
+      "bytes": 240
+    },
+    {
+      "path": "monte-wo/docs/mobile/qa/logs/typecheck.txt",
+      "bytes": 51
+    },
+    {
+      "path": ".cache",
+      "bytes": 595010
+    },
+    {
+      "path": "monte-wo/.cache",
+      "bytes": 0
+    }
+  ],
+  "removedBytes": 8642886,
+  "preserved": "Uploads, source/runtime artwork, all delivered ZIPs, local database state and credentials preserved.",
+  "removedEntries": 161
+}

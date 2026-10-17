@@ -1,0 +1,65 @@
+[
+  {
+    "id": "dumbbell-curl",
+    "status": 200,
+    "bytes": 64262,
+    "sha256Matches": true,
+    "repoPath": "assets/workout-library/monte-wo-pack-2/r2/exercises/dumbbell-curl/loop.mp4"
+  },
+  {
+    "id": "back-squat",
+    "status": 200,
+    "bytes": 143520,
+    "sha256Matches": true,
+    "repoPath": "assets/workout-library/monte-wo-pack-2/r2/exercises/back-squat/loop.mp4"
+  },
+  {
+    "id": "bench-press",
+    "status": 200,
+    "bytes": 79221,
+    "sha256Matches": true,
+    "repoPath": "assets/workout-library/monte-wo-pack-2/r2/exercises/bench-press/loop.mp4"
+  },
+  {
+    "id": "overhead-press",
+    "status": 200,
+    "bytes": 96839,
+    "sha256Matches": true,
+    "repoPath": "assets/workout-library/monte-wo-pack-2/r2/exercises/overhead-press/loop.mp4"
+  },
+  {
+    "id": "triceps-pushdown",
+    "status": 200,
+    "bytes": 71207,
+    "sha256Matches": true,
+    "repoPath": "assets/workout-library/monte-wo-pack-2/r2/exercises/triceps-pushdown/loop.mp4"
+  },
+  {
+    "id": "push-up",
+    "status": 200,
+    "bytes": 98107,
+    "sha256Matches": true,
+    "repoPath": "assets/workout-library/monte-wo-pack-2/r2/exercises/push-up/loop.mp4"
+  },
+  {
+    "id": "romanian-deadlift",
+    "status": 200,
+    "bytes": 157374,
+    "sha256Matches": true,
+    "repoPath": "assets/workout-library/monte-wo-pack-2/r2/exercises/romanian-deadlift/loop.mp4"
+  },
+  {
+    "id": "lat-pulldown",
+    "status": 200,
+    "bytes": 87992,
+    "sha256Matches": true,
+    "repoPath": "assets/workout-library/monte-wo-pack-2/r2/exercises/lat-pulldown/loop.mp4"
+  },
+  {
+    "id": "lateral-raise",
+    "status": 200,
+    "bytes": 90561,
+    "sha256Matches": true,
+    "repoPath": "assets/workout-library/monte-wo-pack-3/r2/exercises/lateral-raise/loop.mp4"
+  }
+]

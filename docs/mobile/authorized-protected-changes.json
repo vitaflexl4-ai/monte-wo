@@ -1,0 +1,17 @@
+{
+  "server/strength/api.js": {
+    "before": "fc47a283f8f64b86397bca5e70f70f75cb4c1457eafccb979bbe81909db5e26f",
+    "after": "60195f666481bbca13b8d707087985420d1bce119ce5544d46868d93e595e4b9",
+    "reason": "Select isolated APP_DB; explicit legacy opt-in only. Ranking, auth and review implementation below the entry binding stays unchanged."
+  },
+  "functions/api/[[route]].js": {
+    "before": "6f8328107d8cd9a9a96204b6d6d8f45f4f29099b1145ee5b997f0ce280142186",
+    "after": "399d398c74967bc499661caccc4835a7b027d7175f9aa198f6aeb68eb5abc2d9",
+    "reason": "Add gated /api/mobile/ dispatch. Existing waitlist and media routes unchanged."
+  },
+  "wrangler.toml": {
+    "before": "cd8435e7291ebdd2c533d6f04abd2d55b5c3d9dca64c684d9ebda814f1f0fd05",
+    "after": "beab7b76ea6abe6467e927c9011cdb5efa893d3793f6a508468b20491d68c3e2",
+    "reason": "Correct unsafe historical comment recommending waitlist DB reuse. No active binding, resource ID or deployment setting added."
+  }
+}

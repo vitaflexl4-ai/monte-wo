@@ -1,0 +1,16 @@
+{
+  "syntheticWebcam": true,
+  "noAudio": true,
+  "duplicateStartPrevented": true,
+  "cancelPendingStopsLateStream": true,
+  "backgroundStopsTracks": true,
+  "reducedMotion": true,
+  "noOverflowWidths": [
+    320,
+    390,
+    768,
+    820,
+    1024,
+    1440
+  ]
+}

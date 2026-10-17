@@ -1,9 +1,11 @@
+import {handleMobile} from '../../server/mobile/api.js';
 import {handleStrength} from '../../server/strength/api.js';
 import {handleWaitlist} from '../../server/waitlist.js';
 // Cloudflare Pages Function: optional R2 delivery, same-origin for offline caching.
-// Restricted Strength Index pilot is gated separately; no native workout-sync endpoint.
+// Restricted Strength Index and native workout APIs are separately gated; no change to waitlist/media.
 export async function onRequest({request,env}) {
  const url=new URL(request.url);
+ if(url.pathname.startsWith('/api/mobile/'))return handleMobile({request,env});
  if(url.pathname==='/api/strength'||url.pathname.startsWith('/api/strength/'))return handleStrength({request,env});
  if(url.pathname.startsWith('/api/waitlist'))return handleWaitlist({request,env});
  const json=(value,status=200)=>new Response(JSON.stringify(value),{status,headers:{'Content-Type':'application/json','Cache-Control':'no-store','X-Content-Type-Options':'nosniff'}});

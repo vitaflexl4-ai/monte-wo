@@ -1,0 +1,5 @@
+
+> @monte-wo/mobile@0.1.0 eas-build-pre-install
+> node scripts/check-build-security.cjs
+
+BUILD SECURITY GATE: Unresolved advisories: only the explicitly accepted Android preview may build.

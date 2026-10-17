@@ -1,0 +1,23 @@
+{
+  "sourceBranch": "main",
+  "sourceCommit": "c9f7151e47d58afce20bc9251bc301ac405ed2ab",
+  "sourceLibraryTree": "c1e9a407bcc754abc8d18e7f3626dfaa72e07a9d",
+  "unchangedSincePreviousPackImport": true,
+  "uniqueAnimations": 57,
+  "browseEntries": 62,
+  "categories": 8,
+  "protectedFilesUnchanged": 137,
+  "unrelatedDirtyPathsPreserved": [
+    "README.md",
+    "docs/ARCHIVE-README-0.4.md",
+    "docs/STRENGTH-LAB-REPORT.md",
+    "docs/strength/IMPLEMENTATION-REPORT.md",
+    "docs/website/REPORT.md",
+    "public/assets/INTER-LICENSE.txt"
+  ],
+  "packageScriptsExecuted": false,
+  "sqlExecuted": false,
+  "githubPushed": false,
+  "productionDeployed": false,
+  "nativeBuildSubmitted": false
+}

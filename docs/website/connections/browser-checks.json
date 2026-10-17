@@ -1,0 +1,27 @@
+{
+  "checks": [
+    {
+      "width": 390,
+      "homeAppMapFilterLoggerStrengthDownloadsHome": true,
+      "connectionPanelFailClosed": true,
+      "noOverflow": true
+    },
+    {
+      "width": 820,
+      "homeAppMapFilterLoggerStrengthDownloadsHome": true,
+      "connectionPanelFailClosed": true,
+      "noOverflow": true
+    },
+    {
+      "width": 1440,
+      "homeAppMapFilterLoggerStrengthDownloadsHome": true,
+      "connectionPanelFailClosed": true,
+      "noOverflow": true
+    }
+  ],
+  "localRouteHttpChecks": 50,
+  "missingReadyIncompatibleNetworkStates": true,
+  "invalidGroupFailsClosed": true,
+  "backGroupSetsBackView": true,
+  "consoleErrors": []
+}

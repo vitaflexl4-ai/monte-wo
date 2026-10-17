@@ -1,0 +1,29 @@
+{
+  "mediaHeadChecks": 171,
+  "range206": true,
+  "unknown404": true,
+  "invalidRange416": true,
+  "browser": [
+    {
+      "label": "phone",
+      "passed": true,
+      "demoPlayback": true,
+      "loopPlayback": true,
+      "errors": []
+    },
+    {
+      "label": "ipad",
+      "passed": true,
+      "demoPlayback": true,
+      "loopPlayback": true,
+      "errors": []
+    },
+    {
+      "label": "desktop",
+      "passed": true,
+      "demoPlayback": true,
+      "loopPlayback": true,
+      "errors": []
+    }
+  ]
+}

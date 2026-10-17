@@ -1,0 +1,28 @@
+{
+  "kind": "Local browser checks with synthetic account API, not live sign-in or cross-device verification",
+  "viewports": [
+    {
+      "width": 390,
+      "passed": true,
+      "noOverflow": true,
+      "pageErrors": []
+    },
+    {
+      "width": 820,
+      "passed": true,
+      "noOverflow": true,
+      "pageErrors": []
+    },
+    {
+      "width": 1440,
+      "passed": true,
+      "noOverflow": true,
+      "pageErrors": []
+    }
+  ],
+  "checks": [
+    "Real local API stays disabled; logger still computes 185 × 5 = 925; no save offered.",
+    "Popup callback; explicit review; no automatic upload; same-ID retry after lost response; history pagination; unsupported movement rejection; private history cleared on error and sign-out; local sets retained; no stored session token.",
+    "Wrong-source messages ignored; incorrect state rejected; popup cancellation recovers; expired session clears private records."
+  ]
+}

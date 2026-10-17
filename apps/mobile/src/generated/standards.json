@@ -1,0 +1,250 @@
+{
+  "brand": "MONTE WO Strength Index™",
+  "message": "MEASURE. PROVE. EARN. CLIMB.",
+  "disciplines": [
+    {
+      "id": "squat",
+      "name": "Barbell Squat",
+      "rulebookId": "squat-standard-draft-1",
+      "modelId": "squat-model-draft-1"
+    },
+    {
+      "id": "bench",
+      "name": "Barbell Bench Press",
+      "rulebookId": "bench-standard-draft-1",
+      "modelId": "bench-model-draft-1"
+    },
+    {
+      "id": "deadlift",
+      "name": "Barbell Deadlift",
+      "rulebookId": "deadlift-standard-draft-1",
+      "modelId": "deadlift-model-draft-1"
+    },
+    {
+      "id": "curl",
+      "name": "Strict Biceps Curl",
+      "rulebookId": "curl-standard-draft-1",
+      "modelId": "curl-model-draft-1"
+    }
+  ],
+  "rulebooks": [
+    {
+      "id": "squat-standard-draft-1",
+      "discipline": "squat",
+      "version": "draft-1",
+      "title": "MONTE Standard — Barbell Squat",
+      "variation": "barbell-back-squat",
+      "equipment": [
+        "raw-barbell"
+      ],
+      "checks": [
+        {
+          "id": "setup",
+          "text": "Free barbell back squat; high- or low-bar position. Start upright, hips and knees extended, feet planted. No Smith machine, front squat, supportive suit or knee wraps."
+        },
+        {
+          "id": "depth",
+          "text": "Hip crease passes below the top of the knee on the same side. Side-oblique view must show hip and knee throughout; an obscured depth is inconclusive, not a pass."
+        },
+        {
+          "id": "control",
+          "text": "No bounce off safety supports, double descent, assistance, or loss of control. Belt and non-supportive knee sleeves allowed; record equipment."
+        },
+        {
+          "id": "finish",
+          "text": "Return to stable upright position with hips and knees extended before reracking. Spotter contact during the scored repetition invalidates it."
+        }
+      ],
+      "safety": "Do not attempt a dangerous maximum for a rank. Use conservative loads, appropriate safety equipment and competent spotting. Pain or an unclear camera angle is not a reason to repeat a dangerous lift. Ranking is optional.",
+      "evidence": "Continuous unedited footage showing setup, complete attempt and finish; load markings and total load, date/identity linkage and bodyweight/category attestation must be reviewable. Additional angles may be required. No automated form or identity certification.",
+      "status": "draft",
+      "visualExamples": "Pending qualified review; no fabricated example footage is supplied."
+    },
+    {
+      "id": "bench-standard-draft-1",
+      "discipline": "bench",
+      "version": "draft-1",
+      "title": "MONTE Standard — Barbell Bench Press",
+      "variation": "paused-barbell-bench",
+      "equipment": [
+        "raw-barbell"
+      ],
+      "checks": [
+        {
+          "id": "setup",
+          "text": "Free-weight flat bench; head, shoulders and buttocks remain on bench; feet supported and fixed. Use a full thumb-around grip. Record belt/wrist wraps; no bench shirt or assistance device."
+        },
+        {
+          "id": "contact",
+          "text": "Lower to chest or upper abdomen under control. The bar must visibly stop before pressing; no bounce or heave. Side-oblique view must show contact and elbows."
+        },
+        {
+          "id": "range",
+          "text": "At the bottom, the underside of both elbow joints reaches at least the top surface of each shoulder joint. Camera must permit judgment; ambiguous footage is inconclusive."
+        },
+        {
+          "id": "finish",
+          "text": "Press to stable extension of both elbows without downward reversal; rack only after completion. Handoff allowed before the start, but any spotter contact during the scored rep invalidates it."
+        }
+      ],
+      "safety": "Do not attempt a dangerous maximum for a rank. Use conservative loads, appropriate safety equipment and competent spotting. Pain or an unclear camera angle is not a reason to repeat a dangerous lift. Ranking is optional.",
+      "evidence": "Continuous unedited footage showing setup, complete attempt and finish; load markings and total load, date/identity linkage and bodyweight/category attestation must be reviewable. Additional angles may be required. No automated form or identity certification.",
+      "status": "draft",
+      "visualExamples": "Pending qualified review; no fabricated example footage is supplied."
+    },
+    {
+      "id": "deadlift-standard-draft-1",
+      "discipline": "deadlift",
+      "version": "draft-1",
+      "title": "MONTE Standard — Barbell Deadlift",
+      "variation": "conventional-deadlift",
+      "equipment": [
+        "raw-barbell"
+      ],
+      "checks": [
+        {
+          "id": "setup",
+          "text": "Conventional stance only in this launch draft: hands outside legs, bar starts stationary on floor. Full-size plates with nominal 450 mm diameter; no blocks, deficit, trap bar or sumo comparisons."
+        },
+        {
+          "id": "control",
+          "text": "Lift without straps, hitching, supporting the bar on thighs, assistance or intentional downward movement before lockout. Belt and chalk allowed. No supportive suit."
+        },
+        {
+          "id": "finish",
+          "text": "Stand erect with hips and knees extended and shoulders in a stable upright position, without exaggerated leaning back."
+        },
+        {
+          "id": "lower",
+          "text": "Keep both hands on the bar while returning it under control. Dropping or losing control invalidates the attempt. Footage shows floor, knees, hips and completion."
+        }
+      ],
+      "safety": "Do not attempt a dangerous maximum for a rank. Use conservative loads, appropriate safety equipment and competent spotting. Pain or an unclear camera angle is not a reason to repeat a dangerous lift. Ranking is optional.",
+      "evidence": "Continuous unedited footage showing setup, complete attempt and finish; load markings and total load, date/identity linkage and bodyweight/category attestation must be reviewable. Additional angles may be required. No automated form or identity certification.",
+      "status": "draft",
+      "visualExamples": "Pending qualified review; no fabricated example footage is supplied."
+    },
+    {
+      "id": "curl-standard-draft-1",
+      "discipline": "curl",
+      "version": "draft-1",
+      "title": "MONTE Standard — Strict Biceps Curl",
+      "variation": "wall-strict-straight-bar-curl",
+      "equipment": [
+        "straight-bar"
+      ],
+      "checks": [
+        {
+          "id": "setup",
+          "text": "Straight bar only, supinated closed grip, heels no more than 30 cm from a rigid vertical wall. Head, upper back and buttocks contact the wall; both feet stay planted. No EZ bar or dumbbell substitutions."
+        },
+        {
+          "id": "start",
+          "text": "Start motionless, elbows fully extended within the athlete’s natural pain-free range, bar clear of supports. Record total bar-and-plate load."
+        },
+        {
+          "id": "motion",
+          "text": "Curl with simultaneous elbow flexion, keeping upper arms near the torso and the three wall contacts. No hip drive, knee dip, torso swing, shoulder thrust, bounce or assistance."
+        },
+        {
+          "id": "finish",
+          "text": "Reach full controlled elbow flexion with the bar approaching the shoulders without resting on the torso; pause visibly and lower under control to the start. Side and front-oblique views must allow range and contact assessment."
+        }
+      ],
+      "safety": "Do not attempt a dangerous maximum for a rank. Use conservative loads, appropriate safety equipment and competent spotting. Pain or an unclear camera angle is not a reason to repeat a dangerous lift. Ranking is optional.",
+      "evidence": "Continuous unedited footage showing setup, complete attempt and finish; load markings and total load, date/identity linkage and bodyweight/category attestation must be reviewable. Additional angles may be required. No automated form or identity certification.",
+      "status": "draft",
+      "visualExamples": "Pending qualified review; no fabricated example footage is supplied."
+    }
+  ],
+  "models": [
+    {
+      "id": "squat-model-draft-1",
+      "discipline": "squat",
+      "version": "draft-1",
+      "purpose": "production",
+      "rulebookId": "squat-standard-draft-1",
+      "normalization": "bodyweight-lookup-v1",
+      "categories": [],
+      "estimate": null,
+      "requireVerifiedFrom": "titan",
+      "evidence": {
+        "dataset": "",
+        "license": "",
+        "calibrationReport": "",
+        "holdoutReport": "",
+        "biasReport": "",
+        "rankMeaningReport": "",
+        "population": "",
+        "limitations": "No thresholds calibrated or approved. No official rank or progress can be assigned."
+      },
+      "status": "draft"
+    },
+    {
+      "id": "bench-model-draft-1",
+      "discipline": "bench",
+      "version": "draft-1",
+      "purpose": "production",
+      "rulebookId": "bench-standard-draft-1",
+      "normalization": "bodyweight-lookup-v1",
+      "categories": [],
+      "estimate": null,
+      "requireVerifiedFrom": "titan",
+      "evidence": {
+        "dataset": "",
+        "license": "",
+        "calibrationReport": "",
+        "holdoutReport": "",
+        "biasReport": "",
+        "rankMeaningReport": "",
+        "population": "",
+        "limitations": "No thresholds calibrated or approved. No official rank or progress can be assigned."
+      },
+      "status": "draft"
+    },
+    {
+      "id": "deadlift-model-draft-1",
+      "discipline": "deadlift",
+      "version": "draft-1",
+      "purpose": "production",
+      "rulebookId": "deadlift-standard-draft-1",
+      "normalization": "bodyweight-lookup-v1",
+      "categories": [],
+      "estimate": null,
+      "requireVerifiedFrom": "titan",
+      "evidence": {
+        "dataset": "",
+        "license": "",
+        "calibrationReport": "",
+        "holdoutReport": "",
+        "biasReport": "",
+        "rankMeaningReport": "",
+        "population": "",
+        "limitations": "No thresholds calibrated or approved. No official rank or progress can be assigned."
+      },
+      "status": "draft"
+    },
+    {
+      "id": "curl-model-draft-1",
+      "discipline": "curl",
+      "version": "draft-1",
+      "purpose": "production",
+      "rulebookId": "curl-standard-draft-1",
+      "normalization": "bodyweight-lookup-v1",
+      "categories": [],
+      "estimate": null,
+      "requireVerifiedFrom": "titan",
+      "evidence": {
+        "dataset": "",
+        "license": "",
+        "calibrationReport": "",
+        "holdoutReport": "",
+        "biasReport": "",
+        "rankMeaningReport": "",
+        "population": "",
+        "limitations": "No thresholds calibrated or approved. No official rank or progress can be assigned."
+      },
+      "status": "draft"
+    }
+  ]
+}

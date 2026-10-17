@@ -1,0 +1,20 @@
+{
+  "loopPages": [
+    "bench-press",
+    "push-up",
+    "lat-pulldown",
+    "overhead-press",
+    "lateral-raise",
+    "dumbbell-curl",
+    "triceps-pushdown",
+    "back-squat",
+    "romanian-deadlift"
+  ],
+  "noExactVideo": [
+    "one-arm-dumbbell-row",
+    "dead-bug",
+    "forearm-plank",
+    "brisk-walk",
+    "stationary-bike"
+  ]
+}

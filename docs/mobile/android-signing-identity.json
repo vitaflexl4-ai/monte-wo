@@ -1,0 +1,17 @@
+{
+  "applicationId": "com.vitaflexbusinessgroup.montewo",
+  "expoOwner": "vitaflex",
+  "expoProjectSlug": "monte-wo",
+  "expoProjectId": "9df7e721-09d7-47a7-b74e-adae504dee37",
+  "credentialsLabel": "Build Credentials uBqEGXbiOa",
+  "keystoreType": "JKS",
+  "certificateSha256": "0cd473cbb52adfd0caa67e793b7fc70ab0075c404067a24c2993dd2867d75610",
+  "source": "User-provided output from authenticated EAS CLI on the owner's Mac",
+  "reportedOn": "2026-10-15",
+  "remoteKeystoreCreationReportedSuccessful": true,
+  "independentlyVerifiedAgainstApk": false,
+  "apkBuildStatus": "Build submitted; last observed in-progress. Not rechecked during the design refresh.",
+  "continuityPolicy": "Reuse this signing identity for subsequent Android builds. Do not regenerate, replace or delete it casually.",
+  "privateKeyOrPasswordIncluded": false,
+  "buildId": "347b15cb-e1c5-4568-8b67-7a302eb54f00"
+}

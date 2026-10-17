@@ -1,0 +1,155 @@
+[
+  {
+    "id": "debitan",
+    "name": "Debitan",
+    "color": "#c1c9d3",
+    "icon": "/assets/ranks/debitan.webp",
+    "artwork": {
+      "source": "01_Debitan.png",
+      "crop": [
+        29,
+        119,
+        254,
+        304
+      ],
+      "missingTopPadding": 0
+    },
+    "ordinal": 1
+  },
+  {
+    "id": "bati",
+    "name": "Bati",
+    "color": "#efa55e",
+    "icon": "/assets/ranks/bati.webp",
+    "artwork": {
+      "source": "02_Bati.png",
+      "crop": [
+        20,
+        122,
+        244,
+        305
+      ],
+      "missingTopPadding": 0
+    },
+    "ordinal": 2
+  },
+  {
+    "id": "solid",
+    "name": "Solid",
+    "color": "#a0ceff",
+    "icon": "/assets/ranks/solid.webp",
+    "artwork": {
+      "source": "03_Solid.png",
+      "crop": [
+        0,
+        121,
+        222,
+        304
+      ],
+      "missingTopPadding": 0
+    },
+    "ordinal": 3
+  },
+  {
+    "id": "fo",
+    "name": "Fò",
+    "color": "#4aaaff",
+    "icon": "/assets/ranks/fo.webp",
+    "artwork": {
+      "source": "04_Fo.png",
+      "crop": [
+        29,
+        15,
+        254,
+        235
+      ],
+      "missingTopPadding": 0
+    },
+    "ordinal": 4
+  },
+  {
+    "id": "avanse",
+    "name": "Avanse",
+    "color": "#2bdcde",
+    "icon": "/assets/ranks/avanse.webp",
+    "artwork": {
+      "source": "05_Avanse.png",
+      "crop": [
+        19,
+        48,
+        242,
+        242
+      ],
+      "missingTopPadding": 0
+    },
+    "ordinal": 5
+  },
+  {
+    "id": "met",
+    "name": "Mèt",
+    "color": "#bb71fa",
+    "icon": "/assets/ranks/met.webp",
+    "artwork": {
+      "source": "06_Met.png",
+      "crop": [
+        0,
+        45,
+        220,
+        239
+      ],
+      "missingTopPadding": 0
+    },
+    "ordinal": 6
+  },
+  {
+    "id": "chanpyon",
+    "name": "Chanpyon",
+    "color": "#ffac45",
+    "icon": "/assets/ranks/chanpyon.webp",
+    "artwork": {
+      "source": "07_Chanpyon.png",
+      "crop": [
+        29,
+        0,
+        253,
+        166
+      ],
+      "missingTopPadding": 37
+    },
+    "ordinal": 7
+  },
+  {
+    "id": "titan",
+    "name": "Titan",
+    "color": "#ff4055",
+    "icon": "/assets/ranks/titan.webp",
+    "artwork": {
+      "source": "08_Titan.png",
+      "crop": [
+        20,
+        0,
+        244,
+        164
+      ],
+      "missingTopPadding": 38
+    },
+    "ordinal": 8
+  },
+  {
+    "id": "lejand",
+    "name": "Lejand",
+    "color": "#f7d354",
+    "icon": "/assets/ranks/lejand.webp",
+    "artwork": {
+      "source": "09_Lejand.png",
+      "crop": [
+        0,
+        0,
+        222,
+        158
+      ],
+      "missingTopPadding": 42
+    },
+    "ordinal": 9
+  }
+]

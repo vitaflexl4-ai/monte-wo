@@ -1,0 +1,63 @@
+{
+  "date": "2026-10-17",
+  "status": "development-only; not deployed; live sync not verified",
+  "rootNodeTests": {
+    "passed": 167,
+    "failed": 0
+  },
+  "finalFocusedTests": {
+    "passed": 31,
+    "failed": 0
+  },
+  "nativeSourceTests": {
+    "passed": 37,
+    "failed": 0
+  },
+  "nativeTypeScript": "passed (TypeScript 6.0.3)",
+  "nodeRuntime": "20.20.2 used for source checks; official native builds require Node >=22.13.0",
+  "browser": {
+    "viewports": [
+      390,
+      820,
+      1440
+    ],
+    "accountApi": "synthetic fixtures only",
+    "localDisabledApi": "checked",
+    "pageErrors": 0
+  },
+  "localIntegration": [
+    "web PKCE -> shared real handler -> native bearer-session read",
+    "native explicit copy -> same-ID retry -> web history read",
+    "other account isolated",
+    "no rank result awarded"
+  ],
+  "serviceWorker": {
+    "cache": "montewo-core-v18-account-workouts",
+    "newModulesPrecached": true,
+    "callbackQueryRemoved": true,
+    "callbackAndPrivateApiNotCached": true
+  },
+  "regression": {
+    "connectionJourneys": [
+      390,
+      820,
+      1440
+    ],
+    "localHttpRoutesChecked": 50,
+    "phoneWidths": [
+      320,
+      390,
+      768,
+      1024,
+      1440
+    ],
+    "localesReducedMotionOffline": "passed"
+  },
+  "scopedPublisherIdempotency": "passed",
+  "productionChanges": false,
+  "databaseMigrationsApplied": false,
+  "r2Operations": false,
+  "nativeBuildOrInstall": false,
+  "cloudSignInTested": false,
+  "scope": "Same existing API and isolated application schema; no new database or ranking engine."
+}

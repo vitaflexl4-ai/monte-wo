@@ -1,0 +1,44 @@
+[
+  {
+    "label": "phone",
+    "passed": true,
+    "svgPathCounts": [
+      28,
+      26
+    ],
+    "regionTierEvents": true,
+    "keyboardSelection": true,
+    "clearSelection": true,
+    "filteredNavigation": true,
+    "earnedRanksUnchanged": true,
+    "errors": []
+  },
+  {
+    "label": "ipad",
+    "passed": true,
+    "svgPathCounts": [
+      28,
+      26
+    ],
+    "regionTierEvents": true,
+    "keyboardSelection": true,
+    "clearSelection": true,
+    "filteredNavigation": true,
+    "earnedRanksUnchanged": true,
+    "errors": []
+  },
+  {
+    "label": "desktop",
+    "passed": true,
+    "svgPathCounts": [
+      28,
+      26
+    ],
+    "regionTierEvents": true,
+    "keyboardSelection": true,
+    "clearSelection": true,
+    "filteredNavigation": true,
+    "earnedRanksUnchanged": true,
+    "errors": []
+  }
+]

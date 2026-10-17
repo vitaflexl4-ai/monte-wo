@@ -1,0 +1,33 @@
+{
+  "scope": "Shared-engine browser harness, NOT a native install test",
+  "results": [
+    {
+      "width": 390,
+      "saveReloadVolumeDelete": true,
+      "noOverflow": true
+    },
+    {
+      "width": 820,
+      "saveReloadVolumeDelete": true,
+      "noOverflow": true
+    },
+    {
+      "width": 1440,
+      "saveReloadVolumeDelete": true,
+      "noOverflow": true
+    },
+    {
+      "quotaErrorPreservesDraft": true
+    },
+    {
+      "twoTabWritesNoLostWorkouts": true
+    },
+    {
+      "corruptStorageFailsClosed": true
+    },
+    {
+      "browserProcessRestartPreservesHistory": true
+    }
+  ],
+  "consoleErrors": []
+}

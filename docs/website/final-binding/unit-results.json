@@ -1,0 +1,13 @@
+{
+  "runner": "node --test",
+  "tests": 25,
+  "passed": 25,
+  "failed": 0,
+  "suites": [
+    "cockpit.test.js",
+    "final-binding.test.js",
+    "posters.test.js",
+    "website.test.js"
+  ],
+  "heavyCompilation": false
+}

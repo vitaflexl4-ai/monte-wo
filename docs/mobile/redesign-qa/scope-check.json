@@ -1,0 +1,14 @@
+{
+  "protected_files_unchanged": 137,
+  "previous_dirty_paths_excluded": [
+    "README.md",
+    "docs/ARCHIVE-README-0.4.md",
+    "docs/STRENGTH-LAB-REPORT.md",
+    "docs/strength/IMPLEMENTATION-REPORT.md",
+    "docs/website/REPORT.md",
+    "public/assets/INTER-LICENSE.txt"
+  ],
+  "production_deploy": false,
+  "native_build_submitted": false,
+  "apk_verified": false
+}

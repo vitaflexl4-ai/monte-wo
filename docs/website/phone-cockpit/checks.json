@@ -1,0 +1,59 @@
+{
+  "results": [
+    {
+      "route": "/app/",
+      "width": 320,
+      "tabsInputsMapHistoryKeyboardBounds": true
+    },
+    {
+      "route": "/app/",
+      "width": 390,
+      "tabsInputsMapHistoryKeyboardBounds": true
+    },
+    {
+      "route": "/app/",
+      "width": 768,
+      "tabsInputsMapHistoryKeyboardBounds": true
+    },
+    {
+      "route": "/app/",
+      "width": 1024,
+      "tabsInputsMapHistoryKeyboardBounds": true
+    },
+    {
+      "route": "/app/",
+      "width": 1440,
+      "tabsInputsMapHistoryKeyboardBounds": true
+    },
+    {
+      "route": "/index.html",
+      "width": 320,
+      "tabsInputsMapHistoryKeyboardBounds": true
+    },
+    {
+      "route": "/index.html",
+      "width": 390,
+      "tabsInputsMapHistoryKeyboardBounds": true
+    },
+    {
+      "route": "/index.html",
+      "width": 768,
+      "tabsInputsMapHistoryKeyboardBounds": true
+    },
+    {
+      "route": "/index.html",
+      "width": 1024,
+      "tabsInputsMapHistoryKeyboardBounds": true
+    },
+    {
+      "route": "/index.html",
+      "width": 1440,
+      "tabsInputsMapHistoryKeyboardBounds": true
+    }
+  ],
+  "reducedMotion": true,
+  "localeSwitching": true,
+  "offlineTabSwitching": true,
+  "exerciseCockpitBoot": true,
+  "consoleErrors": []
+}

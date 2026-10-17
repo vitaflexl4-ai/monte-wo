@@ -1,0 +1,13 @@
+{
+  "mainHead": "d35973567f254bcee4561535dc4061719a816e90",
+  "moduleCommit": "3f60741742db3db0c92d6d316e81b3e4e430d7da",
+  "sameIndexSha256": "eb0526adb12f658ac415846afe5882271a9b70efe9f058fb97394d5144a11ece",
+  "websiteRoute": "/exercises/",
+  "protectedFileCount": 31,
+  "protectedFilesUnchanged": true,
+  "sixPriorEditsPreserved": true,
+  "foodMacrosAdded": false,
+  "personalTargetsAdded": false,
+  "productionDeployment": false,
+  "gitPush": false
+}
