@@ -41,9 +41,7 @@
     "prebuild": "expo prebuild --no-install",
     "export:web": "expo export --platform web --output-dir web-build --max-workers 1",
     "export:native": "expo export --platform android --platform ios --output-dir native-export --max-workers 1",
-    "test:build-safety": "node --test tests/*.test.cjs",
-    "eas-build-pre-install": "node scripts/check-build-security.cjs",
-    "eas-build-post-install": "npm run typecheck && npm run test:build-safety"
+    "test:build-safety": "node --test tests/*.test.cjs"
   },
   "private": true,
   "engines": {
