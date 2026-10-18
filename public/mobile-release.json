@@ -2,21 +2,6 @@
   "product": "MONTE WO",
   "operator": "VitaFlex Business Group",
   "sourceVersion": "0.1.0",
-  "android": {
-    "status": "unreleased",
-    "apkUrl": null,
-    "playUrl": null,
-    "version": null,
-    "releasedAt": null,
-    "bytes": null,
-    "sha256": null,
-    "minSdk": null,
-    "signingCertificateSha256": null,
-    "installationTest": null
-  },
-  "ios": {
-    "status": "unreleased",
-    "testFlightUrl": null,
-    "appStoreUrl": null
-  }
+  "android": {"status": "unreleased", "apkUrl": null, "playUrl": null, "version": null, "releasedAt": null, "bytes": null, "sha256": null, "minSdk": null, "signingCertificateSha256": null, "installationTest": null},
+  "ios": {"status": "unreleased", "testFlightUrl": null, "appStoreUrl": null}
 }

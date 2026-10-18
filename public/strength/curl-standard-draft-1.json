@@ -1,0 +1,32 @@
+{
+  "id": "curl-standard-draft-1",
+  "discipline": "curl",
+  "version": "draft-1",
+  "title": "MONTE Standard \u2014 Strict Biceps Curl",
+  "variation": "wall-strict-straight-bar-curl",
+  "equipment": [
+    "straight-bar"
+  ],
+  "checks": [
+    {
+      "id": "setup",
+      "text": "Straight bar only, supinated closed grip, heels no more than 30 cm from a rigid vertical wall. Head, upper back and buttocks contact the wall; both feet stay planted. No EZ bar or dumbbell substitutions."
+    },
+    {
+      "id": "start",
+      "text": "Start motionless, elbows fully extended within the athlete\u2019s natural pain-free range, bar clear of supports. Record total bar-and-plate load."
+    },
+    {
+      "id": "motion",
+      "text": "Curl with simultaneous elbow flexion, keeping upper arms near the torso and the three wall contacts. No hip drive, knee dip, torso swing, shoulder thrust, bounce or assistance."
+    },
+    {
+      "id": "finish",
+      "text": "Reach full controlled elbow flexion with the bar approaching the shoulders without resting on the torso; pause visibly and lower under control to the start. Side and front-oblique views must allow range and contact assessment."
+    }
+  ],
+  "safety": "Do not attempt a dangerous maximum for a rank. Use conservative loads, appropriate safety equipment and competent spotting. Pain or an unclear camera angle is not a reason to repeat a dangerous lift. Ranking is optional.",
+  "evidence": "Continuous unedited footage showing setup, complete attempt and finish; load markings and total load, date/identity linkage and bodyweight/category attestation must be reviewable. Additional angles may be required. No automated form or identity certification.",
+  "status": "draft",
+  "visualExamples": "Pending qualified review; no fabricated example footage is supplied."
+}

@@ -1,0 +1,32 @@
+{
+  "id": "bench-standard-draft-1",
+  "discipline": "bench",
+  "version": "draft-1",
+  "title": "MONTE Standard \u2014 Barbell Bench Press",
+  "variation": "paused-barbell-bench",
+  "equipment": [
+    "raw-barbell"
+  ],
+  "checks": [
+    {
+      "id": "setup",
+      "text": "Free-weight flat bench; head, shoulders and buttocks remain on bench; feet supported and fixed. Use a full thumb-around grip. Record belt/wrist wraps; no bench shirt or assistance device."
+    },
+    {
+      "id": "contact",
+      "text": "Lower to chest or upper abdomen under control. The bar must visibly stop before pressing; no bounce or heave. Side-oblique view must show contact and elbows."
+    },
+    {
+      "id": "range",
+      "text": "At the bottom, the underside of both elbow joints reaches at least the top surface of each shoulder joint. Camera must permit judgment; ambiguous footage is inconclusive."
+    },
+    {
+      "id": "finish",
+      "text": "Press to stable extension of both elbows without downward reversal; rack only after completion. Handoff allowed before the start, but any spotter contact during the scored rep invalidates it."
+    }
+  ],
+  "safety": "Do not attempt a dangerous maximum for a rank. Use conservative loads, appropriate safety equipment and competent spotting. Pain or an unclear camera angle is not a reason to repeat a dangerous lift. Ranking is optional.",
+  "evidence": "Continuous unedited footage showing setup, complete attempt and finish; load markings and total load, date/identity linkage and bodyweight/category attestation must be reviewable. Additional angles may be required. No automated form or identity certification.",
+  "status": "draft",
+  "visualExamples": "Pending qualified review; no fabricated example footage is supplied."
+}

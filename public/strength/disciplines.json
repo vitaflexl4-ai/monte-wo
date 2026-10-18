@@ -1,0 +1,26 @@
+[
+  {
+    "id": "squat",
+    "name": "Barbell Squat",
+    "rulebookId": "squat-standard-draft-1",
+    "modelId": "squat-model-draft-1"
+  },
+  {
+    "id": "bench",
+    "name": "Barbell Bench Press",
+    "rulebookId": "bench-standard-draft-1",
+    "modelId": "bench-model-draft-1"
+  },
+  {
+    "id": "deadlift",
+    "name": "Barbell Deadlift",
+    "rulebookId": "deadlift-standard-draft-1",
+    "modelId": "deadlift-model-draft-1"
+  },
+  {
+    "id": "curl",
+    "name": "Strict Biceps Curl",
+    "rulebookId": "curl-standard-draft-1",
+    "modelId": "curl-model-draft-1"
+  }
+]

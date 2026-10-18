@@ -1,0 +1,32 @@
+{
+  "id": "squat-standard-draft-1",
+  "discipline": "squat",
+  "version": "draft-1",
+  "title": "MONTE Standard \u2014 Barbell Squat",
+  "variation": "barbell-back-squat",
+  "equipment": [
+    "raw-barbell"
+  ],
+  "checks": [
+    {
+      "id": "setup",
+      "text": "Free barbell back squat; high- or low-bar position. Start upright, hips and knees extended, feet planted. No Smith machine, front squat, supportive suit or knee wraps."
+    },
+    {
+      "id": "depth",
+      "text": "Hip crease passes below the top of the knee on the same side. Side-oblique view must show hip and knee throughout; an obscured depth is inconclusive, not a pass."
+    },
+    {
+      "id": "control",
+      "text": "No bounce off safety supports, double descent, assistance, or loss of control. Belt and non-supportive knee sleeves allowed; record equipment."
+    },
+    {
+      "id": "finish",
+      "text": "Return to stable upright position with hips and knees extended before reracking. Spotter contact during the scored repetition invalidates it."
+    }
+  ],
+  "safety": "Do not attempt a dangerous maximum for a rank. Use conservative loads, appropriate safety equipment and competent spotting. Pain or an unclear camera angle is not a reason to repeat a dangerous lift. Ranking is optional.",
+  "evidence": "Continuous unedited footage showing setup, complete attempt and finish; load markings and total load, date/identity linkage and bodyweight/category attestation must be reviewable. Additional angles may be required. No automated form or identity certification.",
+  "status": "draft",
+  "visualExamples": "Pending qualified review; no fabricated example footage is supplied."
+}
