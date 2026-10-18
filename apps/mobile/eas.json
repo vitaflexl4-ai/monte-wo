@@ -25,6 +25,13 @@
       },
       "ios": {
         "simulator": false
+      },
+      "node": "22.13.0",
+      "cache": {
+        "paths": [
+          "node_modules",
+          "apps/mobile/node_modules"
+        ]
       }
     },
     "ios-device": {

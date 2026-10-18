@@ -1,0 +1,12 @@
+{
+  "expo": {
+    "extra": {
+      "eas": {
+        "projectId": "f87a7392-7a3b-496c-81eb-44c5b4fb71f0"
+      }
+    },
+    "android": {
+      "package": "com.vitaflex.montewovitaflex"
+    }
+  }
+}
