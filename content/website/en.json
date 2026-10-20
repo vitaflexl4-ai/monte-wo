@@ -19,11 +19,11 @@
         "cta": "Understand the Strength Index ↗"
       },
       {
-        "label": "PRODUCT CONCEPT",
-        "title": "The app comes next.",
-        "text": "An athlete dashboard, training history and social features are planned—not live website features.",
-        "link": "/app/",
-        "cta": "See the app direction ↗"
+        "label": "ANDROID PREVIEW",
+        "title": "Try the Android preview.",
+        "text": "An Android preview build is available through Expo for early testing. This is not a public release; iOS and public athlete accounts are not available.",
+        "link": "/downloads/",
+        "cta": "Open Android Preview ↗"
       }
     ]
   },
@@ -68,14 +68,14 @@
     ]
   },
   "app": {
-    "title": "The MONTE WO App — Product Concept, Coming Soon",
-    "description": "Explore the planned MONTE WO app: independent discipline performance, training history and future social features. No app download or public athlete accounts yet.",
+    "title": "The MONTE WO App — Android Preview Build",
+    "description": "Explore the MONTE WO app and access the Android preview build for early testing. This is not an official public release. Strength standards remain draft, not official.",
     "eyebrow": "THE APP / A FIRST LOOK",
     "headline": "Your work.",
     "accent": "Your own climb.",
     "intro": "A focused home for your training, built around progress you can understand—and strength recognition you have to earn.",
     "notice": "INTERACTIVE SIMULATION — NOT A RELEASED APP",
-    "availability": "No native app download, public athlete account or launch date is available. Joining the waitlist requests updates only.",
+    "availability": "An internal Android preview build is available through Expo for early testing. It is not an official public release. No Google Play listing or iOS build is available.",
     "reference": "The visual direction follows the supplied MONTE WO app concept. The phone responds locally to your inputs. Badges and history rows are illustrative, not earned ranks or personal records. No qualification thresholds or athlete data are used.",
     "features": [
       {
