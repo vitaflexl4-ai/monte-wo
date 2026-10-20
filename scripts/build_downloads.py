@@ -17,12 +17,23 @@ doc=re.sub(r'<title>.*?</title>','<title>Official App Downloads &amp; Release St
 for attr in ['name="description"','property="og:description"','name="twitter:description"']:
  doc=re.sub('<meta '+attr+r'[^>]*>','<meta '+attr+' content="Official MONTE WO Android and iOS release status. No APK or store listing is published yet. Use the working website tools today.">',doc)
 for attr in ['property="og:title"','name="twitter:title"']:doc=re.sub('<meta '+attr+r'[^>]*>','<meta '+attr+' content="Official App Downloads | MONTE WO">',doc)
+# Bind the visible preview link to the explicit build metadata, not a guessed APK URL.
+preview_url=manifest.get('android',{}).get('previewUrl')
+if preview_url:
+ if not preview_url.startswith('https://expo.dev/accounts/vitaflex/projects/monte-wo/builds/'):
+  raise ValueError('Android preview URL must be the known MONTE WO EAS build page.')
+ s_url='https://expo.dev/accounts/vitaflex/projects/monte-wo/builds/7a8a3e7f-c088-45e9-8111-218fb60c5b52'
+ body=body.replace('href="'+s_url+'"','href="'+html.escape(preview_url,quote=True)+'"')
 # SITE_ORIGIN remains unset; do not copy an app-specific canonical URL into a new route.
 doc=re.sub(r'<link rel="canonical"[^>]*>|<meta property="og:url"[^>]*>','',doc)
 (P/'downloads').mkdir(exist_ok=True);(P/'downloads/index.html').write_text(doc)
 (P/'mobile-release.json').write_text(json.dumps(manifest,indent=2)+'\n')
 # Only additive links. Preserve the five established primary navigation items.
-app=P/'app/index.html';text=app.read_text();link='<p class="wrap foundation-small" id="native-release-status"><a href="/downloads/">Official app download &amp; release status ↗</a></p>'
+app=P/'app/index.html';text=app.read_text()
+text=text.replace('<div class="foundation-tag">COMING SOON</div>','<div class="foundation-tag">ANDROID PREVIEW</div>')
+text=text.replace('<div class="foundation-actions"><a class="button" href="/waitlist/">Join the Waitlist ↗</a><a href="/tools/">Use the Free Tools ↗</a></div>','<div class="foundation-actions"><a class="button" href="/downloads/">Open Android Preview ↗</a><a href="/tools/">Use the Free Tools ↗</a></div>')
+text=text.replace('No public account or native app download is available.','No public athlete account or official public app release is available. An internal Android preview is linked above for early testing.')
+link='<p class="wrap foundation-small" id="native-release-status"><a href="/downloads/">Android preview download &amp; release status ↗</a></p>'
 text=re.sub(r'<p[^>]*id="native-release-status".*?</p>','',text,flags=re.S).replace('</main>',link+'</main>');app.write_text(text)
 # Disclose the exact additional pilot behavior without claiming operational deployment.
 pilot='''<section class="wrap foundation-section" id="native-pilot-data"><h2>Native training pilot · pre-release</h2><p>If an enrolled pilot account is activated, the native app sends profile revisions, dated workout sets, discipline performances and chosen MP4 evidence to the same application backend as the web pilot. Workout records do not award ranks. The separate waitlist database is not used for application records.</p><p>Sign-in uses Cloudflare Access in your system browser. An expiring opaque session is stored in the device’s secure storage; the server stores its hash and an encrypted provider token. Signing out removes the local session and attempts server revocation. No advertising, analytics, location, microphone, contacts or health-sensor SDK is used. Calories, active minutes and heart rate remain Not connected.</p><p>Chosen evidence is uploaded privately to the configured evidence store, not the public workout-media bucket. Authorized reviewers and operators can access submitted evidence. A temporary upload copy is removed after the native upload attempt where possible; your original file is not deleted. Unsaved workout inputs stay in current app memory, not a durable offline queue.</p><p>Delete Workout removes that training record, not separately submitted performance history. Account → Request account deletion creates a pending operator request; it does not claim completed erasure. You can also use the <a href="/delete-account/">public account and data request page</a> or contact <a href="mailto:Montewo@vitaflexbusinessgroup.com">Montewo@vitaflexbusinessgroup.com</a>. Secure identity verification is required before processing. Retention schedules, backup handling and a tested account-erasure procedure must be finalized before public release. No specific completion deadline is promised by this pre-release implementation.</p></section>'''
