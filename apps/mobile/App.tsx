@@ -1015,7 +1015,7 @@ function Home({ navigation }: any) {
         <Utensils size={24} color={C.cyan} />
         <View style={{ flex: 1 }}>
           <Text style={v.sectionTitle}>Fuel your training</Text>
-          <Body>Explore the existing nutrition tools.</Body>
+          <Body>On-device protein, energy and macro estimates.</Body>
         </View>
         <ChevronRight size={18} color={C.cyan} />
       </Pressable>
