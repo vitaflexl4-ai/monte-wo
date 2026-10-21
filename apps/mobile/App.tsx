@@ -934,7 +934,7 @@ function Home({ navigation }: any) {
                     <View
                       style={{
                         height: "100%",
-                        width: Math.max(0, Math.min(99, Math.floor(rank.progress))) + "%",
+                        width: `${Math.max(0, Math.min(99, Math.floor(rank.progress)))}%` as `${number}%`,
                         borderRadius: 5,
                         backgroundColor: C.cyan,
                       }}
