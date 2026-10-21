@@ -30,6 +30,11 @@ jobs:
           cache-dependency-path: apps/mobile/package-lock.json
       - name: Install locked mobile dependencies
         run: npm ci --prefix apps/mobile
+      - name: Report production dependency advisories
+        working-directory: apps/mobile
+        run: |
+          npm audit --omit=dev --json > /tmp/montewo-npm-audit.json || true
+          node -e 'const a = require("/tmp/montewo-npm-audit.json"); console.log(JSON.stringify({counts:a.metadata?.vulnerabilities, advisories:Object.entries(a.vulnerabilities||{}).map(([name,v])=>({name,severity:v.severity,isDirect:v.isDirect,range:v.range,fixAvailable:v.fixAvailable}))}, null, 2))'
       - name: Type-check the mobile app
         run: npm run typecheck --prefix apps/mobile
       - name: Run mobile build-safety tests
