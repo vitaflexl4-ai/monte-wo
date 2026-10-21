@@ -1270,7 +1270,7 @@ function Nutrition() {
             {maintenanceLow === maintenanceHigh ? maintenanceLow.toLocaleString() : maintenanceLow.toLocaleString() + "–" + maintenanceHigh.toLocaleString()} kcal/day
           </Text>
           <Body>Estimated maintenance using the Mifflin–St Jeor equation and your selected activity factor.</Body>
-          <Divider />
+          <View style={{ height: 1, backgroundColor: C.border, marginVertical: 10 }} />
           <Label>GOAL-ADJUSTED STARTING TARGET</Label>
           <Text style={{ color: C.cyan, fontSize: 25, fontWeight: "800" }}>{calories.toLocaleString()} kcal/day</Text>
           <Body>Starting adjustment: {goalAdjustments[goal] > 0 ? "+" : ""}{goalAdjustments[goal]} kcal/day. Actual needs vary; adjust from observed trends and wellbeing.</Body>
@@ -2498,20 +2498,20 @@ function Privacy() {
       <Card>
         <Text style={v.sectionTitle}>1. What stays on your device</Text>
         <Body>Workout history is saved locally first. Anyone with access to this installation may be able to view local records. Uninstalling the app or clearing its storage may erase them. Onboarding sound and vibration preferences are stored locally. Unfinished workout sets are not treated as saved sessions.</Body>
-        <Divider />
+        <View style={{ height: 1, backgroundColor: C.border, marginVertical: 10 }} />
         <Text style={v.sectionTitle}>2. Account data and synchronization</Text>
         <Body>Account features are restricted to provisioned users. When you sign in and the secured service is enabled, new workout records may be sent to the shared MONTE WO account service so the same account can access them on supported clients. A failed sync must leave the local copy intact and be reported. Older device-only history is not uploaded automatically because it may belong to another person who used the device.</Body>
         <Body>Depending on features enabled, the service may process your account identity, athlete profile revisions, submitted performances, calculated assessments, evidence files, review decisions and security/audit events. Records are private to the enrolled account and authorized reviewers; public leaderboards and social publishing are not enabled in this build.</Body>
-        <Divider />
+        <View style={{ height: 1, backgroundColor: C.border, marginVertical: 10 }} />
         <Text style={v.sectionTitle}>3. Calculators and media</Text>
         <Body>Protein, energy and macro estimates run on the device. Inputs are not uploaded or saved by these calculators. The onboarding audio is bundled with the app. No microphone recording is required for onboarding. Evidence upload, when enabled for a restricted pilot, is a separate feature and may transmit the video you deliberately submit for review.</Body>
-        <Divider />
+        <View style={{ height: 1, backgroundColor: C.border, marginVertical: 10 }} />
         <Text style={v.sectionTitle}>4. Service providers and security</Text>
         <Body>The platform may use Cloudflare hosting, Workers and configured database/object-storage services to operate the app, and an email provider to handle support messages. Providers may process technical connection data to deliver and secure the service. Reasonable safeguards are used, but absolute security cannot be guaranteed. Never email passwords, identity documents or detailed medical records.</Body>
-        <Divider />
+        <View style={{ height: 1, backgroundColor: C.border, marginVertical: 10 }} />
         <Text style={v.sectionTitle}>5. Retention, access and deletion</Text>
         <Body>Local records remain until you clear app data or the device removes them. Server records are retained according to the configured service and applicable legal requirements. To request access, correction or deletion of server data, contact Montewo@vitaflexbusinessgroup.com. Requests may require identity verification and operator processing; submitting a request does not mean data is immediately erased. Limited backup copies may persist temporarily under provider retention rules.</Body>
-        <Divider />
+        <View style={{ height: 1, backgroundColor: C.border, marginVertical: 10 }} />
         <Text style={v.sectionTitle}>6. Changes and contact</Text>
         <Body>This policy must be updated when the app’s data practices or services change. Privacy contact: Montewo@vitaflexbusinessgroup.com. This draft does not replace review of the current website policy or applicable legal requirements before public release.</Body>
       </Card>
@@ -2526,22 +2526,22 @@ function Terms() {
       <Card>
         <Text style={v.sectionTitle}>1. Current access</Text>
         <Body>Account access is restricted to enrolled users when the operator has enabled the secure service. The app does not provide public self-registration in this build. You are responsible for protecting access to your device and account.</Body>
-        <Divider />
+        <View style={{ height: 1, backgroundColor: C.border, marginVertical: 10 }} />
         <Text style={v.sectionTitle}>2. Fitness and nutrition safety</Text>
         <Body>MONTE WO provides training logs, strength assessments and general nutrition estimates for informational and fitness purposes only. They are not medical advice, diagnosis, treatment, or guarantees of performance. Train within your abilities, use appropriate equipment and seek qualified professional guidance when needed. Stop if you experience pain, dizziness or other concerning symptoms.</Body>
-        <Divider />
+        <View style={{ height: 1, backgroundColor: C.border, marginVertical: 10 }} />
         <Text style={v.sectionTitle}>3. Ranks and performance records</Text>
         <Body>Each discipline is independent: Squat, Bench Press, Deadlift and Biceps Curl. Training volume, attendance and streaks do not award ranks. A qualifying performance must meet the applicable discipline rules and approved standards. Provisional assessments are not the same as MONTE Verified status; evidence review is separate. The current threshold models remain draft, so no official rank or official progress percentage is promised or awarded under those drafts.</Body>
-        <Divider />
+        <View style={{ height: 1, backgroundColor: C.border, marginVertical: 10 }} />
         <Text style={v.sectionTitle}>4. Honest and authorized use</Text>
         <Body>Submit accurate information. Do not falsify performance or evidence, manipulate rankings, access another person’s account, bypass access controls, interfere with service availability or use the platform unlawfully. The operator may restrict or terminate access for misuse, subject to applicable law.</Body>
-        <Divider />
+        <View style={{ height: 1, backgroundColor: C.border, marginVertical: 10 }} />
         <Text style={v.sectionTitle}>5. Local records and account sync</Text>
         <Body>Workouts may be stored locally even when the account service is unavailable. When you are signed in and the service is enabled, new workouts may be synchronized to your account. A local save does not prove that account sync succeeded. Check the displayed status before assuming a record is available on another device. Existing device-only records require your explicit action before copying to an account.</Body>
-        <Divider />
+        <View style={{ height: 1, backgroundColor: C.border, marginVertical: 10 }} />
         <Text style={v.sectionTitle}>6. Availability, privacy and deletion</Text>
         <Body>Continuous, error-free service is not guaranteed. Use of the app is also subject to the in-app Privacy Policy. You may request account-data access or deletion through Montewo@vitaflexbusinessgroup.com; requests are processed according to the configured service and applicable law, and may not result in immediate erasure of backups.</Body>
-        <Divider />
+        <View style={{ height: 1, backgroundColor: C.border, marginVertical: 10 }} />
         <Text style={v.sectionTitle}>7. Operator and contact</Text>
         <Body>MONTE WO is managed by VitaFlex Business Group, operating as an individual or sole proprietor. Contact: Montewo@vitaflexbusinessgroup.com. The operator’s legal jurisdiction has not yet been confirmed; applicable mandatory protections continue to apply. These terms may be updated as the service develops.</Body>
       </Card>
