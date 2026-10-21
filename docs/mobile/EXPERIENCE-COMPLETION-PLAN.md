@@ -30,7 +30,7 @@ Status date: 2026-10-21. Work branch: `feature/monte-wo-experience-completion`.
 
 ## Required verification before release
 
-- Run `npm ci --prefix apps/mobile`, `npm run typecheck --prefix apps/mobile`, and `npm run test:build-safety --prefix apps/mobile`.
+- Run `npm ci --prefix apps/mobile`, `npm run typecheck --prefix apps/mobile`, and `npm run test:build-safety --prefix apps/mobile`. Review the runtime dependency audit: it currently reports 15 high-severity advisories and proposes incompatible Expo/React Native major downgrades for several packages, so do not run `npm audit fix` blindly; manually assess advisory reachability and supported fixes.
 - Build the web preview and confirm onboarding audio/haptics controls, returning-user skip, local workout save, and no website navigation.
 - With a test account and an explicitly configured non-production application database, verify new workout auto-sync and cross-client retrieval; test offline failure and retry. Do not enable production flags or alter production databases as part of this task.
 - Test qualifying performance submission and rank refresh against approved standards; current draft standards cannot issue official ranks.
