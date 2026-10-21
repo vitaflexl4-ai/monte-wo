@@ -23,7 +23,7 @@ Status date: 2026-10-21. Work branch: `feature/monte-wo-experience-completion`.
 ## Changes in this branch
 
 1. Replace the one-screen welcome with a persistent three-stage onboarding flow.
-2. Bundle a short locally generated sound cue and use Expo Audio; add optional vibration feedback. Audio is playback-only; Android microphone permission stays disabled.
+2. Bundle a short locally generated sound cue and use Expo Audio; add optional vibration feedback for onboarding transitions and actual provisional/verified rank reveals. Draft/unranked assessments do not trigger a rank-reveal cue. Audio is playback-only; Android microphone permission stays disabled.
 3. When an athlete finishes a new workout, save the local copy first, then attempt an account sync automatically if a signed-in account and the secured service are available. On sync failure, keep the local record and report the failure honestly.
 4. Keep historical device-only records as explicit opt-in transfers; the archive is not account-owned and must not be bulk-uploaded automatically.
 5. Remove direct website navigation from calculator, connection-status and legal-link controls. Add native protein, TDEE and macro estimates and in-app privacy/terms draft screens.
@@ -31,7 +31,7 @@ Status date: 2026-10-21. Work branch: `feature/monte-wo-experience-completion`.
 ## Required verification before release
 
 - Run `npm ci --prefix apps/mobile`, `npm run typecheck --prefix apps/mobile`, and `npm run test:build-safety --prefix apps/mobile`. Review the runtime dependency audit: it currently reports 15 high-severity advisories and proposes incompatible Expo/React Native major downgrades for several packages, so do not run `npm audit fix` blindly; manually assess advisory reachability and supported fixes.
-- Build the web preview and confirm onboarding audio/haptics controls, returning-user skip, local workout save, and no website navigation.
+- Build the app and confirm onboarding audio/haptics controls, returning-user skip, rank-reveal cue only for an actual provisional/verified award, local workout save, and no general website navigation.
 - With a test account and an explicitly configured non-production application database, verify new workout auto-sync and cross-client retrieval; test offline failure and retry. Do not enable production flags or alter production databases as part of this task.
 - Test qualifying performance submission and rank refresh against approved standards; current draft standards cannot issue official ranks.
 - Review and reconcile in-app privacy/terms with the website policy and actual retention/deletion practices; validate nutrition formulas, permissions, accessibility, crash logs, signing identity, and the final APK before release.
