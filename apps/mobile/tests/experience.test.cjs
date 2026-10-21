@@ -1,0 +1,46 @@
+import test from "node:test";
+import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
+
+const app = readFileSync(new URL("../App.tsx", import.meta.url), "utf8");
+const config = readFileSync(new URL("../app.config.ts", import.meta.url), "utf8");
+const pkg = JSON.parse(readFileSync(new URL("../package.json", import.meta.url), "utf8"));
+
+test("onboarding is multi-stage, persists completion, and bundles a local audio cue", () => {
+  assert.match(app, /useAudioPlayer\(require\("\.\/assets\/onboarding-sting\.wav"\)\)/);
+  assert.match(app, /montewo\.onboarding\.completed\.v1/);
+  assert.match(app, /montewo\.onboarding\.sound\.v1/);
+  assert.match(app, /montewo\.onboarding\.haptics\.v1/);
+  assert.match(app, /WELCOME TO THE CLIMB/);
+  assert.match(app, /TRAIN WITH INTENTION/);
+  assert.match(app, /RANKS ARE EARNED/);
+  assert.equal(pkg.dependencies["expo-audio"], "~57.0.5");
+});
+
+test("onboarding audio does not request Android microphone access", () => {
+  assert.match(config, /\["expo-audio", \{ recordAudioAndroid: false \}\]/);
+});
+
+test("new workout saves locally before attempting account sync", () => {
+  const localSave = app.indexOf("await a.saveLocal(workout)");
+  const remoteSave = app.indexOf("await saveAccountWorkout(workout");
+  assert.ok(localSave >= 0, "local save must exist");
+  assert.ok(remoteSave > localSave, "account sync must only follow the local save");
+  assert.match(app, /if \(a\.me && a\.available\)/);
+  assert.match(app, /Your local copy is preserved/);
+  assert.match(app, /Existing device-only records are never uploaded automatically/);
+});
+
+test("general app controls do not redirect to website pages", () => {
+  assert.doesNotMatch(app, /const legal =/);
+  assert.doesNotMatch(app, /Website connection status/);
+  assert.doesNotMatch(app, /Open the existing website calculator/);
+  assert.doesNotMatch(app, /legal\("\/privacy\/"\)/);
+  assert.doesNotMatch(app, /legal\("\/terms\/"\)/);
+});
+
+test("workout history and rank awards remain separate", () => {
+  assert.match(app, /workout volume alone never awards a rank/);
+  assert.match(app, /Submit a discipline performance/);
+  assert.match(app, /DRAFT STANDARDS/);
+});
