@@ -46,6 +46,7 @@ const config: ExpoConfig = {
         backgroundColor: "#070d16",
       },
     ],
+    ["expo-audio", { recordAudioAndroid: false }],
     "expo-secure-store",
     "expo-web-browser",
     [
