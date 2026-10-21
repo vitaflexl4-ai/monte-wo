@@ -56,5 +56,8 @@ test("workout history and rank awards remain separate", () => {
   assert.match(app, /Submit a discipline performance/);
   assert.match(app, /rank\.progress/);
   assert.match(app, /Progress toward /);
+  assert.match(app, /PROVISIONAL RANK:/);
+  assert.match(app, /Vibration\.vibrate\(\[0, 55, 30, 100\]\)/);
+  assert.match(app, /player\.seekTo\(0\)\.then/);
   assert.match(app, /DRAFT STANDARDS/);
 });
