@@ -30,7 +30,7 @@ jobs:
           cache-dependency-path: apps/mobile/package-lock.json
       - name: Install locked mobile dependencies
         run: npm ci --prefix apps/mobile
-      - name: Report production dependency advisories
+      - name: Report runtime dependency advisories
         working-directory: apps/mobile
         run: |
           npm audit --omit=dev --json > /tmp/montewo-npm-audit.json || true
