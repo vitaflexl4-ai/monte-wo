@@ -43,5 +43,7 @@ test("general app controls do not redirect to website pages", () => {
 test("workout history and rank awards remain separate", () => {
   assert.match(app, /workout volume alone never awards a rank/);
   assert.match(app, /Submit a discipline performance/);
+  assert.match(app, /rank\.progress/);
+  assert.match(app, /Progress toward /);
   assert.match(app, /DRAFT STANDARDS/);
 });
