@@ -38,6 +38,17 @@ test("general app controls do not redirect to website pages", () => {
   assert.doesNotMatch(app, /Open the existing website calculator/);
   assert.doesNotMatch(app, /legal\("\/privacy\/"\)/);
   assert.doesNotMatch(app, /legal\("\/terms\/"\)/);
+  assert.match(app, /function Privacy\(\)/);
+  assert.match(app, /function Terms\(\)/);
+  assert.match(app, /navigation\.navigate\("Privacy"\)/);
+  assert.match(app, /navigation\.navigate\("Terms"\)/);
+  assert.match(app, /Native calculator planned/);});
+
+test("nutrition estimates are calculated on-device without website redirects", () => {
+  assert.match(app, /Mifflin–St Jeor/);
+  assert.match(app, /1\.6–2\.2 g per kg/);
+  assert.match(app, /Private, on-device estimates/);
+  assert.doesNotMatch(app, /legal\("\/tools\//);
 });
 
 test("workout history and rank awards remain separate", () => {
