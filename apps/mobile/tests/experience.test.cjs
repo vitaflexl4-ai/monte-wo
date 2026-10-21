@@ -1,10 +1,11 @@
-import test from "node:test";
-import assert from "node:assert/strict";
-import { readFileSync } from "node:fs";
+const test = require("node:test");
+const assert = require("node:assert/strict");
+const { readFileSync } = require("node:fs");
+const path = require("node:path");
 
-const app = readFileSync(new URL("../App.tsx", import.meta.url), "utf8");
-const config = readFileSync(new URL("../app.config.ts", import.meta.url), "utf8");
-const pkg = JSON.parse(readFileSync(new URL("../package.json", import.meta.url), "utf8"));
+const app = readFileSync(path.join(__dirname, "..", "App.tsx"), "utf8");
+const config = readFileSync(path.join(__dirname, "..", "app.config.ts"), "utf8");
+const pkg = JSON.parse(readFileSync(path.join(__dirname, "..", "package.json"), "utf8"));
 
 test("onboarding is multi-stage, persists completion, and bundles a local audio cue", () => {
   assert.match(app, /useAudioPlayer\(require\("\.\/assets\/onboarding-sting\.wav"\)\)/);
