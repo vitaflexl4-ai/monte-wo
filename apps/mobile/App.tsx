@@ -920,6 +920,31 @@ function Home({ navigation }: any) {
                     ? "Provisional · self-reported"
                     : "No verified performance"}
               </Text>
+              {rank && rank.next?.rankId && typeof rank.progress === "number" && (
+                <View style={{ gap: 4, width: "100%" }}>
+                  <Text style={v.tiny}>
+                    {Math.floor(rank.progress)}% to {rankNames[rank.next.rankId]}
+                  </Text>
+                  <View
+                    accessibilityRole="progressbar"
+                    accessibilityLabel={"Progress toward " + rankNames[rank.next.rankId]}
+                    accessibilityValue={{ min: 0, max: 100, now: Math.floor(rank.progress) }}
+                    style={{ height: 5, borderRadius: 5, backgroundColor: "#142b40", overflow: "hidden" }}
+                  >
+                    <View
+                      style={{
+                        height: "100%",
+                        width: Math.max(0, Math.min(99, Math.floor(rank.progress))) + "%",
+                        borderRadius: 5,
+                        backgroundColor: C.cyan,
+                      }}
+                    />
+                  </View>
+                </View>
+              )}
+              {rank?.rankId === "lejand" && (
+                <Text style={v.tiny}>Highest discipline rank</Text>
+              )}
             </Pressable>
           );
         })}
