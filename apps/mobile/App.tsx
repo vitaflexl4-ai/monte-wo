@@ -1160,33 +1160,153 @@ function Notifications() {
   );
 }
 function Nutrition() {
+  const [tool, setTool] = useState("protein");
+  const [weight, setWeight] = useState("75");
+  const [height, setHeight] = useState("175");
+  const [age, setAge] = useState("30");
+  const [sex, setSex] = useState("range");
+  const [activity, setActivity] = useState("moderate");
+  const [goal, setGoal] = useState("maintain");
+  const weightKg = Number(weight), heightCm = Number(height), ageYears = Number(age);
+  const validWeight = Number.isFinite(weightKg) && weightKg >= 30 && weightKg <= 350;
+  const validBody = validWeight && Number.isFinite(heightCm) && heightCm >= 120 && heightCm <= 230
+    && Number.isInteger(ageYears) && ageYears >= 18 && ageYears <= 100;
+  const activityFactors: Record<string, number> = {
+    sedentary: 1.2, light: 1.375, moderate: 1.55, high: 1.725, athlete: 1.9,
+  };
+  const goalAdjustments: Record<string, number> = { cut: -300, maintain: 0, gain: 250 };
+  const femaleBmr = 10 * weightKg + 6.25 * heightCm - 5 * ageYears - 161;
+  const maleBmr = 10 * weightKg + 6.25 * heightCm - 5 * ageYears + 5;
+  const bmrLow = sex === "female" ? femaleBmr : sex === "male" ? maleBmr : Math.min(femaleBmr, maleBmr);
+  const bmrHigh = sex === "range" ? Math.max(femaleBmr, maleBmr) : bmrLow;
+  const factor = activityFactors[activity] || 1.55;
+  const maintenanceLow = Math.round(bmrLow * factor);
+  const maintenanceHigh = Math.round(bmrHigh * factor);
+  const maintenance = Math.round((maintenanceLow + maintenanceHigh) / 2);
+  const calories = maintenance + (goalAdjustments[goal] || 0);
+  const proteinLow = validWeight ? Math.round(weightKg * 1.6) : 0;
+  const proteinHigh = validWeight ? Math.round(weightKg * 2.2) : 0;
+  const protein = validWeight ? Math.round(weightKg * 1.8) : 0;
+  const fat = validWeight ? Math.round(weightKg * 0.8) : 0;
+  const carbs = Math.floor((calories - protein * 4 - fat * 9) / 4);
   return (
     <Screen>
       <PageHeader
         eyebrow="FUEL YOUR TRAINING"
         title="Make room for recovery."
-        subtitle="Existing educational tools. No invented daily totals."
+        subtitle="Private, on-device estimates. Your inputs are not uploaded or saved."
       />
-      {[
-        ["protein", "Protein target"],
-        ["tdee", "Daily energy estimate"],
-        ["macros", "Macro planning"],
-      ].map(([id, name]) => (
-        <Card key={id} style={[s.row, { alignItems: "center" }]}>
-          <Utensils size={23} color={C.cyan} />
-          <View style={{ flex: 1 }}>
-            <Text style={v.sectionTitle}>{name}</Text>
-            <Body>Native calculator planned. This screen does not open a website.</Body>
-          </View>
+      <Chips
+        items={[
+          { id: "protein", name: "Protein" },
+          { id: "tdee", name: "Energy" },
+          { id: "macros", name: "Macros" },
+        ]}
+        value={tool}
+        onChange={setTool}
+      />
+      <Card>
+        <Text style={v.sectionTitle}>Your inputs</Text>
+        <Field label="Bodyweight · kg" value={weight} onChange={setWeight} keyboardType="decimal-pad" />
+        {tool !== "protein" && (
+          <>
+            <View style={s.row}>
+              <View style={{ flex: 1 }}>
+                <Field label="Height · cm" value={height} onChange={setHeight} keyboardType="decimal-pad" />
+              </View>
+              <View style={{ flex: 1 }}>
+                <Field label="Age · years" value={age} onChange={setAge} keyboardType="number-pad" />
+              </View>
+            </View>
+            <Label>REFERENCE EQUATION</Label>
+            <Chips
+              items={[
+                { id: "female", name: "Female" },
+                { id: "male", name: "Male" },
+                { id: "range", name: "Show range" },
+              ]}
+              value={sex}
+              onChange={setSex}
+            />
+            <Label>ACTIVITY</Label>
+            <Chips
+              items={[
+                { id: "sedentary", name: "Low" },
+                { id: "light", name: "Light" },
+                { id: "moderate", name: "Moderate" },
+                { id: "high", name: "High" },
+                { id: "athlete", name: "Very high" },
+              ]}
+              value={activity}
+              onChange={setActivity}
+            />
+            <Label>GOAL</Label>
+            <Chips
+              items={[
+                { id: "cut", name: "Fat loss" },
+                { id: "maintain", name: "Maintain" },
+                { id: "gain", name: "Gain" },
+              ]}
+              value={goal}
+              onChange={setGoal}
+            />
+          </>
+        )}
+      </Card>
+      {!validWeight ? (
+        <Notice text="Enter a bodyweight from 30 to 350 kg to calculate an estimate." error />
+      ) : tool === "protein" ? (
+        <Card style={{ borderColor: "#2468a0" }}>
+          <Label>ESTIMATED DAILY PROTEIN</Label>
+          <Text style={{ color: C.text, fontSize: 32, fontWeight: "800" }}>{proteinLow}–{proteinHigh} g</Text>
+          <Body>About 1.6–2.2 g per kg of bodyweight for people doing regular resistance training. This is a general planning range, not an individualized prescription.</Body>
         </Card>
-      ))}
+      ) : !validBody ? (
+        <Notice text="Enter a height from 120 to 230 cm and an age from 18 to 100 to calculate energy estimates." error />
+      ) : tool === "tdee" ? (
+        <Card style={{ borderColor: "#2468a0" }}>
+          <Label>ESTIMATED DAILY ENERGY</Label>
+          <Text style={{ color: C.text, fontSize: 30, fontWeight: "800" }}>
+            {maintenanceLow === maintenanceHigh ? maintenanceLow.toLocaleString() : maintenanceLow.toLocaleString() + "–" + maintenanceHigh.toLocaleString()} kcal/day
+          </Text>
+          <Body>Estimated maintenance using the Mifflin–St Jeor equation and your selected activity factor.</Body>
+          <Divider />
+          <Label>GOAL-ADJUSTED STARTING TARGET</Label>
+          <Text style={{ color: C.cyan, fontSize: 25, fontWeight: "800" }}>{calories.toLocaleString()} kcal/day</Text>
+          <Body>Starting adjustment: {goalAdjustments[goal] > 0 ? "+" : ""}{goalAdjustments[goal]} kcal/day. Actual needs vary; adjust from observed trends and wellbeing.</Body>
+        </Card>
+      ) : (
+        <Card style={{ borderColor: "#2468a0" }}>
+          <Label>ESTIMATED DAILY MACROS</Label>
+          {carbs > 0 ? (
+            <>
+              <Text style={{ color: C.text, fontSize: 30, fontWeight: "800" }}>{calories.toLocaleString()} kcal</Text>
+              <View style={s.row}>
+                <View style={{ flex: 1, gap: 4 }}>
+                  <Text style={v.subtle}>Protein</Text>
+                  <Text style={{ color: C.text, fontSize: 20, fontWeight: "800" }}>{protein} g</Text>
+                </View>
+                <View style={{ flex: 1, gap: 4 }}>
+                  <Text style={v.subtle}>Carbs</Text>
+                  <Text style={{ color: C.text, fontSize: 20, fontWeight: "800" }}>{carbs} g</Text>
+                </View>
+                <View style={{ flex: 1, gap: 4 }}>
+                  <Text style={v.subtle}>Fat</Text>
+                  <Text style={{ color: C.text, fontSize: 20, fontWeight: "800" }}>{fat} g</Text>
+                </View>
+              </View>
+              <Body>Planning split: protein 1.8 g/kg, fat 0.8 g/kg, remaining energy from carbohydrates.</Body>
+            </>
+          ) : (
+            <Body>The selected calorie target is too low for this estimated protein and fat allocation. Adjust your goal or inputs; no macro plan is shown.</Body>
+          )}
+        </Card>
+      )}
+      <Notice text="Estimates are for general education, not medical advice. They may be unsuitable for pregnancy, illness, eating-disorder recovery, or other special circumstances. Do not treat the calculated values as mandatory targets." />
       <Card>
         <ScanLine size={30} color={C.muted} />
         <Text style={v.subheading}>Food scan</Text>
-        <Body>
-          Not connected. Camera-based food recognition and a synced food diary
-          are not available in this build. No macros are guessed from a photo.
-        </Body>
+        <Body>Camera-based food recognition and a synced food diary are not connected. No macros are guessed from a photo.</Body>
       </Card>
     </Screen>
   );
