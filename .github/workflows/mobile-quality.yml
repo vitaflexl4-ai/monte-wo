@@ -1,0 +1,36 @@
+name: MONTE WO mobile quality checks
+
+on:
+  push:
+    branches:
+      - feature/monte-wo-experience-completion
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "apps/mobile/**"
+      - "shared/**"
+      - ".github/workflows/mobile-quality.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  mobile:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22.13.0"
+          cache: npm
+          cache-dependency-path: apps/mobile/package-lock.json
+      - name: Install locked mobile dependencies
+        run: npm ci --prefix apps/mobile
+      - name: Type-check the mobile app
+        run: npm run typecheck --prefix apps/mobile
+      - name: Run mobile build-safety tests
+        run: npm run test:build-safety --prefix apps/mobile
