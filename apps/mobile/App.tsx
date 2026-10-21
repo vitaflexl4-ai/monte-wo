@@ -19,8 +19,11 @@ import {
   ImageBackground,
   StyleSheet,
   ScrollView,
+  Vibration,
 } from "react-native";
 import { StatusBar } from "expo-status-bar";
+import { useAudioPlayer } from "expo-audio";
+import * as SecureStore from "expo-secure-store";
 import {
   SafeAreaProvider,
   SafeAreaView,
@@ -37,7 +40,6 @@ import {
   UserRound,
   ChevronRight,
   ShieldCheck,
-  ArrowUpRight,
   Flame,
   Heart,
   Timer,
@@ -333,7 +335,6 @@ const confirm = (title: string, message: string, action: () => void) => {
       { text: "Continue", style: "destructive", onPress: action },
     ]);
 };
-const legal = (path: string) => Linking.openURL(API_BASE + path);
 function SignInCard({ navigation }: any) {
   const a = useApp();
   return (
@@ -501,6 +502,96 @@ const v = StyleSheet.create({
   },
 });
 function Welcome({ navigation }: any) {
+  const player = useAudioPlayer(require("./assets/onboarding-sting.wav"));
+  const [step, setStep] = useState(0);
+  const [checking, setChecking] = useState(true);
+  const [soundEnabled, setSoundEnabled] = useState(true);
+  const [hapticsEnabled, setHapticsEnabled] = useState(true);
+
+  async function readPreference(key: string) {
+    if (Platform.OS === "web") return window.localStorage.getItem(key);
+    return SecureStore.getItemAsync(key);
+  }
+  async function writePreference(key: string, value: string) {
+    if (Platform.OS === "web") {
+      window.localStorage.setItem(key, value);
+      return;
+    }
+    await SecureStore.setItemAsync(key, value);
+  }
+
+  useEffect(() => {
+    let active = true;
+    Promise.all([
+      readPreference("montewo.onboarding.completed.v1"),
+      readPreference("montewo.onboarding.sound.v1"),
+      readPreference("montewo.onboarding.haptics.v1"),
+    ]).then(([completed, sound, haptics]) => {
+      if (!active) return;
+      if (sound !== null) setSoundEnabled(sound !== "0");
+      if (haptics !== null) setHapticsEnabled(haptics !== "0");
+      if (completed === "1") navigation.replace("Main");
+      else setChecking(false);
+    }).catch(() => {
+      if (active) setChecking(false);
+    });
+    return () => { active = false; };
+  }, [navigation]);
+
+  function transitionCue() {
+    if (hapticsEnabled) {
+      try { Vibration.vibrate([0, 28, 18, 48]); } catch {}
+    }
+    if (soundEnabled) {
+      try {
+        void player.seekTo(0).then(() => player.play()).catch(() => {});
+      } catch {}
+    }
+  }
+
+  async function finish() {
+    if (hapticsEnabled) {
+      try { Vibration.vibrate(45); } catch {}
+    }
+    try {
+      await Promise.all([
+        writePreference("montewo.onboarding.completed.v1", "1"),
+        writePreference("montewo.onboarding.sound.v1", soundEnabled ? "1" : "0"),
+        writePreference("montewo.onboarding.haptics.v1", hapticsEnabled ? "1" : "0"),
+      ]);
+    } catch {
+      // A storage failure must not prevent a guest from using the app.
+    }
+    navigation.replace("Main");
+  }
+
+  if (checking) {
+    return (
+      <SafeAreaView style={[v.welcome, { alignItems: "center", justifyContent: "center" }]}>
+        <ActivityIndicator color={C.cyan} size="large" />
+      </SafeAreaView>
+    );
+  }
+
+  const pages = [
+    {
+      eyebrow: "WELCOME TO THE CLIMB",
+      title: "Your strength.\nYour next level.",
+      body: "MONTE WO is your training record: every session, every lift, every step you can prove.",
+    },
+    {
+      eyebrow: "TRAIN WITH INTENTION",
+      title: "Record the work.\nKeep the proof.",
+      body: "Log sets, load and repetitions. Your workout history is separate from performance assessments. Account sync works only when you sign in and the secure shared service is enabled.",
+    },
+    {
+      eyebrow: "RANKS ARE EARNED",
+      title: "Measure. Prove.\nClimb higher.",
+      body: "Squat, Bench Press, Deadlift and Biceps Curl have independent ranks. Training volume alone never awards a rank; qualifying performances are assessed against approved standards, and verification is separate. Current standards remain draft until formally approved.",
+    },
+  ];
+  const page = pages[step];
+
   return (
     <SafeAreaView
       style={[v.welcome, { width: "100%", maxWidth: 500, alignSelf: "center" }]}
@@ -514,31 +605,98 @@ function Welcome({ navigation }: any) {
       </ImageBackground>
       <Screen transparent>
         <View style={v.welcomeInner}>
-          <Brand large />
-          <View style={v.welcomeCopy}>
-            <Text style={v.welcomeTitle}>
-              Your Strength.{"\n"}Your Next Level.
-            </Text>
-            <Body style={{ fontSize: 14, color: "#b9cde1", maxWidth: 260 }}>
-              Track your lifts. Build your discipline. Prove your progress.
-            </Body>
-            <View style={{ gap: 12, marginTop: 14 }}>
-              <Button
-                title="Get Started"
-                onPress={() => navigation.replace("Main")}
-              />
-              <Button
-                title="Sign In"
-                secondary
-                onPress={() => navigation.navigate("SignIn")}
-              />
+          <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: 8 }}>
+            <Brand large />
+            <View style={{ gap: 7, alignItems: "flex-end" }}>
+              <Pressable
+                accessibilityRole="switch"
+                accessibilityState={{ checked: soundEnabled }}
+                accessibilityLabel="Onboarding sound"
+                onPress={() => setSoundEnabled((value) => !value)}
+                style={[v.iconButton, { width: 106, borderRadius: 9, flexDirection: "row", gap: 6 }]}
+              >
+                <Text style={{ color: C.text, fontSize: 10, fontWeight: "700" }}>
+                  SOUND {soundEnabled ? "ON" : "OFF"}
+                </Text>
+              </Pressable>
+              <Pressable
+                accessibilityRole="switch"
+                accessibilityState={{ checked: hapticsEnabled }}
+                accessibilityLabel="Onboarding vibration"
+                onPress={() => setHapticsEnabled((value) => !value)}
+                style={[v.iconButton, { width: 106, borderRadius: 9, flexDirection: "row", gap: 6 }]}
+              >
+                <Text style={{ color: C.text, fontSize: 10, fontWeight: "700" }}>
+                  HAPTICS {hapticsEnabled ? "ON" : "OFF"}
+                </Text>
+              </Pressable>
             </View>
-            <Text style={[v.subtle, { textAlign: "center", marginTop: 3 }]}>
-              Explore the app without an account.
-            </Text>
-            <Text style={[v.tagline, { marginTop: 22 }]}>
-              Leve. Klase. Monte Wo.
-            </Text>
+          </View>
+          <View style={v.welcomeCopy}>
+            <Label>{page.eyebrow} · {step + 1} / {pages.length}</Label>
+            <Text style={v.welcomeTitle}>{page.title}</Text>
+            <Body style={{ fontSize: 14, color: "#b9cde1", maxWidth: 320 }}>
+              {page.body}
+            </Body>
+            {step === 0 ? (
+              <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 8, marginTop: 8 }}>
+                {["TRAIN", "RECORD", "PROVE", "CLIMB"].map((label) => (
+                  <View key={label} style={[v.pill, { borderColor: "#2468a0", backgroundColor: "#06182b" }]}>
+                    <Text style={[v.pillText, { color: "#d4eaff" }]}>{label}</Text>
+                  </View>
+                ))}
+              </View>
+            ) : step === 1 ? (
+              <Card style={{ gap: 11 }}>
+                {[
+                  ["01", "Log every set", "Keep the load, reps and session date."],
+                  ["02", "Own your history", "Device records stay local until you choose an account transfer."],
+                  ["03", "Sync when connected", "New workouts sync automatically after sign-in when the secure account service is enabled."],
+                ].map(([number, title, detail]) => (
+                  <View key={number} style={{ flexDirection: "row", gap: 11, alignItems: "flex-start" }}>
+                    <Text style={{ color: C.cyan, fontSize: 12, fontWeight: "800" }}>{number}</Text>
+                    <View style={{ flex: 1, gap: 3 }}>
+                      <Text style={{ color: C.text, fontWeight: "700" }}>{title}</Text>
+                      <Text style={v.subtle}>{detail}</Text>
+                    </View>
+                  </View>
+                ))}
+              </Card>
+            ) : (
+              <Card style={{ borderColor: "#2468a0", gap: 10 }}>
+                <Text style={{ color: C.cyan, fontSize: 12, fontWeight: "800", letterSpacing: 1 }}>
+                  NINE RANKS · FOUR DISCIPLINES
+                </Text>
+                <RankLadder strip />
+                <Text style={v.subtle}>
+                  No fabricated rank, no combined score, and no automatic award for workout volume.
+                </Text>
+              </Card>
+            )}
+            <View style={{ flexDirection: "row", justifyContent: "center", gap: 7, marginTop: 4 }}>
+              {pages.map((_, index) => (
+                <View key={index} style={{ height: 4, width: index === step ? 28 : 8, borderRadius: 4, backgroundColor: index === step ? C.cyan : "#36506a" }} />
+              ))}
+            </View>
+            <View style={{ gap: 10, marginTop: 8 }}>
+              <Button
+                title={step === 2 ? "Enter MONTE WO" : step === 0 ? "Begin your climb" : "Continue"}
+                onPress={() => {
+                  if (step < 2) {
+                    transitionCue();
+                    setStep((value) => value + 1);
+                  } else {
+                    void finish();
+                  }
+                }}
+              />
+              {step === 0 ? (
+                <Button title="Explore without setup" secondary onPress={() => void finish()} />
+              ) : (
+                <Button title="Back" secondary onPress={() => setStep((value) => Math.max(0, value - 1))} />
+              )}
+            </View>
+            <Text style={[v.tagline, { marginTop: 8 }]}>Leve. Klase. Monte Wo.</Text>
           </View>
         </View>
       </Screen>
@@ -989,19 +1147,13 @@ function Nutrition() {
         ["tdee", "Daily energy estimate"],
         ["macros", "Macro planning"],
       ].map(([id, name]) => (
-        <Pressable
-          key={id}
-          style={[s.card, s.row]}
-          accessibilityRole="button"
-          onPress={() => legal("/tools/" + id + "/")}
-        >
+        <Card key={id} style={[s.row, { alignItems: "center" }]}>
           <Utensils size={23} color={C.cyan} />
           <View style={{ flex: 1 }}>
             <Text style={v.sectionTitle}>{name}</Text>
-            <Body>Open the existing website calculator</Body>
+            <Body>Native calculator planned. This screen does not open a website.</Body>
           </View>
-          <ArrowUpRight size={20} color={C.cyan} />
-        </Pressable>
+        </Card>
       ))}
       <Card>
         <ScanLine size={30} color={C.muted} />
@@ -1061,8 +1213,7 @@ function SignIn({ navigation }: any) {
         busy={a.loading}
         onPress={a.refresh}
       />
-      <Button title="Website connection status" secondary onPress={() => legal("/app/#app-connections")} />
-      <Text style={v.subtle}>Shared API: {API_BASE}. Device-only history is not automatically uploaded or merged into an account.</Text>
+      <Text style={v.subtle}>Shared account service: {a.available ? "enabled" : "not enabled"}. Device-only history is not automatically uploaded or merged into an account.</Text>
       {op.message && <Notice text={op.message} error />}
       <Pressable
         accessibilityRole="button"
@@ -1217,29 +1368,35 @@ function Train({ navigation }: any) {
       <Body>Session volume: {volumeLabel({id, title, performedOn: date, exercises: entries})}</Body>
       {op.message && <Notice text={op.message} />}
       <Button
-        title="Finish & save on device"
+        title={a.me && a.available ? "Finish & sync workout" : "Finish & save workout"}
         busy={op.busy}
         disabled={!a.localReady || !entries.length}
         onPress={() => op.run(async () => {
-          await a.saveLocal(payload());
+          const workout = payload();
+          await a.saveLocal(workout);
+          let synced = false;
+          let syncFailure = "";
+          if (a.me && a.available) {
+            try {
+              await saveAccountWorkout(workout, new Set(catalog.exercises.map(e => e.id)), getSessionRevision());
+              await a.refresh();
+              synced = true;
+            } catch (error) {
+              syncFailure = errorMessage(error);
+            }
+          }
           resetSession();
-          op.setMessage("Workout saved on this device. Reopen the app and check History → On this device. No account sync or rank was awarded.");
+          if (synced) {
+            op.setMessage("Workout saved on this device and synced to your MONTE WO account. Qualifying performance assessment is separate; workout volume alone never awards a rank.");
+          } else if (syncFailure) {
+            op.setMessage("Workout saved on this device, but account sync failed: " + syncFailure + " Your local copy is preserved; open History to retry an explicit account copy.");
+          } else {
+            op.setMessage("Workout saved on this device. Account sync requires sign-in and an enabled secure service. Existing device-only records are never uploaded automatically. No rank was awarded.");
+          }
         })}
       />
       {!a.localReady && <Button title="Retry device storage" secondary onPress={() => op.run(a.refreshLocal)} />}
       <Button title="View saved workouts" secondary onPress={() => navigation.navigate("History")} />
-      <Button
-        title="Save workout to account"
-        secondary
-        busy={op.busy}
-        disabled={!a.me || !a.available || !entries.length}
-        onPress={() => op.run(async () => {
-          await saveAccountWorkout(payload(), new Set(catalog.exercises.map(e => e.id)), getSessionRevision());
-          resetSession();
-          await a.refresh();
-          op.setMessage("Workout saved to your account. It was not copied into device history. No rank was awarded.");
-        })}
-      />
       {!a.me && <Button title="Sign in for account sync" secondary onPress={() => navigation.navigate("SignIn")} />}
       <Button
         title="Submit a discipline performance"
@@ -1673,7 +1830,7 @@ function HistoryScreen({ navigation }: any) {
                     () => op.run(async () => {
                       await saveAccountWorkout(w, new Set(a.trainingCatalog.exercises.map(e => e.id)), revision);
                       await a.refresh();
-                      op.setMessage("Account copy confirmed. The device record was kept. Refresh website account history using the same identity and API origin to compare. No rank was awarded.");
+                      op.setMessage("Account copy confirmed. The device record was kept. Refresh account history on your other connected MONTE WO client to compare. No rank was awarded.");
                     }));
                 }} />
               <Button title="Delete device workout" danger secondary busy={op.busy}
@@ -2231,16 +2388,9 @@ function Account({ navigation }: any) {
           Private training records and evidence are not public leaderboard
           entries. No social publishing is enabled.
         </Body>
-        <Button
-          title="Privacy policy"
-          secondary
-          onPress={() => legal("/privacy/")}
-        />
-        <Button
-          title="Terms of use"
-          secondary
-          onPress={() => legal("/terms/")}
-        />
+        <Body>
+          Privacy policy and terms must be available as full in-app documents before public account enrollment. This screen does not redirect to the website.
+        </Body>
         <Button
           title="Request account deletion"
           danger
