@@ -2132,13 +2132,31 @@ function HistoryScreen({ navigation }: any) {
 function Performance({ navigation }: any) {
   const a = useApp(),
     op = useOperation(),
+    player = useAudioPlayer(require("./assets/onboarding-sting.wav")),
     [discipline, setDiscipline] = useState("squat"),
     [load, setLoad] = useState(""),
     [unit, setUnit] = useState("kg"),
     [reps, setReps] = useState("1"),
     [kind, setKind] = useState("tested"),
     [date, setDate] = useState(today()),
-    [checks, setChecks] = useState<Record<string, boolean>>({});
+    [checks, setChecks] = useState<Record<string, boolean>>({}),
+    [soundEnabled, setSoundEnabled] = useState(true),
+    [hapticsEnabled, setHapticsEnabled] = useState(true);
+  useEffect(() => {
+    let active = true;
+    const read = (key: string) => Platform.OS === "web"
+      ? Promise.resolve(window.localStorage.getItem(key))
+      : SecureStore.getItemAsync(key);
+    Promise.all([
+      read("montewo.onboarding.sound.v1"),
+      read("montewo.onboarding.haptics.v1"),
+    ]).then(([sound, haptics]) => {
+      if (!active) return;
+      if (sound !== null) setSoundEnabled(sound !== "0");
+      if (haptics !== null) setHapticsEnabled(haptics !== "0");
+    }).catch(() => {});
+    return () => { active = false; };
+  }, []);
   const rule =
     a.me?.disciplines?.find((c: any) => c.discipline === discipline)
       ?.rulebook || ruleFor(discipline);
@@ -2222,7 +2240,7 @@ function Performance({ navigation }: any) {
             onPress={() =>
               op.run(async () => {
                 const p = a.me.profile.data;
-                await post("/strength/performances", {
+                const submission = await post("/strength/performances", {
                   discipline,
                   load,
                   unit,
@@ -2240,9 +2258,27 @@ function Performance({ navigation }: any) {
                   ),
                 });
                 await a.refresh();
-                op.setMessage(
-                  "Performance recorded. See history for its server assessment.",
-                );
+                const result = submission?.result;
+                if (result?.rankId && ["provisional", "verified"].includes(result.status)) {
+                  if (hapticsEnabled) {
+                    try { Vibration.vibrate([0, 55, 30, 100]); } catch {}
+                  }
+                  if (soundEnabled) {
+                    try { void player.seekTo(0).then(() => player.play()).catch(() => {}); } catch {}
+                  }
+                  const next = result.next?.rankId ? rankNames[result.next.rankId] : null;
+                  const progress = typeof result.progress === "number" && next
+                    ? " " + Math.floor(result.progress) + "% toward " + next + "."
+                    : result.rankId === "lejand" ? " Highest discipline rank reached." : "";
+                  op.setMessage(
+                    (result.status === "verified" ? "MONTE VERIFIED: " : "PROVISIONAL RANK: ")
+                    + rankNames[result.rankId] + "." + progress
+                  );
+                } else {
+                  op.setMessage(
+                    "Performance recorded. " + (result?.explanation || "Check the server assessment in History.")
+                  );
+                }
                 setLoad("");
                 setChecks({});
               })
