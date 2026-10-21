@@ -42,7 +42,7 @@ test("general app controls do not redirect to website pages", () => {
   assert.match(app, /function Terms\(\)/);
   assert.match(app, /navigation\.navigate\("Privacy"\)/);
   assert.match(app, /navigation\.navigate\("Terms"\)/);
-  assert.match(app, /Native calculator planned/);});
+  assert.doesNotMatch(app, /Native calculator planned/);});
 
 test("nutrition estimates are calculated on-device without website redirects", () => {
   assert.match(app, /Mifflin–St Jeor/);
