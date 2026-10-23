@@ -2409,9 +2409,11 @@ function Discipline({ route, navigation }: any) {
       {["verified", "provisional"].map((kind) => (
         <Card key={kind}>
           <Label>
-            {kind === "verified"
-              ? "MONTE VERIFIED"
-              : "PROVISIONAL · SELF-REPORTED"}
+            {!card?.modelApproved || !card?.ruleApproved
+              ? "ASSESSMENT STATUS"
+              : kind === "verified"
+                ? "MONTE VERIFIED"
+                : "PROVISIONAL · SELF-REPORTED"}
           </Label>
           <Text style={s.title}>
             {!card?.modelApproved || !card?.ruleApproved
