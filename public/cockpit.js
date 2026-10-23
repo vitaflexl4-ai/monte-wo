@@ -119,6 +119,15 @@ function bindPhoneCockpits() {
       texts.forEach(el => {el.textContent = copy()[el.dataset.phoneText] || english.get(el);});
       drawMap();announce(copy().ready);
     }
+    const shotButtons = [...root.querySelectorAll('[data-app-shot-btn]')];
+    const shotPanes = [...root.querySelectorAll('[data-app-shot-pane]')];
+    shotButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const target = btn.dataset.appShotBtn;
+        shotButtons.forEach(b => b.setAttribute('aria-pressed', String(b === btn)));
+        shotPanes.forEach(p => { p.hidden = p.dataset.appShotPane !== target; });
+      });
+    });
     new MutationObserver(translate).observe(document.documentElement, {attributes:true,attributeFilter:['lang']});
     selectTab(tabs[0]);translate();
   }
