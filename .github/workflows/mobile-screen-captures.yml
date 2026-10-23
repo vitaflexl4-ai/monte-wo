@@ -50,21 +50,26 @@ jobs:
           SITE_ORIGIN: https://monte-wo.test
 
       - name: Install mobile dependencies
+        if: always()
         run: npm ci --prefix apps/mobile
 
       - name: Type-check the actual app
+        if: always()
         run: npm run typecheck --prefix apps/mobile
 
       - name: Export the Expo app for browser capture
+        if: always()
         run: npm run export:web --prefix apps/mobile
         env:
           MONTEWO_WEB_PREVIEW: "true"
           EXPO_PUBLIC_API_BASE_URL: http://127.0.0.1:8082
 
       - name: Install Chromium
+        if: always()
         run: npx playwright install --with-deps chromium
 
       - name: Capture Home, Workout, Nutrition and Rank
+        if: always()
         run: node scripts/capture-mobile-screenshots.mjs
 
       - name: Upload actual app screen captures
