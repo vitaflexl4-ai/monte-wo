@@ -66,7 +66,7 @@ jobs:
 
       - name: Install Chromium
         if: always()
-        run: npx playwright install --with-deps chromium
+        run: npx playwright install chromium
 
       - name: Capture Home, Workout, Nutrition and Rank
         if: always()
