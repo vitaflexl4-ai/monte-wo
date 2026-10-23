@@ -72,7 +72,7 @@ notfound='''<section class="foundation-page-hero"><span class="eyebrow">404 / PA
 doc=main((P/'about/index.html').read_text(),notfound);doc=re.sub(r'<main[^>]*>','<main id="main" class="wrap">',doc,count=1);(P/'404.html').write_text(doc)
 # Shared navigation, accessibility, public metadata. Private administration is not indexed.
 exec(compile((ROOT/'scripts/build_downloads.py').read_text(),str(ROOT/'scripts/build_downloads.py'),'exec'),{'__file__':str(ROOT/'scripts/build_downloads.py')})
-paths=[p for p in sorted(P.rglob('index.html')) if not p.is_relative_to(P/'mobile')]+[P/'404.html'];metadata={'/':copy['home'],'/app/':copy['app'],'/strength/':copy['ranking'],'/exercises/standards/':copy['standards'],'/tools/':{'title':'Free Strength & Fitness Calculators | MONTE WO','description':'Five strength calculators plus existing educational nutrition tools. Estimate 1RM, training percentages, balanced plates, kg/lb and warm-up loads locally, without an account.'}}
+paths=[p for p in sorted(P.rglob('index.html')) if (P/'mobile') not in p.parents]+[P/'404.html'];metadata={'/':copy['home'],'/app/':copy['app'],'/strength/':copy['ranking'],'/exercises/standards/':copy['standards'],'/tools/':{'title':'Free Strength & Fitness Calculators | MONTE WO','description':'Five strength calculators plus existing educational nutrition tools. Estimate 1RM, training percentages, balanced plates, kg/lb and warm-up loads locally, without an account.'}}
 canonical_routes=[]
 for file in paths:
  path='/' if file==P/'index.html' else '/404.html' if file==P/'404.html' else '/'+file.parent.relative_to(P).as_posix()+'/'
