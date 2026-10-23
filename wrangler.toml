@@ -27,7 +27,7 @@ pages_build_output_dir = "public"
 # TURNSTILE_SITE_KEY = "PASTE_YOUR_PUBLIC_SITE_KEY_HERE"
 
 # OPTIONAL RESTRICTED STRENGTH INDEX PILOT — disabled until configured and reviewed.
-# Reuse DB above; apply migration 0002_strength_index.sql after 0001.
+# Use a dedicated APP_DB database; never reuse the waitlist DB.
 # Configure RANKING_ENABLED, RANKING_ACCESS_ISSUER and RANKING_ACCESS_AUD in Pages.
 # Protect private /api/strength routes with Cloudflare Access; /config and /catalog
 # may be public readiness/methodology exceptions (neither returns athlete data).
