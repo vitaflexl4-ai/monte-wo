@@ -57,6 +57,10 @@ jobs:
         if: always()
         run: npm run typecheck --prefix apps/mobile
 
+      - name: Run mobile build-safety and UI guard tests
+        if: always()
+        run: npm run test:build-safety --prefix apps/mobile
+
       - name: Export the Expo app for browser capture
         if: always()
         run: npm run export:web --prefix apps/mobile
