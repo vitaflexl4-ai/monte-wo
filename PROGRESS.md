@@ -6,6 +6,7 @@ Updated: 2026-10-23
 - Fix the preview handoff: local preview root should open the actual Expo app, not the older website phone simulation.
 - Capture four app-source screens—Home, Workout, Nutrition, Rank—from the Expo web export with Playwright.
 - Make unapproved discipline cards say “Assessment pending”; no rank is shown until standards are approved.
+- Clear the Nutrition screen's preset bodyweight, height and age so no sample estimate is presented before the user enters their own inputs.
 - Keep the website phone component explicitly labelled as a website concept, separate from the app.
 
 ## Next
@@ -29,5 +30,6 @@ Updated: 2026-10-23
 - No production deploy, remote migration, account creation, store build, store publishing or spending is performed.
 - No ranking engine, thresholds or evidence storage are changed.
 - Last screenshot workflow run: website build passed, mobile typecheck and Expo web export passed. The full root test suite reported 4 failing test files; one was a stale assertion for the website-concept label and has been corrected. The other three failures appear unrelated to this preview task and need review.
-- A fresh run is queued after the latest Rank UI change. Screenshot artifact availability is not yet confirmed.
+- The first browser capture attempt successfully produced Home, Workout and Nutrition PNGs, but failed while returning to Home before Rank. The capture script has been changed to open isolated guest contexts for each screen, avoiding the unreliable tab-return step.
+- Latest workflow run is queued after the capture-script and Nutrition updates; final four-screen artifact is not yet confirmed.
 - Branch handoff link: https://github.com/vitaflexl4-ai/monte-wo/tree/agent/mobile-screen-captures
