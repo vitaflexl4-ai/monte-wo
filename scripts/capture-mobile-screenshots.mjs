@@ -9,18 +9,16 @@ const output = path.join(root, "artifacts", "mobile-screenshots");
 await mkdir(output, { recursive: true });
 const server = spawn(process.execPath, ["scripts/preview_mobile_app.mjs"], {
   cwd: root,
-  env: {
-    ...process.env,
-    PORT: "8082",
-    PREVIEW_ENTRY: "/mobile/",
-  },
+  env: { ...process.env, PORT: "8082", PREVIEW_ENTRY: "/mobile/" },
   stdio: ["ignore", "pipe", "pipe"],
 });
 let serverOutput = "";
 server.stdout.on("data", chunk => { serverOutput += chunk.toString(); });
 server.stderr.on("data", chunk => { serverOutput += chunk.toString(); });
 let browser;
+const contexts = [];
 const pageErrors = [];
+
 async function waitForServer() {
   const deadline = Date.now() + 60_000;
   while (Date.now() < deadline) {
@@ -32,61 +30,79 @@ async function waitForServer() {
   }
   throw new Error("Local app preview did not start. " + serverOutput);
 }
-async function save(page, name) {
-  await page.screenshot({
-    path: path.join(output, name + ".png"),
-    animations: "disabled",
-    caret: "hide",
-  });
-}
-try {
-  await waitForServer();
-  browser = await chromium.launch({ headless: true, args: ["--no-sandbox"] });
+async function newAppPage() {
   const context = await browser.newContext({
     viewport: { width: 390, height: 844 },
     deviceScaleFactor: 2,
     reducedMotion: "reduce",
     serviceWorkers: "block",
   });
+  contexts.push(context);
+  // A local guest-preview preference skips onboarding for repeatable captures.
+  // No account or athlete data is created; sound and haptics stay off.
+  await context.addInitScript(() => {
+    localStorage.setItem("montewo.onboarding.completed.v1", "1");
+    localStorage.setItem("montewo.onboarding.sound.v1", "0");
+    localStorage.setItem("montewo.onboarding.haptics.v1", "0");
+  });
   const page = await context.newPage();
+  page.setDefaultTimeout(20_000);
+  page.setDefaultNavigationTimeout(45_000);
   page.on("pageerror", error => pageErrors.push(error.message));
-  // Keep screenshots disconnected from live services and prevent accidental
-  // cross-origin requests. The local preview server has no production bindings.
+  // Block cross-origin browser requests. The local preview server has empty
+  // account bindings and no production credentials.
   await page.route("**/*", route => {
     const url = new URL(route.request().url());
     if (url.hostname === "127.0.0.1" && url.port === "8082") return route.continue();
     return route.abort();
   });
-  await page.goto(origin + "/mobile/", { waitUntil: "networkidle", timeout: 60_000 });
-  await page.getByRole("button", { name: "Explore without setup" }).click();
-  await page.getByText("Welcome to the climb.").waitFor({ timeout: 20_000 });
-  await save(page, "01-home");
+  await page.goto(origin + "/mobile/", { waitUntil: "domcontentloaded" });
+  await page.getByText("Welcome to the climb.").waitFor();
+  return page;
+}
+async function save(page, name) {
+  await page.screenshot({
+    path: path.join(output, name + ".png"),
+    animations: "disabled",
+    caret: "hide",
+  });
+  console.log("Captured " + name);
+}
 
-  await page.getByRole("tab", { name: "Train" }).click();
-  await page.getByText("Every set counts.").waitFor();
-  await save(page, "02-workout");
+try {
+  await waitForServer();
+  browser = await chromium.launch({ headless: true, args: ["--no-sandbox"] });
 
-  await page.getByRole("tab", { name: "Home" }).click();
-  await page.getByText("Fuel your training").click();
-  await page.getByText("Make room for recovery.").waitFor();
-  await save(page, "03-nutrition");
+  const home = await newAppPage();
+  await save(home, "01-home");
 
-  await page.getByRole("tab", { name: "Home" }).click();
-  await page.getByLabel("Squat discipline").click();
-  await page.getByText("DRAFT — NOT OFFICIAL. No approved thresholds are available for this discipline. No official MONTE Climb Scale percentage is shown.").waitFor();
-  await page.getByText("Assessment pending", { exact: true }).waitFor();
-  await save(page, "04-rank");
+  const workout = await newAppPage();
+  await workout.getByRole("tab", { name: "Train" }).click();
+  await workout.getByText("Every set counts.").waitFor();
+  await save(workout, "02-workout");
+
+  const nutrition = await newAppPage();
+  await nutrition.getByText("Fuel your training").click();
+  await nutrition.getByText("Make room for recovery.").waitFor();
+  await save(nutrition, "03-nutrition");
+
+  const rank = await newAppPage();
+  await rank.getByLabel("Squat discipline").click();
+  await rank.getByText("DRAFT — NOT OFFICIAL. No approved thresholds are available for this discipline. No official MONTE Climb Scale percentage is shown.").waitFor();
+  await rank.getByText("Assessment pending", { exact: true }).waitFor();
+  await save(rank, "04-rank");
 
   if (pageErrors.length) throw new Error("App preview browser errors: " + pageErrors.join(" | "));
   await writeFile(path.join(output, "README.txt"),
     "MONTE WO actual app screen captures\n" +
     "Rendered from the Expo / React Native app web export (React Native Web), not a native Android device capture.\n" +
     "Viewport: 390 × 844 CSS pixels; device scale factor: 2; reduced motion enabled.\n" +
-    "No signed-in account or athlete records were used. API bindings are local and empty.\n" +
-    "Rank screen intentionally shows assessment pending / no rank earned because approved thresholds are not present.\n" +
+    "No signed-in account or athlete records were used. API bindings are local and empty; sound and haptics are off.\n" +
+    "Rank screen intentionally shows Assessment pending because approved thresholds are not present.\n" +
     "Screens: 01-home.png, 02-workout.png, 03-nutrition.png, 04-rank.png.\n");
-  console.log("Captured Home, Workout, Nutrition and Rank from the actual Expo app.");
+  console.log("All four actual app screens captured.");
 } finally {
+  for (const context of contexts) await context.close().catch(() => {});
   if (browser) await browser.close();
   server.kill("SIGTERM");
 }
