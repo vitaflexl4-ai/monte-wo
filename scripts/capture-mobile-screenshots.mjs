@@ -74,7 +74,7 @@ try {
   await page.getByRole("tab", { name: "Home" }).click();
   await page.getByLabel("Squat discipline").click();
   await page.getByText("DRAFT — NOT OFFICIAL. No approved thresholds are available for this discipline. No official MONTE Climb Scale percentage is shown.").waitFor();
-  await page.getByText("No rank earned", { exact: true }).waitFor();
+  await page.getByText("Assessment pending", { exact: true }).waitFor();
   await save(page, "04-rank");
 
   if (pageErrors.length) throw new Error("App preview browser errors: " + pageErrors.join(" | "));
