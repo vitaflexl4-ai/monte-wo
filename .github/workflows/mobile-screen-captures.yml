@@ -39,6 +39,16 @@ jobs:
       - name: Install website and browser-test dependencies
         run: npm install --no-audit --no-fund --package-lock=false
 
+      - name: Build website using test-only origin
+        run: npm run build
+        env:
+          SITE_ORIGIN: https://monte-wo.test
+
+      - name: Run website and platform tests
+        run: npm test
+        env:
+          SITE_ORIGIN: https://monte-wo.test
+
       - name: Install mobile dependencies
         run: npm ci --prefix apps/mobile
 
