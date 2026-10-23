@@ -1163,9 +1163,9 @@ function Notifications() {
 }
 function Nutrition() {
   const [tool, setTool] = useState("protein");
-  const [weight, setWeight] = useState("75");
-  const [height, setHeight] = useState("175");
-  const [age, setAge] = useState("30");
+  const [weight, setWeight] = useState("");
+  const [height, setHeight] = useState("");
+  const [age, setAge] = useState("");
   const [sex, setSex] = useState("range");
   const [activity, setActivity] = useState("moderate");
   const [goal, setGoal] = useState("maintain");
