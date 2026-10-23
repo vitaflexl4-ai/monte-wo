@@ -17,7 +17,7 @@ test('phone: both published index pages contain one accessible three-tab phone w
   assert.equal([...s.matchAll(/role="tab"/g)].length,3);assert.equal([...s.matchAll(/role="tabpanel"/g)].length,3);
   assert.equal([...s.matchAll(/data-phone-load=/g)].length,3);assert.equal([...s.matchAll(/data-phone-rank=/g)].length,3);
   assert.match(s,/Mock historical sets · nothing saved or synced/);assert.match(s,/Fixed example badge—not calculated from your load/);
-  assert.match(s,/APP CONCEPT · NO ATHLETE DATA/);assert.doesNotMatch(s,/Static MONTE WO app concept|phone-left|phone-right/);
+  assert.match(s,/WEBSITE CONCEPT · NOT THE NATIVE APP/);assert.doesNotMatch(s,/Static MONTE WO app concept|phone-left|phone-right/);
   assert.match(s,/<script type="module" src="\/cockpit.js"><\/script>/);
   const ids=[...s.matchAll(/\bid="([^"]+)"/g)].map(m=>m[1]);assert.equal(ids.length,new Set(ids).size,'No duplicate SVG/ARIA IDs');
  }
