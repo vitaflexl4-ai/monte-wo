@@ -1000,6 +1000,7 @@ export function RankHallOfPrideStage({
   };
 
   const displayedNowOrd = evolving ? inspectOrd : currentOrdinal;
+  const [showTitleMatrix, setShowTitleMatrix] = useState(false);
   const nowMeta = getRankVisual(displayedNowOrd);
   const baseNowMeta = getRankVisual(currentOrdinal);
   const nextMeta = getRankVisual(inspectOrd);
@@ -1579,110 +1580,128 @@ export function RankHallOfPrideStage({
         </ScrollView>
       </View>
 
-      {/* BOLD FULL 9-RANK HAITIAN TITLE MATRIX */}
+      {/* COLLAPSIBLE 9-RANK HAITIAN TITLE MATRIX (Tucked away until tapped) */}
       <View
         style={{
-          borderRadius: 16,
-          backgroundColor: "#050a14",
+          borderRadius: 14,
+          backgroundColor: "#050912",
           borderWidth: 1,
-          borderColor: "#17263c",
-          padding: 12,
-          gap: 6,
+          borderColor: "#142033",
+          paddingHorizontal: 12,
+          paddingVertical: 10,
+          gap: 8,
         }}
       >
-        <Text
+        <Pressable
+          accessibilityRole="button"
+          accessibilityState={{ expanded: showTitleMatrix }}
+          onPress={() => setShowTitleMatrix((v) => !v)}
           style={{
-            color: "#fde047",
-            fontSize: 10.5,
-            fontWeight: "900",
-            letterSpacing: 1,
+            flexDirection: "row",
+            alignItems: "center",
+            justifyContent: "space-between",
           }}
         >
-          MATRIS 9 RAN YO · FULL 9-RANK HAITIAN TITLE MATRIX
-        </Text>
-        <View style={{ gap: 5 }}>
-          {RANK_VISUAL_LADDER.slice(1).map((rk) => {
-            const isCurrent = currentOrdinal === rk.ordinal;
-            const isSelected = inspectOrd === rk.ordinal;
-            return (
-              <Pressable
-                key={"matrix-" + rk.id}
-                onPress={() => {
-                  setInspectOrd(rk.ordinal);
-                  playRankPreviewPulse(rk.ordinal);
-                }}
-                style={{
-                  flexDirection: "row",
-                  alignItems: "center",
-                  justifyContent: "space-between",
-                  gap: 8,
-                  paddingVertical: 6,
-                  paddingHorizontal: 10,
-                  borderRadius: 10,
-                  backgroundColor: isSelected
-                    ? "#0d1b30"
-                    : isCurrent
-                      ? "#081a14"
-                      : "#080f1d",
-                  borderWidth: 1,
-                  borderColor: isSelected
-                    ? rk.primary
-                    : isCurrent
-                      ? "#10b981"
-                      : "#121f33",
-                }}
-              >
-                <View
+          <Text
+            style={{
+              color: "#fde047",
+              fontSize: 10.5,
+              fontWeight: "800",
+              letterSpacing: 0.8,
+            }}
+          >
+            MATRIS 9 RAN YO · HAITIAN RANK TITLES (01–09)
+          </Text>
+          <Text style={{ color: C.muted, fontSize: 11, fontWeight: "700" }}>
+            {showTitleMatrix ? "Hide ▲" : "Show ▾"}
+          </Text>
+        </Pressable>
+
+        {showTitleMatrix ? (
+          <View style={{ gap: 5, paddingTop: 4 }}>
+            {RANK_VISUAL_LADDER.slice(1).map((rk) => {
+              const isCurrent = currentOrdinal === rk.ordinal;
+              const isSelected = inspectOrd === rk.ordinal;
+              return (
+                <Pressable
+                  key={"matrix-" + rk.id}
+                  onPress={() => {
+                    setInspectOrd(rk.ordinal);
+                    playRankPreviewPulse(rk.ordinal);
+                  }}
                   style={{
                     flexDirection: "row",
                     alignItems: "center",
+                    justifyContent: "space-between",
                     gap: 8,
-                    flex: 1,
+                    paddingVertical: 6,
+                    paddingHorizontal: 10,
+                    borderRadius: 10,
+                    backgroundColor: isSelected
+                      ? "#0d1b30"
+                      : isCurrent
+                        ? "#081a14"
+                        : "#080f1d",
+                    borderWidth: 1,
+                    borderColor: isSelected
+                      ? rk.primary
+                      : isCurrent
+                        ? "#10b981"
+                        : "#121f33",
                   }}
                 >
-                  <Text
+                  <View
                     style={{
-                      color: rk.primary,
-                      fontSize: 11,
-                      fontWeight: "900",
-                      width: 24,
+                      flexDirection: "row",
+                      alignItems: "center",
+                      gap: 8,
+                      flex: 1,
                     }}
                   >
-                    0{rk.ordinal}
-                  </Text>
-                  <View style={{ flex: 1 }}>
                     <Text
                       style={{
-                        color: "#ffffff",
-                        fontSize: 12,
+                        color: rk.primary,
+                        fontSize: 11,
                         fontWeight: "900",
+                        width: 24,
                       }}
                     >
-                      {rk.name} ·{" "}
-                      <Text style={{ color: rk.primary, fontSize: 10.5 }}>
-                        {rk.title}
+                      0{rk.ordinal}
+                    </Text>
+                    <View style={{ flex: 1 }}>
+                      <Text
+                        style={{
+                          color: "#ffffff",
+                          fontSize: 12,
+                          fontWeight: "900",
+                        }}
+                      >
+                        {rk.name} ·{" "}
+                        <Text style={{ color: rk.primary, fontSize: 10.5 }}>
+                          {rk.title}
+                        </Text>
                       </Text>
-                    </Text>
-                    <Text
-                      style={{
-                        color: "#94a3b8",
-                        fontSize: 10.5,
-                        fontWeight: "600",
-                      }}
-                    >
-                      {rk.creoleMotto}
-                    </Text>
+                      <Text
+                        style={{
+                          color: "#94a3b8",
+                          fontSize: 10.5,
+                          fontWeight: "600",
+                        }}
+                      >
+                        {rk.creoleMotto}
+                      </Text>
+                    </View>
                   </View>
-                </View>
-                {isCurrent ? (
-                  <Badge text="YOU NOW" tone="green" />
-                ) : isSelected ? (
-                  <Badge text="PREVIEW" tone="amber" />
-                ) : null}
-              </Pressable>
-            );
-          })}
-        </View>
+                  {isCurrent ? (
+                    <Badge text="YOU NOW" tone="green" />
+                  ) : isSelected ? (
+                    <Badge text="PREVIEW" tone="amber" />
+                  ) : null}
+                </Pressable>
+              );
+            })}
+          </View>
+        ) : null}
       </View>
 
       {/* Primary Action Row */}

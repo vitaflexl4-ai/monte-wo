@@ -33,6 +33,7 @@ import {
   C,
   Card,
   Chips,
+  Disclosure,
   Field,
   Label,
   ModalSheet,
@@ -262,37 +263,46 @@ export function RankScreen({
 
   const peakVisual = getRankVisual(overallCrown.peakOrd);
 
+  const divisionLabel =
+    sexCat === "male"
+      ? "Male Division"
+      : sexCat === "female"
+        ? "Female Division"
+        : "Open Division";
+
+  const nextTargetSummary =
+    nextRung && nextRung.requiredKg
+      ? `Next target: ${nextRung.name} (${bwUnit === "lb" ? `${nextRung.requiredLb} lb` : `${nextRung.requiredKg} kg`}${deltaLabel ? ` · ${deltaLabel}` : ""})`
+      : "Tap to preview all 9 ceremony rungs";
+
   return (
     <Screen wide>
-      {/* Hall of Pride Top Header */}
+      {/* Minimal Top Header */}
       <View style={[s.row, { flexWrap: "wrap" }]}>
         <View style={{ gap: 2, flex: 1 }}>
-          <Label>RAN FÒ AK KOURAY · GLWA NAN FÈ AYISYEN</Label>
-          <Title>Ran Fò ak Kouray · Athlete Evolution</Title>
-          <Text style={{ color: "#fde047", fontSize: 12, fontWeight: "800" }}>
-            Madanm ak Mesye, Onè Respè — Anperè Fòs Soti nan Limonade
-          </Text>
+          <Label>RAN FÒ AK KOURAY</Label>
+          <Title>Rank & Evolution</Title>
         </View>
         <Button
           small
           crimson
-          title="⚡ Test 1RM Lift"
+          title="⚡ Test 1RM"
           onPress={() => setLogModalOpen(true)}
         />
       </View>
 
-      {/* Overall 4-Discipline Championship Crown Banner */}
+      {/* Compact Overall Standing + 4-Lift Switcher */}
       <Card
         style={{
-          backgroundColor: "#04070f",
-          borderColor: overallCrown.peakOrd >= 5 ? peakVisual.primary : "#1e2e48",
-          padding: 15,
+          backgroundColor: "#050811",
+          borderColor: overallCrown.peakOrd >= 5 ? peakVisual.primary : "#192438",
+          padding: 14,
           gap: 12,
         }}
       >
         <ImageBackground
           source={disciplineArt[discipline]}
-          style={[StyleSheet.absoluteFill, { opacity: 0.25 }]}
+          style={[StyleSheet.absoluteFill, { opacity: 0.2 }]}
           resizeMode="cover"
         >
           <CardScrim direction="horizontal" />
@@ -302,62 +312,45 @@ export function RankScreen({
           <View style={{ flexDirection: "row", alignItems: "center", gap: 10 }}>
             <View
               style={{
-                width: 40,
-                height: 40,
-                borderRadius: 12,
-                backgroundColor: "#140c1c",
+                width: 36,
+                height: 36,
+                borderRadius: 11,
+                backgroundColor: "#110a1a",
                 borderWidth: 1,
                 borderColor: peakVisual.primary,
                 alignItems: "center",
                 justifyContent: "center",
               }}
             >
-              <Crown size={20} color={peakVisual.primary} />
+              <Crown size={18} color={peakVisual.primary} />
             </View>
             <View>
               <Text
                 style={{
                   color: peakVisual.primary,
-                  fontSize: 10,
-                  fontWeight: "900",
-                  letterSpacing: 1.2,
+                  fontSize: 9.5,
+                  fontWeight: "800",
+                  letterSpacing: 1,
                 }}
               >
-                OVERALL ATHLETE STANDING
+                ATHLETE STANDING
               </Text>
-              <Text style={{ color: "#ffffff", fontSize: 18, fontWeight: "900" }}>
+              <Text style={{ color: "#ffffff", fontSize: 16.5, fontWeight: "900" }}>
                 {overallCrown.peakOrd > 0
-                  ? `${peakVisual.name} Sovereign · ${peakVisual.title}`
-                  : "Unranked Contender · Claim Your First Crest"}
+                  ? `${peakVisual.name} · ${peakVisual.title}`
+                  : "Unranked · Claim Your First Crest"}
               </Text>
             </View>
           </View>
 
-          <View
-            style={{
-              paddingHorizontal: 12,
-              paddingVertical: 6,
-              borderRadius: 12,
-              backgroundColor: "#09101d",
-              borderWidth: 1,
-              borderColor: "#223452",
-            }}
-          >
-            <Text
-              style={{
-                color: "#ffffff",
-                fontSize: 13,
-                fontWeight: "900",
-                fontVariant: ["tabular-nums"],
-              }}
-            >
-              CLIMB SCORE: {overallCrown.totalPoints} / {overallCrown.maxPoints}
-            </Text>
-          </View>
+          <Badge
+            text={`Score ${overallCrown.totalPoints}/${overallCrown.maxPoints}`}
+            tone="muted"
+          />
         </View>
 
-        {/* 4 Independent Discipline Selector Cards with Live Crests */}
-        <View style={{ flexDirection: "row", gap: 8, flexWrap: "wrap" }}>
+        {/* 4 Independent Discipline Selector Tabs */}
+        <View style={{ flexDirection: "row", gap: 7, flexWrap: "wrap" }}>
           {overallCrown.perLift.map((d) => {
             const active = d.id === discipline;
             const dVis = getRankVisual(d.ord);
@@ -372,35 +365,35 @@ export function RankScreen({
                 }}
                 style={{
                   flex: 1,
-                  minWidth: 130,
-                  paddingVertical: 10,
-                  paddingHorizontal: 11,
-                  borderRadius: 15,
-                  backgroundColor: active ? "#0e192d" : "#060911",
+                  minWidth: 126,
+                  paddingVertical: 9,
+                  paddingHorizontal: 10,
+                  borderRadius: 13,
+                  backgroundColor: active ? "#0d1729" : "#060911",
                   borderWidth: active ? 1.5 : 1,
                   borderColor: active
                     ? d.ord > 0
                       ? dVis.primary
                       : C.cyan
-                    : "#192438",
+                    : "#172133",
                   flexDirection: "row",
                   alignItems: "center",
                   justifyContent: "space-between",
-                  gap: 8,
+                  gap: 6,
                 }}
               >
-                <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
+                <View style={{ flexDirection: "row", alignItems: "center", gap: 7 }}>
                   <LiftGlyph
                     id={d.id}
-                    size={24}
+                    size={21}
                     color={active ? C.cyan : "#64748b"}
                   />
                   <View>
                     <Text
                       style={{
                         color: active ? "#ffffff" : "#cbd5e1",
-                        fontWeight: "900",
-                        fontSize: 13,
+                        fontWeight: "800",
+                        fontSize: 12.5,
                       }}
                     >
                       {d.short}
@@ -408,8 +401,8 @@ export function RankScreen({
                     <Text
                       style={{
                         color: d.ord > 0 ? dVis.primary : "#64748b",
-                        fontSize: 10.5,
-                        fontWeight: "800",
+                        fontSize: 10,
+                        fontWeight: "700",
                       }}
                     >
                       {d.rankName}
@@ -420,9 +413,9 @@ export function RankScreen({
                 <Image
                   source={rankArt[d.rankId || "debitan"]}
                   style={{
-                    width: 30,
-                    height: 30,
-                    opacity: d.rankId ? 1 : 0.32,
+                    width: 26,
+                    height: 26,
+                    opacity: d.rankId ? 1 : 0.3,
                   }}
                   resizeMode="contain"
                 />
@@ -432,7 +425,7 @@ export function RankScreen({
         </View>
       </Card>
 
-      {/* GLORIOUS 2D ANIMATED "YOU NOW" vs "POSSIBLE NEXT RANK" STAGE */}
+      {/* CENTERPIECE: 2D "YOU NOW" vs "POSSIBLE NEXT RANK" STAGE */}
       <RankHallOfPrideStage
         disciplineFull={activeDisciplineMeta.full}
         currentOrdinal={currentOrdinal}
@@ -464,21 +457,22 @@ export function RankScreen({
         }}
       />
 
-      {/* AI MUSCLE DEFINITION CAMERA & 9:16 SOCIAL STORY EXPORTER */}
-      <MuscleDefinitionCamera
-        earnedRankOrdinal={currentOrdinal || overallCrown.peakOrd || 7}
-        disciplineLabel={activeDisciplineMeta.full}
-      />
-
-      {/* Inline Bodyweight & Division Calibration */}
-      <Card>
+      {/* Tucked-Away 1: Bodyweight & Division Calibration */}
+      <Disclosure
+        title="Bodyweight & Division Calibration"
+        summary={
+          bwText.trim()
+            ? `${bwText} ${bwUnit} · ${divisionLabel} · Age ${ageText || "25"}`
+            : "Enter your bodyweight to calculate exact Debitan → Lejand target weights"
+        }
+        badge={bwText.trim() ? `${bwText} ${bwUnit}` : "Set BW"}
+        badgeTone={bwText.trim() ? "blue" : "amber"}
+        defaultOpen={!bwText.trim()}
+      >
         <View style={[s.row, { flexWrap: "wrap" }]}>
-          <View style={{ gap: 2 }}>
-            <Text style={s.heading}>Your Bodyweight Class & Silhouette</Text>
-            <Text style={{ color: C.muted, fontSize: 11.5 }}>
-              Calibrates exact Debitan → Lejand target weights and your 2D athlete frame.
-            </Text>
-          </View>
+          <Text style={{ color: C.muted, fontSize: 12 }}>
+            Preferred Weight Unit
+          </Text>
           <Chips
             items={[
               { id: "lb", name: "LB" },
@@ -533,27 +527,18 @@ export function RankScreen({
             syncProfile(bwText, bwUnit, nextC, ageText);
           }}
         />
-      </Card>
+      </Disclosure>
 
-      {/* 9-Rank Climb Scale Ladder (Interactive: Tap Any Rung for Ceremony & Sound!) */}
-      <Card>
-        <View style={s.row}>
-          <View style={{ gap: 2 }}>
-            <Text style={s.heading}>
-              {activeDisciplineMeta.full} · All 9 Rungs
-            </Text>
-            <Text style={{ color: C.muted, fontSize: 11.5 }}>
-              Tap any rung to launch its 2D rank ceremony & brass fanfare
-            </Text>
-          </View>
-          <Text style={s.small}>
-            {ladder?.ok ? `@ ${bwText} ${bwUnit}` : "Enter BW above"}
-          </Text>
-        </View>
-
+      {/* Tucked-Away 2: Full 9-Rung Target Table */}
+      <Disclosure
+        title={`${activeDisciplineMeta.full} · All 9 Target Weights`}
+        summary={nextTargetSummary}
+        badge={ladder?.ok ? `@ ${bwText} ${bwUnit}` : "9 Rungs"}
+        badgeTone="gold"
+      >
         {ladder && !ladder.ok ? <Notice text={ladder.message} /> : null}
 
-        <View style={{ gap: 8 }}>
+        <View style={{ gap: 7 }}>
           {(
             (ladder?.ok ? ladder.rungs : null) ||
             (climbDataset as any).ranks.map((r: any, idx: number) => ({
@@ -590,46 +575,46 @@ export function RankScreen({
                 style={{
                   flexDirection: "row",
                   alignItems: "center",
-                  gap: 12,
-                  padding: 12,
-                  borderRadius: 15,
+                  gap: 11,
+                  padding: 11,
+                  borderRadius: 14,
                   backgroundColor: achieved
-                    ? "#061b14"
+                    ? "#051912"
                     : isNext
-                      ? "#0b1324"
-                      : "#000000",
+                      ? "#0a1222"
+                      : "#04060b",
                   borderWidth: isNext || achieved ? 1.5 : 1,
                   borderColor: achieved
                     ? "#10b981"
                     : isNext
                       ? vis.primary
-                      : "#182234",
+                      : "#162032",
                 }}
               >
                 <Image
                   source={rankArt[r.id]}
-                  style={{ width: 50, height: 50 }}
+                  style={{ width: 42, height: 42 }}
                   resizeMode="contain"
                 />
                 <View style={{ flex: 1, gap: 2 }}>
                   <View style={{ flexDirection: "row", alignItems: "center", gap: 6, flexWrap: "wrap" }}>
-                    <Text style={{ color: vis.primary, fontSize: 11.5, fontWeight: "900" }}>
+                    <Text style={{ color: vis.primary, fontSize: 11, fontWeight: "900" }}>
                       0{r.ordinal}
                     </Text>
-                    <Text style={{ color: "#ffffff", fontSize: 16, fontWeight: "900" }}>
+                    <Text style={{ color: "#ffffff", fontSize: 15, fontWeight: "800" }}>
                       {r.name}
                     </Text>
                     {achieved ? <Badge text="EARNED" tone="green" /> : null}
                     {isNext && !achieved ? (
-                      <Badge text="NEXT TARGET" tone="gold" />
+                      <Badge text="NEXT" tone="gold" />
                     ) : null}
                     {r.requiresVideoForTier ? (
                       <Badge text="VIDEO" tone="red" />
                     ) : null}
                   </View>
-                  <Text style={{ color: C.muted, fontSize: 11.5 }}>
-                    {vis.title} ·{" "}
-                    {r.bwMultiple ? `${r.bwMultiple}× bodyweight` : "Strict 1-rep standard"}
+                  <Text style={{ color: C.muted, fontSize: 11 }}>
+                    {vis.title}
+                    {r.bwMultiple ? ` · ${r.bwMultiple}× BW` : ""}
                   </Text>
                 </View>
 
@@ -639,36 +624,50 @@ export function RankScreen({
                       <Text
                         style={{
                           color: achieved ? C.green : "#ffffff",
-                          fontSize: 16,
+                          fontSize: 15,
                           fontWeight: "900",
                           fontVariant: ["tabular-nums"],
                         }}
                       >
                         {bwUnit === "lb" ? `${r.requiredLb} lb` : `${r.requiredKg} kg`}
                       </Text>
-                      <Text style={{ color: C.muted, fontSize: 11 }}>
+                      <Text style={{ color: C.muted, fontSize: 10.5 }}>
                         {bwUnit === "lb" ? `${r.requiredKg} kg` : `${r.requiredLb} lb`}
                       </Text>
                     </>
                   ) : (
-                    <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
-                      <Sparkles size={12} color={vis.primary} />
-                      <Text style={{ color: vis.primary, fontSize: 11.5, fontWeight: "800" }}>
-                        Preview
-                      </Text>
-                    </View>
+                    <Text style={{ color: vis.primary, fontSize: 11.5, fontWeight: "700" }}>
+                      Preview
+                    </Text>
                   )}
                 </View>
               </Pressable>
             );
           })}
         </View>
-      </Card>
+      </Disclosure>
 
-      {/* Logged Self-Reported Lifts */}
+      {/* Tucked-Away 3: AI Muscle Definition Camera & 9:16 Story Studio */}
+      <Disclosure
+        title="AI Gains Camera & 9:16 Story Studio"
+        summary="Shadow reconstruction lens, gallery save & Instagram/TikTok story card"
+        badge="9:16 Studio"
+        badgeTone="blue"
+      >
+        <MuscleDefinitionCamera
+          earnedRankOrdinal={currentOrdinal || overallCrown.peakOrd || 7}
+          disciplineLabel={activeDisciplineMeta.full}
+        />
+      </Disclosure>
+
+      {/* Tucked-Away 4: Logged Self-Reported Lifts */}
       {disciplineLifts.length > 0 ? (
-        <Card>
-          <Text style={s.heading}>Your Logged {activeDisciplineMeta.short} Attempts</Text>
+        <Disclosure
+          title={`Logged ${activeDisciplineMeta.short} Attempts`}
+          summary={`Best: ${bestCandidate ? `${bestCandidate.load} ${bestCandidate.unit}` : "Logged"} · ${disciplineLifts.length} attempt(s)`}
+          badge={`${disciplineLifts.length}`}
+          badgeTone="green"
+        >
           <View style={{ gap: 8 }}>
             {disciplineLifts.map((l) => (
               <View
@@ -676,23 +675,23 @@ export function RankScreen({
                 style={{
                   padding: 11,
                   borderRadius: 12,
-                  backgroundColor: "#05070c",
+                  backgroundColor: "#04060a",
                   borderWidth: 1,
-                  borderColor: "#1a2538",
+                  borderColor: "#182234",
                   flexDirection: "row",
                   alignItems: "center",
                   justifyContent: "space-between",
                 }}
               >
                 <View style={{ flex: 1, gap: 2 }}>
-                  <Text style={{ color: "#ffffff", fontWeight: "800", fontSize: 14 }}>
+                  <Text style={{ color: "#ffffff", fontWeight: "800", fontSize: 13.5 }}>
                     {l.load} {l.unit} × {l.reps} rep ·{" "}
                     {l.evaluation?.candidateRankName ||
                       (l.evaluation?.status === "training-estimate-only"
                         ? `Est. 1RM ${l.evaluation.estimatedKg} kg`
                         : "Below Debitan / Disqualified")}
                   </Text>
-                  <Text style={{ color: C.muted, fontSize: 11.5 }}>
+                  <Text style={{ color: C.muted, fontSize: 11 }}>
                     {l.performedOn} · SELF-REPORTED · NOT VERIFIED
                   </Text>
                 </View>
@@ -702,44 +701,28 @@ export function RankScreen({
               </View>
             ))}
           </View>
-        </Card>
+        </Disclosure>
       ) : null}
 
-      {/* Compact Collapsible Standard & Verification Details */}
-      <Card>
-        <Pressable
-          accessibilityRole="button"
-          onPress={() => setShowStandardInfo((v) => !v)}
-          style={s.row}
-        >
-          <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
-            <ShieldCheck size={16} color={C.cyan} />
-            <Text style={{ color: "#ffffff", fontWeight: "800", fontSize: 13.5 }}>
-              Judging Rules & MONTE Verified Status
-            </Text>
-          </View>
-          {showStandardInfo ? (
-            <ChevronUp size={16} color={C.muted} />
-          ) : (
-            <ChevronDown size={16} color={C.muted} />
-          )}
-        </Pressable>
-        {showStandardInfo ? (
-          <View style={{ gap: 8, paddingTop: 6 }}>
-            <Text style={{ color: C.cyan, fontSize: 11, fontWeight: "800" }}>
-              STRICT MOVEMENT STANDARD · {rule?.variation}
-            </Text>
-            {(rule?.checks || []).map((c: any) => (
-              <Text key={c.id} style={{ color: C.muted, fontSize: 12.5 }}>
-                • {c.label}
-              </Text>
-            ))}
-            <Text style={{ color: C.muted, fontSize: 12, marginTop: 4 }}>
-              MONTE Verified official awards remain locked pending final v0.1 calibration sign-off and video review activation. Device attempts are badged SELF-REPORTED · NOT VERIFIED under Proposed Standard v0.1.
-            </Text>
-          </View>
-        ) : null}
-      </Card>
+      {/* Tucked-Away 5: Judging Rules & MONTE Verified Status */}
+      <Disclosure
+        title="Judging Rules & MONTE Verified Status"
+        summary={`Strict ${rule?.variation || activeDisciplineMeta.short} checklist · Proposed Standard v0.1`}
+        open={showStandardInfo}
+        onToggle={setShowStandardInfo}
+      >
+        <Text style={{ color: C.cyan, fontSize: 11, fontWeight: "800" }}>
+          STRICT MOVEMENT STANDARD · {rule?.variation}
+        </Text>
+        {(rule?.checks || []).map((c: any) => (
+          <Text key={c.id} style={{ color: C.muted, fontSize: 12.5 }}>
+            • {c.label}
+          </Text>
+        ))}
+        <Text style={{ color: C.muted, fontSize: 12, marginTop: 2 }}>
+          MONTE Verified official awards remain locked pending final v0.1 calibration sign-off and video review activation. Device attempts are badged SELF-REPORTED · NOT VERIFIED under Proposed Standard v0.1.
+        </Text>
+      </Disclosure>
 
       {/* Modal: Record Strict Attempt */}
       <ModalSheet

@@ -82,6 +82,7 @@ import {
   C,
   s,
   Card,
+  Disclosure,
   Label,
   Body,
   Title,
@@ -851,52 +852,46 @@ function Home({ navigation }: any) {
 
   const hasBw = Boolean(a.localProfile.bodyweight && a.localProfile.bodyweight.trim());
 
-  const STUDIO_SUITES = [
+  const QUICK_LAUNCH = [
     {
       id: "workout-ai",
-      eyebrow: "TRAINING ENGINE",
-      title: "AI Workout Architect",
-      desc: "Generate PPL, Upper/Lower, Strength or Peaking routines & load directly into Logger.",
-      tags: ["Smart Splits", "Auto Sets & Rest", "1-Tap Logger"],
-      accent: "#ff3b5c",
-      accentBg: "#240a12",
-      accentBorder: "#561627",
+      label: "AI Split Builder",
+      color: "#ff5c74",
       icon: Sparkles,
       onPress: () => navigation.navigate("Train", { section: "generator" }),
     },
     {
       id: "macro-vision",
-      eyebrow: "NUTRITION VISION",
-      title: "Barcode & AI Macro Scan",
-      desc: "Live camera EAN/UPC reader, Nutrition Label OCR, and smart meal/plate portion vision.",
-      tags: ["Live Camera EAN", "Plate & Label AI", "3M+ World Foods"],
-      accent: "#38bdf8",
-      accentBg: "#081b2e",
-      accentBorder: "#184775",
+      label: "Scan Barcode / Meal",
+      color: "#38bdf8",
       icon: Barcode,
       onPress: () => navigation.navigate("Nutrition", { section: "scan" }),
     },
     {
       id: "meal-planner",
-      eyebrow: "CUSTOM FUELING",
-      title: "Custom Meal Plan AI",
-      desc: "Gram-accurate daily meals tailored to Haitian + global cuisines, macros & allergies.",
-      tags: ["Haitian + Global", "Exact Grams", "1-Tap Swap"],
-      accent: "#f59e0b",
-      accentBg: "#231705",
-      accentBorder: "#5c3d0e",
+      label: "Meal Plan AI",
+      color: "#f59e0b",
       icon: ChefHat,
       onPress: () => navigation.navigate("Nutrition", { section: "planner" }),
     },
     {
-      id: "media-vault",
-      eyebrow: "OPEN MOVEMENT VAULT",
-      title: `${atlasCount}+ Exercises & Media`,
-      desc: `Log any lift name in the world and attach custom MP4, GIF, or video demos on the fly.`,
-      tags: [`${mediaTotal} MP4 / GIFs`, "Any Lift Name", "Live Vault"],
-      accent: "#10b981",
-      accentBg: "#062118",
-      accentBorder: "#13533c",
+      id: "anatomy",
+      label: "Muscle Map",
+      color: "#38bdf8",
+      icon: ScanLine,
+      onPress: () => navigation.navigate("MuscleMap"),
+    },
+    {
+      id: "history",
+      label: `History (${totalSessions})`,
+      color: "#94a3b8",
+      icon: History,
+      onPress: () => navigation.navigate("History"),
+    },
+    {
+      id: "vault",
+      label: `${atlasCount}+ Exercises (${mediaTotal} clips)`,
+      color: "#10b981",
       icon: Film,
       onPress: () => navigation.navigate("Train", { section: "library" }),
     },
@@ -904,34 +899,11 @@ function Home({ navigation }: any) {
 
   return (
     <Screen wide>
-      {/* Top Command Header */}
-      <View style={[v.topbar, { paddingVertical: 6 }]}>
-        <View style={{ flexDirection: "row", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
-          <Brand />
-          <View
-            style={{
-              paddingHorizontal: 9,
-              paddingVertical: 4,
-              borderRadius: 999,
-              backgroundColor: "#0b1220",
-              borderWidth: 1,
-              borderColor: "#1e3252",
-            }}
-          >
-            <Text
-              style={{
-                color: "#7dd3fc",
-                fontSize: 9.5,
-                fontWeight: "900",
-                letterSpacing: 1,
-              }}
-            >
-              CLIMB SYSTEM · v2
-            </Text>
-          </View>
-        </View>
+      {/* Minimal Top Bar */}
+      <View style={[v.topbar, { paddingVertical: 4 }]}>
+        <Brand />
 
-        <View style={{ flexDirection: "row", gap: 8 }}>
+        <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
           <Pressable
             accessibilityRole="button"
             accessibilityLabel="Open AI Muscle Definition Camera"
@@ -939,114 +911,93 @@ function Home({ navigation }: any) {
               v.iconButton,
               {
                 width: "auto",
+                height: 36,
                 paddingHorizontal: 12,
+                borderRadius: 999,
                 flexDirection: "row",
                 gap: 6,
-                backgroundColor: "#05192e",
-                borderColor: "#00d2ff",
+                backgroundColor: "#071322",
+                borderColor: "#1a3b63",
               },
             ]}
             onPress={() => navigation.navigate("GainsCamera")}
           >
-            <Camera size={16} color="#00d2ff" />
-            <Text style={{ color: "#e0f2fe", fontSize: 12, fontWeight: "900" }}>
+            <Camera size={15} color={C.cyan} />
+            <Text style={{ color: "#e2edf8", fontSize: 11.5, fontWeight: "800" }}>
               Gains Cam
             </Text>
           </Pressable>
           <Pressable
             accessibilityRole="button"
-            accessibilityLabel="Open muscle map"
-            style={[
-              v.iconButton,
-              {
-                width: "auto",
-                paddingHorizontal: 12,
-                flexDirection: "row",
-                gap: 6,
-                backgroundColor: "#080d16",
-                borderColor: "#1e2f4a",
-              },
-            ]}
-            onPress={() => navigation.navigate("MuscleMap")}
-          >
-            <ScanLine size={16} color={C.cyan} />
-            <Text style={{ color: "#dce9f8", fontSize: 12, fontWeight: "800" }}>
-              Anatomy
-            </Text>
-          </Pressable>
-          <Pressable
-            accessibilityRole="button"
-            accessibilityLabel="Open training history"
-            style={v.iconButton}
-            onPress={() => navigation.navigate("History")}
-          >
-            <History size={17} color={C.cyan} />
-          </Pressable>
-          <Pressable
-            accessibilityRole="button"
             accessibilityLabel="Open account and profile"
-            style={v.iconButton}
+            style={[v.iconButton, { width: 36, height: 36, borderRadius: 999 }]}
             onPress={() => navigation.navigate("Account")}
           >
-            <UserRound size={17} color={C.cyan} />
+            <UserRound size={16} color={C.cyan} />
           </Pressable>
         </View>
       </View>
 
-      {/* Flagship Asymmetric Obsidian Hero Stage + Live Telemetry Strip */}
+      {/* Minimal Obsidian Hero + 3-Metric Telemetry Bar */}
       <Card
         accent="red"
         style={{
           padding: 0,
           backgroundColor: "#000000",
-          borderColor: "#24344f",
-          borderRadius: 24,
+          borderColor: "#1b273b",
+          borderRadius: 22,
           overflow: "hidden",
         }}
       >
-        <View style={{ minHeight: 248, justifyContent: "space-between" }}>
+        <View style={{ justifyContent: "space-between" }}>
           <ImageBackground
             source={disciplineArt.deadlift}
-            style={[StyleSheet.absoluteFill, { opacity: 0.78 }]}
+            style={[StyleSheet.absoluteFill, { opacity: 0.68 }]}
             imageStyle={{ resizeMode: "cover" }}
           >
             <CardScrim direction="horizontal" />
           </ImageBackground>
 
-          <View style={{ padding: 22, gap: 14, maxWidth: 600 }}>
-            <View style={{ flexDirection: "row", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
-              <Badge text="● LEVE · KLASE · MONTE WO" tone="red" />
-              <Badge text="9 RANKS · 4 LIFTS · WORLD FUEL" tone="blue" />
-            </View>
+          <View style={{ padding: 20, gap: 12, maxWidth: 560 }}>
+            <Text
+              style={{
+                color: "#ff6b81",
+                fontSize: 10,
+                fontWeight: "800",
+                letterSpacing: 1.5,
+              }}
+            >
+              LEVE · KLASE · MONTE WO
+            </Text>
 
-            <View style={{ gap: 6 }}>
+            <View style={{ gap: 4 }}>
               <Text
                 style={{
                   color: "#ffffff",
-                  fontSize: 34,
-                  lineHeight: 38,
+                  fontSize: 30,
+                  lineHeight: 34,
                   fontWeight: "900",
-                  letterSpacing: -0.9,
+                  letterSpacing: -0.8,
                 }}
               >
-                FORGED UNDER{"\n"}
-                <Text style={{ color: "#4cc2ff" }}>STRICT IRON.</Text>
+                Forged Under{" "}
+                <Text style={{ color: "#4cc2ff" }}>Strict Iron.</Text>
               </Text>
               <Text
                 style={{
-                  color: "#b8c7dc",
-                  fontSize: 13.5,
-                  lineHeight: 20,
-                  maxWidth: 470,
+                  color: "#a8b8ce",
+                  fontSize: 13,
+                  lineHeight: 19,
+                  maxWidth: 420,
                 }}
               >
-                Bodyweight-calibrated strength ranks from Debitan to Lejand, 3M+ world foods with camera barcode & AI vision macros, and {atlasCount}+ movements with live MP4/GIF vault.
+                Bodyweight-calibrated strength ranks from Debitan to Lejand across four strict competition lifts.
               </Text>
             </View>
 
             <View style={{ flexDirection: "row", gap: 10, flexWrap: "wrap", marginTop: 2 }}>
               <Button
-                title="+ Start Live Workout"
+                title="+ Start Workout"
                 onPress={() => navigation.navigate("Train", { section: "logger" })}
               />
               <Button
@@ -1054,37 +1005,17 @@ function Home({ navigation }: any) {
                 title="Test Ranked Lift"
                 onPress={() => navigation.navigate("Rank")}
               />
-              <Pressable
-                accessibilityRole="button"
-                onPress={() => navigation.navigate("Train", { section: "generator" })}
-                style={{
-                  paddingHorizontal: 15,
-                  paddingVertical: 11,
-                  borderRadius: 12,
-                  backgroundColor: "rgba(9, 15, 26, 0.88)",
-                  borderWidth: 1,
-                  borderColor: "#294063",
-                  flexDirection: "row",
-                  alignItems: "center",
-                  gap: 6,
-                }}
-              >
-                <Sparkles size={15} color="#ff6b81" />
-                <Text style={{ color: "#ffffff", fontWeight: "800", fontSize: 13 }}>
-                  AI Split Builder
-                </Text>
-              </Pressable>
             </View>
           </View>
 
-          {/* Integrated 3-Metric Live Telemetry Dock */}
+          {/* Clean 3-Stat Telemetry Bar */}
           <View
             style={{
               flexDirection: "row",
               flexWrap: "wrap",
               borderTopWidth: 1,
-              borderTopColor: "#182438",
-              backgroundColor: "rgba(4, 7, 13, 0.92)",
+              borderTopColor: "#141e2e",
+              backgroundColor: "rgba(4, 6, 11, 0.92)",
             }}
           >
             <Pressable
@@ -1092,34 +1023,31 @@ function Home({ navigation }: any) {
               onPress={() => navigation.navigate("Rank")}
               style={{
                 flex: 1,
-                minWidth: 180,
-                paddingHorizontal: 18,
-                paddingVertical: 13,
+                minWidth: 150,
+                paddingHorizontal: 16,
+                paddingVertical: 12,
                 flexDirection: "row",
                 alignItems: "center",
-                gap: 10,
+                gap: 9,
                 borderRightWidth: 1,
-                borderRightColor: "#141e30",
+                borderRightColor: "#121a28",
               }}
             >
               <Image
                 source={rankArt[rankRollup.bestId || "debitan"]}
                 style={{
-                  width: 36,
-                  height: 36,
-                  opacity: rankRollup.bestId ? 1 : 0.45,
+                  width: 30,
+                  height: 30,
+                  opacity: rankRollup.bestId ? 1 : 0.42,
                 }}
                 resizeMode="contain"
               />
               <View style={{ flex: 1 }}>
-                <Text style={{ color: "#7f93b0", fontSize: 10, fontWeight: "800", letterSpacing: 0.8 }}>
-                  PEAK RANK STATUS
+                <Text style={{ color: C.muted, fontSize: 9.5, fontWeight: "700", letterSpacing: 0.6 }}>
+                  PEAK RANK
                 </Text>
-                <Text style={{ color: "#ffffff", fontSize: 14, fontWeight: "900" }}>
+                <Text style={{ color: "#ffffff", fontSize: 13.5, fontWeight: "800" }}>
                   {rankRollup.bestName}
-                </Text>
-                <Text style={{ color: C.cyan, fontSize: 11, fontWeight: "700" }}>
-                  {rankRollup.tested}/4 disciplines tested
                 </Text>
               </View>
             </Pressable>
@@ -1129,39 +1057,23 @@ function Home({ navigation }: any) {
               onPress={() => navigation.navigate("Train", { section: "logger" })}
               style={{
                 flex: 1,
-                minWidth: 180,
-                paddingHorizontal: 18,
-                paddingVertical: 13,
+                minWidth: 150,
+                paddingHorizontal: 16,
+                paddingVertical: 12,
                 flexDirection: "row",
                 alignItems: "center",
-                gap: 10,
+                gap: 9,
                 borderRightWidth: 1,
-                borderRightColor: "#141e30",
+                borderRightColor: "#121a28",
               }}
             >
-              <View
-                style={{
-                  width: 34,
-                  height: 34,
-                  borderRadius: 10,
-                  backgroundColor: "#0b192e",
-                  borderWidth: 1,
-                  borderColor: "#1f4373",
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
-              >
-                <Activity size={17} color={C.cyan} />
-              </View>
+              <Activity size={16} color={C.cyan} />
               <View style={{ flex: 1 }}>
-                <Text style={{ color: "#7f93b0", fontSize: 10, fontWeight: "800", letterSpacing: 0.8 }}>
-                  TRAINING VAULT
+                <Text style={{ color: C.muted, fontSize: 9.5, fontWeight: "700", letterSpacing: 0.6 }}>
+                  WORKOUTS
                 </Text>
-                <Text style={{ color: "#ffffff", fontSize: 14, fontWeight: "900", fontVariant: ["tabular-nums"] }}>
-                  {totalSessions} Sessions · {totalSets} Sets
-                </Text>
-                <Text style={{ color: "#94a3b8", fontSize: 11 }} numberOfLines={1}>
-                  {latestVault ? `Last: ${latestVault.title}` : "Ready to log any lift"}
+                <Text style={{ color: "#ffffff", fontSize: 13.5, fontWeight: "800", fontVariant: ["tabular-nums"] }}>
+                  {totalSessions} logged · {totalSets} sets
                 </Text>
               </View>
             </Pressable>
@@ -1171,39 +1083,21 @@ function Home({ navigation }: any) {
               onPress={() => navigation.navigate("Nutrition", { section: "log" })}
               style={{
                 flex: 1,
-                minWidth: 180,
-                paddingHorizontal: 18,
-                paddingVertical: 13,
+                minWidth: 150,
+                paddingHorizontal: 16,
+                paddingVertical: 12,
                 flexDirection: "row",
                 alignItems: "center",
-                gap: 10,
+                gap: 9,
               }}
             >
-              <View
-                style={{
-                  width: 34,
-                  height: 34,
-                  borderRadius: 10,
-                  backgroundColor: "#240d14",
-                  borderWidth: 1,
-                  borderColor: "#5c1d2e",
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
-              >
-                <Flame size={17} color="#ff6b81" />
-              </View>
+              <Flame size={16} color="#ff6b81" />
               <View style={{ flex: 1 }}>
-                <Text style={{ color: "#7f93b0", fontSize: 10, fontWeight: "800", letterSpacing: 0.8 }}>
+                <Text style={{ color: C.muted, fontSize: 9.5, fontWeight: "700", letterSpacing: 0.6 }}>
                   TODAY'S FUEL
                 </Text>
-                <Text style={{ color: "#ffffff", fontSize: 14, fontWeight: "900", fontVariant: ["tabular-nums"] }}>
+                <Text style={{ color: "#ffffff", fontSize: 13.5, fontWeight: "800", fontVariant: ["tabular-nums"] }}>
                   {Math.round(fuelSummary.calories)} kcal · {Math.round(fuelSummary.proteinG)}g P
-                </Text>
-                <Text style={{ color: "#94a3b8", fontSize: 11 }}>
-                  {fuelStore?.meals.length
-                    ? `${fuelStore.meals.length} meal(s) logged today`
-                    : "Scan barcode or log world food"}
                 </Text>
               </View>
             </Pressable>
@@ -1211,30 +1105,17 @@ function Home({ navigation }: any) {
         </View>
       </Card>
 
-      {/* 4 Ranked Disciplines — Full-Bleed Obsidian Studio Showcase Cards */}
-      <View style={{ gap: 12 }}>
-        <View style={[s.row, { alignItems: "flex-end" }]}>
-          <View style={{ gap: 2 }}>
-            <Label>STRICT 1RM COMPETITION LIFTS</Label>
-            <Text style={{ color: "#ffffff", fontSize: 20, fontWeight: "900", letterSpacing: -0.4 }}>
-              4 Ranked Disciplines
-            </Text>
-          </View>
+      {/* 4 Ranked Disciplines — Minimal High-Contrast 2x2 Grid */}
+      <View style={{ gap: 10 }}>
+        <View style={s.row}>
+          <Text style={{ color: "#ffffff", fontSize: 17, fontWeight: "800", letterSpacing: -0.3 }}>
+            Ranked Disciplines
+          </Text>
           <Pressable
             accessibilityRole="button"
             onPress={() => navigation.navigate("Rank")}
-            style={{
-              paddingHorizontal: 12,
-              paddingVertical: 6,
-              borderRadius: 999,
-              backgroundColor: "#0b1424",
-              borderWidth: 1,
-              borderColor: "#1e375c",
-            }}
           >
-            <Text style={{ color: C.cyan, fontWeight: "800", fontSize: 12 }}>
-              All 9 Rungs →
-            </Text>
+            <Text style={s.link}>All 9 Rungs →</Text>
           </Pressable>
         </View>
 
@@ -1284,143 +1165,76 @@ function Home({ navigation }: any) {
                 style={({ pressed }) => ({
                   width: "47%",
                   flexGrow: 1,
-                  minWidth: 250,
-                  minHeight: 224,
-                  borderRadius: 22,
+                  minWidth: 230,
+                  minHeight: 156,
+                  borderRadius: 18,
                   borderWidth: 1,
-                  borderColor: rankId ? "#2c5ea8" : "#1c283d",
+                  borderColor: rankId ? "#244a85" : "#162032",
                   backgroundColor: "#000000",
                   overflow: "hidden",
                   justifyContent: "space-between",
-                  padding: 16,
-                  opacity: pressed ? 0.9 : 1,
+                  padding: 14,
+                  opacity: pressed ? 0.88 : 1,
                 })}
               >
-                {/* Studio Athlete Key Art + Smooth Vertical Scrim */}
                 <ImageBackground
                   source={disciplineArt[d.id]}
-                  style={[StyleSheet.absoluteFill, { opacity: 0.86 }]}
+                  style={[StyleSheet.absoluteFill, { opacity: 0.78 }]}
                   imageStyle={{ resizeMode: "cover" }}
                 >
                   <CardScrim direction="vertical" />
                 </ImageBackground>
 
-                {/* Top HUD Row: Precision Iron Emblem Pill + Rank Medallion */}
                 <View style={s.row}>
-                  <View
+                  <LiftGlyph id={d.id} size={19} color={meta.accent} />
+                  <Image
+                    source={rankArt[rankId || "debitan"]}
                     style={{
-                      flexDirection: "row",
-                      alignItems: "center",
-                      gap: 7,
-                      paddingHorizontal: 10,
-                      paddingVertical: 5,
-                      borderRadius: 999,
-                      backgroundColor: "rgba(5, 9, 17, 0.86)",
-                      borderWidth: 1,
-                      borderColor: "#243652",
+                      width: 34,
+                      height: 34,
+                      opacity: rankId ? 1 : 0.38,
                     }}
-                  >
-                    <LiftGlyph id={d.id} size={20} color={meta.accent} />
-                    <Text
-                      style={{
-                        color: "#dce9f8",
-                        fontSize: 10,
-                        fontWeight: "900",
-                        letterSpacing: 0.9,
-                      }}
-                    >
-                      {meta.code} · {meta.tag}
-                    </Text>
-                  </View>
-
-                  <View
-                    style={{
-                      width: 48,
-                      height: 48,
-                      borderRadius: 15,
-                      backgroundColor: "rgba(0, 0, 0, 0.9)",
-                      borderWidth: 1,
-                      borderColor: rankId ? meta.accent : "#1e293b",
-                      alignItems: "center",
-                      justifyContent: "center",
-                    }}
-                  >
-                    <Image
-                      source={rankArt[rankId || "debitan"]}
-                      style={{
-                        width: 40,
-                        height: 40,
-                        opacity: rankId ? 1 : 0.42,
-                      }}
-                      resizeMode="contain"
-                    />
-                  </View>
+                    resizeMode="contain"
+                  />
                 </View>
 
-                {/* Bottom HUD Block: Discipline Name, Rule & Live Target */}
-                <View style={{ gap: 8, marginTop: 48 }}>
-                  <View style={{ gap: 2 }}>
-                    <Text
-                      style={{
-                        color: "#ffffff",
-                        fontSize: 18.5,
-                        fontWeight: "900",
-                        letterSpacing: -0.3,
-                      }}
-                    >
-                      {FULL_DISCIPLINE_NAMES[d.id]}
-                    </Text>
-                    <Text style={{ color: "#9fb2cc", fontSize: 11.5 }} numberOfLines={1}>
-                      {meta.standard}
-                    </Text>
-                  </View>
+                <View style={{ gap: 6, marginTop: 22 }}>
+                  <Text
+                    style={{
+                      color: "#ffffff",
+                      fontSize: 16.5,
+                      fontWeight: "800",
+                      letterSpacing: -0.2,
+                    }}
+                  >
+                    {FULL_DISCIPLINE_NAMES[d.id]}
+                  </Text>
 
                   {selfBest ? (
-                    <View style={{ gap: 6 }}>
-                      <View style={s.row}>
-                        <Text
-                          style={{
-                            color: meta.accent,
-                            fontSize: 15,
-                            fontWeight: "900",
-                            fontVariant: ["tabular-nums"],
-                          }}
-                        >
-                          {selfBest.evaluation.candidateRankName || "Logged"} ·{" "}
-                          {selfBest.load} {selfBest.unit}
-                        </Text>
-                        {nextRung && nextTargetLabel ? (
-                          <Text style={{ color: "#cbd5e1", fontSize: 11, fontWeight: "700" }}>
-                            Next: {nextRung.name} ({nextTargetLabel})
-                          </Text>
-                        ) : null}
-                      </View>
+                    <View style={{ gap: 5 }}>
+                      <Text
+                        style={{
+                          color: meta.accent,
+                          fontSize: 13,
+                          fontWeight: "800",
+                          fontVariant: ["tabular-nums"],
+                        }}
+                      >
+                        {selfBest.evaluation.candidateRankName || "Logged"} ·{" "}
+                        {selfBest.load} {selfBest.unit}
+                      </Text>
                       {nextRung ? (
-                        <ProgressBar percent={pctToNext} color={meta.accent} height={5} />
+                        <ProgressBar percent={pctToNext} color={meta.accent} height={4} />
                       ) : null}
                     </View>
                   ) : (
-                    <View
-                      style={{
-                        flexDirection: "row",
-                        alignItems: "center",
-                        justifyContent: "space-between",
-                        paddingTop: 6,
-                        borderTopWidth: 1,
-                        borderTopColor: "rgba(36, 52, 78, 0.65)",
-                      }}
-                    >
-                      <Text style={{ color: "#cbd5e1", fontSize: 12, fontWeight: "700" }}>
+                    <View style={s.row}>
+                      <Text style={{ color: "#9fb2cc", fontSize: 11.5, fontWeight: "600" }}>
                         {nextRung && nextTargetLabel
-                          ? `Debitan Target: ${nextTargetLabel}`
-                          : "Unranked · Test strict 1RM"}
+                          ? `Debitan: ${nextTargetLabel}`
+                          : "Unranked · Test 1RM"}
                       </Text>
-                      <View style={{ flexDirection: "row", alignItems: "center", gap: 3 }}>
-                        <Text style={{ color: meta.accent, fontSize: 12, fontWeight: "900" }}>
-                          Test
-                        </Text>
-                        <ArrowUpRight size={14} color={meta.accent} />
-                      </View>
+                      <ArrowUpRight size={14} color={meta.accent} />
                     </View>
                   )}
                 </View>
@@ -1430,198 +1244,74 @@ function Home({ navigation }: any) {
         </View>
       </View>
 
-      {/* AI & Performance Studio Suite — 4 Distinct Color-Lit Command Cards */}
-      <View style={{ gap: 12 }}>
-        <View style={s.row}>
-          <View style={{ gap: 2 }}>
-            <Label>INTELLIGENT TRAINING & WORLD NUTRITION</Label>
-            <Text style={{ color: "#ffffff", fontSize: 20, fontWeight: "900", letterSpacing: -0.4 }}>
-              AI & Performance Studio
-            </Text>
-          </View>
-          <Badge text="ALL UNLOCKED" tone="green" />
+      {/* Clean Horizontal Quick-Launch Strip (Replaces Verbose Multi-Card Walls) */}
+      <ScrollView
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        contentContainerStyle={{ gap: 8, paddingVertical: 2 }}
+      >
+        {QUICK_LAUNCH.map((item) => {
+          const IconComp = item.icon;
+          return (
+            <Pressable
+              key={item.id}
+              accessibilityRole="button"
+              onPress={item.onPress}
+              style={({ pressed }) => ({
+                flexDirection: "row",
+                alignItems: "center",
+                gap: 7,
+                paddingHorizontal: 13,
+                paddingVertical: 9,
+                borderRadius: 999,
+                backgroundColor: "#080c14",
+                borderWidth: 1,
+                borderColor: "#182334",
+                opacity: pressed ? 0.82 : 1,
+              })}
+            >
+              <IconComp size={14} color={item.color} />
+              <Text style={{ color: "#dce8f6", fontSize: 12, fontWeight: "700" }}>
+                {item.label}
+              </Text>
+            </Pressable>
+          );
+        })}
+      </ScrollView>
+
+      {/* Tucked-Away Progressive Disclosure: 9-Rank Climb Scale & Studio Overview */}
+      <Disclosure
+        title="9-Rank Climb Scale & Studio Tools"
+        summary={
+          latestVault
+            ? `01 Debitan → 09 Lejand · Last session: ${latestVault.title}`
+            : "01 Debitan → 09 Lejand · Tap to preview all 9 crests & tools"
+        }
+        badge={`${rankRollup.tested}/4 Tested`}
+        badgeTone={rankRollup.tested > 0 ? "blue" : "muted"}
+      >
+        <RankLadder strip onOpenRank={() => navigation.navigate("Rank")} />
+        <View style={{ flexDirection: "row", gap: 8, flexWrap: "wrap" }}>
+          <Button
+            small
+            secondary
+            title="AI Gains Camera & 9:16 Story"
+            onPress={() => navigation.navigate("GainsCamera")}
+          />
+          <Button
+            small
+            secondary
+            title="Interactive Muscle Map"
+            onPress={() => navigation.navigate("MuscleMap")}
+          />
+          <Button
+            small
+            secondary
+            title="Plate Calculator"
+            onPress={() => navigation.navigate("Train", { section: "tools" })}
+          />
         </View>
-
-        <View style={s.grid}>
-          {STUDIO_SUITES.map((suite) => {
-            const IconComp = suite.icon;
-            return (
-              <Pressable
-                key={suite.id}
-                accessibilityRole="button"
-                onPress={suite.onPress}
-                style={({ pressed }) => ({
-                  width: "47%",
-                  flexGrow: 1,
-                  minWidth: 250,
-                  borderRadius: 20,
-                  borderWidth: 1,
-                  borderColor: "#1b273b",
-                  borderTopWidth: 2.5,
-                  borderTopColor: suite.accent,
-                  backgroundColor: "#070a10",
-                  padding: 16,
-                  gap: 12,
-                  opacity: pressed ? 0.88 : 1,
-                })}
-              >
-                <View style={s.row}>
-                  <View style={{ flexDirection: "row", alignItems: "center", gap: 10 }}>
-                    <View
-                      style={{
-                        width: 42,
-                        height: 42,
-                        borderRadius: 13,
-                        backgroundColor: suite.accentBg,
-                        borderWidth: 1,
-                        borderColor: suite.accentBorder,
-                        alignItems: "center",
-                        justifyContent: "center",
-                      }}
-                    >
-                      <IconComp size={20} color={suite.accent} />
-                    </View>
-                    <View>
-                      <Text
-                        style={{
-                          color: suite.accent,
-                          fontSize: 9.5,
-                          fontWeight: "900",
-                          letterSpacing: 1,
-                        }}
-                      >
-                        {suite.eyebrow}
-                      </Text>
-                      <Text
-                        style={{
-                          color: "#ffffff",
-                          fontSize: 16,
-                          fontWeight: "900",
-                        }}
-                      >
-                        {suite.title}
-                      </Text>
-                    </View>
-                  </View>
-
-                  <View
-                    style={{
-                      width: 30,
-                      height: 30,
-                      borderRadius: 999,
-                      backgroundColor: "#0e1522",
-                      borderWidth: 1,
-                      borderColor: "#1f2e47",
-                      alignItems: "center",
-                      justifyContent: "center",
-                    }}
-                  >
-                    <ArrowUpRight size={15} color={suite.accent} />
-                  </View>
-                </View>
-
-                <Text style={{ color: "#94a3b8", fontSize: 12.5, lineHeight: 18 }}>
-                  {suite.desc}
-                </Text>
-
-                <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 6 }}>
-                  {suite.tags.map((tg) => (
-                    <View
-                      key={tg}
-                      style={{
-                        paddingHorizontal: 8,
-                        paddingVertical: 3.5,
-                        borderRadius: 7,
-                        backgroundColor: "#0d131f",
-                        borderWidth: 1,
-                        borderColor: "#1c2940",
-                      }}
-                    >
-                      <Text style={{ color: "#cbd5e1", fontSize: 10.5, fontWeight: "700" }}>
-                        {tg}
-                      </Text>
-                    </View>
-                  ))}
-                </View>
-              </Pressable>
-            );
-          })}
-        </View>
-      </View>
-
-      {/* Nine-Rank Climb Scale Strip */}
-      <RankLadder strip onOpenRank={() => navigation.navigate("Rank")} />
-
-      {/* AI Muscle Definition Camera & 9:16 Story Exporter */}
-      <MuscleDefinitionCamera
-        earnedRankOrdinal={rankRollup.bestOrd || 7}
-        disciplineLabel="4 Ranked Disciplines"
-      />
-
-      {/* Bottom 2-Column Bento: Recent Session Vault + Interactive Anatomy Explorer */}
-      <View style={s.grid}>
-        <Card
-          style={{
-            width: "47%",
-            flexGrow: 1,
-            minWidth: 250,
-            justifyContent: "space-between",
-            backgroundColor: "#070a10",
-          }}
-        >
-          <View style={{ gap: 6 }}>
-            <Label>LIVE WORKOUT LOGGER</Label>
-            <Text style={v.sectionTitle}>
-              {latestVault ? `Last: ${latestVault.title}` : "Training Activity"}
-            </Text>
-            <Text style={{ color: C.muted, fontSize: 12.5, lineHeight: 18 }}>
-              {latestVault
-                ? `${latestVault.sets.length} sets logged on ${latestVault.performedOn} · ${totalSessions} total sessions saved.`
-                : "Log any movement in the world with kg/lb tracking, rest timer, barbell plate loader & media vault."}
-            </Text>
-          </View>
-          <View style={{ flexDirection: "row", gap: 8, marginTop: 6 }}>
-            <Button
-              small
-              title={latestVault ? "Log Next Session" : "+ Open Logger"}
-              onPress={() => navigation.navigate("Train", { section: "logger" })}
-            />
-            <Button
-              small
-              secondary
-              title="Plate Calc"
-              onPress={() => navigation.navigate("Train", { section: "tools" })}
-            />
-          </View>
-        </Card>
-
-        <Card
-          style={{
-            width: "47%",
-            flexGrow: 1,
-            minWidth: 250,
-            justifyContent: "space-between",
-            backgroundColor: "#070a10",
-            borderColor: "#1b3558",
-          }}
-        >
-          <View style={{ gap: 6 }}>
-            <Label>BILATERAL SVG ANATOMY</Label>
-            <Text style={v.sectionTitle}>Interactive Muscle Map</Text>
-            <Text style={{ color: C.muted, fontSize: 12.5, lineHeight: 18 }}>
-              Inspect front & posterior muscle regions across 54 bilateral anatomical paths and jump directly to targeted movements.
-            </Text>
-          </View>
-          <View style={{ flexDirection: "row", gap: 8, marginTop: 6 }}>
-            <Button
-              small
-              secondary
-              title="Explore Muscle Map →"
-              onPress={() => navigation.navigate("MuscleMap")}
-            />
-          </View>
-        </Card>
-      </View>
+      </Disclosure>
     </Screen>
   );
 }
@@ -1945,11 +1635,11 @@ function Library({ navigation, route }: any) {
   return (
     <Screen wide>
       <View style={s.row}>
-        <View style={{ flex: 1, gap: 4 }}>
-          <Label>MOVEMENT LIBRARY</Label>
-          <Title>Find your next lift.</Title>
+        <View style={{ flex: 1, gap: 2 }}>
+          <Label>EXPLORE</Label>
+          <Title>Movement Library</Title>
           <Text style={v.subtle}>
-            Explore movements, animations, and coaching cues.
+            {rows.length} of {catalog.exercises.length} movements · {packCount} animations · {guideCount} guides
           </Text>
         </View>
         <Pressable
@@ -1958,66 +1648,62 @@ function Library({ navigation, route }: any) {
           style={v.iconButton}
           onPress={() => navigation.navigate("MuscleMap")}
         >
-          <ScanLine size={21} color={C.cyan} />
+          <ScanLine size={20} color={C.cyan} />
         </Pressable>
       </View>
-      <Card style={{ padding: 14 }}>
-        <View style={s.row}>
-          <View>
-            <Text style={v.sectionTitle}>
-              {catalog.exercises.length} exercises · {catalog.groups.length}{" "}
-              groups
-            </Text>
-            <Text style={v.subtle}>
-              {packCount} pack animations · {guideCount} written guides (
-              {overlapCount} shared)
-            </Text>
-          </View>
-          <BookOpen color={C.cyan} size={24} />
-        </View>
-      </Card>
+
       <View style={{ gap: 8 }}>
         <Field
-          label="Search exercises or muscles"
+          label=""
+          placeholder="Search exercises or muscles…"
           value={query}
           onChange={setQuery}
-        />
-        <Chips
-          items={[
-            { id: "all", name: "All sources" },
-            { id: "pack", name: "Pack animations" },
-            { id: "guides", name: "Written guides" },
-          ]}
-          value={source}
-          onChange={setSource}
         />
         <Chips
           items={[{ id: "all", name: "All" }, ...catalog.groups]}
           value={group}
           onChange={setGroup}
         />
+      </View>
+
+      <Disclosure
+        title="More Filters & Catalog Info"
+        summary={
+          filtered
+            ? `Active filters · ${source === "all" ? "All sources" : source} · ${equipment === "all" ? "Any equipment" : equipment}`
+            : `Filter by source, equipment, sort (${overlapCount} shared) & provenance`
+        }
+        badge={filtered ? "Filtered" : undefined}
+        badgeTone="blue"
+      >
+        <View style={{ gap: 8 }}>
+          <Text style={s.fieldLabel}>Source</Text>
+          <Chips
+            items={[
+              { id: "all", name: "All sources" },
+              { id: "pack", name: "Pack animations" },
+              { id: "guides", name: "Written guides" },
+            ]}
+            value={source}
+            onChange={setSource}
+          />
+        </View>
+        <View style={{ gap: 8 }}>
+          <Text style={s.fieldLabel}>Equipment</Text>
+          <Chips
+            items={equipmentGroups}
+            value={equipment}
+            onChange={setEquipment}
+          />
+        </View>
         <View style={{ flexDirection: "row", gap: 8, flexWrap: "wrap" }}>
-          <Pressable
-            accessibilityRole="button"
-            accessibilityState={{ expanded: equipmentOpen }}
-            onPress={() => setEquipmentOpen(!equipmentOpen)}
-            style={s.chip}
-          >
-            <Text style={s.chipText}>
-              Equipment ·{" "}
-              {equipment === "all"
-                ? "Any"
-                : equipmentGroups.find((e) => e.id === equipment)?.name}{" "}
-              {equipmentOpen ? "−" : "+"}
-            </Text>
-          </Pressable>
           <Pressable
             accessibilityRole="button"
             accessibilityLabel={"Sort " + (sort === "az" ? "Z to A" : "A to Z")}
             onPress={() => setSort(sort === "az" ? "za" : "az")}
             style={s.chip}
           >
-            <Text style={s.chipText}>{sort === "az" ? "A → Z" : "Z → A"}</Text>
+            <Text style={s.chipText}>Sort: {sort === "az" ? "A → Z" : "Z → A"}</Text>
           </Pressable>
           {filtered && (
             <Pressable
@@ -2029,20 +1715,28 @@ function Library({ navigation, route }: any) {
             </Pressable>
           )}
         </View>
-        {equipmentOpen && (
-          <Chips
-            items={equipmentGroups}
-            value={equipment}
-            onChange={setEquipment}
+        <View
+          style={{
+            paddingTop: 10,
+            borderTopWidth: 1,
+            borderTopColor: "#141d2b",
+            gap: 8,
+          }}
+        >
+          <Text style={v.subtle}>
+            Pinned GitHub source: {workoutLibrary.source.commit.slice(0, 7)}.{" "}
+            {a.catalogStatus}.
+          </Text>
+          <Button
+            small
+            title="Refresh shared catalog"
+            secondary
+            busy={op.busy}
+            onPress={() => op.run(a.refreshCatalog)}
           />
-        )}
-      </View>
-      <View style={s.row}>
-        <Text accessibilityLiveRegion="polite" style={v.subtle}>
-          {rows.length} matching exercises
-        </Text>
-        <Text style={v.subtle}>TAP A CARD TO EXPLORE</Text>
-      </View>
+        </View>
+      </Disclosure>
+
       <ExerciseGrid
         exercises={rows}
         onOpen={(id) => navigation.navigate("Exercise", { id })}
@@ -2058,19 +1752,6 @@ function Library({ navigation, route }: any) {
           <Button title="Clear search and filters" secondary onPress={reset} />
         </Card>
       )}
-      <Card>
-        <Text style={v.sectionTitle}>Catalog provenance</Text>
-        <Body>
-          Pinned GitHub source: {workoutLibrary.source.commit.slice(0, 7)}.{" "}
-          {a.catalogStatus}.
-        </Body>
-        <Button
-          title="Refresh shared catalog"
-          secondary
-          busy={op.busy}
-          onPress={() => op.run(a.refreshCatalog)}
-        />
-      </Card>
     </Screen>
   );
 }

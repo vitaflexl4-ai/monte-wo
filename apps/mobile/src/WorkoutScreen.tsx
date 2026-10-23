@@ -50,6 +50,7 @@ import {
   C,
   Card,
   Chips,
+  Disclosure,
   Field,
   Label,
   ModalSheet,
@@ -376,6 +377,8 @@ export function WorkoutScreen({
   const [libQuery, setLibQuery] = useState("");
   const [libGroup, setLibGroup] = useState("all");
   const [libMediaFilter, setLibMediaFilter] = useState<"all" | "ready" | "needs">("all");
+  const [expandedExId, setExpandedExId] = useState<string | null>(null);
+  const [showNotesField, setShowNotesField] = useState(false);
 
   const filteredLibrary = useMemo(() => {
     const base = searchUniversalExercises(atlas, libQuery, libGroup, "all");
@@ -816,21 +819,30 @@ export function WorkoutScreen({
 
           {blocks.length > 0 ? (
             <Card>
-              <Field
-                label="Session Notes (optional)"
-                value={notes}
-                onChangeText={setNotes}
-                placeholder="Bar speed, cues, PR notes…"
-              />
+              {showNotesField || notes.trim() ? (
+                <Field
+                  label="Session Notes"
+                  value={notes}
+                  onChangeText={setNotes}
+                  placeholder="Bar speed, cues, PR notes…"
+                />
+              ) : (
+                <Pressable
+                  accessibilityRole="button"
+                  onPress={() => setShowNotesField(true)}
+                >
+                  <Text style={s.link}>+ Add session note</Text>
+                </Pressable>
+              )}
               <View style={{ flexDirection: "row", gap: 10, flexWrap: "wrap" }}>
-                <View style={{ flex: 1, minWidth: 160 }}>
+                <View style={{ flex: 1, minWidth: 150 }}>
                   <Button
                     secondary
                     title="+ Add Exercise"
                     onPress={() => setPickerOpen(true)}
                   />
                 </View>
-                <View style={{ flex: 1, minWidth: 180 }}>
+                <View style={{ flex: 1, minWidth: 170 }}>
                   <Button
                     crimson
                     title="Finish & Save Workout"
@@ -851,54 +863,59 @@ export function WorkoutScreen({
           <Card accent="red">
             <View style={s.row}>
               <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
-                <Sparkles size={18} color="#ff6b81" />
+                <Sparkles size={17} color="#ff6b81" />
                 <Text style={s.heading}>Smart Workout Generator</Text>
               </View>
-              <Badge text="CUSTOM BUILDER" tone="red" />
+              <Badge text={`~${generatedPlan.estimatedMinutes} MIN`} tone="blue" />
             </View>
 
-            <View style={{ gap: 6 }}>
-              <Text style={s.fieldLabel}>Training Split / Style</Text>
+            <Chips
+              items={[
+                { id: "climb_power", name: "Climb Peak" },
+                { id: "push", name: "Push" },
+                { id: "pull", name: "Pull" },
+                { id: "legs", name: "Legs" },
+                { id: "upper", name: "Upper" },
+                { id: "lower", name: "Lower" },
+                { id: "full_body", name: "Full Body" },
+                { id: "arms_curl", name: "Strict Curl" },
+              ]}
+              value={genPref.split}
+              onChange={(v) => {
+                const next = { ...genPref, split: v as any };
+                setGenPref(next);
+                regeneratePlan(next);
+              }}
+            />
+
+            {genPref.split === "climb_power" ? (
               <Chips
                 items={[
-                  { id: "climb_power", name: "Climb Scale Peak" },
-                  { id: "push", name: "Push (Chest/Delt/Tri)" },
-                  { id: "pull", name: "Pull (Back/Biceps)" },
-                  { id: "legs", name: "Legs & Glutes" },
-                  { id: "upper", name: "Upper Body" },
-                  { id: "lower", name: "Lower Power" },
-                  { id: "full_body", name: "Full Body" },
-                  { id: "arms_curl", name: "Strict Curl & Arms" },
+                  { id: "squat", name: "Squat" },
+                  { id: "bench", name: "Bench" },
+                  { id: "deadlift", name: "Deadlift" },
+                  { id: "curl", name: "Strict Curl" },
                 ]}
-                value={genPref.split}
+                value={genPref.focusLift}
                 onChange={(v) => {
-                  const next = { ...genPref, split: v as any };
+                  const next = { ...genPref, focusLift: v as any };
                   setGenPref(next);
                   regeneratePlan(next);
                 }}
               />
-            </View>
-
-            {genPref.split === "climb_power" ? (
-              <View style={{ gap: 6 }}>
-                <Text style={s.fieldLabel}>Primary Ranked Discipline Focus</Text>
-                <Chips
-                  items={[
-                    { id: "squat", name: "Barbell Squat" },
-                    { id: "bench", name: "Bench Press" },
-                    { id: "deadlift", name: "Deadlift" },
-                    { id: "curl", name: "Strict Curl" },
-                  ]}
-                  value={genPref.focusLift}
-                  onChange={(v) => {
-                    const next = { ...genPref, focusLift: v as any };
-                    setGenPref(next);
-                    regeneratePlan(next);
-                  }}
-                />
-              </View>
             ) : null}
 
+            <Button
+              crimson
+              title="Load Plan into Logger →"
+              onPress={loadPlanIntoLogger}
+            />
+          </Card>
+
+          <Disclosure
+            title="Customize Equipment, Duration & Level"
+            summary={`${genPref.equipment.replace(/_/g, " ")} · ${genPref.durationMin} min · ${genPref.level}`}
+          >
             <View style={{ gap: 6 }}>
               <Text style={s.fieldLabel}>Available Equipment</Text>
               <Chips
@@ -918,7 +935,8 @@ export function WorkoutScreen({
               />
             </View>
 
-            <View style={[s.row, { flexWrap: "wrap" }]}>
+            <View style={{ gap: 6 }}>
+              <Text style={s.fieldLabel}>Session Duration</Text>
               <Chips
                 items={[
                   { id: "30", name: "30 min" },
@@ -936,6 +954,10 @@ export function WorkoutScreen({
                   regeneratePlan(next);
                 }}
               />
+            </View>
+
+            <View style={{ gap: 6 }}>
+              <Text style={s.fieldLabel}>Experience Tier</Text>
               <Chips
                 items={[
                   { id: "foundation", name: "Debitan–Bati" },
@@ -950,62 +972,50 @@ export function WorkoutScreen({
                 }}
               />
             </View>
-
-            <Button
-              crimson
-              title="Start This Generated Workout in Logger →"
-              onPress={loadPlanIntoLogger}
-            />
-          </Card>
+          </Disclosure>
 
           <Card>
             <View style={s.row}>
               <View style={{ flex: 1, gap: 2 }}>
-                <Text style={{ color: "#ffffff", fontSize: 18, fontWeight: "900" }}>
+                <Text style={{ color: "#ffffff", fontSize: 17, fontWeight: "800" }}>
                   {generatedPlan.title}
                 </Text>
                 <Text style={{ color: C.muted, fontSize: 12 }}>
-                  {generatedPlan.subtitle}
+                  Warm-up: {generatedPlan.warmupNote}
                 </Text>
               </View>
-              <Badge text={`~${generatedPlan.estimatedMinutes} MIN`} tone="blue" />
             </View>
-            <Text style={{ color: C.cyan, fontSize: 12 }}>
-              Warm-up: {generatedPlan.warmupNote}
-            </Text>
 
-            <View style={{ gap: 10 }}>
+            <View style={{ gap: 8 }}>
               {generatedPlan.slots.map((slot, idx) => (
                 <View
                   key={slot.slotId}
                   style={{
                     padding: 12,
-                    borderRadius: 14,
-                    backgroundColor: "#05070c",
+                    borderRadius: 13,
+                    backgroundColor: "#04060a",
                     borderWidth: 1,
-                    borderColor: "#1b263b",
-                    gap: 6,
+                    borderColor: "#162032",
+                    gap: 4,
                   }}
                 >
                   <View style={s.row}>
-                    <Badge text={slot.role} tone="muted" />
+                    <Text style={{ color: "#ffffff", fontWeight: "800", fontSize: 14.5, flex: 1 }}>
+                      {idx + 1}. {slot.exercise.name}
+                    </Text>
                     {slot.alternatives.length > 0 ? (
                       <Pressable
                         accessibilityRole="button"
                         onPress={() => swapSlotExercise(idx)}
-                        style={{ flexDirection: "row", alignItems: "center", gap: 5 }}
+                        style={{ flexDirection: "row", alignItems: "center", gap: 4 }}
                       >
-                        <RefreshCw size={13} color={C.cyan} />
-                        <Text style={s.link}>Swap Movement</Text>
+                        <RefreshCw size={12} color={C.cyan} />
+                        <Text style={s.link}>Swap</Text>
                       </Pressable>
                     ) : null}
                   </View>
-                  <Text style={{ color: "#ffffff", fontWeight: "800", fontSize: 15.5 }}>
-                    {idx + 1}. {slot.exercise.name}
-                  </Text>
                   <Text style={{ color: C.muted, fontSize: 12 }}>
-                    {slot.sets} sets × {slot.repRange} reps · {slot.rpe} · Rest{" "}
-                    {slot.restSec}s · {slot.exercise.equipment}
+                    {slot.sets} × {slot.repRange} · {slot.rpe} · Rest {slot.restSec}s · {slot.exercise.equipment}
                   </Text>
                 </View>
               ))}
@@ -1015,22 +1025,23 @@ export function WorkoutScreen({
       ) : null}
 
       {/* =================================================================== */}
-      {/* TAB 3: UNIVERSAL EXERCISE LIBRARY + ADD VIDEO / GIF / MP4 AS WE GO  */}
+      {/* TAB 3: UNIVERSAL EXERCISE LIBRARY + TUCKED MEDIA PREVIEW            */}
       {/* =================================================================== */}
       {tab === "library" ? (
         <>
-          <Card accent="blue">
+          <Card accent="blue" style={{ gap: 10 }}>
             <View style={[s.row, { flexWrap: "wrap" }]}>
               <View style={{ gap: 2 }}>
                 <Text style={s.heading}>
-                  Universal Exercise & Media Vault ({atlas.length})
+                  Exercises ({filteredLibrary.length})
                 </Text>
-                <Text style={{ color: C.muted, fontSize: 12 }}>
-                  {builtInMediaCount} built-in MP4s · {customMediaCount} custom GIF/MP4s added · add any workout name or video as you go.
+                <Text style={{ color: C.muted, fontSize: 11.5 }}>
+                  {builtInMediaCount} built-in clips · {customMediaCount} custom
                 </Text>
               </View>
               <Button
                 small
+                secondary
                 title="+ New Exercise"
                 onPress={() => setCreateModalOpen(true)}
               />
@@ -1040,24 +1051,35 @@ export function WorkoutScreen({
               label=""
               value={libQuery}
               onChangeText={setLibQuery}
-              placeholder="Search any workout name (e.g. Larsen Press, Hack Squat, Pendlay Row, Bayesian Curl)…"
+              placeholder="Search exercise or muscle…"
             />
 
             <Chips
               items={[
-                { id: "all", name: "All Muscles" },
+                { id: "all", name: "All" },
                 { id: "chest", name: "Chest" },
                 { id: "back", name: "Back" },
                 { id: "legs", name: "Legs" },
                 { id: "shoulders", name: "Shoulders" },
                 { id: "arms", name: "Arms" },
                 { id: "core", name: "Core" },
-                { id: "cardio", name: "Conditioning" },
+                { id: "cardio", name: "Cardio" },
               ]}
               value={libGroup}
               onChange={setLibGroup}
             />
+          </Card>
 
+          <Disclosure
+            title="Media Filter"
+            summary={
+              libMediaFilter === "all"
+                ? "Showing all movements"
+                : libMediaFilter === "ready"
+                  ? "Only movements with MP4 / GIF"
+                  : "Movements without attached media"
+            }
+          >
             <Chips
               items={[
                 { id: "all", name: "All Exercises" },
@@ -1067,81 +1089,128 @@ export function WorkoutScreen({
               value={libMediaFilter}
               onChange={(v) => setLibMediaFilter(v as any)}
             />
-          </Card>
+          </Disclosure>
 
-          {filteredLibrary.slice(0, 28).map((ex) => {
-            const videoUri = builtInExerciseVideoUri(ex, packOrigin);
-            const custom = mediaMap[ex.id] || null;
-            const poster =
-              (ex.climbDiscipline ? disciplineArt[ex.climbDiscipline] : null) ||
-              workoutPosters[ex.id];
-            const glyphKind =
-              ex.climbDiscipline ||
-              (ex.group === "legs"
-                ? "squat"
-                : ex.group === "chest" || ex.group === "shoulders"
-                  ? "bench"
-                  : ex.group === "arms"
-                    ? "curl"
-                    : "deadlift");
-            return (
-              <Card key={ex.id}>
-                <View style={s.row}>
-                  <View
-                    style={{
-                      width: 40,
-                      height: 40,
-                      borderRadius: 12,
-                      backgroundColor: "#060b14",
-                      borderWidth: 1,
-                      borderColor: "#1d2e47",
-                      alignItems: "center",
-                      justifyContent: "center",
-                    }}
-                  >
-                    <LiftGlyph id={glyphKind} size={24} color={C.cyan} />
+          <Card style={{ padding: 10, gap: 6 }}>
+            {filteredLibrary.slice(0, 28).map((ex, idx) => {
+              const videoUri = builtInExerciseVideoUri(ex, packOrigin);
+              const custom = mediaMap[ex.id] || null;
+              const isOpen = expandedExId === ex.id;
+              const poster =
+                (ex.climbDiscipline ? disciplineArt[ex.climbDiscipline] : null) ||
+                workoutPosters[ex.id];
+              const glyphKind =
+                ex.climbDiscipline ||
+                (ex.group === "legs"
+                  ? "squat"
+                  : ex.group === "chest" || ex.group === "shoulders"
+                    ? "bench"
+                    : ex.group === "arms"
+                      ? "curl"
+                      : "deadlift");
+              return (
+                <View
+                  key={ex.id}
+                  style={{
+                    paddingVertical: 10,
+                    paddingHorizontal: 8,
+                    borderBottomWidth:
+                      idx < Math.min(28, filteredLibrary.length) - 1 ? 1 : 0,
+                    borderBottomColor: "#121a28",
+                    gap: 10,
+                  }}
+                >
+                  <View style={s.row}>
+                    <Pressable
+                      accessibilityRole="button"
+                      onPress={() =>
+                        setExpandedExId((cur) => (cur === ex.id ? null : ex.id))
+                      }
+                      style={{
+                        flex: 1,
+                        flexDirection: "row",
+                        alignItems: "center",
+                        gap: 10,
+                      }}
+                    >
+                      <View
+                        style={{
+                          width: 36,
+                          height: 36,
+                          borderRadius: 10,
+                          backgroundColor: "#060b14",
+                          borderWidth: 1,
+                          borderColor: "#18263b",
+                          alignItems: "center",
+                          justifyContent: "center",
+                        }}
+                      >
+                        <LiftGlyph id={glyphKind} size={20} color={C.cyan} />
+                      </View>
+                      <View style={{ flex: 1, gap: 2 }}>
+                        <View
+                          style={{
+                            flexDirection: "row",
+                            gap: 6,
+                            alignItems: "center",
+                            flexWrap: "wrap",
+                          }}
+                        >
+                          <Text
+                            style={{
+                              color: "#ffffff",
+                              fontSize: 14.5,
+                              fontWeight: "800",
+                            }}
+                          >
+                            {ex.name}
+                          </Text>
+                          {ex.climbDiscipline ? (
+                            <Badge text="RANKED" tone="red" />
+                          ) : null}
+                        </View>
+                        <Text style={{ color: C.muted, fontSize: 11.5 }}>
+                          {ex.equipment} · {ex.muscles.slice(0, 2).join(", ")} ·{" "}
+                          <Text style={{ color: C.cyan }}>
+                            {isOpen ? "Hide demo ▲" : "Demo & cue ▾"}
+                          </Text>
+                        </Text>
+                      </View>
+                    </Pressable>
+
+                    <Button
+                      small
+                      title="+ Log"
+                      onPress={() => {
+                        addExerciseToSession(ex);
+                        setTab("logger");
+                        flash(`Added ${ex.name} to active workout`);
+                      }}
+                    />
                   </View>
-                  <View style={{ flex: 1, gap: 3 }}>
-                    <View style={{ flexDirection: "row", gap: 6, alignItems: "center", flexWrap: "wrap" }}>
-                      <Text style={{ color: "#ffffff", fontSize: 16, fontWeight: "800" }}>
-                        {ex.name}
-                      </Text>
-                      {ex.climbDiscipline ? (
-                        <Badge text="RANKED DISCIPLINE" tone="red" />
+
+                  {isOpen ? (
+                    <View style={{ gap: 8, paddingTop: 2 }}>
+                      <ExerciseMediaBanner
+                        exerciseId={ex.id}
+                        exerciseName={ex.name}
+                        builtInVideoUri={videoUri}
+                        posterSource={poster}
+                        customMedia={custom}
+                        height={175}
+                        onManageMedia={() => setMediaTarget(ex)}
+                      />
+                      {ex.cues[0] ? (
+                        <Text style={{ color: C.muted, fontSize: 12 }}>
+                          {ex.cues[0]}
+                        </Text>
                       ) : null}
-                      {ex.isCustom ? <Badge text="CUSTOM" tone="gold" /> : null}
                     </View>
-                    <Text style={{ color: C.muted, fontSize: 12 }}>
-                      {ex.equipment} · {ex.muscles.join(" · ")}
-                    </Text>
-                  </View>
-                  <Button
-                    small
-                    title="+ Log"
-                    onPress={() => {
-                      addExerciseToSession(ex);
-                      setTab("logger");
-                      flash(`Added ${ex.name} to active workout`);
-                    }}
-                  />
+                  ) : null}
                 </View>
-
-                <ExerciseMediaBanner
-                  exerciseId={ex.id}
-                  exerciseName={ex.name}
-                  builtInVideoUri={videoUri}
-                  posterSource={poster}
-                  customMedia={custom}
-                  height={175}
-                  onManageMedia={() => setMediaTarget(ex)}
-                />
-
-                {ex.cues[0] ? (
-                  <Text style={{ color: C.muted, fontSize: 12 }}>{ex.cues[0]}</Text>
-                ) : null}
-              </Card>
-            );
-          })}
+              );
+            })}
+          </Card>
         </>
       ) : null}
 

@@ -70,6 +70,7 @@ import {
   C,
   Card,
   Chips,
+  Disclosure,
   Field,
   Label,
   ModalSheet,
@@ -346,6 +347,11 @@ export function NutritionScreen({ route }: any) {
   }
 
   const dailyTotals = useMemo(() => summarizeMeals(meals), [meals]);
+  const [showQuickPills, setShowQuickPills] = useState(false);
+  const [showAllFoods, setShowAllFoods] = useState(false);
+  const [showCuisineFilters, setShowCuisineFilters] = useState(false);
+  const [showBarcodeSamples, setShowBarcodeSamples] = useState(false);
+  const [showLabelParser, setShowLabelParser] = useState(false);
 
   // =========================================================================
   // TAB 1: WORLD FOOD SEARCH & PORTION MODAL
@@ -1162,64 +1168,79 @@ export function NutritionScreen({ route }: any) {
           );
         })()}
 
-        {/* Zero-Latency Quick Haitian & Global Food Pills with Click Sound Chime */}
-        <View style={{ gap: 6 }}>
-          <Text
-            style={{
-              color: "#94a3b8",
-              fontSize: 10,
-              fontWeight: "800",
-              letterSpacing: 0.8,
-            }}
+        {/* Tucked-Away Quick Haitian & Global Dish Preview Pills */}
+        <View
+          style={{
+            paddingTop: 8,
+            borderTopWidth: 1,
+            borderTopColor: "#131c2b",
+            gap: 8,
+          }}
+        >
+          <Pressable
+            accessibilityRole="button"
+            accessibilityState={{ expanded: showQuickPills }}
+            onPress={() => setShowQuickPills((v) => !v)}
+            style={s.row}
           >
-            QUICK GLOBAL & HAITIAN DISH PILLS · ZERO-LATENCY RING PREVIEW + CHIME
-          </Text>
-          <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 6 }}>
-            {BUILTIN_WORLD_FOODS.slice(0, 10).map((dish) => {
-              const selected = quickPreviewFood?.id === dish.id;
-              return (
-                <Pressable
-                  key={"pill-" + dish.id}
-                  accessibilityRole="button"
-                  onPress={() => {
-                    playFoodChime();
-                    setQuickPreviewFood(selected ? null : dish);
-                  }}
-                  style={({ pressed }) => ({
-                    paddingHorizontal: 11,
-                    paddingVertical: 6,
-                    borderRadius: 999,
-                    backgroundColor: selected
-                      ? "#172554"
-                      : pressed
-                        ? "#1e293b"
-                        : "#09101d",
-                    borderWidth: 1,
-                    borderColor: selected ? "#38bdf8" : "#1e2f4a",
-                    transform: [{ scale: pressed ? 0.96 : 1 }],
-                  })}
-                >
-                  <Text
-                    style={{
-                      color: selected ? "#fde047" : "#e2e8f0",
-                      fontSize: 11,
-                      fontWeight: "800",
+            <Text style={{ color: C.muted, fontSize: 11.5, fontWeight: "700" }}>
+              {quickPreviewFood
+                ? `Previewing: ${quickPreviewFood.name}`
+                : "Quick Haitian & Global Dish Preview"}
+            </Text>
+            <Text style={{ color: C.cyan, fontSize: 11.5, fontWeight: "700" }}>
+              {showQuickPills ? "Hide ▲" : "Preview ▾"}
+            </Text>
+          </Pressable>
+
+          {showQuickPills ? (
+            <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 6 }}>
+              {BUILTIN_WORLD_FOODS.slice(0, 10).map((dish) => {
+                const selected = quickPreviewFood?.id === dish.id;
+                return (
+                  <Pressable
+                    key={"pill-" + dish.id}
+                    accessibilityRole="button"
+                    onPress={() => {
+                      playFoodChime();
+                      setQuickPreviewFood(selected ? null : dish);
                     }}
+                    style={({ pressed }) => ({
+                      paddingHorizontal: 11,
+                      paddingVertical: 6,
+                      borderRadius: 999,
+                      backgroundColor: selected
+                        ? "#172554"
+                        : pressed
+                          ? "#1e293b"
+                          : "#09101d",
+                      borderWidth: 1,
+                      borderColor: selected ? "#38bdf8" : "#1e2f4a",
+                      transform: [{ scale: pressed ? 0.96 : 1 }],
+                    })}
                   >
-                    {dish.name}
-                  </Text>
-                </Pressable>
-              );
-            })}
-          </View>
+                    <Text
+                      style={{
+                        color: selected ? "#fde047" : "#e2e8f0",
+                        fontSize: 11,
+                        fontWeight: "700",
+                      }}
+                    >
+                      {dish.name}
+                    </Text>
+                  </Pressable>
+                );
+              })}
+            </View>
+          ) : null}
         </View>
       </Card>
 
       <SegmentedTabs
         items={[
-          { id: "log", name: "World Foods" },
-          { id: "scan", name: "Scan & Barcode" },
-          { id: "planner", name: "Meal Plan AI" },
+          { id: "log", name: "Foods & Log" },
+          { id: "scan", name: "Scan" },
+          { id: "planner", name: "Meal Plan" },
           { id: "calc", name: "Macro Calc" },
         ]}
         value={tab}
@@ -1227,152 +1248,27 @@ export function NutritionScreen({ route }: any) {
       />
 
       {/* =================================================================== */}
-      {/* TAB 1: WORLD FOOD DATABASE + TODAY'S LOGGED MEALS                   */}
+      {/* TAB 1: TODAY'S LOGGED MEALS + WORLD FOOD DATABASE                   */}
       {/* =================================================================== */}
       {tab === "log" ? (
         <>
-          <Card>
-            <View style={s.row}>
-              <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
-                <Globe size={17} color={C.cyan} />
-                <Text style={s.heading}>Search Global & Haitian Foods</Text>
+          {/* Today's Logged Meals (Visible right away when logged; compact otherwise) */}
+          {meals.length > 0 ? (
+            <Card style={{ padding: 14, gap: 10 }}>
+              <View style={s.row}>
+                <Text style={s.heading}>Today's Meals ({meals.length})</Text>
+                <Text style={s.small}>{today()}</Text>
               </View>
-              <Pressable
-                accessibilityRole="button"
-                onPress={() => setCustomFoodModal(true)}
-              >
-                <Text style={s.link}>+ Create Food</Text>
-              </Pressable>
-            </View>
-
-            <Field
-              label=""
-              value={foodQuery}
-              onChangeText={setFoodQuery}
-              placeholder="Search ANY food in the world (Griot, Jollof, Ramen, Biryani, Shawarma, Tacos, Brand)…"
-            />
-
-            <View style={[s.row, { flexWrap: "wrap" }]}>
-              <Chips
-                items={[
-                  { id: "all", name: "All World + Live 3M+" },
-                  { id: "haitian", name: "Haitian & Caribbean" },
-                  { id: "african", name: "African" },
-                  { id: "asian", name: "Asian" },
-                  { id: "indian", name: "Indian" },
-                  { id: "latin", name: "Latin" },
-                  { id: "mediterranean", name: "Med & Euro" },
-                  { id: "gym", name: "High-Protein" },
-                ]}
-                value={regionFilter}
-                onChange={setRegionFilter}
-              />
-              {onlineSearching ? (
-                <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
-                  <ActivityIndicator size="small" color={C.cyan} />
-                  <Text style={{ color: C.cyan, fontSize: 11, fontWeight: "700" }}>
-                    Querying USDA + Open Food Facts 3M+…
-                  </Text>
-                </View>
-              ) : null}
-            </View>
-
-            <View style={{ gap: 8 }}>
-              {combinedFoods.slice(0, 40).map((food) => {
-                const serv = macrosForGrams(food, food.servingGrams);
-                const isLiveGlobal =
-                  food.region === "OpenFoodFacts" || food.region === "USDA Global";
-                return (
-                  <Pressable
-                    key={food.id}
-                    accessibilityRole="button"
-                    onPress={() => openFoodPortion(food)}
-                    style={{
-                      padding: 12,
-                      borderRadius: 12,
-                      backgroundColor: "#05070c",
-                      borderWidth: 1,
-                      borderColor: isLiveGlobal ? "#1b365d" : "#192334",
-                      flexDirection: "row",
-                      alignItems: "center",
-                      justifyContent: "space-between",
-                      gap: 10,
-                    }}
-                  >
-                    <View style={{ flex: 1, gap: 3 }}>
-                      <View style={{ flexDirection: "row", alignItems: "center", gap: 6, flexWrap: "wrap" }}>
-                        <Text
-                          style={{
-                            color: "#ffffff",
-                            fontWeight: "800",
-                            fontSize: 13.5,
-                          }}
-                        >
-                          {food.name}
-                        </Text>
-                        {food.brand ? (
-                          <Text style={{ color: C.cyan, fontSize: 11, fontWeight: "700" }}>
-                            · {food.brand}
-                          </Text>
-                        ) : null}
-                        {isLiveGlobal ? (
-                          <Badge
-                            text={food.region === "USDA Global" ? "USDA GLOBAL" : "WORLD API"}
-                            tone="blue"
-                          />
-                        ) : food.region === "Haitian & Caribbean" ? (
-                          <Badge text="CARIBBEAN" tone="red" />
-                        ) : null}
-                      </View>
-                      <Text style={{ color: C.muted, fontSize: 11.5 }}>
-                        {food.servingLabel} ({food.servingGrams}g) ·{" "}
-                        <Text style={{ color: "#ffffff", fontWeight: "700" }}>
-                          {serv.calories} kcal
-                        </Text>{" "}
-                        · P {serv.proteinG}g · C {serv.carbsG}g · F {serv.fatG}g
-                      </Text>
-                    </View>
-                    <View
-                      style={{
-                        width: 32,
-                        height: 32,
-                        borderRadius: 16,
-                        backgroundColor: "#0e223d",
-                        borderWidth: 1,
-                        borderColor: "#2463eb",
-                        alignItems: "center",
-                        justifyContent: "center",
-                      }}
-                    >
-                      <Plus size={16} color="#ffffff" />
-                    </View>
-                  </Pressable>
-                );
-              })}
-            </View>
-          </Card>
-
-          {/* Today's Logged Meals */}
-          <Card>
-            <View style={s.row}>
-              <Text style={s.heading}>Today's Logged Meals ({meals.length})</Text>
-              <Text style={s.small}>{today()}</Text>
-            </View>
-            {meals.length === 0 ? (
-              <Body style={{ fontSize: 12.5 }}>
-                Tap any food above, scan a barcode, snap a meal photo, or log a generated meal plan card.
-              </Body>
-            ) : (
-              <View style={{ gap: 8 }}>
+              <View style={{ gap: 7 }}>
                 {meals.map((m) => (
                   <View
                     key={m.id}
                     style={{
-                      padding: 11,
-                      borderRadius: 12,
-                      backgroundColor: "#05070c",
+                      padding: 10,
+                      borderRadius: 11,
+                      backgroundColor: "#04060a",
                       borderWidth: 1,
-                      borderColor: "#182232",
+                      borderColor: "#162030",
                       flexDirection: "row",
                       alignItems: "center",
                       justifyContent: "space-between",
@@ -1383,8 +1279,9 @@ export function NutritionScreen({ route }: any) {
                       <Text style={{ color: "#ffffff", fontWeight: "700", fontSize: 13.5 }}>
                         {m.name}
                       </Text>
-                      <Text style={{ color: C.muted, fontSize: 11.5 }}>
-                        {m.calories} kcal · P {m.proteinG}g · C {m.carbsG}g · F {m.fatG}g · {m.loggedAt}
+                      <Text style={{ color: C.muted, fontSize: 11 }}>
+                        {m.calories} kcal · P {m.proteinG}g · C {m.carbsG}g · F {m.fatG}g
+                        {m.loggedAt ? ` · ${m.loggedAt}` : ""}
                       </Text>
                     </View>
                     <Pressable
@@ -1397,7 +1294,153 @@ export function NutritionScreen({ route }: any) {
                   </View>
                 ))}
               </View>
-            )}
+            </Card>
+          ) : null}
+
+          <Card>
+            <View style={s.row}>
+              <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
+                <Globe size={16} color={C.cyan} />
+                <Text style={s.heading}>World & Haitian Foods</Text>
+              </View>
+              <View style={{ flexDirection: "row", alignItems: "center", gap: 12 }}>
+                <Pressable
+                  accessibilityRole="button"
+                  onPress={() => setShowCuisineFilters((v) => !v)}
+                >
+                  <Text style={{ color: C.muted, fontSize: 12, fontWeight: "700" }}>
+                    {regionFilter === "all" ? "Cuisine ▾" : `${regionFilter} ▾`}
+                  </Text>
+                </Pressable>
+                <Pressable
+                  accessibilityRole="button"
+                  onPress={() => setCustomFoodModal(true)}
+                >
+                  <Text style={s.link}>+ Custom</Text>
+                </Pressable>
+              </View>
+            </View>
+
+            <Field
+              label=""
+              value={foodQuery}
+              onChangeText={setFoodQuery}
+              placeholder="Search Griot, Jollof, Ramen, Chicken, Brand…"
+            />
+
+            {showCuisineFilters || regionFilter !== "all" ? (
+              <Chips
+                items={[
+                  { id: "all", name: "All World" },
+                  { id: "haitian", name: "Haitian & Caribbean" },
+                  { id: "african", name: "African" },
+                  { id: "asian", name: "Asian" },
+                  { id: "indian", name: "Indian" },
+                  { id: "latin", name: "Latin" },
+                  { id: "mediterranean", name: "Mediterranean" },
+                  { id: "gym", name: "High-Protein" },
+                ]}
+                value={regionFilter}
+                onChange={setRegionFilter}
+              />
+            ) : null}
+
+            {onlineSearching ? (
+              <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
+                <ActivityIndicator size="small" color={C.cyan} />
+                <Text style={{ color: C.cyan, fontSize: 11, fontWeight: "700" }}>
+                  Searching global food database…
+                </Text>
+              </View>
+            ) : null}
+
+            <View style={{ gap: 7 }}>
+              {combinedFoods
+                .slice(0, foodQuery.trim() || showAllFoods ? 28 : 8)
+                .map((food) => {
+                  const serv = macrosForGrams(food, food.servingGrams);
+                  const isLiveGlobal =
+                    food.region === "OpenFoodFacts" || food.region === "USDA Global";
+                  return (
+                    <Pressable
+                      key={food.id}
+                      accessibilityRole="button"
+                      onPress={() => openFoodPortion(food)}
+                      style={{
+                        padding: 11,
+                        borderRadius: 12,
+                        backgroundColor: "#04060a",
+                        borderWidth: 1,
+                        borderColor: isLiveGlobal ? "#183254" : "#162030",
+                        flexDirection: "row",
+                        alignItems: "center",
+                        justifyContent: "space-between",
+                        gap: 10,
+                      }}
+                    >
+                      <View style={{ flex: 1, gap: 2 }}>
+                        <View style={{ flexDirection: "row", alignItems: "center", gap: 6, flexWrap: "wrap" }}>
+                          <Text
+                            style={{
+                              color: "#ffffff",
+                              fontWeight: "700",
+                              fontSize: 13.5,
+                            }}
+                          >
+                            {food.name}
+                          </Text>
+                          {food.brand ? (
+                            <Text style={{ color: C.cyan, fontSize: 11, fontWeight: "600" }}>
+                              · {food.brand}
+                            </Text>
+                          ) : null}
+                          {isLiveGlobal ? (
+                            <Badge
+                              text={food.region === "USDA Global" ? "USDA" : "GLOBAL"}
+                              tone="blue"
+                            />
+                          ) : null}
+                        </View>
+                        <Text style={{ color: C.muted, fontSize: 11.5 }}>
+                          {food.servingLabel} ({food.servingGrams}g) ·{" "}
+                          <Text style={{ color: "#ffffff", fontWeight: "700" }}>
+                            {serv.calories} kcal
+                          </Text>{" "}
+                          · P {serv.proteinG}g · C {serv.carbsG}g · F {serv.fatG}g
+                        </Text>
+                      </View>
+                      <View
+                        style={{
+                          width: 30,
+                          height: 30,
+                          borderRadius: 15,
+                          backgroundColor: "#0b1a30",
+                          borderWidth: 1,
+                          borderColor: "#1e4b8a",
+                          alignItems: "center",
+                          justifyContent: "center",
+                        }}
+                      >
+                        <Plus size={15} color="#ffffff" />
+                      </View>
+                    </Pressable>
+                  );
+                })}
+            </View>
+
+            {!foodQuery.trim() && combinedFoods.length > 8 ? (
+              <Pressable
+                accessibilityRole="button"
+                onPress={() => setShowAllFoods((v) => !v)}
+                style={{ alignSelf: "center", paddingVertical: 4 }}
+              >
+                <Text style={s.link}>
+                  {showAllFoods
+                    ? "Show fewer foods ▲"
+                    : `Show more world dishes (${combinedFoods.length - 8}+) ▾`}
+                </Text>
+              </Pressable>
+            ) : null}
           </Card>
         </>
       ) : null}
@@ -1582,36 +1625,43 @@ export function NutritionScreen({ route }: any) {
               </View>
 
               <View style={{ gap: 6 }}>
-                <Text style={{ color: C.muted, fontSize: 11, fontWeight: "700" }}>
-                  QUICK TEST REAL BARCODES:
-                </Text>
-                <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 6 }}>
-                  {[
-                    { code: "0748927028652", label: "Whey Isolate" },
-                    { code: "3017620422003", label: "Nutella" },
-                    { code: "8076809513753", label: "Barilla Pasta" },
-                    { code: "0689544080602", label: "0% Greek Yogurt" },
-                    { code: "0030000010402", label: "Quaker Oats" },
-                  ].map((sample) => (
-                    <Pressable
-                      key={sample.code}
-                      accessibilityRole="button"
-                      onPress={() => runBarcodeLookup(sample.code)}
-                      style={{
-                        paddingHorizontal: 10,
-                        paddingVertical: 6,
-                        borderRadius: 999,
-                        backgroundColor: "#0e1522",
-                        borderWidth: 1,
-                        borderColor: "#24324a",
-                      }}
-                    >
-                      <Text style={{ color: C.cyan, fontSize: 11, fontWeight: "700" }}>
-                        {sample.label} · {sample.code.slice(-4)}
-                      </Text>
-                    </Pressable>
-                  ))}
-                </View>
+                <Pressable
+                  accessibilityRole="button"
+                  onPress={() => setShowBarcodeSamples((v) => !v)}
+                >
+                  <Text style={{ color: C.muted, fontSize: 11.5, fontWeight: "700" }}>
+                    {showBarcodeSamples ? "Hide sample barcodes ▲" : "Try sample barcodes ▾"}
+                  </Text>
+                </Pressable>
+                {showBarcodeSamples ? (
+                  <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 6 }}>
+                    {[
+                      { code: "0748927028652", label: "Whey Isolate" },
+                      { code: "3017620422003", label: "Nutella" },
+                      { code: "8076809513753", label: "Barilla Pasta" },
+                      { code: "0689544080602", label: "0% Greek Yogurt" },
+                      { code: "0030000010402", label: "Quaker Oats" },
+                    ].map((sample) => (
+                      <Pressable
+                        key={sample.code}
+                        accessibilityRole="button"
+                        onPress={() => runBarcodeLookup(sample.code)}
+                        style={{
+                          paddingHorizontal: 10,
+                          paddingVertical: 6,
+                          borderRadius: 999,
+                          backgroundColor: "#0e1522",
+                          borderWidth: 1,
+                          borderColor: "#24324a",
+                        }}
+                      >
+                        <Text style={{ color: C.cyan, fontSize: 11, fontWeight: "700" }}>
+                          {sample.label} · {sample.code.slice(-4)}
+                        </Text>
+                      </Pressable>
+                    ))}
+                  </View>
+                ) : null}
               </View>
 
               {barcodeMessage ? <Notice text={barcodeMessage} /> : null}
@@ -2031,30 +2081,44 @@ export function NutritionScreen({ route }: any) {
                 </View>
               ) : null}
 
-              {/* Nutrition Facts Label Text Parser */}
-              <View style={{ gap: 8, paddingTop: 6, borderTopWidth: 1, borderColor: "#172030" }}>
-                <Field
-                  label="Or Paste Nutrition Facts Label Text"
-                  value={labelOcrText}
-                  onChangeText={setLabelOcrText}
-                  placeholder="e.g. Calories 240, Total Fat 7g, Total Carb 21g, Protein 24g"
-                />
-                {parsedLabel ? (
-                  <View style={s.row}>
-                    <Text style={{ color: "#ffffff", fontWeight: "700", fontSize: 13 }}>
-                      Extracted: {parsedLabel.calories} kcal · P {parsedLabel.proteinG}g · C {parsedLabel.carbsG}g · F {parsedLabel.fatG}g
-                    </Text>
-                    <Button
-                      small
-                      title="+ Log Label"
-                      onPress={() =>
-                        logMealItem({
-                          name: "Scanned Nutrition Label",
-                          ...parsedLabel,
-                        })
-                      }
+              {/* Tucked-Away Nutrition Facts Label Text Parser */}
+              <View style={{ gap: 8, paddingTop: 6, borderTopWidth: 1, borderColor: "#141d2b" }}>
+                <Pressable
+                  accessibilityRole="button"
+                  onPress={() => setShowLabelParser((v) => !v)}
+                >
+                  <Text style={{ color: C.muted, fontSize: 11.5, fontWeight: "700" }}>
+                    {showLabelParser || labelOcrText.trim()
+                      ? "Hide nutrition label text parser ▲"
+                      : "Paste nutrition facts label text ▾"}
+                  </Text>
+                </Pressable>
+                {showLabelParser || labelOcrText.trim() ? (
+                  <>
+                    <Field
+                      label=""
+                      value={labelOcrText}
+                      onChangeText={setLabelOcrText}
+                      placeholder="e.g. Calories 240, Total Fat 7g, Total Carb 21g, Protein 24g"
                     />
-                  </View>
+                    {parsedLabel ? (
+                      <View style={s.row}>
+                        <Text style={{ color: "#ffffff", fontWeight: "700", fontSize: 13 }}>
+                          Extracted: {parsedLabel.calories} kcal · P {parsedLabel.proteinG}g · C {parsedLabel.carbsG}g · F {parsedLabel.fatG}g
+                        </Text>
+                        <Button
+                          small
+                          title="+ Log Label"
+                          onPress={() =>
+                            logMealItem({
+                              name: "Scanned Nutrition Label",
+                              ...parsedLabel,
+                            })
+                          }
+                        />
+                      </View>
+                    ) : null}
+                  </>
                 ) : null}
               </View>
             </Card>
@@ -2070,10 +2134,10 @@ export function NutritionScreen({ route }: any) {
           <Card accent="gold">
             <View style={s.row}>
               <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
-                <ChefHat size={18} color={C.gold} />
+                <ChefHat size={17} color={C.gold} />
                 <Text style={s.heading}>Custom Meal Plan Generator</Text>
               </View>
-              <Badge text="GRAM-SCALED" tone="gold" />
+              <Badge text={`${generatedPlan.dayTotals.calories} KCAL`} tone="gold" />
             </View>
 
             <View style={s.grid}>
@@ -2091,6 +2155,29 @@ export function NutritionScreen({ route }: any) {
               </View>
             </View>
 
+            <View style={{ flexDirection: "row", gap: 10, flexWrap: "wrap" }}>
+              <View style={{ flex: 1, minWidth: 180 }}>
+                <Button
+                  title="Generate Custom Meal Plan"
+                  onPress={() => {
+                    const nextSeed = mpSeed + 1;
+                    setMpSeed(nextSeed);
+                    buildMealPlanNow(nextSeed);
+                  }}
+                />
+              </View>
+              <Button
+                secondary
+                title={showGrocery ? "Hide Grocery List" : "Grocery List"}
+                onPress={() => setShowGrocery((v) => !v)}
+              />
+            </View>
+          </Card>
+
+          <Disclosure
+            title="Cuisine, Diet & Allergy Preferences"
+            summary={`${mpCuisine === "all" ? "Global mix" : mpCuisine} · ${mpDiet.replace(/_/g, " ")} · ${mpMealsCount} meals/day`}
+          >
             <View style={{ gap: 6 }}>
               <Text style={s.fieldLabel}>Cuisine Style</Text>
               <Chips
@@ -2124,9 +2211,9 @@ export function NutritionScreen({ route }: any) {
             <View style={[s.row, { flexWrap: "wrap" }]}>
               <Chips
                 items={[
-                  { id: "3", name: "3 Meals / Day" },
-                  { id: "4", name: "4 Meals / Day" },
-                  { id: "5", name: "5 Meals / Day" },
+                  { id: "3", name: "3 Meals" },
+                  { id: "4", name: "4 Meals" },
+                  { id: "5", name: "5 Meals" },
                 ]}
                 value={String(mpMealsCount)}
                 onChange={(v) => setMpMealsCount(Number(v) as 3 | 4 | 5)}
@@ -2152,42 +2239,12 @@ export function NutritionScreen({ route }: any) {
             </View>
 
             <Field
-              label="Exclude Any Foods / Allergies (comma-separated)"
+              label="Exclude Any Foods / Allergies"
               value={mpExclude}
               onChangeText={setMpExclude}
               placeholder="e.g. peanuts, shrimp, mushrooms"
             />
-
-            <View style={{ flexDirection: "row", gap: 10, flexWrap: "wrap" }}>
-              <View style={{ flex: 1, minWidth: 180 }}>
-                <Button
-                  title="Generate Custom Meal Plan"
-                  onPress={() => {
-                    const nextSeed = mpSeed + 1;
-                    setMpSeed(nextSeed);
-                    buildMealPlanNow(nextSeed);
-                  }}
-                />
-              </View>
-              <Button
-                secondary
-                title={showGrocery ? "Hide Grocery List" : "Grocery List"}
-                onPress={() => setShowGrocery((v) => !v)}
-              />
-            </View>
-          </Card>
-
-          {/* Day Summary */}
-          <Card style={{ padding: 14 }}>
-            <View style={[s.row, { flexWrap: "wrap" }]}>
-              <Text style={{ color: "#ffffff", fontWeight: "800", fontSize: 14 }}>
-                Plan Total: {generatedPlan.dayTotals.calories} kcal
-              </Text>
-              <Text style={{ color: C.cyan, fontWeight: "700", fontSize: 12.5 }}>
-                P {generatedPlan.dayTotals.proteinG}g · C {generatedPlan.dayTotals.carbsG}g · F {generatedPlan.dayTotals.fatG}g
-              </Text>
-            </View>
-          </Card>
+          </Disclosure>
 
           {showGrocery ? (
             <Card accent="green">

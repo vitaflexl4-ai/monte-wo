@@ -1,4 +1,4 @@
-import React, { PropsWithChildren } from "react";
+import React, { PropsWithChildren, useState } from "react";
 import {
   View,
   Text,
@@ -9,22 +9,23 @@ import {
   ActivityIndicator,
   Modal,
 } from "react-native";
+import { ChevronDown, ChevronUp } from "lucide-react-native";
 
 export const C = {
   bg: "#000000",
-  card: "#090c12",
-  surface: "#05070b",
-  elevated: "#101622",
-  border: "#1b2434",
+  card: "#070a10",
+  surface: "#04060a",
+  elevated: "#0d131f",
+  border: "#161f2e",
   borderBright: "#2578ff",
   text: "#ffffff",
-  muted: "#8e9eb5",
-  dim: "#586880",
+  muted: "#8b9bb2",
+  dim: "#55657d",
   blue: "#0084ff",
   cyan: "#38bdf8",
   red: "#ff2442",
-  redSoft: "#1f070d",
-  redBorder: "#6e1727",
+  redSoft: "#1c070c",
+  redBorder: "#5c1523",
   green: "#10b981",
   amber: "#f59e0b",
   gold: "#facc15",
@@ -40,13 +41,13 @@ export function Card({
 }>) {
   const accentBorder =
     accent === "red"
-      ? "#4d1522"
+      ? "#3d131e"
       : accent === "gold"
-        ? "#524114"
+        ? "#453712"
         : accent === "green"
-          ? "#144938"
+          ? "#123d2f"
           : accent === "blue"
-            ? "#1c4a82"
+            ? "#183b68"
             : C.border;
   const topBar =
     accent === "red"
@@ -68,13 +69,109 @@ export function Card({
             top: 0,
             left: 0,
             right: 0,
-            height: 2,
+            height: 1.5,
             backgroundColor: topBar,
+            opacity: 0.9,
           }}
         />
       ) : null}
       {children}
     </View>
+  );
+}
+
+export function Disclosure({
+  title,
+  summary,
+  badge,
+  badgeTone = "muted",
+  defaultOpen = false,
+  open: controlledOpen,
+  onToggle,
+  children,
+}: PropsWithChildren<{
+  title: string;
+  summary?: string;
+  badge?: string;
+  badgeTone?: "blue" | "red" | "amber" | "green" | "muted" | "gold";
+  defaultOpen?: boolean;
+  open?: boolean;
+  onToggle?: (next: boolean) => void;
+}>) {
+  const [internalOpen, setInternalOpen] = useState(defaultOpen);
+  const isOpen = controlledOpen !== undefined ? controlledOpen : internalOpen;
+
+  const toggle = () => {
+    const next = !isOpen;
+    if (controlledOpen === undefined) setInternalOpen(next);
+    onToggle?.(next);
+  };
+
+  return (
+    <Card style={{ padding: 14, gap: isOpen ? 12 : 0 }}>
+      <Pressable
+        accessibilityRole="button"
+        accessibilityState={{ expanded: isOpen }}
+        onPress={toggle}
+        style={{
+          flexDirection: "row",
+          alignItems: "center",
+          justifyContent: "space-between",
+          gap: 10,
+        }}
+      >
+        <View style={{ flex: 1, gap: 2 }}>
+          <View
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              gap: 8,
+              flexWrap: "wrap",
+            }}
+          >
+            <Text style={{ color: C.text, fontSize: 14.5, fontWeight: "800" }}>
+              {title}
+            </Text>
+            {badge ? <Badge text={badge} tone={badgeTone} /> : null}
+          </View>
+          {summary ? (
+            <Text style={{ color: C.muted, fontSize: 12 }} numberOfLines={1}>
+              {summary}
+            </Text>
+          ) : null}
+        </View>
+        <View
+          style={{
+            width: 28,
+            height: 28,
+            borderRadius: 999,
+            backgroundColor: "#0d131f",
+            borderWidth: 1,
+            borderColor: "#1b2638",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          {isOpen ? (
+            <ChevronUp size={15} color={C.muted} />
+          ) : (
+            <ChevronDown size={15} color={C.muted} />
+          )}
+        </View>
+      </Pressable>
+      {isOpen ? (
+        <View
+          style={{
+            paddingTop: 12,
+            borderTopWidth: 1,
+            borderTopColor: "#121a28",
+            gap: 12,
+          }}
+        >
+          {children}
+        </View>
+      ) : null}
+    </Card>
   );
 }
 
@@ -107,12 +204,12 @@ export function Badge({
   tone?: "blue" | "red" | "amber" | "green" | "muted" | "gold";
 }) {
   const palette = {
-    blue: { bg: "#071d36", border: "#1a528a", fg: "#7cc8ff" },
-    red: { bg: "#260810", border: "#7a1a2d", fg: "#ff8496" },
-    amber: { bg: "#241706", border: "#6e4813", fg: "#fcd37d" },
-    green: { bg: "#052219", border: "#145943", fg: "#6ee7b7" },
-    gold: { bg: "#241d07", border: "#735a15", fg: "#fde047" },
-    muted: { bg: "#0d121c", border: "#222d40", fg: "#9cb0c9" },
+    blue: { bg: "#071a30", border: "#164473", fg: "#7cc8ff" },
+    red: { bg: "#21070e", border: "#661727", fg: "#ff8496" },
+    amber: { bg: "#201505", border: "#5c3d10", fg: "#fcd37d" },
+    green: { bg: "#051f17", border: "#124d3a", fg: "#6ee7b7" },
+    gold: { bg: "#201a06", border: "#614c12", fg: "#fde047" },
+    muted: { bg: "#0b1019", border: "#1d2738", fg: "#9cb0c9" },
   }[tone];
   return (
     <View
@@ -129,7 +226,7 @@ export function Badge({
 export function ProgressBar({
   percent,
   color = C.blue,
-  height = 8,
+  height = 6,
 }: {
   percent: number;
   color?: string;
@@ -143,7 +240,7 @@ export function ProgressBar({
       style={{
         height,
         borderRadius: height,
-        backgroundColor: "#0f1520",
+        backgroundColor: "#0e1420",
         overflow: "hidden",
       }}
     >
@@ -172,12 +269,12 @@ export function SegmentedTabs({
     <View
       style={{
         flexDirection: "row",
-        backgroundColor: "#0a0e16",
-        borderRadius: 14,
-        padding: 4,
+        backgroundColor: "#070a10",
+        borderRadius: 13,
+        padding: 3,
         borderWidth: 1,
         borderColor: C.border,
-        gap: 4,
+        gap: 3,
       }}
     >
       {items.map((item) => {
@@ -190,14 +287,14 @@ export function SegmentedTabs({
             onPress={() => onChange(item.id)}
             style={{
               flex: 1,
-              paddingVertical: 10,
+              paddingVertical: 9,
               paddingHorizontal: 8,
               borderRadius: 10,
               alignItems: "center",
               justifyContent: "center",
-              backgroundColor: active ? "#162236" : "transparent",
+              backgroundColor: active ? "#121c2d" : "transparent",
               borderWidth: active ? 1 : 0,
-              borderColor: active ? "#2d6cdf" : "transparent",
+              borderColor: active ? "#2454a6" : "transparent",
             }}
           >
             <Text
@@ -243,11 +340,16 @@ export function Button({
       onPress={onPress}
       style={({ pressed }) => [
         s.button,
-        small && { minHeight: 38, paddingVertical: 8, paddingHorizontal: 12, borderRadius: 10 },
+        small && {
+          minHeight: 36,
+          paddingVertical: 7,
+          paddingHorizontal: 12,
+          borderRadius: 10,
+        },
         secondary && s.secondary,
         crimson && {
-          backgroundColor: "#e01e3c",
-          borderColor: "#ff5c74",
+          backgroundColor: "#d91c38",
+          borderColor: "#f44d66",
         },
         danger && {
           backgroundColor: C.redSoft,
@@ -287,19 +389,19 @@ export function Field({
 }) {
   const handleChange = onChangeText || onChange || (() => {});
   return (
-    <View style={{ gap: 6 }}>
+    <View style={{ gap: 5 }}>
       {label ? <Text style={s.fieldLabel}>{label}</Text> : null}
       <TextInput
         accessibilityLabel={label || placeholder || "Input"}
         value={value}
         onChangeText={handleChange}
         placeholder={placeholder}
-        placeholderTextColor="#4e5f78"
+        placeholderTextColor="#4b5b73"
         keyboardType={keyboardType || (numeric ? "decimal-pad" : "default")}
         multiline={multiline}
         style={[
           s.input,
-          multiline && { minHeight: 82, textAlignVertical: "top" },
+          multiline && { minHeight: 80, textAlignVertical: "top" },
         ]}
       />
     </View>
@@ -349,7 +451,7 @@ export function Screen({
       <ScrollView
         keyboardShouldPersistTaps="handled"
         style={{ flex: 1 }}
-        contentContainerStyle={[s.screen, wide && { maxWidth: 840 }]}
+        contentContainerStyle={[s.screen, wide && { maxWidth: 800 }]}
       >
         {children}
       </ScrollView>
@@ -377,7 +479,7 @@ export function ModalSheet({
       <View
         style={{
           flex: 1,
-          backgroundColor: "rgba(0,0,0,0.82)",
+          backgroundColor: "rgba(0,0,0,0.84)",
           justifyContent: "center",
           padding: 16,
         }}
@@ -385,13 +487,13 @@ export function ModalSheet({
         <View
           style={{
             width: "100%",
-            maxWidth: 560,
+            maxWidth: 540,
             maxHeight: "90%",
             alignSelf: "center",
-            backgroundColor: "#080b11",
+            backgroundColor: "#070a10",
             borderRadius: 20,
             borderWidth: 1,
-            borderColor: "#223047",
+            borderColor: "#1d293d",
             overflow: "hidden",
           }}
         >
@@ -403,10 +505,10 @@ export function ModalSheet({
               paddingHorizontal: 18,
               paddingVertical: 14,
               borderBottomWidth: 1,
-              borderColor: "#162030",
+              borderColor: "#141d2b",
             }}
           >
-            <Text style={{ color: "#ffffff", fontSize: 17, fontWeight: "800" }}>
+            <Text style={{ color: "#ffffff", fontSize: 16.5, fontWeight: "800" }}>
               {title}
             </Text>
             <Pressable
@@ -416,7 +518,7 @@ export function ModalSheet({
                 paddingHorizontal: 12,
                 paddingVertical: 6,
                 borderRadius: 8,
-                backgroundColor: "#131b29",
+                backgroundColor: "#101724",
               }}
             >
               <Text style={{ color: C.muted, fontWeight: "700", fontSize: 12 }}>
@@ -468,7 +570,7 @@ export const s = StyleSheet.create({
   screen: {
     paddingHorizontal: 16,
     paddingTop: 14,
-    paddingBottom: 42,
+    paddingBottom: 40,
     gap: 14,
     width: "100%",
     maxWidth: 640,
@@ -484,80 +586,80 @@ export const s = StyleSheet.create({
     overflow: "hidden",
   },
   label: {
-    fontSize: 10,
+    fontSize: 9.5,
     fontWeight: "800",
-    letterSpacing: 1.4,
+    letterSpacing: 1.5,
     color: C.cyan,
     textTransform: "uppercase",
   },
-  body: { fontSize: 13.5, color: C.muted, lineHeight: 20 },
+  body: { fontSize: 13, color: C.muted, lineHeight: 19 },
   title: {
-    fontSize: 28,
+    fontSize: 25,
     fontWeight: "900",
     color: C.text,
-    lineHeight: 33,
-    letterSpacing: -0.7,
+    lineHeight: 30,
+    letterSpacing: -0.6,
   },
   badge: {
-    paddingHorizontal: 9,
-    paddingVertical: 4,
+    paddingHorizontal: 8,
+    paddingVertical: 3.5,
     borderRadius: 999,
     borderWidth: 1,
     alignSelf: "flex-start",
   },
   badgeText: {
-    fontSize: 9.5,
+    fontSize: 9,
     fontWeight: "800",
     letterSpacing: 0.6,
     textTransform: "uppercase",
   },
   button: {
-    minHeight: 46,
+    minHeight: 44,
     borderRadius: 12,
     backgroundColor: "#007aff",
     borderWidth: 1,
-    borderColor: "#389bff",
+    borderColor: "#3395ff",
     alignItems: "center",
     justifyContent: "center",
     paddingHorizontal: 16,
-    paddingVertical: 11,
+    paddingVertical: 10,
     overflow: "hidden",
   },
   secondary: {
-    backgroundColor: "#0d121c",
-    borderColor: "#222e42",
+    backgroundColor: "#0b1019",
+    borderColor: "#1d283a",
   },
-  buttonText: { color: "#ffffff", fontWeight: "800", fontSize: 13.5 },
-  fieldLabel: { color: "#b6c5db", fontSize: 11.5, fontWeight: "700" },
+  buttonText: { color: "#ffffff", fontWeight: "800", fontSize: 13 },
+  fieldLabel: { color: "#b0c0d6", fontSize: 11.5, fontWeight: "700" },
   input: {
-    minHeight: 45,
+    minHeight: 43,
     paddingHorizontal: 13,
-    paddingVertical: 10,
-    borderRadius: 12,
+    paddingVertical: 9,
+    borderRadius: 11,
     borderWidth: 1,
-    borderColor: "#1f2a3d",
-    backgroundColor: "#05070c",
+    borderColor: "#1b2536",
+    backgroundColor: "#04060a",
     color: "#ffffff",
-    fontSize: 15,
+    fontSize: 14.5,
     fontVariant: ["tabular-nums"],
   },
-  chips: { flexDirection: "row", flexWrap: "wrap", gap: 7 },
+  chips: { flexDirection: "row", flexWrap: "wrap", gap: 6 },
   chip: {
-    paddingHorizontal: 12,
-    paddingVertical: 8,
+    paddingHorizontal: 11,
+    paddingVertical: 7,
     borderRadius: 999,
     borderWidth: 1,
-    borderColor: "#1f2b3e",
-    backgroundColor: "#0b0f17",
+    borderColor: "#1a2536",
+    backgroundColor: "#090d14",
   },
-  chipOn: { backgroundColor: "#0077f5", borderColor: "#4da6ff" },
-  chipText: { color: C.muted, fontSize: 12, fontWeight: "700" },
+  chipOn: { backgroundColor: "#0073eb", borderColor: "#4da6ff" },
+  chipText: { color: C.muted, fontSize: 11.5, fontWeight: "700" },
   notice: {
-    padding: 12,
+    padding: 11,
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: "#1e2a3d",
-    backgroundColor: "#0a0e17",
+    borderColor: "#1a2536",
+    backgroundColor: "#080c14",
   },
   row: {
     flexDirection: "row",
@@ -565,15 +667,15 @@ export const s = StyleSheet.create({
     justifyContent: "space-between",
     gap: 10,
   },
-  heading: { fontSize: 17, fontWeight: "800", color: C.text },
+  heading: { fontSize: 16, fontWeight: "800", color: C.text },
   small: { fontSize: 11.5, color: C.muted },
   value: {
-    fontSize: 28,
+    fontSize: 26,
     color: C.text,
     fontWeight: "900",
     fontVariant: ["tabular-nums"],
   },
   grid: { flexDirection: "row", flexWrap: "wrap", gap: 10 },
   half: { width: "48%", flexGrow: 1 },
-  link: { color: C.cyan, fontSize: 13, fontWeight: "700" },
+  link: { color: C.cyan, fontSize: 12.5, fontWeight: "700" },
 });
