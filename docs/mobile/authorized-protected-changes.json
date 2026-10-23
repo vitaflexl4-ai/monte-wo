@@ -11,7 +11,7 @@
   },
   "wrangler.toml": {
     "before": "cd8435e7291ebdd2c533d6f04abd2d55b5c3d9dca64c684d9ebda814f1f0fd05",
-    "after": "beab7b76ea6abe6467e927c9011cdb5efa893d3793f6a508468b20491d68c3e2",
-    "reason": "Correct unsafe historical comment recommending waitlist DB reuse. No active binding, resource ID or deployment setting added."
+    "after": "cd8435e7291ebdd2c533d6f04abd2d55b5c3d9dca64c684d9ebda814f1f0fd05",
+    "reason": "Preserve exact historical Cloudflare Pages configuration (vitaflex-monte-wo, output public) with no active binding or resource ID changes."
   }
 }

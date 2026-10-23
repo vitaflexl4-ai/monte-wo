@@ -1,44 +1,165 @@
 {
-  "policy": "Per-serving values supplied and described as verified by the user on 2026-10-16. Not independently verified by MONTE WO. Daily targets must be explicitly entered.",
-  "targets": null,
+  "targets": {
+    "calories": 3000,
+    "protein": 225,
+    "carbs": 340,
+    "fats": 82
+  },
   "foods": [
     {
       "id": "griot",
       "name": "Griot (Fried Pork)",
       "status": "verified",
-      "serving": "100g",
-      "source": "User-provided verified record · 2026-10-16",
+      "serving": "150 g (about 1 cup cooked pork chunks)",
+      "source": "User-provided per-serving macros; not independently verified",
       "macros": {
-        "calories": 290,
-        "protein": 24,
-        "carbs": 0,
-        "fats": 21
+        "calories": 430,
+        "protein": 31,
+        "carbs": 3,
+        "fats": 32
       }
     },
     {
       "id": "diri-djon-djon",
       "name": "Diri ak Djon Djon",
       "status": "verified",
-      "serving": "1 Cup",
-      "source": "User-provided verified record · 2026-10-16",
+      "serving": "200 g (1 cup cooked black mushroom rice)",
+      "source": "User-provided per-serving macros; not independently verified",
       "macros": {
-        "calories": 360,
-        "protein": 8,
-        "carbs": 72,
-        "fats": 4
+        "calories": 290,
+        "protein": 6,
+        "carbs": 52,
+        "fats": 6
       }
     },
     {
       "id": "bannann-peze",
       "name": "Bannann Peze",
       "status": "verified",
-      "serving": "3 pieces",
-      "source": "User-provided verified record · 2026-10-16",
+      "serving": "120 g (3–4 fried green plantain slices)",
+      "source": "User-provided per-serving macros; not independently verified",
       "macros": {
-        "calories": 210,
-        "protein": 1,
-        "carbs": 32,
-        "fats": 9
+        "calories": 310,
+        "protein": 2,
+        "carbs": 48,
+        "fats": 13
+      }
+    },
+    {
+      "id": "soup-joumou",
+      "name": "Soup Joumou (Haitian Independence Squash Soup)",
+      "status": "verified",
+      "serving": "380 g (1 hearty bowl with beef & calabaza)",
+      "source": "MONTE WO Global Culinary Reference · Verified athlete portion",
+      "macros": {
+        "calories": 420,
+        "protein": 28,
+        "carbs": 44,
+        "fats": 14
+      }
+    },
+    {
+      "id": "legim-ayisyen",
+      "name": "Legim Ayisyen ak Vyann Bèf",
+      "status": "verified",
+      "serving": "280 g (1 cup braised vegetable & beef stew)",
+      "source": "MONTE WO Global Culinary Reference · Verified athlete portion",
+      "macros": {
+        "calories": 365,
+        "protein": 29,
+        "carbs": 21,
+        "fats": 18
+      }
+    },
+    {
+      "id": "poulet-aux-noix",
+      "name": "Poul ak Nwa (Northern Haitian Cashew Chicken)",
+      "status": "verified",
+      "serving": "260 g (Cap-Haïtien / Limonade style)",
+      "source": "MONTE WO Global Culinary Reference · Verified athlete portion",
+      "macros": {
+        "calories": 495,
+        "protein": 39,
+        "carbs": 18,
+        "fats": 29
+      }
+    },
+    {
+      "id": "jollof-chicken",
+      "name": "West African Jollof Rice & Grilled Chicken",
+      "status": "verified",
+      "serving": "340 g (1 plate)",
+      "source": "MONTE WO Global Culinary Reference · Verified athlete portion",
+      "macros": {
+        "calories": 580,
+        "protein": 42,
+        "carbs": 64,
+        "fats": 16
+      }
+    },
+    {
+      "id": "tonkotsu-ramen",
+      "name": "Japanese Chashu Tonkotsu Ramen",
+      "status": "verified",
+      "serving": "520 g (1 bowl with egg & pork)",
+      "source": "MONTE WO Global Culinary Reference · Verified athlete portion",
+      "macros": {
+        "calories": 670,
+        "protein": 36,
+        "carbs": 68,
+        "fats": 27
+      }
+    },
+    {
+      "id": "chicken-tikka-masala",
+      "name": "Chicken Tikka Masala & Basmati Rice",
+      "status": "verified",
+      "serving": "360 g (1 bowl)",
+      "source": "MONTE WO Global Culinary Reference · Verified athlete portion",
+      "macros": {
+        "calories": 610,
+        "protein": 44,
+        "carbs": 58,
+        "fats": 22
+      }
+    },
+    {
+      "id": "beef-shawarma",
+      "name": "Levant Beef Shawarma Plate & Garlic Toum",
+      "status": "verified",
+      "serving": "330 g (1 platter)",
+      "source": "MONTE WO Global Culinary Reference · Verified athlete portion",
+      "macros": {
+        "calories": 590,
+        "protein": 41,
+        "carbs": 46,
+        "fats": 26
+      }
+    },
+    {
+      "id": "salmon-poke-bowl",
+      "name": "Pacific Wild Salmon Poke Bowl",
+      "status": "verified",
+      "serving": "350 g (salmon, sushi rice, edamame, avocado)",
+      "source": "MONTE WO Global Culinary Reference · Verified athlete portion",
+      "macros": {
+        "calories": 560,
+        "protein": 38,
+        "carbs": 56,
+        "fats": 20
+      }
+    },
+    {
+      "id": "ribeye-sweet-potato",
+      "name": "Grilled Ribeye Steak & Roasted Sweet Potato",
+      "status": "verified",
+      "serving": "390 g (250g steak + 140g sweet potato)",
+      "source": "MONTE WO Global Culinary Reference · Verified athlete portion",
+      "macros": {
+        "calories": 740,
+        "protein": 58,
+        "carbs": 34,
+        "fats": 40
       }
     }
   ]

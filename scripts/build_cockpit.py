@@ -5,6 +5,8 @@ ROOT=Path(__file__).resolve().parents[1];P=ROOT/'public'
 def esc(v):return html.escape(str(v),quote=True)
 def build():
  for name in ['workouts.js','workout-transfer.js']:(P/name).write_bytes((ROOT/'shared'/name).read_bytes())
+ canon_ex=json.loads((ROOT/'content/exercises.json').read_text())
+ (ROOT/'shared/exercises-catalog.js').write_text('// GENERATED from content/exercises.json — do not edit by hand.\nexport default '+json.dumps(canon_ex,separators=(',',':'))+';\n')
  data=json.loads((P/'cockpit-catalog.json').read_text())
  assert hashlib.sha256((P/'cockpit-library.js').read_bytes()).hexdigest()==data['libraryModuleSha256'], 'Regenerate the shared filter module; do not hand-edit it.'
  for name,sha in data['inputs'].items():
@@ -14,7 +16,9 @@ def build():
    assert re.fullmatch(r'[a-z0-9-]+',e['id'])
    dest=P/'assets/workout-preview'/(e['id']+'.jpg');dest.parent.mkdir(parents=True,exist_ok=True)
    shutil.copyfile(ROOT/'apps/mobile/assets/workout-posters'/(e['id']+'.jpg'),dest)
- catalog=data['catalog'];model=json.loads((ROOT/'apps/mobile/src/generated/premium-muscle-map.json').read_text());foods=json.loads((ROOT/'content/nutrition/foods.json').read_text())
+ catalog=data['catalog'];model=json.loads((ROOT/'apps/mobile/src/generated/premium-muscle-map.json').read_text());base_foods=json.loads((ROOT/'content/nutrition/foods.json').read_text())
+ assert base_foods['targets'] is None and len(base_foods['foods'])==3
+ foods=json.loads((ROOT/'content/nutrition/cockpit-world-foods.json').read_text())
  names={r['id']:r['name'] for r in json.loads((P/'ranks.json').read_text())}
  def shape(node):
   assert node['tag'] in ['defs','clipPath','ellipse','linearGradient','stop','g','path','rect','circle']

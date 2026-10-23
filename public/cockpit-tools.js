@@ -61,3 +61,113 @@ $('#activate-camera').addEventListener('click',()=>initializeFoodCamera());
 $('#stop-camera').addEventListener('click',()=>stopFoodCamera());
 window.addEventListener('pagehide',()=>stopFoodCamera());
 document.addEventListener('visibilitychange',()=>{if(document.hidden&&(stream||requesting))stopFoodCamera('Camera stopped when this page became inactive. Activate it again when ready.')});
+
+// AI Muscle Definition Camera & 9:16 Story Exporter (Shadow Reconstruction visual guide)
+if($('#gains-camera-panel')){
+ let gainsStream=null,gainsPreset='shadow_sculpt',capturedReady=false;
+ const presetFilters={
+  shadow_sculpt:'contrast(1.54) brightness(0.9) saturate(1.16)',
+  anabolic_noir:'grayscale(0.82) contrast(1.74) brightness(0.88)',
+  gold_rim:'contrast(1.48) brightness(0.93) sepia(0.24) saturate(1.36)',
+  raw:'contrast(1.05) brightness(1.0)'
+ };
+ const setGainsStatus=msg=>{const el=$('#gains-status');if(el)el.textContent=msg;};
+ function stopGainsCamera(msg='Muscle lens stopped. Captured frame remains local.'){
+  if(gainsStream){for(const track of gainsStream.getTracks())track.stop();gainsStream=null}
+  const v=$('#gains-camera-video');if(v){v.pause();v.srcObject=null}
+  $('#gains-viewfinder').classList.remove('is-live');
+  $('#activate-gains-camera').disabled=false;$('#stop-gains-camera').disabled=true;
+  if(!capturedReady)$('#gains-camera-placeholder').hidden=false;
+  setGainsStatus(msg);
+ }
+ async function startGainsCamera(){
+  if(gainsStream)return;
+  $('#activate-gains-camera').disabled=true;$('#stop-gains-camera').disabled=false;
+  setGainsStatus('Requesting HD webcam stream for Shadow Reconstruction…');
+  try{
+   if(!window.isSecureContext||!navigator.mediaDevices?.getUserMedia)throw Error('Camera requires HTTPS or localhost.');
+   const incoming=await navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:'user'},width:{ideal:1920},height:{ideal:1080}},audio:false});
+   gainsStream=incoming;
+   const v=$('#gains-camera-video');v.srcObject=incoming;await v.play();
+   $('#gains-preview-canvas').hidden=true;$('#gains-camera-placeholder').hidden=true;
+   $('#gains-viewfinder').classList.add('is-live');
+   setGainsStatus('Live HD feed active · Shadow Reconstruction contour shader applied.');
+  }catch{
+   stopGainsCamera('Live camera unavailable in this frame — tap the electric-blue shutter to capture an HD simulated Shadow Reconstruction frame.');
+  }
+ }
+ function drawSimulatedSculpt(ctx,w,h){
+  const g=ctx.createRadialGradient(w/2,h*0.38,40,w/2,h*0.5,h*0.65);
+  g.addColorStop(0,gainsPreset==='gold_rim'?'#2b1e08':'#0b2340');g.addColorStop(0.6,'#050b17');g.addColorStop(1,'#010308');
+  ctx.fillStyle=g;ctx.fillRect(0,0,w,h);
+  ctx.save();ctx.translate(w/2,h*0.12);
+  const rim=gainsPreset==='gold_rim'?'#fde047':'#00d2ff';
+  ctx.fillStyle='#0f1828';ctx.strokeStyle=rim;ctx.lineWidth=5;ctx.shadowColor=rim;ctx.shadowBlur=26;
+  ctx.beginPath();ctx.ellipse(0,95,54,66,0,0,Math.PI*2);ctx.fill();ctx.stroke();
+  ctx.beginPath();ctx.moveTo(-80,175);ctx.quadraticCurveTo(0,148,80,175);
+  ctx.bezierCurveTo(225,188,262,278,228,395);ctx.bezierCurveTo(185,485,138,570,104,695);
+  ctx.lineTo(-104,695);ctx.bezierCurveTo(-138,570,-185,485,-228,395);ctx.bezierCurveTo(-262,278,-225,188,-80,175);
+  ctx.closePath();ctx.fill();ctx.stroke();ctx.restore();
+ }
+ function captureGainsFrame(){
+  const preview=$('#gains-preview-canvas'),story=$('#gains-story-canvas'),v=$('#gains-camera-video');
+  preview.width=1080;preview.height=1440;
+  const pctx=preview.getContext('2d');
+  if(gainsStream&&v.videoWidth>0){
+   pctx.save();pctx.filter=presetFilters[gainsPreset]||presetFilters.shadow_sculpt;
+   pctx.translate(1080,0);pctx.scale(-1,1);
+   const s=Math.max(1080/v.videoWidth,1440/v.videoHeight),dw=v.videoWidth*s,dh=v.videoHeight*s;
+   pctx.drawImage(v,(1080-dw)/2,(1440-dh)/2,dw,dh);pctx.restore();
+  }else{drawSimulatedSculpt(pctx,1080,1440)}
+  preview.hidden=false;$('#gains-camera-placeholder').hidden=true;capturedReady=true;
+  // Render vertical 9:16 (1080x1920) MONTE WO · LEVEL UP Story Canvas
+  const sctx=story.getContext('2d');
+  sctx.fillStyle='#020611';sctx.fillRect(0,0,1080,1920);
+  sctx.drawImage(preview,56,240,968,1300);
+  sctx.strokeStyle='#00d2ff';sctx.lineWidth=4;sctx.strokeRect(56,240,968,1300);
+  sctx.fillStyle='#00209f';sctx.fillRect(56,64,484,12);
+  sctx.fillStyle='#d21034';sctx.fillRect(540,64,484,12);
+  sctx.fillStyle='#ffffff';sctx.font='900 60px system-ui,sans-serif';sctx.fillText('MONTE WO · LEVEL UP',56,152);
+  sctx.fillStyle='#00d2ff';sctx.font='800 26px system-ui,sans-serif';sctx.fillText('AI GAINS DETECTOR · SHADOW RECONSTRUCTION',56,198);
+  sctx.fillStyle='#071124';sctx.fillRect(56,1585,968,245);
+  sctx.strokeStyle='#fbbf24';sctx.lineWidth=4;sctx.strokeRect(56,1585,968,245);
+  sctx.fillStyle='#fde047';sctx.font='900 26px system-ui,sans-serif';sctx.fillText('RAN FÒ AK KOURAY · HAITIAN RANK BADGE',92,1655);
+  sctx.fillStyle='#ffffff';sctx.font='900 68px system-ui,sans-serif';sctx.fillText('CHANPYON',92,1738);
+  sctx.fillStyle='#94a3b8';sctx.font='700 25px system-ui,sans-serif';sctx.fillText('KOUWÒN CHANPYON AYITI · #MonteWo #LevelUp',92,1792);
+  $('#gains-viewfinder').classList.add('has-flash');setTimeout(()=>$('#gains-viewfinder').classList.remove('has-flash'),160);
+  setGainsStatus('Captured 9:16 Shadow-Reconstructed photo! Ready to Save to Gallery or Share to Story.');
+ }
+ for(const b of document.querySelectorAll('[data-gains-preset]'))b.addEventListener('click',()=>{
+  gainsPreset=b.dataset.gainsPreset;$('#gains-viewfinder').dataset.preset=gainsPreset;
+  for(const x of document.querySelectorAll('[data-gains-preset]'))x.setAttribute('aria-pressed',String(x===b));
+  if(capturedReady)captureGainsFrame();
+ });
+ $('#activate-gains-camera').addEventListener('click',()=>startGainsCamera());
+ $('#stop-gains-camera').addEventListener('click',()=>stopGainsCamera());
+ $('#gains-shutter-button').addEventListener('click',()=>captureGainsFrame());
+ $('#gains-save-gallery').addEventListener('click',()=>{
+  if(!capturedReady)captureGainsFrame();
+  const a=document.createElement('a');a.href=$('#gains-preview-canvas').toDataURL('image/png');
+  a.download='monte-wo-gains-capture.png';a.click();
+  setGainsStatus('Saved high-fidelity Shadow Reconstruction capture to your device gallery!');
+ });
+ $('#gains-share-story').addEventListener('click',()=>{
+  if(!capturedReady)captureGainsFrame();
+  $('#gains-story-dialog').showModal();
+ });
+ $('#close-gains-story').addEventListener('click',()=>$('#gains-story-dialog').close());
+ $('#gains-native-share').addEventListener('click',()=>{
+  const story=$('#gains-story-canvas');
+  story.toBlob(blob=>{
+   if(!blob)return;
+   const file=new File([blob],'monte-wo-story-chanpyon.png',{type:'image/png'});
+   if(navigator.canShare&&navigator.canShare({files:[file]})){
+    navigator.share({title:'MONTE WO · LEVEL UP',text:'MONTE WO · LEVEL UP — CHANPYON',files:[file]}).catch(()=>{});
+   }else{
+    const a=document.createElement('a');a.href=story.toDataURL('image/png');a.download='monte-wo-9x16-story.png';a.click();
+    setGainsStatus('Exported 9:16 Story PNG — ready to post directly to Instagram & TikTok Stories!');
+   }
+  },'image/png');
+ });
+ window.addEventListener('pagehide',()=>stopGainsCamera());
+}

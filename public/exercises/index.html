@@ -84,7 +84,7 @@
             <p>Built for the work. Rooted in who you are.</p>
           </div>
           <div class="session-chip">
-            <i></i> LOCAL EXPLORER<small>No account connected</small><a href="#training-tools" class="session-entry">Open Logger &amp; Camera ↓</a>
+            <i></i> LOCAL EXPLORER<small>No account connected</small><a href="/mobile/" class="session-entry">Launch 5-Tab App ↗</a><a href="#training-tools" class="session-entry">Open Logger &amp; Camera ↓</a>
           </div>
         </div>
         <p id="boot-message" class="boot" role="status">
@@ -169,10 +169,80 @@
    <div id="clear-confirm" class="clear-confirm" hidden><span>Clear all sets in this session?</span><button id="confirm-clear-session" type="button">Yes, clear</button><button id="cancel-clear-session" type="button">Keep sets</button></div>
   </article>
   <article class="panel scanner-card" aria-labelledby="scanner-heading"><div class="small-label">FOOD CAMERA / LIVE VIEWFINDER</div><h3 id="scanner-heading">A real lens. Your control.</h3><p class="tool-description">Real camera preview, not ingredient recognition. No recording, snapshots, uploads or nutrition analysis.</p>
-   <div class="camera-frame" id="camera-frame"><video id="food-camera" autoplay muted playsinline aria-label="Live food camera preview"></video><div id="camera-placeholder"><span aria-hidden="true">◎</span><strong>Camera is off</strong><small>Starts only when you choose to activate it.</small></div><span class="camera-badge" id="camera-badge">CAMERA OFF</span><div class="scan-overlay" id="scan-overlay" hidden><div class="scan-reticle" aria-hidden="true"><i></i></div><div class="scan-caption"><b>SCANNING FOOD MATRIX - ISOLATING INGREDIENTS...</b><span>Visual guide only · ingredient analysis is not running.</span></div></div></div>
+   <div class="camera-frame" id="camera-frame"><video id="food-camera" autoplay muted playsinline aria-label="Live food camera preview"></video><div id="camera-placeholder"><span aria-hidden="true">◎</span><strong>Camera is off</strong><small>Starts only when you choose to activate it.</small></div><span class="camera-badge" id="camera-badge">CAMERA OFF</span><div class="scan-overlay" id="scan-overlay" hidden><div class="scan-reticle" aria-hidden="true"><i></i></div><div class="scan-caption"><b>MONTE WO GLOBAL MULTIMODAL SCANNER — RECOGNIZING INGREDIENTS...</b><span>Visual guide only · ingredient analysis is not running.</span></div></div></div>
    <div class="camera-actions"><button type="button" id="activate-camera" class="accent-button">Activate Live Capture Engine</button><button type="button" id="stop-camera" disabled>Stop camera</button></div><p id="camera-status" class="tool-status" role="status" aria-live="polite">Your browser will request camera permission. Audio is never requested.</p><a class="subtle-link" href="/exercises/#training-tools" target="_blank" rel="noopener">Open in a new tab if this embedded preview blocks camera access ↗</a>
   </article>
  </div>
+ <article class="panel gains-camera-panel" id="gains-camera-panel" aria-labelledby="gains-camera-heading">
+  <svg width="0" height="0" style="position:absolute;pointer-events:none" aria-hidden="true"><defs><filter id="cockpit-muscle-contour-shader" color-interpolation-filters="sRGB"><feConvolveMatrix order="3 3" preserveAlpha="true" kernelMatrix="0 -0.65 0 -0.65 3.6 -0.65 0 -0.65 0"/></filter></defs></svg>
+  <div class="gains-head">
+   <div>
+    <div class="small-label">AI MUSCLE DEFINITION CAMERA / 9:16 STORY STUDIO</div>
+    <h3 id="gains-camera-heading">Sculpted in shadow. Ready for the story.</h3>
+    <p class="tool-description">Visual guide: real-time contrast, shadow, and edge-sharpness contour shader over your live HD webcam feed. Nothing is uploaded automatically.</p>
+   </div>
+   <div class="gains-presets" role="group" aria-label="Muscle contour shader presets">
+    <button type="button" data-gains-preset="shadow_sculpt" aria-pressed="true">Shadow Sculpt</button>
+    <button type="button" data-gains-preset="anabolic_noir" aria-pressed="false">Anabolic Noir</button>
+    <button type="button" data-gains-preset="gold_rim" aria-pressed="false">Citadelle Gold</button>
+    <button type="button" data-gains-preset="raw" aria-pressed="false">Optical Feed</button>
+   </div>
+  </div>
+  <div class="gains-viewfinder" id="gains-viewfinder" data-preset="shadow_sculpt">
+   <video id="gains-camera-video" autoplay muted playsinline aria-label="AI Muscle Definition live camera preview"></video>
+   <canvas id="gains-preview-canvas" class="gains-preview-canvas" hidden></canvas>
+   <div id="gains-camera-placeholder" class="gains-placeholder">
+    <span aria-hidden="true">◈</span>
+    <strong>Shadow Reconstruction Viewfinder Ready</strong>
+    <small>Activate your HD camera or tap the electric-blue shutter below to capture a sculpted 9:16 frame.</small>
+    <div class="gains-lens-controls">
+     <button type="button" id="activate-gains-camera" class="accent-button">Start Live HD Muscle Lens</button>
+     <button type="button" id="stop-gains-camera" disabled>Stop lens</button>
+    </div>
+   </div>
+   <div class="gains-reticle-hud" aria-hidden="true">
+    <div class="gains-hud-pill"><b>MONTE WO AI GAINS DETECTOR — SHADOW RECONSTRUCTION ACTIVE</b><span>VISUAL GUIDE · CONTRAST, SHADOW &amp; EDGE-SHARPNESS SHADER</span></div>
+    <div class="gains-crosshair"><i></i><em></em></div>
+   </div>
+  </div>
+  <div class="gains-shutter-row">
+   <button type="button" id="gains-shutter-button" class="gains-shutter-button" aria-label="Capture high-fidelity muscle definition photo"><span></span></button>
+   <small id="gains-status" role="status" aria-live="polite">Tap the electric-blue shutter to capture a high-definition 9:16 frame.</small>
+  </div>
+  <div class="gains-bento-actions">
+   <button type="button" id="gains-save-gallery" class="gains-bento-btn gains-bento-gallery">
+    <span class="gains-bento-tag">CAMERA ROLL · HD PNG</span>
+    <strong>Save to Gallery</strong>
+    <small>Saves your shadow-reconstructed capture directly to your device gallery.</small>
+   </button>
+   <button type="button" id="gains-share-story" class="gains-bento-btn gains-bento-story">
+    <span class="gains-bento-tag">9:16 VERTICAL CARD · IG &amp; TIKTOK</span>
+    <strong>Share to Story</strong>
+    <small>Wraps capture in a 9:16 “MONTE WO · LEVEL UP” + Haitian CHANPYON rank card.</small>
+   </button>
+  </div>
+  <dialog id="gains-story-dialog" class="gains-story-dialog" aria-labelledby="gains-story-title">
+   <div class="gains-story-shell">
+    <div class="gains-story-top"><strong id="gains-story-title">9:16 Story Exporter · MONTE WO · LEVEL UP</strong><button type="button" id="close-gains-story">Close</button></div>
+    <div class="gains-story-card-frame">
+     <div class="gains-bicolore"><span></span><span></span></div>
+     <div class="gains-story-brand"><strong>MONTE WO · LEVEL UP</strong><small>AI GAINS DETECTOR · SHADOW RECONSTRUCTION</small></div>
+     <canvas id="gains-story-canvas" width="1080" height="1920" aria-label="9:16 MONTE WO Level Up Story preview"></canvas>
+     <div class="gains-story-rank-bar">
+      <img id="gains-story-crest" src="/assets/ranks/chanpyon.webp" alt="Chanpyon Haitian rank badge" width="52" height="52">
+      <div><span>RAN FÒ AK KOURAY · HAITIAN RANK</span><strong id="gains-story-rank-name">CHANPYON</strong><small>KOUWÒN CHANPYON AYITI · CROWNED VICTOR</small></div>
+     </div>
+    </div>
+    <div class="gains-story-share-links">
+     <button type="button" id="gains-native-share" class="accent-button">Share 9:16 Card (iOS / Android / Web Share)</button>
+     <div class="gains-social-row">
+      <a href="https://www.instagram.com/" target="_blank" rel="noopener noreferrer" id="gains-ig-link" class="gains-social-btn">Instagram Stories ↗</a>
+      <a href="https://www.tiktok.com/" target="_blank" rel="noopener noreferrer" id="gains-tt-link" class="gains-social-btn">TikTok Stories ↗</a>
+     </div>
+    </div>
+   </div>
+  </dialog>
+ </article>
 <section class="panel account-panel" id="account-workouts" aria-labelledby="account-heading">
  <div class="account-heading-row"><div><div class="small-label">SAME ACCOUNT / WEBSITE + NATIVE APP</div><h3 id="account-heading">Your training. One account.</h3></div><span class="account-state" id="account-identity">No account connected</span></div>
  <p class="tool-description">The logger above is a session-only draft. Account saving is optional and requires enrolled-pilot sign-in. Device-only app history is separate and never uploaded automatically. Training records do not award ranks.</p>
@@ -205,8 +275,9 @@
                 <span class="tiny-icon">◌</span> NUTRITION DASHBOARD
               </div>
               <h3>Culture on the plate.<br />Clarity in the numbers.</h3>
-              <p>Choose a dish to inspect its documented serving and macros.</p>
-              <div class="food-pills"><button data-food="griot" aria-pressed="false" data-requires-js disabled>Griot (Fried Pork)</button><button data-food="diri-djon-djon" aria-pressed="false" data-requires-js disabled>Diri ak Djon Djon</button><button data-food="bannann-peze" aria-pressed="false" data-requires-js disabled>Bannann Peze</button></div>
+              <p>Choose any Haitian or global dish—or type any meal or recipe—to compute macro rings against 3,000 daily kcal targets.</p>
+              <label class="search-label" style="margin-bottom:0.65rem"><span aria-hidden="true">⌕</span><input id="world-food-search" type="search" placeholder="Search or synthesize any world food / recipe…" autocomplete="off" data-requires-js disabled></label>
+              <div class="food-pills" id="food-pills"><button data-food="griot" aria-pressed="false" data-requires-js disabled>Griot (Fried Pork)</button><button data-food="diri-djon-djon" aria-pressed="false" data-requires-js disabled>Diri ak Djon Djon</button><button data-food="bannann-peze" aria-pressed="false" data-requires-js disabled>Bannann Peze</button><button data-food="soup-joumou" aria-pressed="false" data-requires-js disabled>Soup Joumou (Haitian Independence Squash Soup)</button><button data-food="legim-ayisyen" aria-pressed="false" data-requires-js disabled>Legim Ayisyen ak Vyann Bèf</button><button data-food="poulet-aux-noix" aria-pressed="false" data-requires-js disabled>Poul ak Nwa (Northern Haitian Cashew Chicken)</button><button data-food="jollof-chicken" aria-pressed="false" data-requires-js disabled>West African Jollof Rice &amp; Grilled Chicken</button><button data-food="tonkotsu-ramen" aria-pressed="false" data-requires-js disabled>Japanese Chashu Tonkotsu Ramen</button><button data-food="chicken-tikka-masala" aria-pressed="false" data-requires-js disabled>Chicken Tikka Masala &amp; Basmati Rice</button><button data-food="beef-shawarma" aria-pressed="false" data-requires-js disabled>Levant Beef Shawarma Plate &amp; Garlic Toum</button><button data-food="salmon-poke-bowl" aria-pressed="false" data-requires-js disabled>Pacific Wild Salmon Poke Bowl</button><button data-food="ribeye-sweet-potato" aria-pressed="false" data-requires-js disabled>Grilled Ribeye Steak &amp; Roasted Sweet Potato</button></div>
               <div class="food-info" role="status" aria-live="polite">
                 <strong id="food-name">Choose a dish</strong
                 ><span id="food-status"

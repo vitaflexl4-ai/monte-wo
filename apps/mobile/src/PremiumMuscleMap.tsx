@@ -1,4 +1,4 @@
-import React, { useEffect, useId, useRef, useState } from "react";
+import React, { useEffect, useId, useMemo, useRef, useState } from "react";
 import {
   View,
   Text,
@@ -32,6 +32,7 @@ import {
 import { rankArt } from "./art";
 import { rankNames } from "./model";
 import { C } from "./ui";
+
 const tags: Record<string, any> = {
   path: Path,
   circle: Circle,
@@ -43,6 +44,7 @@ const tags: Record<string, any> = {
   stop: Stop,
   ellipse: Ellipse,
 };
+
 const attrNames: Record<string, string> = {
   "stroke-width": "strokeWidth",
   "stroke-opacity": "strokeOpacity",
@@ -50,6 +52,43 @@ const attrNames: Record<string, string> = {
   "stop-color": "stopColor",
   "clip-path": "clipPath",
 };
+
+function computeRegionBounds(paths: readonly string[]) {
+  let minX = 420,
+    minY = 640,
+    maxX = 0,
+    maxY = 0;
+  const numRx = /-?\d+(?:\.\d+)?/g;
+  for (const d of paths) {
+    const nums = d.match(numRx);
+    if (!nums) continue;
+    for (let i = 0; i + 1 < nums.length; i += 2) {
+      const x = Number(nums[i]),
+        y = Number(nums[i + 1]);
+      if (Number.isFinite(x) && Number.isFinite(y)) {
+        if (x < minX) minX = x;
+        if (x > maxX) maxX = x;
+        if (y < minY) minY = y;
+        if (y > maxY) maxY = y;
+      }
+    }
+  }
+  if (minX > maxX || minY > maxY) {
+    return { leftPct: 25, topPct: 20, widthPct: 50, heightPct: 20 };
+  }
+  const pad = 8;
+  const x0 = Math.max(0, minX - pad),
+    y0 = Math.max(0, minY - pad),
+    x1 = Math.min(420, maxX + pad),
+    y1 = Math.min(640, maxY + pad);
+  return {
+    leftPct: (x0 / 420) * 100,
+    topPct: (y0 / 640) * 100,
+    widthPct: ((x1 - x0) / 420) * 100,
+    heightPct: ((y1 - y0) / 640) * 100,
+  };
+}
+
 function backgroundShape(
   shape: SvgShape,
   key: string,
@@ -81,88 +120,153 @@ function backgroundShape(
     </Tag>
   );
 }
+
 export function PremiumFigure({
   view,
   selected,
   active,
-  onSelect,
+  pressedId,
+  onSelectRegion,
   onHover,
+  onPressChange,
 }: {
   view: BodyView;
   selected: MuscleRegion | null;
   active: MuscleRegion | null;
-  onSelect: (event: MuscleSelection) => void;
+  pressedId: MuscleRegion | null;
+  onSelectRegion: (id: MuscleRegion) => void;
   onHover: (id: MuscleRegion | null) => void;
+  onPressChange: (id: MuscleRegion | null) => void;
 }) {
   const prefix = "premium-" + useId().replace(/[^a-zA-Z0-9_-]/g, "") + "-";
+  const regions = useMemo(() => visibleRegions(view), [view]);
+
   return (
-    <Svg
-      id="fig"
-      width="100%"
-      height="100%"
-      viewBox={premiumMap.viewBox.join(" ")}
-      style={{ position: "relative" }}
-      accessibilityLabel={
-        view === "f"
-          ? "Front muscle region diagram"
-          : "Back muscle region diagram"
-      }
-    >
-      {premiumMap.background.map((shape, i) =>
-        backgroundShape(shape, String(i), prefix, view),
-      )}
-      <G id="mg">
-        {visibleRegions(view).map((region) => (
-          <G
-            key={region.id}
-            id={"muscle-" + view + "-" + region.id}
-            {...(Platform.OS === "web"
-              ? {
-                  "data-m": region.id,
-                  "data-v": view,
-                  className: "m",
-                  onMouseEnter: () => onHover(region.id),
-                  onMouseLeave: () => onHover(null),
-                }
-              : {})}
-            opacity={active && active !== region.id ? 0.4 : 1}
-            onPress={() => onSelect(toggleRegion(selected, region.id, view))}
-          >
-            {region.paths[view]!.map((d, i) => (
-              <Path
-                key={i}
-                d={d}
-                fill={region.color}
-                fillOpacity={active === region.id ? 0.82 : 0.5}
-                stroke={region.color}
-                strokeOpacity={0.95}
-                strokeWidth={active === region.id ? 1.8 : 1.2}
-                strokeLinejoin="round"
-              />
-            ))}
-          </G>
-        ))}
-      </G>
-    </Svg>
+    <View style={{ width: "100%", height: "100%", position: "relative" }}>
+      <Svg
+        id="fig"
+        width="100%"
+        height="100%"
+        viewBox={premiumMap.viewBox.join(" ")}
+        style={{ position: "relative" }}
+        accessibilityLabel={
+          view === "f"
+            ? "Front muscle region diagram"
+            : "Back muscle region diagram"
+        }
+      >
+        {premiumMap.background.map((shape, i) =>
+          backgroundShape(shape, String(i), prefix, view),
+        )}
+        <G id="mg">
+          {regions.map((region) => {
+            const isPressed = pressedId === region.id;
+            const isActive = active === region.id || isPressed;
+            return (
+              <G
+                key={region.id}
+                id={"muscle-" + view + "-" + region.id}
+                {...(Platform.OS === "web"
+                  ? {
+                      "data-m": region.id,
+                      "data-v": view,
+                      className: "m",
+                      onMouseEnter: () => onHover(region.id),
+                      onMouseLeave: () => {
+                        onHover(null);
+                        onPressChange(null);
+                      },
+                    }
+                  : {})}
+                opacity={active && !isActive ? 0.36 : 1}
+                onPressIn={() => onPressChange(region.id)}
+                onPressOut={() => onPressChange(null)}
+                onPress={() => onSelectRegion(region.id)}
+              >
+                {region.paths[view]!.map((d, i) => (
+                  <Path
+                    key={i}
+                    d={d}
+                    fill={isPressed ? "#FFFFFF" : region.color}
+                    fillOpacity={isPressed ? 0.94 : isActive ? 0.84 : 0.5}
+                    stroke={isPressed ? "#FDE047" : region.color}
+                    strokeOpacity={1}
+                    strokeWidth={isPressed ? 2.5 : isActive ? 1.85 : 1.2}
+                    strokeLinejoin="round"
+                  />
+                ))}
+              </G>
+            );
+          })}
+        </G>
+      </Svg>
+
+      {/* Cross-Platform Native <Pressable> Touch Targets with Ripple & Visual Feedback */}
+      <View
+        pointerEvents={Platform.OS === "web" ? "box-none" : "auto"}
+        style={StyleSheet.absoluteFill}
+      >
+        {regions.map((region) => {
+          const box = computeRegionBounds(region.paths[view] || []);
+          const isPressed = pressedId === region.id;
+          return (
+            <Pressable
+              key={"touch-" + view + "-" + region.id}
+              testID={"premium-svg-touch-" + region.id}
+              accessibilityRole="button"
+              accessibilityLabel={`Select ${region.name} muscle group`}
+              accessibilityState={{ selected: selected === region.id }}
+              android_ripple={{
+                color: region.color + "66",
+                borderless: true,
+              }}
+              onPressIn={() => onPressChange(region.id)}
+              onPressOut={() => onPressChange(null)}
+              onHoverIn={() => onHover(region.id)}
+              onHoverOut={() => onHover(null)}
+              onPress={() => onSelectRegion(region.id)}
+              style={({ pressed }) => ({
+                position: "absolute",
+                left: `${box.leftPct}%` as any,
+                top: `${box.topPct}%` as any,
+                width: `${box.widthPct}%` as any,
+                height: `${box.heightPct}%` as any,
+                borderRadius: 16,
+                backgroundColor:
+                  pressed || isPressed ? region.color + "26" : "transparent",
+                borderWidth: pressed || isPressed ? 1.2 : 0,
+                borderColor: pressed || isPressed ? region.color + "AA" : "transparent",
+              })}
+            />
+          );
+        })}
+      </View>
+    </View>
   );
 }
+
 function RegionCard({
   region,
   selected,
   active,
-  view,
-  onSelect,
+  pressedId,
+  onSelectRegion,
   onHover,
+  onPressChange,
   onLayout,
 }: {
   region: RegionDefinition;
   selected: MuscleRegion | null;
   active: MuscleRegion | null;
-  view: BodyView;
-  onSelect: (event: MuscleSelection) => void;
+  pressedId: MuscleRegion | null;
+  onSelectRegion: (id: MuscleRegion) => void;
   onHover: (id: MuscleRegion | null) => void;
+  onPressChange: (id: MuscleRegion | null) => void;
   onLayout: (e: LayoutChangeEvent) => void;
 }) {
+  const isPressed = pressedId === region.id;
+  const isActive = active === region.id || isPressed;
+
   return (
     <Pressable
       testID={"premium-region-" + region.id}
@@ -171,11 +275,14 @@ function RegionCard({
         region.name + " · " + rankNames[region.tierId] + " · example tier"
       }
       accessibilityState={{ selected: selected === region.id }}
+      android_ripple={{ color: region.color + "44", borderless: false }}
       {...(Platform.OS === "web"
         ? { "aria-pressed": selected === region.id }
         : {})}
       onLayout={onLayout}
-      onPress={() => onSelect(toggleRegion(selected, region.id, view))}
+      onPressIn={() => onPressChange(region.id)}
+      onPressOut={() => onPressChange(null)}
+      onPress={() => onSelectRegion(region.id)}
       onHoverIn={() => onHover(region.id)}
       onHoverOut={() => onHover(null)}
       onFocus={() => onHover(region.id)}
@@ -183,18 +290,23 @@ function RegionCard({
       style={({ pressed }) => [
         m.regionCard,
         {
-          borderColor: region.color,
-          backgroundColor: active === region.id ? "#10233b" : "#081321",
-          opacity: pressed ? 0.8 : 1,
+          borderColor: pressed || isPressed ? "#FDE047" : region.color,
+          backgroundColor:
+            pressed || isPressed
+              ? region.color + "2E"
+              : isActive
+                ? "#10233b"
+                : "#081321",
+          transform: [{ scale: pressed || isPressed ? 0.985 : 1 }],
         },
-        active === region.id && { boxShadow: `0px 0px 18px ${region.color}33` },
+        isActive && { boxShadow: `0px 0px 18px ${region.color}40` },
       ]}
     >
       <View style={m.cardRow}>
         <Svg width={27} height={27} viewBox="0 0 28 28">
           <G
             fill="none"
-            stroke="#DCE6F8"
+            stroke={isPressed ? "#FDE047" : "#DCE6F8"}
             strokeWidth={1.6}
             strokeLinecap="round"
             strokeLinejoin="round"
@@ -228,6 +340,7 @@ function RegionCard({
     </Pressable>
   );
 }
+
 export function PremiumMuscleMap({
   view,
   selected,
@@ -239,14 +352,22 @@ export function PremiumMuscleMap({
 }) {
   const [width, setWidth] = useState(340),
     [hover, setHover] = useState<MuscleRegion | null>(null),
+    [pressedId, setPressedId] = useState<MuscleRegion | null>(null),
     [cards, setCards] = useState<Record<string, { y: number; height: number }>>(
       {},
     );
+
+  // Instant zero-latency selection handler shared across SVG <Pressable> & RegionCard
+  const select = (id: MuscleRegion) => {
+    onSelect(toggleRegion(selected, id, view));
+  };
+
   const frame = useRef<number | undefined>(undefined),
     pending = useRef<{
       width?: number;
       cards: Record<string, { y: number; height: number }>;
     }>({ cards: {} });
+
   const schedule = () => {
     if (frame.current !== undefined) return;
     frame.current = requestAnimationFrame(() => {
@@ -258,13 +379,19 @@ export function PremiumMuscleMap({
         setCards((previous) => ({ ...previous, ...updates.cards }));
     });
   };
+
   useEffect(
     () => () => {
       if (frame.current !== undefined) cancelAnimationFrame(frame.current);
     },
     [],
   );
-  useEffect(() => setHover(null), [view]);
+
+  useEffect(() => {
+    setHover(null);
+    setPressedId(null);
+  }, [view]);
+
   const measure = (event: LayoutChangeEvent) => {
     const w = Math.floor(event.nativeEvent.layout.width);
     if (w > 0 && w !== width) {
@@ -272,6 +399,7 @@ export function PremiumMuscleMap({
       schedule();
     }
   };
+
   const record = (id: string, event: LayoutChangeEvent) => {
     const { y, height } = event.nativeEvent.layout;
     const value = { y: Math.round(y), height: Math.round(height) };
@@ -280,12 +408,14 @@ export function PremiumMuscleMap({
       schedule();
     }
   };
+
   const wide = width > 700,
     figureWidth = wide ? 300 : Math.min(width, 340),
     figureHeight = (figureWidth * 640) / 420,
     sideWidth = (width - figureWidth - 36) / 2,
-    active = hover || selected,
+    active = pressedId || hover || selected,
     regions = visibleRegions(view);
+
   const column = (side: string) => (
     <View
       style={[
@@ -307,16 +437,18 @@ export function PremiumMuscleMap({
           <RegionCard
             key={r.id}
             region={r}
-            view={view}
             active={active}
+            pressedId={pressedId}
             selected={selected}
-            onSelect={onSelect}
+            onSelectRegion={select}
             onHover={setHover}
+            onPressChange={setPressedId}
             onLayout={(e) => record(r.id, e)}
           />
         ))}
     </View>
   );
+
   const figure = (
     <View
       style={{ width: figureWidth, height: figureHeight, alignSelf: "center" }}
@@ -325,11 +457,14 @@ export function PremiumMuscleMap({
         view={view}
         selected={selected}
         active={active}
-        onSelect={onSelect}
+        pressedId={pressedId}
+        onSelectRegion={select}
         onHover={setHover}
+        onPressChange={setPressedId}
       />
     </View>
   );
+
   return (
     <View
       testID="premium-map-stage"
@@ -355,7 +490,7 @@ export function PremiumMuscleMap({
                     d={`M${x1} ${y1}L${x1 + (r.side === "l" ? 24 : -24)} ${y1}L${x2} ${y2}`}
                     fill="none"
                     stroke={active === r.id ? r.color : "#6ea5ff61"}
-                    strokeWidth={active === r.id ? 1.8 : 1.3}
+                    strokeWidth={active === r.id ? 2 : 1.3}
                   />
                   <Circle cx={x2} cy={y2} r={4.5} fill={r.color} />
                 </G>
@@ -382,6 +517,7 @@ export function PremiumMuscleMap({
     </View>
   );
 }
+
 const m = StyleSheet.create({
   column: { position: "relative" },
   regionCard: {

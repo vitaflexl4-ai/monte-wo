@@ -1,5 +1,5 @@
 import {validateWorkout as validateSharedWorkout, WorkoutInputError} from '../../shared/workouts.js';
-import catalog from '../../content/exercises.json' with {type:'json'};
+import catalog from '../../shared/exercises-catalog.js';
 import {authenticate} from '../strength/auth.js';
 import {handleStrength} from '../strength/api.js';
 import {StrengthError,requireThat,exactKeys} from '../strength/engine.js';

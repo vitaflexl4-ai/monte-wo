@@ -15,7 +15,8 @@
     "test:phase2": "node tests/phase2.mjs",
     "test:ranks": "node tests/ranks.mjs",
     "test:portable": "node tests/portable.mjs",
-    "build": "python3 scripts/build_tools.py && python3 scripts/build_library.py && python3 scripts/build_strength.py && python3 scripts/build_lab.py && python3 scripts/build_website.py",
+    "build": "python3 scripts/build_tools.py && python3 scripts/build_library.py && python3 scripts/build_strength.py && python3 scripts/build_lab.py && python3 scripts/build_website.py && node scripts/patch_mobile_web_index.mjs",
+    "build:mobile-web": "(cd apps/mobile && MONTEWO_WEB_PREVIEW=true npx expo export --platform web --output-dir ../../public/mobile) && node scripts/patch_mobile_web_index.mjs",
     "test:library": "node tests/library.mjs",
     "test:strength": "node --test tests/strength*.test.js",
     "test:strength-browser": "node tests/strength-browser.mjs",
@@ -31,8 +32,5 @@
   "devDependencies": {
     "wrangler": "^4.0.0",
     "@playwright/test": "^1.50.0"
-  },
-  "dependencies": {
-    "expo": "^51.0.0"
   }
 }

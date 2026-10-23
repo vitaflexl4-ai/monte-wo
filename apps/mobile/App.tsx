@@ -15,7 +15,6 @@ import {
   Alert,
   Linking,
   Platform,
-  ActivityIndicator,
   ImageBackground,
   StyleSheet,
   ScrollView,
@@ -37,10 +36,7 @@ import {
   UserRound,
   ChevronRight,
   ShieldCheck,
-  ArrowUpRight,
-  Flame,
-  Heart,
-  Timer,
+  Trophy,
   Plus,
   LockKeyhole,
   Bell,
@@ -48,8 +44,15 @@ import {
   Utensils,
   ArrowRight,
   Layers3,
+  Barcode,
+  ChefHat,
+  Sparkles,
+  Film,
+  Flame,
+  ArrowUpRight,
+  Activity,
+  Camera,
 } from "lucide-react-native";
-import * as Crypto from "expo-crypto";
 import * as DocumentPicker from "expo-document-picker";
 import { File } from "expo-file-system";
 import { VideoView, useVideoPlayer } from "expo-video";
@@ -87,9 +90,19 @@ import {
   Chips,
   Screen,
   Notice,
+  Badge,
+  ProgressBar,
 } from "./src/ui";
 
-import { Brand, Glow, LiftGlyph, rankArt, WelcomeShade } from "./src/art";
+import {
+  Brand,
+  Glow,
+  LiftGlyph,
+  disciplineArt,
+  CardScrim,
+  rankArt,
+  WelcomeShade,
+} from "./src/art";
 import {
   fetchPublicCatalog,
   mediaUri,
@@ -103,12 +116,6 @@ import {
   type PackRecord,
 } from "./src/workout-library";
 import { workoutPosters } from "./src/workout-posters";
-const packPreviewOrigin =
-  Platform.OS === "web" &&
-  process.env.EXPO_PUBLIC_LOCAL_WORKOUT_MEDIA === "true"
-    ? API_BASE
-    : undefined;
-
 import { ExerciseGrid } from "./src/ExerciseGrid";
 import {
   equipmentGroups,
@@ -116,7 +123,6 @@ import {
   filterLibrary,
   type LibraryFilters,
 } from "./src/library-index";
-
 import { PremiumMuscleMap } from "./src/PremiumMuscleMap";
 import {
   selectionFor,
@@ -125,13 +131,55 @@ import {
   type MuscleRegion,
   type MuscleSelection,
 } from "./src/muscle-map";
+import { deviceWorkouts } from "./src/workout-storage";
+import { workoutVolume } from "../../shared/workouts.js";
+import { analyzeWorkouts, summarizeMeals } from "../../shared/training-tools.js";
+import { interpolateDisciplineLadder } from "../../shared/proposed-climb-scale.js";
+import climbDataset from "./src/climb-scale-data.json";
+import {
+  DEFAULT_CLIMB_PROFILE,
+  loadClimbProfile,
+  saveClimbProfile,
+  loadSelfReportedLifts,
+  recordSelfReportedLift,
+  removeSelfReportedLift,
+  bestCandidateForDiscipline,
+  loadDailyFuel,
+  type DailyFuelStore,
+  type LocalClimbProfile,
+  type SelfReportedLift,
+} from "./src/device-prefs";
+import { RankScreen } from "./src/RankScreen";
+import { WorkoutScreen } from "./src/WorkoutScreen";
+import { NutritionScreen } from "./src/NutritionScreen";
+import { MuscleDefinitionCamera } from "./src/MuscleDefinitionCamera";
+import {
+  buildUniversalExerciseAtlas,
+  loadCustomExercises,
+  loadVaultWorkouts,
+} from "./src/global-exercises";
+import {
+  AttachMediaModal,
+  ExerciseMediaBanner,
+  useMediaVault,
+} from "./src/media-vault";
 
-import {deviceWorkouts} from "./src/workout-storage";
-import {validateSet, validateWorkout, workoutVolume} from "../../shared/workouts.js";
+const packPreviewOrigin =
+  Platform.OS === "web" &&
+  process.env.EXPO_PUBLIC_LOCAL_WORKOUT_MEDIA === "true"
+    ? API_BASE
+    : undefined;
 
 const volumeLabel = (workout: Workout) => {
-  const v = workoutVolume(workout);
-  return `${v.kg} kg·reps / ${v.lb} lb·reps`;
+  const vol = workoutVolume(workout);
+  return `${vol.kg} kg·reps / ${vol.lb} lb·reps`;
+};
+
+const FULL_DISCIPLINE_NAMES: Record<string, string> = {
+  squat: "Barbell Squat",
+  bench: "Barbell Bench Press",
+  deadlift: "Barbell Deadlift",
+  curl: "Strict Biceps Curl",
 };
 
 type AppState = {
@@ -147,6 +195,11 @@ type AppState = {
   refreshLocal: () => Promise<void>;
   saveLocal: (workout: Workout) => Promise<void>;
   deleteLocal: (id: string) => Promise<void>;
+  localProfile: LocalClimbProfile;
+  updateLocalProfile: (next: LocalClimbProfile) => Promise<void>;
+  selfLifts: SelfReportedLift[];
+  addSelfLift: (input: Parameters<typeof recordSelfReportedLift>[0]) => Promise<SelfReportedLift>;
+  deleteSelfLift: (id: string) => Promise<void>;
   next: string | null;
   available: boolean;
   status: string;
@@ -155,18 +208,27 @@ type AppState = {
   loadMore: () => Promise<void>;
   logout: () => Promise<void>;
 };
+
 const Context = createContext<AppState>(null as any);
 const useApp = () => useContext(Context);
+
 function Provider({ children }: PropsWithChildren) {
   const [localWorkouts, setLocalWorkouts] = useState<Workout[]>([]);
   const [localStatus, setLocalStatus] = useState("Loading device history…");
   const [localReady, setLocalReady] = useState(false);
+
+  const [localProfile, setLocalProfile] =
+    useState<LocalClimbProfile>(DEFAULT_CLIMB_PROFILE);
+  const [selfLifts, setSelfLifts] = useState<SelfReportedLift[]>([]);
+
   async function refreshLocal() {
     try {
       const result = await deviceWorkouts.list();
       setLocalWorkouts(result.workouts);
       setLocalReady(true);
-      setLocalStatus(result.warning || "Saved on this device · not synced to an account");
+      setLocalStatus(
+        result.warning || "Saved on this device · not synced to an account",
+      );
     } catch (error) {
       setLocalReady(false);
       setLocalStatus(errorMessage(error));
@@ -176,19 +238,43 @@ function Provider({ children }: PropsWithChildren) {
     const result = await deviceWorkouts.save(workout);
     setLocalWorkouts(result.workouts);
     setLocalReady(true);
-    setLocalStatus(result.warning || "Saved on this device · not synced to an account");
+    setLocalStatus(
+      result.warning || "Saved on this device · not synced to an account",
+    );
   }
   async function deleteLocal(id: string) {
     const result = await deviceWorkouts.remove(id);
     setLocalWorkouts(result.workouts);
-    setLocalStatus(result.warning || "Deleted from device history and its recovery copy.");
+    setLocalStatus(
+      result.warning || "Deleted from device history and its recovery copy.",
+    );
   }
+
+  async function updateLocalProfile(next: LocalClimbProfile) {
+    setLocalProfile(next);
+    await saveClimbProfile(next);
+  }
+
+  async function addSelfLift(
+    input: Parameters<typeof recordSelfReportedLift>[0],
+  ) {
+    const res = await recordSelfReportedLift(input);
+    setSelfLifts(res.all);
+    return res.record;
+  }
+
+  async function deleteSelfLift(id: string) {
+    const next = await removeSelfReportedLift(id);
+    setSelfLifts(next);
+  }
+
   const [me, setMe] = useState<any>(null),
     [workouts, setWorkouts] = useState<Workout[]>([]),
     [next, setNext] = useState<string | null>(null),
     [available, setAvailable] = useState(false),
     [status, setStatus] = useState("Checking account services…"),
     [loading, setLoading] = useState(false);
+
   const [exerciseCatalog, setExerciseCatalog] = useState<ExerciseCatalog>(
     mergeWorkoutLibrary(bundledCatalog as ExerciseCatalog),
   );
@@ -196,6 +282,7 @@ function Provider({ children }: PropsWithChildren) {
     bundledCatalog as ExerciseCatalog,
   );
   const [catalogStatus, setCatalogStatus] = useState("Bundled guides");
+
   async function refreshCatalog() {
     try {
       const result = await fetchPublicCatalog(API_BASE);
@@ -211,6 +298,7 @@ function Provider({ children }: PropsWithChildren) {
       );
     }
   }
+
   async function refresh() {
     setLoading(true);
     try {
@@ -219,7 +307,7 @@ function Provider({ children }: PropsWithChildren) {
       if (!config.available || !config.workoutSync) {
         setMe(null); setWorkouts([]); setNext(null);
         setStatus(
-          "Account services are not configured. The exercise library is available offline.",
+          "Account services are not configured. Device training, calculators, and Climb Scale preview work offline.",
         );
         return;
       }
@@ -247,6 +335,7 @@ function Provider({ children }: PropsWithChildren) {
       setLoading(false);
     }
   }
+
   async function loadMore() {
     if (!next) return;
     const history = await request(
@@ -255,6 +344,7 @@ function Provider({ children }: PropsWithChildren) {
     setWorkouts((previous) => [...previous, ...history.workouts]);
     setNext(history.nextCursor);
   }
+
   async function logout() {
     try {
       await signOut();
@@ -265,6 +355,7 @@ function Provider({ children }: PropsWithChildren) {
       setStatus("Signed out on this device.");
     }
   }
+
   useEffect(() => {
     const stop = onSessionCleared(() => {
       setMe(null);
@@ -275,8 +366,11 @@ function Provider({ children }: PropsWithChildren) {
     refresh();
     refreshCatalog();
     refreshLocal();
+    loadClimbProfile().then(setLocalProfile);
+    loadSelfReportedLifts().then(setSelfLifts);
     return stop;
   }, []);
+
   return (
     <Context.Provider
       value={{
@@ -286,7 +380,17 @@ function Provider({ children }: PropsWithChildren) {
         catalogStatus,
         refreshCatalog,
         workouts,
-        localWorkouts, localStatus, localReady, refreshLocal, saveLocal, deleteLocal,
+        localWorkouts,
+        localStatus,
+        localReady,
+        refreshLocal,
+        saveLocal,
+        deleteLocal,
+        localProfile,
+        updateLocalProfile,
+        selfLifts,
+        addSelfLift,
+        deleteSelfLift,
         next,
         available,
         status,
@@ -300,6 +404,7 @@ function Provider({ children }: PropsWithChildren) {
     </Context.Provider>
   );
 }
+
 function useOperation() {
   const running = useRef(false);
   const [busy, setBusy] = useState(false),
@@ -324,6 +429,7 @@ function useOperation() {
     setMessage,
   };
 }
+
 const confirm = (title: string, message: string, action: () => void) => {
   if (Platform.OS === "web") {
     if (window.confirm(title + "\n\n" + message)) action();
@@ -333,7 +439,9 @@ const confirm = (title: string, message: string, action: () => void) => {
       { text: "Continue", style: "destructive", onPress: action },
     ]);
 };
+
 const legal = (path: string) => Linking.openURL(API_BASE + path);
+
 function SignInCard({ navigation }: any) {
   const a = useApp();
   return (
@@ -345,6 +453,7 @@ function SignInCard({ navigation }: any) {
     </Card>
   );
 }
+
 function PageHeader({
   eyebrow,
   title,
@@ -355,13 +464,14 @@ function PageHeader({
   subtitle?: string;
 }) {
   return (
-    <View style={{ gap: 9 }}>
+    <View style={{ gap: 8 }}>
       <Label>{eyebrow}</Label>
       <Title>{title}</Title>
       {subtitle && <Body>{subtitle}</Body>}
     </View>
   );
 }
+
 const v = StyleSheet.create({
   welcome: { flex: 1, backgroundColor: C.bg },
   welcomeArt: {
@@ -379,109 +489,87 @@ const v = StyleSheet.create({
     justifyContent: "space-between",
     minHeight: 720,
   },
-  welcomeCopy: { gap: 14, marginTop: 270 },
+  welcomeCopy: { gap: 14, marginTop: 260 },
   welcomeTitle: {
     fontSize: 34,
     lineHeight: 39,
-    fontWeight: "800",
-    fontStyle: "italic",
+    fontWeight: "900",
     letterSpacing: -0.9,
     color: C.text,
   },
   tagline: {
     fontSize: 10,
     color: "#91b2cc",
-    letterSpacing: 0.6,
+    letterSpacing: 1.1,
+    fontWeight: "700",
     textAlign: "center",
   },
   topbar: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    paddingVertical: 3,
+    paddingVertical: 4,
   },
   iconButton: {
-    width: 38,
-    height: 38,
-    borderRadius: 19,
+    width: 39,
+    height: 39,
+    borderRadius: 12,
     alignItems: "center",
     justifyContent: "center",
     borderWidth: 1,
     borderColor: C.border,
-    backgroundColor: "#061321",
+    backgroundColor: "#0a0e16",
   },
-  greeting: { fontSize: 12, color: C.muted },
-  welcomeName: {
-    color: C.text,
-    fontWeight: "800",
-    fontSize: 26,
-    letterSpacing: -0.5,
-    lineHeight: 32,
-  },
-  sectionTitle: { fontSize: 15, fontWeight: "700", color: C.text },
-  subtle: { fontSize: 10, color: C.muted, lineHeight: 16 },
+  sectionTitle: { fontSize: 16.5, fontWeight: "800", color: C.text },
+  subtle: { fontSize: 11.5, color: C.muted, lineHeight: 17 },
   pill: {
     borderWidth: 1,
-    borderColor: "#284866",
-    borderRadius: 6,
-    paddingHorizontal: 7,
+    borderColor: "#24324a",
+    borderRadius: 999,
+    paddingHorizontal: 9,
     paddingVertical: 4,
     alignSelf: "flex-start",
-    backgroundColor: "#0b2137",
+    backgroundColor: "#0d1320",
   },
   pillText: {
-    fontSize: 8,
-    fontWeight: "700",
-    color: "#b2cee6",
-    letterSpacing: 0.5,
+    fontSize: 8.5,
+    fontWeight: "800",
+    color: "#9ccaff",
+    letterSpacing: 0.6,
   },
   discipline: {
     width: "47%",
     flexGrow: 1,
     padding: 14,
-    borderRadius: 13,
+    borderRadius: 18,
     borderWidth: 1,
-    borderColor: "#1e4d78",
-    backgroundColor: "#04101d",
+    borderColor: "#1b263b",
+    backgroundColor: "#000000",
     overflow: "hidden",
     gap: 10,
-    minHeight: 172,
+    minHeight: 158,
   },
-  stat: { color: C.text, fontSize: 24, fontWeight: "700" },
+  stat: {
+    color: C.text,
+    fontSize: 25,
+    fontWeight: "900",
+    fontVariant: ["tabular-nums"],
+  },
   quick: {
-    flex: 1,
-    minHeight: 105,
-    padding: 14,
-    borderRadius: 12,
+    width: "47%",
+    flexGrow: 1,
+    minHeight: 96,
+    padding: 15,
+    borderRadius: 16,
     borderWidth: 1,
-    borderColor: C.border,
-    backgroundColor: "#051322",
-    gap: 8,
+    borderColor: "#1d283d",
+    backgroundColor: "#090c12",
+    gap: 7,
   },
-  tiny: { fontSize: 9, color: C.muted },
+  tiny: { fontSize: 9.5, color: C.muted },
   rankItem: { width: "18%", alignItems: "center", gap: 3 },
-  rankName: { fontSize: 9, color: "#a4b7ca" },
+  rankName: { fontSize: 9.5, color: "#b6c9dd", fontWeight: "700" },
   rankImage: { width: 44, height: 44 },
-  atlasButton: {
-    padding: 12,
-    borderWidth: 1,
-    borderRadius: 10,
-    borderColor: C.border,
-    backgroundColor: "#08172a",
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-  },
-  exerciseThumb: {
-    width: 58,
-    height: 64,
-    borderRadius: 9,
-    backgroundColor: "#0a2037",
-    justifyContent: "center",
-    alignItems: "center",
-    borderWidth: 1,
-    borderColor: "#1b3d60",
-  },
   mediaFrame: {
     height: 210,
     borderWidth: 1,
@@ -490,7 +578,7 @@ const v = StyleSheet.create({
     overflow: "hidden",
     backgroundColor: "#020911",
   },
-  subheading: { color: C.text, fontSize: 21, fontWeight: "700" },
+  subheading: { color: C.text, fontSize: 20, fontWeight: "800" },
   footer: {
     marginTop: 6,
     paddingTop: 16,
@@ -500,15 +588,16 @@ const v = StyleSheet.create({
     gap: 6,
   },
 });
+
 function Welcome({ navigation }: any) {
   return (
     <SafeAreaView
-      style={[v.welcome, { width: "100%", maxWidth: 500, alignSelf: "center" }]}
+      style={[v.welcome, { width: "100%", maxWidth: 540, alignSelf: "center" }]}
     >
       <ImageBackground
         source={require("./assets/training-hero.jpg")}
         style={v.welcomeArt}
-        imageStyle={{ opacity: 0.8, width: "100%", height: "100%" }}
+        imageStyle={{ opacity: 0.78, width: "100%", height: "100%" }}
       >
         <WelcomeShade />
       </ImageBackground>
@@ -516,28 +605,26 @@ function Welcome({ navigation }: any) {
         <View style={v.welcomeInner}>
           <Brand large />
           <View style={v.welcomeCopy}>
+            <Badge text="SERIOUS STRENGTH SPORT" tone="red" />
             <Text style={v.welcomeTitle}>
-              Your Strength.{"\n"}Your Next Level.
+              Measure. Prove.{"\n"}Earn the Climb.
             </Text>
-            <Body style={{ fontSize: 14, color: "#b9cde1", maxWidth: 260 }}>
-              Track your lifts. Build your discipline. Prove your progress.
+            <Body style={{ fontSize: 14, color: "#c3d7ec", maxWidth: 320 }}>
+              Nine earned ranks across Squat, Bench Press, Deadlift, and Strict Curl. No attendance trophies—only strict performance.
             </Body>
-            <View style={{ gap: 12, marginTop: 14 }}>
+            <View style={{ gap: 11, marginTop: 12 }}>
               <Button
-                title="Get Started"
+                title="Enter MONTE WO Dashboard"
                 onPress={() => navigation.replace("Main")}
               />
               <Button
-                title="Sign In"
+                title="Sign In to Pilot Account"
                 secondary
                 onPress={() => navigation.navigate("SignIn")}
               />
             </View>
-            <Text style={[v.subtle, { textAlign: "center", marginTop: 3 }]}>
-              Explore the app without an account.
-            </Text>
-            <Text style={[v.tagline, { marginTop: 22 }]}>
-              Leve. Klase. Monte Wo.
+            <Text style={[v.tagline, { marginTop: 18 }]}>
+              LEVE. KLASE. MONTE WO.
             </Text>
           </View>
         </View>
@@ -545,34 +632,123 @@ function Welcome({ navigation }: any) {
     </SafeAreaView>
   );
 }
-function RankLadder({ strip = false }: { strip?: boolean }) {
-  const items = Object.entries(rankNames).map(([id, name]) => (
-    <View
-      key={id}
-      style={
-        strip
-          ? { minWidth: 64, flexGrow: 1, alignItems: "center", gap: 3 }
-          : v.rankItem
-      }
-    >
-      <Image source={rankArt[id]} style={v.rankImage} resizeMode="contain" />
-      <Text style={v.rankName}>{name}</Text>
-    </View>
-  ));
+
+const DISCIPLINE_META: Record<
+  string,
+  { code: string; tag: string; standard: string; accent: string }
+> = {
+  squat: {
+    code: "01",
+    tag: "LOWER · RACK",
+    standard: "Hip crease below top of knee · full stand",
+    accent: "#38bdf8",
+  },
+  bench: {
+    code: "02",
+    tag: "PRESS · BENCH",
+    standard: "Controlled chest pause · locked elbows",
+    accent: "#60a5fa",
+  },
+  deadlift: {
+    code: "03",
+    tag: "PULL · PLATFORM",
+    standard: "Dead stop from floor · hips & knees locked",
+    accent: "#ff3b5c",
+  },
+  curl: {
+    code: "04",
+    tag: "ARMS · STRICT",
+    standard: "Zero hip/torso swing · full supinated lockout",
+    accent: "#a78bfa",
+  },
+};
+
+function RankLadder({
+  strip = false,
+  onOpenRank,
+}: {
+  strip?: boolean;
+  onOpenRank?: () => void;
+}) {
+  const items = Object.entries(rankNames).map(([id, name], idx) => {
+    const elite = idx >= 6;
+    return (
+      <Pressable
+        key={id}
+        disabled={!onOpenRank}
+        onPress={onOpenRank}
+        style={
+          strip
+            ? {
+                minWidth: 82,
+                flexGrow: 1,
+                alignItems: "center",
+                gap: 5,
+                backgroundColor: "#000000",
+                paddingVertical: 10,
+                paddingHorizontal: 6,
+                borderRadius: 16,
+                borderWidth: 1,
+                borderColor: elite ? "#3b1520" : "#162032",
+              }
+            : v.rankItem
+        }
+      >
+        <Image source={rankArt[id]} style={{ width: 48, height: 48 }} resizeMode="contain" />
+        <Text
+          style={{
+            fontSize: 9,
+            color: elite ? "#ff6b81" : C.cyan,
+            fontWeight: "900",
+            letterSpacing: 0.8,
+          }}
+        >
+          0{idx + 1}
+        </Text>
+        <Text style={{ fontSize: 10.5, color: "#e2edf8", fontWeight: "800" }}>
+          {name}
+        </Text>
+      </Pressable>
+    );
+  });
+
   return (
-    <Card>
-      <View style={s.row}>
-        <Text style={v.sectionTitle}>The climb has nine names.</Text>
-        <Layers3 size={16} color={C.cyan} />
+    <Card
+      style={{
+        backgroundColor: "#000000",
+        borderColor: "#1d293e",
+        padding: 18,
+        gap: 14,
+      }}
+    >
+      <View style={[s.row, { flexWrap: "wrap" }]}>
+        <View style={{ flex: 1, minWidth: 190, gap: 3 }}>
+          <Label>RAN FÒ AK KOURAY · 9-RANK CLIMB SCALE</Label>
+          <Text style={v.sectionTitle}>01 Debitan → 09 Lejand Progression</Text>
+        </View>
+        <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
+          <Badge text="07–09 Video Tier" tone="red" />
+          {onOpenRank ? (
+            <Pressable accessibilityRole="button" onPress={onOpenRank}>
+              <Text style={s.link}>Target Table →</Text>
+            </Pressable>
+          ) : (
+            <Layers3 size={18} color={C.cyan} />
+          )}
+        </View>
       </View>
       {strip ? (
         <ScrollView
           horizontal
-          showsHorizontalScrollIndicator
+          scrollEnabled
+          directionalLockEnabled
+          decelerationRate="fast"
+          scrollEventThrottle={16}
+          showsHorizontalScrollIndicator={false}
           contentContainerStyle={{
             flexGrow: 1,
             gap: 8,
-            paddingBottom: 8,
+            paddingBottom: 2,
             justifyContent: "space-between",
           }}
         >
@@ -583,277 +759,946 @@ function RankLadder({ strip = false }: { strip?: boolean }) {
           style={{
             flexDirection: "row",
             flexWrap: "wrap",
-            gap: 7,
+            gap: 8,
             justifyContent: "center",
           }}
         >
           {items}
         </View>
       )}
-      <Text style={v.subtle}>
-        Rank ladder only—not your achievements. Each discipline is independent.
-      </Text>
     </Card>
   );
 }
+
 function Home({ navigation }: any) {
   const a = useApp();
+  const { mediaMap } = useMediaVault();
+  const [vaultTick, setVaultTick] = useState(0);
+  const [fuelStore, setFuelStore] = useState<DailyFuelStore | null>(null);
+
+  useEffect(() => {
+    let active = true;
+    loadDailyFuel()
+      .then((res) => {
+        if (active) setFuelStore(res);
+      })
+      .catch(() => {});
+    const unsub = navigation.addListener("focus", () => {
+      setVaultTick((t) => t + 1);
+      loadDailyFuel()
+        .then((res) => {
+          if (active) setFuelStore(res);
+        })
+        .catch(() => {});
+    });
+    return () => {
+      active = false;
+      unsub();
+    };
+  }, [navigation]);
+
+  const vaultSessions = useMemo(() => loadVaultWorkouts(), [vaultTick]);
+  const atlasCount = useMemo(
+    () =>
+      buildUniversalExerciseAtlas(
+        a.exerciseCatalog,
+        a.trainingCatalog,
+        loadCustomExercises(),
+      ).length,
+    [a.exerciseCatalog, a.trainingCatalog, vaultTick],
+  );
+
+  const combinedWorkouts = useMemo(
+    () => (a.me && a.workouts.length ? a.workouts : a.localWorkouts),
+    [a.me, a.workouts, a.localWorkouts],
+  );
+  const analytics = useMemo(
+    () => analyzeWorkouts(combinedWorkouts, today()),
+    [combinedWorkouts],
+  );
+
+  const totalSessions = Math.max(vaultSessions.length, combinedWorkouts.length);
+  const totalSets = Math.max(
+    vaultSessions.reduce((sum, sess) => sum + sess.sets.length, 0),
+    analytics.weeklySets,
+  );
+  const latestVault = vaultSessions[0] || null;
+  const mediaTotal = workoutLibrary.records.length + Object.keys(mediaMap).length;
+
+  const fuelSummary = useMemo(
+    () => summarizeMeals(fuelStore?.meals || []),
+    [fuelStore],
+  );
+
+  // Compute highest earned self-reported rank across the 4 disciplines
+  const rankRollup = useMemo(() => {
+    let bestOrd = 0;
+    let bestId: string | null = null;
+    let bestName = "Unranked";
+    let tested = 0;
+    for (const d of disciplines) {
+      const cand = bestCandidateForDiscipline(a.selfLifts, d.id);
+      if (cand) tested += 1;
+      const ord = cand?.evaluation?.candidateOrdinal || 0;
+      if (ord > bestOrd && cand?.evaluation?.candidateRankId) {
+        bestOrd = ord;
+        bestId = cand.evaluation.candidateRankId;
+        bestName = cand.evaluation.candidateRankName || "Ranked";
+      }
+    }
+    return { bestOrd, bestId, bestName, tested };
+  }, [a.selfLifts]);
+
+  const hasBw = Boolean(a.localProfile.bodyweight && a.localProfile.bodyweight.trim());
+
+  const STUDIO_SUITES = [
+    {
+      id: "workout-ai",
+      eyebrow: "TRAINING ENGINE",
+      title: "AI Workout Architect",
+      desc: "Generate PPL, Upper/Lower, Strength or Peaking routines & load directly into Logger.",
+      tags: ["Smart Splits", "Auto Sets & Rest", "1-Tap Logger"],
+      accent: "#ff3b5c",
+      accentBg: "#240a12",
+      accentBorder: "#561627",
+      icon: Sparkles,
+      onPress: () => navigation.navigate("Train", { section: "generator" }),
+    },
+    {
+      id: "macro-vision",
+      eyebrow: "NUTRITION VISION",
+      title: "Barcode & AI Macro Scan",
+      desc: "Live camera EAN/UPC reader, Nutrition Label OCR, and smart meal/plate portion vision.",
+      tags: ["Live Camera EAN", "Plate & Label AI", "3M+ World Foods"],
+      accent: "#38bdf8",
+      accentBg: "#081b2e",
+      accentBorder: "#184775",
+      icon: Barcode,
+      onPress: () => navigation.navigate("Nutrition", { section: "scan" }),
+    },
+    {
+      id: "meal-planner",
+      eyebrow: "CUSTOM FUELING",
+      title: "Custom Meal Plan AI",
+      desc: "Gram-accurate daily meals tailored to Haitian + global cuisines, macros & allergies.",
+      tags: ["Haitian + Global", "Exact Grams", "1-Tap Swap"],
+      accent: "#f59e0b",
+      accentBg: "#231705",
+      accentBorder: "#5c3d0e",
+      icon: ChefHat,
+      onPress: () => navigation.navigate("Nutrition", { section: "planner" }),
+    },
+    {
+      id: "media-vault",
+      eyebrow: "OPEN MOVEMENT VAULT",
+      title: `${atlasCount}+ Exercises & Media`,
+      desc: `Log any lift name in the world and attach custom MP4, GIF, or video demos on the fly.`,
+      tags: [`${mediaTotal} MP4 / GIFs`, "Any Lift Name", "Live Vault"],
+      accent: "#10b981",
+      accentBg: "#062118",
+      accentBorder: "#13533c",
+      icon: Film,
+      onPress: () => navigation.navigate("Train", { section: "library" }),
+    },
+  ];
+
   return (
-    <Screen>
-      <View style={v.topbar}>
-        <Brand />
-        <View style={{ flexDirection: "row", gap: 9 }}>
+    <Screen wide>
+      {/* Top Command Header */}
+      <View style={[v.topbar, { paddingVertical: 6 }]}>
+        <View style={{ flexDirection: "row", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
+          <Brand />
+          <View
+            style={{
+              paddingHorizontal: 9,
+              paddingVertical: 4,
+              borderRadius: 999,
+              backgroundColor: "#0b1220",
+              borderWidth: 1,
+              borderColor: "#1e3252",
+            }}
+          >
+            <Text
+              style={{
+                color: "#7dd3fc",
+                fontSize: 9.5,
+                fontWeight: "900",
+                letterSpacing: 1,
+              }}
+            >
+              CLIMB SYSTEM · v2
+            </Text>
+          </View>
+        </View>
+
+        <View style={{ flexDirection: "row", gap: 8 }}>
           <Pressable
             accessibilityRole="button"
-            accessibilityLabel="Notification status"
-            style={v.iconButton}
-            onPress={() => navigation.navigate("Notifications")}
+            accessibilityLabel="Open AI Muscle Definition Camera"
+            style={[
+              v.iconButton,
+              {
+                width: "auto",
+                paddingHorizontal: 12,
+                flexDirection: "row",
+                gap: 6,
+                backgroundColor: "#05192e",
+                borderColor: "#00d2ff",
+              },
+            ]}
+            onPress={() => navigation.navigate("GainsCamera")}
           >
-            <Bell size={18} color="#a2c8e9" />
+            <Camera size={16} color="#00d2ff" />
+            <Text style={{ color: "#e0f2fe", fontSize: 12, fontWeight: "900" }}>
+              Gains Cam
+            </Text>
           </Pressable>
           <Pressable
             accessibilityRole="button"
-            accessibilityLabel="Open account"
+            accessibilityLabel="Open muscle map"
+            style={[
+              v.iconButton,
+              {
+                width: "auto",
+                paddingHorizontal: 12,
+                flexDirection: "row",
+                gap: 6,
+                backgroundColor: "#080d16",
+                borderColor: "#1e2f4a",
+              },
+            ]}
+            onPress={() => navigation.navigate("MuscleMap")}
+          >
+            <ScanLine size={16} color={C.cyan} />
+            <Text style={{ color: "#dce9f8", fontSize: 12, fontWeight: "800" }}>
+              Anatomy
+            </Text>
+          </Pressable>
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel="Open training history"
+            style={v.iconButton}
+            onPress={() => navigation.navigate("History")}
+          >
+            <History size={17} color={C.cyan} />
+          </Pressable>
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel="Open account and profile"
             style={v.iconButton}
             onPress={() => navigation.navigate("Account")}
           >
-            <UserRound size={18} color={C.cyan} />
+            <UserRound size={17} color={C.cyan} />
           </Pressable>
         </View>
       </View>
-      <View style={{ gap: 5 }}>
-        <Text style={v.greeting}>
-          {a.me ? "Welcome back." : "Welcome to the climb."}
-        </Text>
-        <Text style={v.welcomeName}>Your strength. Your story.</Text>
-        <Text style={{ fontSize: 12, color: "#8cc7ec" }}>
-          Make the work count. One discipline at a time.
-        </Text>
-      </View>
-      <Card style={{ padding: 0, borderColor: "#17558a", minHeight: 142 }}>
-        <ImageBackground
-          source={require("./assets/training-hero.jpg")}
-          style={{
-            position: "absolute",
-            right: -5,
-            top: -35,
-            width: 180,
-            height: 230,
-          }}
-          imageStyle={{ opacity: 0.46 }}
-        />
-        <View style={{ padding: 16, gap: 9, maxWidth: "72%" }}>
-          <Label>YOUR NEXT CHAPTER</Label>
-          <Text
-            style={{
-              color: C.text,
-              fontSize: 21,
-              lineHeight: 26,
-              fontWeight: "800",
-            }}
+
+      {/* Flagship Asymmetric Obsidian Hero Stage + Live Telemetry Strip */}
+      <Card
+        accent="red"
+        style={{
+          padding: 0,
+          backgroundColor: "#000000",
+          borderColor: "#24344f",
+          borderRadius: 24,
+          overflow: "hidden",
+        }}
+      >
+        <View style={{ minHeight: 248, justifyContent: "space-between" }}>
+          <ImageBackground
+            source={disciplineArt.deadlift}
+            style={[StyleSheet.absoluteFill, { opacity: 0.78 }]}
+            imageStyle={{ resizeMode: "cover" }}
           >
-            Show up. Lift.{"\n"}Leave a record.
-          </Text>
-          <Pressable
-            accessibilityRole="button"
-            onPress={() => navigation.navigate("Train")}
+            <CardScrim direction="horizontal" />
+          </ImageBackground>
+
+          <View style={{ padding: 22, gap: 14, maxWidth: 600 }}>
+            <View style={{ flexDirection: "row", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
+              <Badge text="● LEVE · KLASE · MONTE WO" tone="red" />
+              <Badge text="9 RANKS · 4 LIFTS · WORLD FUEL" tone="blue" />
+            </View>
+
+            <View style={{ gap: 6 }}>
+              <Text
+                style={{
+                  color: "#ffffff",
+                  fontSize: 34,
+                  lineHeight: 38,
+                  fontWeight: "900",
+                  letterSpacing: -0.9,
+                }}
+              >
+                FORGED UNDER{"\n"}
+                <Text style={{ color: "#4cc2ff" }}>STRICT IRON.</Text>
+              </Text>
+              <Text
+                style={{
+                  color: "#b8c7dc",
+                  fontSize: 13.5,
+                  lineHeight: 20,
+                  maxWidth: 470,
+                }}
+              >
+                Bodyweight-calibrated strength ranks from Debitan to Lejand, 3M+ world foods with camera barcode & AI vision macros, and {atlasCount}+ movements with live MP4/GIF vault.
+              </Text>
+            </View>
+
+            <View style={{ flexDirection: "row", gap: 10, flexWrap: "wrap", marginTop: 2 }}>
+              <Button
+                title="+ Start Live Workout"
+                onPress={() => navigation.navigate("Train", { section: "logger" })}
+              />
+              <Button
+                crimson
+                title="Test Ranked Lift"
+                onPress={() => navigation.navigate("Rank")}
+              />
+              <Pressable
+                accessibilityRole="button"
+                onPress={() => navigation.navigate("Train", { section: "generator" })}
+                style={{
+                  paddingHorizontal: 15,
+                  paddingVertical: 11,
+                  borderRadius: 12,
+                  backgroundColor: "rgba(9, 15, 26, 0.88)",
+                  borderWidth: 1,
+                  borderColor: "#294063",
+                  flexDirection: "row",
+                  alignItems: "center",
+                  gap: 6,
+                }}
+              >
+                <Sparkles size={15} color="#ff6b81" />
+                <Text style={{ color: "#ffffff", fontWeight: "800", fontSize: 13 }}>
+                  AI Split Builder
+                </Text>
+              </Pressable>
+            </View>
+          </View>
+
+          {/* Integrated 3-Metric Live Telemetry Dock */}
+          <View
             style={{
               flexDirection: "row",
-              alignItems: "center",
-              gap: 8,
-              marginTop: 5,
+              flexWrap: "wrap",
+              borderTopWidth: 1,
+              borderTopColor: "#182438",
+              backgroundColor: "rgba(4, 7, 13, 0.92)",
             }}
           >
-            <View
+            <Pressable
+              accessibilityRole="button"
+              onPress={() => navigation.navigate("Rank")}
               style={{
-                width: 27,
-                height: 27,
-                borderRadius: 8,
-                backgroundColor: "#087fff",
+                flex: 1,
+                minWidth: 180,
+                paddingHorizontal: 18,
+                paddingVertical: 13,
+                flexDirection: "row",
                 alignItems: "center",
-                justifyContent: "center",
+                gap: 10,
+                borderRightWidth: 1,
+                borderRightColor: "#141e30",
               }}
             >
-              <Plus size={18} color="white" />
-            </View>
-            <Text style={{ color: "#d3e9ff", fontWeight: "700", fontSize: 12 }}>
-              Start a workout
+              <Image
+                source={rankArt[rankRollup.bestId || "debitan"]}
+                style={{
+                  width: 36,
+                  height: 36,
+                  opacity: rankRollup.bestId ? 1 : 0.45,
+                }}
+                resizeMode="contain"
+              />
+              <View style={{ flex: 1 }}>
+                <Text style={{ color: "#7f93b0", fontSize: 10, fontWeight: "800", letterSpacing: 0.8 }}>
+                  PEAK RANK STATUS
+                </Text>
+                <Text style={{ color: "#ffffff", fontSize: 14, fontWeight: "900" }}>
+                  {rankRollup.bestName}
+                </Text>
+                <Text style={{ color: C.cyan, fontSize: 11, fontWeight: "700" }}>
+                  {rankRollup.tested}/4 disciplines tested
+                </Text>
+              </View>
+            </Pressable>
+
+            <Pressable
+              accessibilityRole="button"
+              onPress={() => navigation.navigate("Train", { section: "logger" })}
+              style={{
+                flex: 1,
+                minWidth: 180,
+                paddingHorizontal: 18,
+                paddingVertical: 13,
+                flexDirection: "row",
+                alignItems: "center",
+                gap: 10,
+                borderRightWidth: 1,
+                borderRightColor: "#141e30",
+              }}
+            >
+              <View
+                style={{
+                  width: 34,
+                  height: 34,
+                  borderRadius: 10,
+                  backgroundColor: "#0b192e",
+                  borderWidth: 1,
+                  borderColor: "#1f4373",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                <Activity size={17} color={C.cyan} />
+              </View>
+              <View style={{ flex: 1 }}>
+                <Text style={{ color: "#7f93b0", fontSize: 10, fontWeight: "800", letterSpacing: 0.8 }}>
+                  TRAINING VAULT
+                </Text>
+                <Text style={{ color: "#ffffff", fontSize: 14, fontWeight: "900", fontVariant: ["tabular-nums"] }}>
+                  {totalSessions} Sessions · {totalSets} Sets
+                </Text>
+                <Text style={{ color: "#94a3b8", fontSize: 11 }} numberOfLines={1}>
+                  {latestVault ? `Last: ${latestVault.title}` : "Ready to log any lift"}
+                </Text>
+              </View>
+            </Pressable>
+
+            <Pressable
+              accessibilityRole="button"
+              onPress={() => navigation.navigate("Nutrition", { section: "log" })}
+              style={{
+                flex: 1,
+                minWidth: 180,
+                paddingHorizontal: 18,
+                paddingVertical: 13,
+                flexDirection: "row",
+                alignItems: "center",
+                gap: 10,
+              }}
+            >
+              <View
+                style={{
+                  width: 34,
+                  height: 34,
+                  borderRadius: 10,
+                  backgroundColor: "#240d14",
+                  borderWidth: 1,
+                  borderColor: "#5c1d2e",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                <Flame size={17} color="#ff6b81" />
+              </View>
+              <View style={{ flex: 1 }}>
+                <Text style={{ color: "#7f93b0", fontSize: 10, fontWeight: "800", letterSpacing: 0.8 }}>
+                  TODAY'S FUEL
+                </Text>
+                <Text style={{ color: "#ffffff", fontSize: 14, fontWeight: "900", fontVariant: ["tabular-nums"] }}>
+                  {Math.round(fuelSummary.calories)} kcal · {Math.round(fuelSummary.proteinG)}g P
+                </Text>
+                <Text style={{ color: "#94a3b8", fontSize: 11 }}>
+                  {fuelStore?.meals.length
+                    ? `${fuelStore.meals.length} meal(s) logged today`
+                    : "Scan barcode or log world food"}
+                </Text>
+              </View>
+            </Pressable>
+          </View>
+        </View>
+      </Card>
+
+      {/* 4 Ranked Disciplines — Full-Bleed Obsidian Studio Showcase Cards */}
+      <View style={{ gap: 12 }}>
+        <View style={[s.row, { alignItems: "flex-end" }]}>
+          <View style={{ gap: 2 }}>
+            <Label>STRICT 1RM COMPETITION LIFTS</Label>
+            <Text style={{ color: "#ffffff", fontSize: 20, fontWeight: "900", letterSpacing: -0.4 }}>
+              4 Ranked Disciplines
             </Text>
-            <ArrowRight size={15} color={C.cyan} />
+          </View>
+          <Pressable
+            accessibilityRole="button"
+            onPress={() => navigation.navigate("Rank")}
+            style={{
+              paddingHorizontal: 12,
+              paddingVertical: 6,
+              borderRadius: 999,
+              backgroundColor: "#0b1424",
+              borderWidth: 1,
+              borderColor: "#1e375c",
+            }}
+          >
+            <Text style={{ color: C.cyan, fontWeight: "800", fontSize: 12 }}>
+              All 9 Rungs →
+            </Text>
           </Pressable>
         </View>
-      </Card>
-      <Pressable
-        accessibilityRole="button"
-        accessibilityLabel="Open workout pack library"
-        onPress={() =>
-          navigation.navigate("Library", { source: "pack", group: "all" })
-        }
-        style={[s.card, s.row, { padding: 13 }]}
-      >
-        <Image
-          source={workoutPosters["back-squat"]}
-          style={{ width: 47, height: 61, borderRadius: 8 }}
-          resizeMode="cover"
-        />
-        <View style={{ flex: 1, gap: 3 }}>
-          <Label>YOUR WORKOUT LIBRARY</Label>
-          <Text style={v.sectionTitle}>
-            {workoutLibrary.records.length} exercise animations
-          </Text>
-          <Text style={v.subtle}>
-            8 categories · demo + loop · source packs
-          </Text>
-        </View>
-        <ChevronRight size={20} color={C.cyan} />
-      </Pressable>
-      <View style={s.row}>
-        <Text style={v.sectionTitle}>Your Discipline Ranks</Text>
-        <View style={v.pill}>
-          <Text style={v.pillText}>DRAFT STANDARDS</Text>
-        </View>
-      </View>
-      <View style={s.grid}>
-        {disciplines.map((d) => {
-          const card = a.me?.disciplines?.find(
-            (c: any) => c.discipline === d.id,
-          );
-          const approved = card?.modelApproved && card?.ruleApproved;
-          const rank = approved ? card.verified || card.provisional : null;
-          const perf =
-            rank &&
-            a.me.performances?.find((p: any) => p.id === rank.performanceId);
-          return (
-            <Pressable
-              key={d.id}
-              accessibilityRole="button"
-              accessibilityLabel={d.name + " discipline"}
-              style={v.discipline}
-              onPress={() => navigation.navigate("Discipline", { id: d.id })}
-            >
-              <Glow />
-              <View
-                style={{ flexDirection: "row", gap: 8, alignItems: "center" }}
+
+        <View style={s.grid}>
+          {disciplines.map((d) => {
+            const meta = DISCIPLINE_META[d.id] || DISCIPLINE_META.squat;
+            const selfBest = bestCandidateForDiscipline(a.selfLifts, d.id);
+            const rankId = selfBest?.evaluation?.candidateRankId || null;
+
+            const ladder = hasBw
+              ? interpolateDisciplineLadder(climbDataset as any, d.id, {
+                  bodyweight: a.localProfile.bodyweight.trim(),
+                  unit: a.localProfile.unit,
+                  sexCategory: a.localProfile.sexCategory,
+                  ageYears: a.localProfile.ageYears || 25,
+                })
+              : null;
+
+            const currentOrd = selfBest?.evaluation?.candidateOrdinal || 0;
+            const nextRung =
+              ladder?.ok
+                ? ladder.rungs.find((r: any) => r.ordinal === currentOrd + 1) ||
+                  ladder.rungs[ladder.rungs.length - 1]
+                : null;
+            const nextTargetLabel = nextRung
+              ? a.localProfile.unit === "lb"
+                ? `${nextRung.requiredLb} lb`
+                : `${nextRung.requiredKg} kg`
+              : null;
+
+            const pctToNext =
+              selfBest?.evaluation?.performedKg && nextRung?.requiredKg
+                ? Math.min(
+                    100,
+                    Math.round(
+                      (selfBest.evaluation.performedKg / nextRung.requiredKg) * 100,
+                    ),
+                  )
+                : 0;
+
+            return (
+              <Pressable
+                key={d.id}
+                accessibilityRole="button"
+                accessibilityLabel={FULL_DISCIPLINE_NAMES[d.id] + " discipline"}
+                onPress={() => navigation.navigate("Rank", { discipline: d.id })}
+                style={({ pressed }) => ({
+                  width: "47%",
+                  flexGrow: 1,
+                  minWidth: 250,
+                  minHeight: 224,
+                  borderRadius: 22,
+                  borderWidth: 1,
+                  borderColor: rankId ? "#2c5ea8" : "#1c283d",
+                  backgroundColor: "#000000",
+                  overflow: "hidden",
+                  justifyContent: "space-between",
+                  padding: 16,
+                  opacity: pressed ? 0.9 : 1,
+                })}
               >
-                <LiftGlyph id={d.id} size={35} />
-                <Text
-                  style={{
-                    color: C.text,
-                    fontSize: 13,
-                    fontWeight: "700",
-                    flex: 1,
-                  }}
+                {/* Studio Athlete Key Art + Smooth Vertical Scrim */}
+                <ImageBackground
+                  source={disciplineArt[d.id]}
+                  style={[StyleSheet.absoluteFill, { opacity: 0.86 }]}
+                  imageStyle={{ resizeMode: "cover" }}
                 >
-                  {d.name}
-                </Text>
-              </View>
-              <View style={v.pill}>
-                <Text style={v.pillText}>
-                  {rank ? rankNames[rank.rankId] : "NOT RANKED"}
-                </Text>
-              </View>
-              <Text style={{ fontSize: 21, fontWeight: "700", color: C.text }}>
-                {perf ? perf.data.load + " " + perf.data.unit : "—"}
-              </Text>
-              <Text style={v.subtle}>
-                {rank?.status === "verified"
-                  ? "MONTE Verified"
-                  : rank
-                    ? "Provisional · self-reported"
-                    : "No verified performance"}
-              </Text>
-            </Pressable>
-          );
-        })}
+                  <CardScrim direction="vertical" />
+                </ImageBackground>
+
+                {/* Top HUD Row: Precision Iron Emblem Pill + Rank Medallion */}
+                <View style={s.row}>
+                  <View
+                    style={{
+                      flexDirection: "row",
+                      alignItems: "center",
+                      gap: 7,
+                      paddingHorizontal: 10,
+                      paddingVertical: 5,
+                      borderRadius: 999,
+                      backgroundColor: "rgba(5, 9, 17, 0.86)",
+                      borderWidth: 1,
+                      borderColor: "#243652",
+                    }}
+                  >
+                    <LiftGlyph id={d.id} size={20} color={meta.accent} />
+                    <Text
+                      style={{
+                        color: "#dce9f8",
+                        fontSize: 10,
+                        fontWeight: "900",
+                        letterSpacing: 0.9,
+                      }}
+                    >
+                      {meta.code} · {meta.tag}
+                    </Text>
+                  </View>
+
+                  <View
+                    style={{
+                      width: 48,
+                      height: 48,
+                      borderRadius: 15,
+                      backgroundColor: "rgba(0, 0, 0, 0.9)",
+                      borderWidth: 1,
+                      borderColor: rankId ? meta.accent : "#1e293b",
+                      alignItems: "center",
+                      justifyContent: "center",
+                    }}
+                  >
+                    <Image
+                      source={rankArt[rankId || "debitan"]}
+                      style={{
+                        width: 40,
+                        height: 40,
+                        opacity: rankId ? 1 : 0.42,
+                      }}
+                      resizeMode="contain"
+                    />
+                  </View>
+                </View>
+
+                {/* Bottom HUD Block: Discipline Name, Rule & Live Target */}
+                <View style={{ gap: 8, marginTop: 48 }}>
+                  <View style={{ gap: 2 }}>
+                    <Text
+                      style={{
+                        color: "#ffffff",
+                        fontSize: 18.5,
+                        fontWeight: "900",
+                        letterSpacing: -0.3,
+                      }}
+                    >
+                      {FULL_DISCIPLINE_NAMES[d.id]}
+                    </Text>
+                    <Text style={{ color: "#9fb2cc", fontSize: 11.5 }} numberOfLines={1}>
+                      {meta.standard}
+                    </Text>
+                  </View>
+
+                  {selfBest ? (
+                    <View style={{ gap: 6 }}>
+                      <View style={s.row}>
+                        <Text
+                          style={{
+                            color: meta.accent,
+                            fontSize: 15,
+                            fontWeight: "900",
+                            fontVariant: ["tabular-nums"],
+                          }}
+                        >
+                          {selfBest.evaluation.candidateRankName || "Logged"} ·{" "}
+                          {selfBest.load} {selfBest.unit}
+                        </Text>
+                        {nextRung && nextTargetLabel ? (
+                          <Text style={{ color: "#cbd5e1", fontSize: 11, fontWeight: "700" }}>
+                            Next: {nextRung.name} ({nextTargetLabel})
+                          </Text>
+                        ) : null}
+                      </View>
+                      {nextRung ? (
+                        <ProgressBar percent={pctToNext} color={meta.accent} height={5} />
+                      ) : null}
+                    </View>
+                  ) : (
+                    <View
+                      style={{
+                        flexDirection: "row",
+                        alignItems: "center",
+                        justifyContent: "space-between",
+                        paddingTop: 6,
+                        borderTopWidth: 1,
+                        borderTopColor: "rgba(36, 52, 78, 0.65)",
+                      }}
+                    >
+                      <Text style={{ color: "#cbd5e1", fontSize: 12, fontWeight: "700" }}>
+                        {nextRung && nextTargetLabel
+                          ? `Debitan Target: ${nextTargetLabel}`
+                          : "Unranked · Test strict 1RM"}
+                      </Text>
+                      <View style={{ flexDirection: "row", alignItems: "center", gap: 3 }}>
+                        <Text style={{ color: meta.accent, fontSize: 12, fontWeight: "900" }}>
+                          Test
+                        </Text>
+                        <ArrowUpRight size={14} color={meta.accent} />
+                      </View>
+                    </View>
+                  )}
+                </View>
+              </Pressable>
+            );
+          })}
+        </View>
       </View>
-      <Text style={v.subtle}>
-        MONTE WO Strength Index™ · DRAFT — NOT OFFICIAL. No combined score or
-        overall rank.
-      </Text>
-      <View style={{ flexDirection: "row", gap: 10 }}>
-        <Pressable
-          style={v.quick}
-          accessibilityRole="button"
-          onPress={() => navigation.navigate("MuscleMap")}
-        >
-          <ScanLine color={C.cyan} size={23} />
-          <Text style={v.sectionTitle}>Muscle map</Text>
-          <Text style={v.subtle}>Find your next movement ↗</Text>
-        </Pressable>
-        <Pressable
-          style={v.quick}
-          accessibilityRole="button"
-          onPress={() => navigation.navigate("Performance")}
-        >
-          <ShieldCheck color={C.cyan} size={23} />
-          <Text style={v.sectionTitle}>Log a performance</Text>
-          <Text style={v.subtle}>Measure it. Keep the proof ↗</Text>
-        </Pressable>
-      </View>
-      <Card>
+
+      {/* AI & Performance Studio Suite — 4 Distinct Color-Lit Command Cards */}
+      <View style={{ gap: 12 }}>
         <View style={s.row}>
-          <Text style={v.sectionTitle}>Your training, at a glance</Text>
-          <History size={17} color={C.cyan} />
-        </View>
-        <View style={{ flexDirection: "row", gap: 15 }}>
-          <View style={{ flex: 1, gap: 4 }}>
-            <Text style={v.stat}>{a.localReady ? a.localWorkouts.length : "—"}</Text>
-            <Text style={v.subtle}>Sessions saved on this device</Text>
+          <View style={{ gap: 2 }}>
+            <Label>INTELLIGENT TRAINING & WORLD NUTRITION</Label>
+            <Text style={{ color: "#ffffff", fontSize: 20, fontWeight: "900", letterSpacing: -0.4 }}>
+              AI & Performance Studio
+            </Text>
           </View>
-          <View style={{ flex: 1, gap: 4 }}>
-            <Text style={v.stat}>4</Text>
-            <Text style={v.subtle}>Independent disciplines</Text>
+          <Badge text="ALL UNLOCKED" tone="green" />
+        </View>
+
+        <View style={s.grid}>
+          {STUDIO_SUITES.map((suite) => {
+            const IconComp = suite.icon;
+            return (
+              <Pressable
+                key={suite.id}
+                accessibilityRole="button"
+                onPress={suite.onPress}
+                style={({ pressed }) => ({
+                  width: "47%",
+                  flexGrow: 1,
+                  minWidth: 250,
+                  borderRadius: 20,
+                  borderWidth: 1,
+                  borderColor: "#1b273b",
+                  borderTopWidth: 2.5,
+                  borderTopColor: suite.accent,
+                  backgroundColor: "#070a10",
+                  padding: 16,
+                  gap: 12,
+                  opacity: pressed ? 0.88 : 1,
+                })}
+              >
+                <View style={s.row}>
+                  <View style={{ flexDirection: "row", alignItems: "center", gap: 10 }}>
+                    <View
+                      style={{
+                        width: 42,
+                        height: 42,
+                        borderRadius: 13,
+                        backgroundColor: suite.accentBg,
+                        borderWidth: 1,
+                        borderColor: suite.accentBorder,
+                        alignItems: "center",
+                        justifyContent: "center",
+                      }}
+                    >
+                      <IconComp size={20} color={suite.accent} />
+                    </View>
+                    <View>
+                      <Text
+                        style={{
+                          color: suite.accent,
+                          fontSize: 9.5,
+                          fontWeight: "900",
+                          letterSpacing: 1,
+                        }}
+                      >
+                        {suite.eyebrow}
+                      </Text>
+                      <Text
+                        style={{
+                          color: "#ffffff",
+                          fontSize: 16,
+                          fontWeight: "900",
+                        }}
+                      >
+                        {suite.title}
+                      </Text>
+                    </View>
+                  </View>
+
+                  <View
+                    style={{
+                      width: 30,
+                      height: 30,
+                      borderRadius: 999,
+                      backgroundColor: "#0e1522",
+                      borderWidth: 1,
+                      borderColor: "#1f2e47",
+                      alignItems: "center",
+                      justifyContent: "center",
+                    }}
+                  >
+                    <ArrowUpRight size={15} color={suite.accent} />
+                  </View>
+                </View>
+
+                <Text style={{ color: "#94a3b8", fontSize: 12.5, lineHeight: 18 }}>
+                  {suite.desc}
+                </Text>
+
+                <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 6 }}>
+                  {suite.tags.map((tg) => (
+                    <View
+                      key={tg}
+                      style={{
+                        paddingHorizontal: 8,
+                        paddingVertical: 3.5,
+                        borderRadius: 7,
+                        backgroundColor: "#0d131f",
+                        borderWidth: 1,
+                        borderColor: "#1c2940",
+                      }}
+                    >
+                      <Text style={{ color: "#cbd5e1", fontSize: 10.5, fontWeight: "700" }}>
+                        {tg}
+                      </Text>
+                    </View>
+                  ))}
+                </View>
+              </Pressable>
+            );
+          })}
+        </View>
+      </View>
+
+      {/* Nine-Rank Climb Scale Strip */}
+      <RankLadder strip onOpenRank={() => navigation.navigate("Rank")} />
+
+      {/* AI Muscle Definition Camera & 9:16 Story Exporter */}
+      <MuscleDefinitionCamera
+        earnedRankOrdinal={rankRollup.bestOrd || 7}
+        disciplineLabel="4 Ranked Disciplines"
+      />
+
+      {/* Bottom 2-Column Bento: Recent Session Vault + Interactive Anatomy Explorer */}
+      <View style={s.grid}>
+        <Card
+          style={{
+            width: "47%",
+            flexGrow: 1,
+            minWidth: 250,
+            justifyContent: "space-between",
+            backgroundColor: "#070a10",
+          }}
+        >
+          <View style={{ gap: 6 }}>
+            <Label>LIVE WORKOUT LOGGER</Label>
+            <Text style={v.sectionTitle}>
+              {latestVault ? `Last: ${latestVault.title}` : "Training Activity"}
+            </Text>
+            <Text style={{ color: C.muted, fontSize: 12.5, lineHeight: 18 }}>
+              {latestVault
+                ? `${latestVault.sets.length} sets logged on ${latestVault.performedOn} · ${totalSessions} total sessions saved.`
+                : "Log any movement in the world with kg/lb tracking, rest timer, barbell plate loader & media vault."}
+            </Text>
           </View>
-        </View>
-      </Card>
-      <RankLadder />
-      <View style={s.row}>
-        <Text style={v.sectionTitle}>Health connections</Text>
-        <Text style={v.subtle}>NOT CONNECTED</Text>
-      </View>
-      <View style={{ flexDirection: "row", gap: 8 }}>
-        {[
-          [Flame, "Calories"],
-          [Timer, "Active minutes"],
-          [Heart, "Heart rate"],
-        ].map(([Icon, label]: any) => (
-          <Card key={label} style={{ flex: 1, padding: 11, gap: 8 }}>
-            <Icon size={18} color={C.muted} />
-            <Text style={{ color: C.text, fontSize: 23 }}>—</Text>
-            <Text style={v.tiny}>{label}</Text>
-          </Card>
-        ))}
-      </View>
-      <Pressable
-        style={[s.card, s.row]}
-        accessibilityRole="button"
-        onPress={() => navigation.navigate("Nutrition")}
-      >
-        <Utensils size={24} color={C.cyan} />
-        <View style={{ flex: 1 }}>
-          <Text style={v.sectionTitle}>Fuel your training</Text>
-          <Body>Explore the existing nutrition tools.</Body>
-        </View>
-        <ChevronRight size={18} color={C.cyan} />
-      </Pressable>
-      {!a.me && (
-        <View style={{ gap: 10 }}>
-          <Button
-            title="Sign in to sync your training"
-            onPress={() => navigation.navigate("SignIn")}
-          />
-          <Text style={[v.subtle, { textAlign: "center" }]}>
-            Device training available · account sync requires pilot enrollment.
-          </Text>
-        </View>
-      )}
-      <View style={v.footer}>
-        <Brand />
-        <Text style={v.tagline}>MEASURE. PROVE. RANK. CLIMB.</Text>
+          <View style={{ flexDirection: "row", gap: 8, marginTop: 6 }}>
+            <Button
+              small
+              title={latestVault ? "Log Next Session" : "+ Open Logger"}
+              onPress={() => navigation.navigate("Train", { section: "logger" })}
+            />
+            <Button
+              small
+              secondary
+              title="Plate Calc"
+              onPress={() => navigation.navigate("Train", { section: "tools" })}
+            />
+          </View>
+        </Card>
+
+        <Card
+          style={{
+            width: "47%",
+            flexGrow: 1,
+            minWidth: 250,
+            justifyContent: "space-between",
+            backgroundColor: "#070a10",
+            borderColor: "#1b3558",
+          }}
+        >
+          <View style={{ gap: 6 }}>
+            <Label>BILATERAL SVG ANATOMY</Label>
+            <Text style={v.sectionTitle}>Interactive Muscle Map</Text>
+            <Text style={{ color: C.muted, fontSize: 12.5, lineHeight: 18 }}>
+              Inspect front & posterior muscle regions across 54 bilateral anatomical paths and jump directly to targeted movements.
+            </Text>
+          </View>
+          <View style={{ flexDirection: "row", gap: 8, marginTop: 6 }}>
+            <Button
+              small
+              secondary
+              title="Explore Muscle Map →"
+              onPress={() => navigation.navigate("MuscleMap")}
+            />
+          </View>
+        </Card>
       </View>
     </Screen>
   );
 }
+
+function TrainTabWrapper({ navigation, route }: any) {
+  const a = useApp();
+  const op = useOperation();
+  // An optional external media manifest is browsing-only; saving uses the
+  // canonical backend exercise IDs, not unregistered third-party records.
+  const catalog = process.env.EXPO_PUBLIC_EXERCISE_CATALOG_URL
+    ? (bundledCatalog as ExerciseCatalog)
+    : a.trainingCatalog;
+
+  return (
+    <WorkoutScreen
+      navigation={navigation}
+      route={route}
+      trainingCatalog={catalog}
+      exerciseCatalog={a.exerciseCatalog}
+      me={a.me}
+      localWorkouts={a.localWorkouts}
+      localStatus={a.localStatus}
+      localReady={a.localReady}
+      saveLocal={a.saveLocal}
+      deleteLocal={a.deleteLocal}
+      onCopyToAccount={(w) =>
+        confirm("Save this workout to your account?", "This uploads a copy to your signed-in account.", () =>
+          op.run(async () => {
+            const revision = getSessionRevision();
+            await saveAccountWorkout(w, a.me, revision);
+            await a.refresh();
+          }),
+        )
+      }
+    />
+  );
+}
+
+function RankTabWrapper({ navigation, route }: any) {
+  const a = useApp();
+  return (
+    <RankScreen
+      navigation={navigation}
+      route={route}
+      me={a.me}
+      localProfile={a.localProfile}
+      onSaveProfile={a.updateLocalProfile}
+      selfLifts={a.selfLifts}
+      onRecordLift={a.addSelfLift}
+      onDeleteLift={a.deleteSelfLift}
+    />
+  );
+}
+
+function NutritionTabWrapper({ route }: any) {
+  return <NutritionScreen route={route} />;
+}
+
+function GainsCameraScreen() {
+  const a = useApp();
+  let bestOrd = 0;
+  for (const d of disciplines) {
+    const cand = bestCandidateForDiscipline(a.selfLifts, d.id);
+    if ((cand?.evaluation?.candidateOrdinal || 0) > bestOrd) {
+      bestOrd = cand?.evaluation?.candidateOrdinal || 0;
+    }
+  }
+  return (
+    <Screen wide>
+      <MuscleDefinitionCamera
+        earnedRankOrdinal={bestOrd || 7}
+        disciplineLabel="4 Ranked Disciplines"
+      />
+    </Screen>
+  );
+}
+
 function MuscleMap({ navigation }: any) {
   const a = useApp(),
     [selected, setSelected] = useState<string | null>(null),
@@ -961,6 +1806,7 @@ function MuscleMap({ navigation }: any) {
     </Screen>
   );
 }
+
 function Notifications() {
   return (
     <Screen>
@@ -976,50 +1822,13 @@ function Notifications() {
     </Screen>
   );
 }
-function Nutrition() {
-  return (
-    <Screen>
-      <PageHeader
-        eyebrow="FUEL YOUR TRAINING"
-        title="Make room for recovery."
-        subtitle="Existing educational tools. No invented daily totals."
-      />
-      {[
-        ["protein", "Protein target"],
-        ["tdee", "Daily energy estimate"],
-        ["macros", "Macro planning"],
-      ].map(([id, name]) => (
-        <Pressable
-          key={id}
-          style={[s.card, s.row]}
-          accessibilityRole="button"
-          onPress={() => legal("/tools/" + id + "/")}
-        >
-          <Utensils size={23} color={C.cyan} />
-          <View style={{ flex: 1 }}>
-            <Text style={v.sectionTitle}>{name}</Text>
-            <Body>Open the existing website calculator</Body>
-          </View>
-          <ArrowUpRight size={20} color={C.cyan} />
-        </Pressable>
-      ))}
-      <Card>
-        <ScanLine size={30} color={C.muted} />
-        <Text style={v.subheading}>Food scan</Text>
-        <Body>
-          Not connected. Camera-based food recognition and a synced food diary
-          are not available in this build. No macros are guessed from a photo.
-        </Body>
-      </Card>
-    </Screen>
-  );
-}
+
 function SignIn({ navigation }: any) {
   const a = useApp(),
     op = useOperation();
   return (
     <Screen>
-      <View style={{ alignItems: "center", paddingVertical: 22 }}>
+      <View style={{ alignItems: "center", paddingVertical: 18 }}>
         <Brand large />
       </View>
       <PageHeader
@@ -1061,8 +1870,15 @@ function SignIn({ navigation }: any) {
         busy={a.loading}
         onPress={a.refresh}
       />
-      <Button title="Website connection status" secondary onPress={() => legal("/app/#app-connections")} />
-      <Text style={v.subtle}>Shared API: {API_BASE}. Device-only history is not automatically uploaded or merged into an account.</Text>
+      <Button
+        title="Website connection status"
+        secondary
+        onPress={() => legal("/app/#app-connections")}
+      />
+      <Text style={v.subtle}>
+        Shared API: {API_BASE}. Device-only history is not automatically uploaded
+        or merged into an account.
+      </Text>
       {op.message && <Notice text={op.message} error />}
       <Pressable
         accessibilityRole="button"
@@ -1087,168 +1903,7 @@ function SignIn({ navigation }: any) {
     </Screen>
   );
 }
-function Train({ navigation }: any) {
-  const a = useApp(),
-    op = useOperation();
-  // An optional external media manifest is browsing-only; saving uses the
-  // canonical backend exercise IDs, not unregistered third-party records.
-  const catalog = process.env.EXPO_PUBLIC_EXERCISE_CATALOG_URL
-    ? bundledCatalog
-    : a.trainingCatalog;
-  const [id, setId] = useState(() => Crypto.randomUUID()),
-    [title, setTitle] = useState("Training session"),
-    [date, setDate] = useState(today()),
-    [selected, setSelected] = useState("bench-press"),
-    [load, setLoad] = useState(""),
-    [reps, setReps] = useState(""),
-    [unit, setUnit] = useState<"kg" | "lb">("kg"),
-    [entries, setEntries] = useState<Workout["exercises"]>([]),
-    [search, setSearch] = useState("");
-  function payload(): Workout {
-    return validateWorkout({id, title, performedOn: date, exercises: entries},
-      new Set(catalog.exercises.map(e => e.id)), today());
-  }
-  function resetSession() {
-    setEntries([]);
-    setId(Crypto.randomUUID());
-    setLoad(""); setReps(""); setDate(today());
-  }
-  function add() {
-    if (op.busy) return;
-    try {
-      if (!/^\d+$/.test(reps)) throw Error("Enter 1–1000 whole repetitions.");
-      const set = validateSet({load, reps: Number(reps), unit});
-      const found = entries.find(e => e.exerciseId === selected);
-      if (found && found.sets.length >= 20) throw Error("Maximum 20 sets per exercise. Finish this workout before adding more.");
-      if (!found && entries.length >= 30) throw Error("Maximum 30 exercises per workout.");
-      setEntries(previous => {
-        const next = previous.map(e => ({...e, sets: [...e.sets]}));
-        const existing = next.find(e => e.exerciseId === selected);
-        if (existing) existing.sets.push(set);
-        else next.push({exerciseId: selected, sets: [set]});
-        return next;
-      });
-      op.setMessage("Set added. Finish and save to keep it after closing the app.");
-    } catch (error) { op.setMessage(errorMessage(error)); }
-  }
-  return (
-    <Screen>
-      <PageHeader
-        eyebrow="TRAINING LOG"
-        title="Every set counts."
-        subtitle="Workout volume is a training record—not a rank qualification."
-      />
-      <Notice text="Finish and save to keep this workout on this device. Unfinished sets are not persisted. Device history is not account-synced or encrypted by MONTE WO; anyone using this device can view it. Uninstalling the app or clearing browser storage can erase it." />
-      <Notice text={a.localStatus} />
-<View style={{gap: 14}} pointerEvents={op.busy ? "none" : "auto"} accessibilityElementsHidden={op.busy} importantForAccessibility={op.busy ? "no-hide-descendants" : "auto"}>
-      <Card>
-        <Field editable={!op.busy} label="Session name" value={title} onChange={setTitle} />
-        <Field editable={!op.busy} label="Date · YYYY-MM-DD" value={date} onChange={setDate} />
-        <Field editable={!op.busy} label="Find an exercise" value={search} onChange={setSearch} />
-        <Chips
-          items={catalog.exercises
-            .filter((e) => e.name.toLowerCase().includes(search.toLowerCase()))
-            .map((e) => ({ id: e.id, name: e.name }))}
-          value={selected}
-          onChange={setSelected}
-        />
-        <Chips
-          items={[
-            { id: "kg", name: "kg" },
-            { id: "lb", name: "lb" },
-          ]}
-          value={unit}
-          onChange={(v) => setUnit(v as "kg" | "lb")}
-        />
-        <View style={s.row}>
-          <View style={{ flex: 1 }}>
-            <Field editable={!op.busy}
-              label={"Load · " + unit}
-              value={load}
-              onChange={setLoad}
-              keyboardType="decimal-pad"
-            />
-          </View>
-          <View style={{ flex: 1 }}>
-            <Field editable={!op.busy}
-              label="Repetitions"
-              value={reps}
-              onChange={setReps}
-              keyboardType="number-pad"
-            />
-          </View>
-        </View>
-        <Button title="Add set" secondary onPress={add} />
-      </Card>
-      {entries.map((e) => (
-        <Card key={e.exerciseId}>
-          <Text style={s.heading}>
-            {catalog.exercises.find((x) => x.id === e.exerciseId)?.name}
-          </Text>
-          {e.sets.map((set, i) => (
-            <View key={i} style={s.row}>
-              <Body>
-                Set {i + 1}: {set.load} {set.unit} × {set.reps}
-              </Body>
-              <Pressable
-                disabled={op.busy}
-                accessibilityRole="button"
-                accessibilityLabel={"Remove set " + (i + 1)}
-                onPress={() =>
-                  setEntries((prev) =>
-                    prev
-                      .map((x) =>
-                        x.exerciseId === e.exerciseId
-                          ? { ...x, sets: x.sets.filter((_, n) => n !== i) }
-                          : x,
-                      )
-                      .filter((x) => x.sets.length),
-                  )
-                }
-              >
-                <Text style={{ color: C.red }}>Remove</Text>
-              </Pressable>
-            </View>
-          ))}
-        </Card>
-      ))}
 
-</View>
-      <Body>Session volume: {volumeLabel({id, title, performedOn: date, exercises: entries})}</Body>
-      {op.message && <Notice text={op.message} />}
-      <Button
-        title="Finish & save on device"
-        busy={op.busy}
-        disabled={!a.localReady || !entries.length}
-        onPress={() => op.run(async () => {
-          await a.saveLocal(payload());
-          resetSession();
-          op.setMessage("Workout saved on this device. Reopen the app and check History → On this device. No account sync or rank was awarded.");
-        })}
-      />
-      {!a.localReady && <Button title="Retry device storage" secondary onPress={() => op.run(a.refreshLocal)} />}
-      <Button title="View saved workouts" secondary onPress={() => navigation.navigate("History")} />
-      <Button
-        title="Save workout to account"
-        secondary
-        busy={op.busy}
-        disabled={!a.me || !a.available || !entries.length}
-        onPress={() => op.run(async () => {
-          await saveAccountWorkout(payload(), new Set(catalog.exercises.map(e => e.id)), getSessionRevision());
-          resetSession();
-          await a.refresh();
-          op.setMessage("Workout saved to your account. It was not copied into device history. No rank was awarded.");
-        })}
-      />
-      {!a.me && <Button title="Sign in for account sync" secondary onPress={() => navigation.navigate("SignIn")} />}
-      <Button
-        title="Submit a discipline performance"
-        secondary
-        onPress={() => navigation.navigate("Performance")}
-      />
-    </Screen>
-  );
-}
 function Library({ navigation, route }: any) {
   const a = useApp(),
     catalog = a.exerciseCatalog,
@@ -1291,10 +1946,10 @@ function Library({ navigation, route }: any) {
     <Screen wide>
       <View style={s.row}>
         <View style={{ flex: 1, gap: 4 }}>
-          <Label>MOVEMENT LIBRARY / MAIN</Label>
+          <Label>MOVEMENT LIBRARY</Label>
           <Title>Find your next lift.</Title>
           <Text style={v.subtle}>
-            Explore the movement. Choose your next session.
+            Explore movements, animations, and coaching cues.
           </Text>
         </View>
         <Pressable
@@ -1314,15 +1969,12 @@ function Library({ navigation, route }: any) {
               groups
             </Text>
             <Text style={v.subtle}>
-              {packCount} pack animations · {guideCount} written guides
+              {packCount} pack animations · {guideCount} written guides (
+              {overlapCount} shared)
             </Text>
           </View>
           <BookOpen color={C.cyan} size={24} />
         </View>
-        <Text style={v.subtle}>
-          {overlapCount} guides share a pack exercise. Duplicates are counted
-          once.
-        </Text>
       </Card>
       <View style={{ gap: 8 }}>
         <Field
@@ -1407,33 +2059,22 @@ function Library({ navigation, route }: any) {
         </Card>
       )}
       <Card>
-        <Text style={v.sectionTitle}>Source pack inventory</Text>
+        <Text style={v.sectionTitle}>Catalog provenance</Text>
         <Body>
-          67 manifest rows → 57 unique exercises. The 10 repeated entries have
-          identical metadata and media. Animations are source-pack previews;
-          exercise-form and usage-rights review is not implied.
-        </Body>
-        <Text style={v.subtle}>
           Pinned GitHub source: {workoutLibrary.source.commit.slice(0, 7)}.{" "}
-          {packPreviewOrigin
-            ? "Media served by this local preview."
-            : "Media streams from the pinned public GitHub files."}{" "}
-          R2 has not been populated.
-        </Text>
+          {a.catalogStatus}.
+        </Body>
         <Button
           title="Refresh shared catalog"
           secondary
           busy={op.busy}
           onPress={() => op.run(a.refreshCatalog)}
         />
-        <Text style={v.subtle}>
-          {a.catalogStatus}. New pack-only IDs remain browsing-only until
-          registered with the shared workout backend.
-        </Text>
       </Card>
     </Screen>
   );
 }
+
 function PublicExerciseVideo({
   uri,
   loop = false,
@@ -1469,6 +2110,7 @@ function PublicExerciseVideo({
     />
   );
 }
+
 function PackAnimation({ pack }: { pack: PackRecord }) {
   const [kind, setKind] = useState<"poster" | "demo" | "loop">("poster");
   const m = pack.manifest;
@@ -1509,8 +2151,11 @@ function PackAnimation({ pack }: { pack: PackRecord }) {
     </Card>
   );
 }
-function Exercise({ route }: any) {
+
+function Exercise({ navigation, route }: any) {
   const a = useApp(),
+    { mediaMap } = useMediaVault(),
+    [attachOpen, setAttachOpen] = useState(false),
     e = a.exerciseCatalog.exercises.find((e) => e.id === route.params.id);
   const [failed, setFailed] = useState(false);
   if (!e)
@@ -1520,7 +2165,8 @@ function Exercise({ route }: any) {
       </Screen>
     );
   const uri = mediaUri(e, API_BASE),
-    registered = a.trainingCatalog.exercises.some((x) => x.id === e.id);
+    registered = a.trainingCatalog.exercises.some((x) => x.id === e.id),
+    customMedia = mediaMap[e.id] || null;
   return (
     <Screen>
       <PageHeader
@@ -1528,7 +2174,33 @@ function Exercise({ route }: any) {
         title={e.name}
         subtitle={e.muscles.join(" · ")}
       />
-      {e.pack ? (
+      <View style={{ flexDirection: "row", gap: 10, flexWrap: "wrap" }}>
+        <Button
+          small
+          title="+ Log in Active Workout"
+          onPress={() =>
+            navigation.popTo("Main", {
+              screen: "Train",
+              params: { section: "logger", exercise: e.id },
+            })
+          }
+        />
+        <Button
+          small
+          secondary
+          title={customMedia ? "Edit Attached MP4 / GIF" : "+ Attach MP4 / GIF"}
+          onPress={() => setAttachOpen(true)}
+        />
+      </View>
+      {customMedia ? (
+        <ExerciseMediaBanner
+          exerciseId={e.id}
+          exerciseName={e.name}
+          customMedia={customMedia}
+          height={260}
+          onManageMedia={() => setAttachOpen(true)}
+        />
+      ) : e.pack ? (
         <PackAnimation pack={e.pack} />
       ) : uri && !failed ? (
         <View style={v.mediaFrame}>
@@ -1563,27 +2235,6 @@ function Exercise({ route }: any) {
               : "Written guide · demonstration not linked"}
           </Text>
           <Text style={v.tiny}>Icon is not a form demonstration.</Text>
-        </Card>
-      )}
-      {e.pack && (
-        <Card>
-          <Label>EXERCISE METADATA</Label>
-          <Body>
-            Category: {e.pack.manifest.category} · Equipment:{" "}
-            {e.pack.manifest.equipment}
-          </Body>
-          <Body>
-            Primary muscles: {e.pack.manifest.primary_muscles.join(", ")}
-          </Body>
-          {e.pack.manifest.secondary_muscles.length > 0 && (
-            <Body>
-              Secondary muscles: {e.pack.manifest.secondary_muscles.join(", ")}
-            </Body>
-          )}
-          <Text style={v.subtle}>
-            Haitian Creole exercise name: awaiting native-speaker review. This
-            library entry never awards a Discipline Rank.
-          </Text>
         </Card>
       )}
       {e.steps.length > 0 ? (
@@ -1626,11 +2277,21 @@ function Exercise({ route }: any) {
         <Notice text="This pack supplies movement metadata and animation, not written technique or safety instructions. Those instructions still need review; none have been fabricated." />
       )}
       {!registered && (
-        <Notice text="Browse-only exercise: its ID is not registered in the current shared workout backend. Saving it to a workout is not enabled. No database import has been run." />
+        <Text style={v.subtle}>
+          Browse-only exercise on shared cloud sync · full logging & media vault enabled on this device.
+        </Text>
       )}
+      <AttachMediaModal
+        visible={attachOpen}
+        exerciseId={e.id}
+        exerciseName={e.name}
+        existing={customMedia}
+        onClose={() => setAttachOpen(false)}
+      />
     </Screen>
   );
 }
+
 function HistoryScreen({ navigation }: any) {
   const catalog = useApp().exerciseCatalog;
   const a = useApp(),
@@ -1651,34 +2312,81 @@ function HistoryScreen({ navigation }: any) {
       {tab === "device" ? (
         <>
           <Notice text={a.localStatus} />
-          <Body>Device-only history is shared by people using this installation. It stays separate from signed-in accounts, is not encrypted by MONTE WO, and never awards ranks. Deleting here does not delete account workouts.</Body>
-          <Button title="Refresh device history" secondary busy={op.busy} onPress={() => op.run(a.refreshLocal)} />
-          {!a.me && <Button title="Sign in to copy a workout" secondary onPress={() => navigation.navigate("SignIn")} />}
-          {a.localReady && !a.localWorkouts.length && <Notice text="No workouts saved on this device yet. Finish a session in Train to start your history." />}
-          {a.localWorkouts.map(w => (
+          <Body>
+            Device-only history stays separate from signed-in accounts, is not
+            encrypted by MONTE WO, and never awards ranks.
+          </Body>
+          <Button
+            title="Refresh device history"
+            secondary
+            busy={op.busy}
+            onPress={() => op.run(a.refreshLocal)}
+          />
+          {!a.me && (
+            <Button
+              title="Sign in to copy a workout"
+              secondary
+              onPress={() => navigation.navigate("SignIn")}
+            />
+          )}
+          {a.localReady && !a.localWorkouts.length && (
+            <Notice text="No workouts saved on this device yet. Finish a session in Workout to start your history." />
+          )}
+          {a.localWorkouts.map((w) => (
             <Card key={w.id}>
               <Label>DEVICE COPY · NO AUTO-SYNC</Label>
               <Text style={s.heading}>{w.title}</Text>
-              <Body>{w.performedOn} · {workoutSummary(w)}</Body>
+              <Body>
+                {w.performedOn} · {workoutSummary(w)}
+              </Body>
               <Body>{volumeLabel(w)}</Body>
-              {w.exercises.map(e => <Body key={e.exerciseId}>
-                {catalog.exercises.find(x => x.id === e.exerciseId)?.name || e.exerciseId}: {e.sets.map(set => `${set.load} ${set.unit} × ${set.reps}`).join(" · ")}
-              </Body>)}
+              {w.exercises.map((e) => (
+                <Body key={e.exerciseId}>
+                  {catalog.exercises.find((x) => x.id === e.exerciseId)?.name ||
+                    e.exerciseId}
+                  :{" "}
+                  {e.sets
+                    .map((set) => `${set.load} ${set.unit} × ${set.reps}`)
+                    .join(" · ")}
+                </Body>
+              ))}
               <Body>Workout ID: {w.id}</Body>
-              <Button title="Save a copy to account" secondary busy={op.busy} disabled={!a.me || !a.available}
+              <Button
+                title="Save a copy to account"
+                secondary
+                busy={op.busy}
+                disabled={!a.me || !a.available}
                 onPress={() => {
                   const revision = getSessionRevision();
                   confirm("Save this workout to your account?",
                     `Send this one workout to account ${a.me?.actor?.id || "currently signed in"} at ${API_BASE}? The device copy stays here. No other device workouts will be uploaded and no rank will be awarded.`,
-                    () => op.run(async () => {
-                      await saveAccountWorkout(w, new Set(a.trainingCatalog.exercises.map(e => e.id)), revision);
-                      await a.refresh();
-                      op.setMessage("Account copy confirmed. The device record was kept. Refresh website account history using the same identity and API origin to compare. No rank was awarded.");
-                    }));
-                }} />
-              <Button title="Delete device workout" danger secondary busy={op.busy}
-                onPress={() => confirm("Delete this device workout?", "Removes it from local history and its recovery copy. Cloud account records are not changed.",
-                  () => op.run(async () => { await a.deleteLocal(w.id); }))} />
+                    () =>
+                      op.run(async () => {
+                        await saveAccountWorkout(w, new Set(a.trainingCatalog.exercises.map((e) => e.id)), revision);
+                        await a.refresh();
+                        op.setMessage(
+                          "Account copy confirmed. The device record was kept. No rank was awarded.",
+                        );
+                      }),
+                  );
+                }}
+              />
+              <Button
+                title="Delete device workout"
+                danger
+                secondary
+                busy={op.busy}
+                onPress={() =>
+                  confirm(
+                    "Delete this device workout?",
+                    "Removes it from local history and its recovery copy. Cloud account records are not changed.",
+                    () =>
+                      op.run(async () => {
+                        await a.deleteLocal(w.id);
+                      }),
+                  )
+                }
+              />
             </Card>
           ))}
         </>
@@ -1686,9 +2394,15 @@ function HistoryScreen({ navigation }: any) {
         <SignInCard navigation={navigation} />
       ) : tab === "workouts" ? (
         <>
-          <Body>Account: {a.me.actor?.id || "Signed in"} · API: {API_BASE}</Body>
-          <Body>These are account records, separate from device history. Use the same identity and API origin on the website. No automatic upload is performed.</Body>
-          <Button title="Refresh account workouts" secondary busy={a.loading || op.busy} onPress={() => op.run(a.refresh)} />
+          <Body>
+            Account: {a.me.actor?.id || "Signed in"} · API: {API_BASE}
+          </Body>
+          <Button
+            title="Refresh account workouts"
+            secondary
+            busy={a.loading || op.busy}
+            onPress={() => op.run(a.refresh)}
+          />
           {!a.workouts.length && (
             <Notice text="No workouts saved yet. Your next session starts the record." />
           )}
@@ -1699,12 +2413,11 @@ function HistoryScreen({ navigation }: any) {
                 <Text style={s.small}>{w.performedOn}</Text>
               </View>
               <Body>{workoutSummary(w)}</Body>
-              <Body>Workout ID: {w.id}</Body>
               {w.exercises.map((e) => (
                 <Body key={e.exerciseId}>
                   {catalog.exercises.find((x) => x.id === e.exerciseId)?.name}:{" "}
                   {e.sets
-                    .map((s) => `${s.load} ${s.unit} × ${s.reps}`)
+                    .map((st) => `${st.load} ${st.unit} × ${st.reps}`)
                     .join(" · ")}
                 </Body>
               ))}
@@ -1812,21 +2525,13 @@ function HistoryScreen({ navigation }: any) {
               />
             </Card>
           ))}
-          {a.me.reviews?.map((r: any) => (
-            <Card key={r.id}>
-              <Label>
-                {r.state.toUpperCase()} · REVIEW {r.revision}
-              </Label>
-              <Body>{r.reason}</Body>
-              <Text style={s.small}>{r.createdAt}</Text>
-            </Card>
-          ))}
         </>
       )}
       {op.message && <Notice text={op.message} error />}
     </Screen>
   );
 }
+
 function Performance({ navigation }: any) {
   const a = useApp(),
     op = useOperation(),
@@ -1843,11 +2548,21 @@ function Performance({ navigation }: any) {
   return (
     <Screen>
       <PageHeader
-        eyebrow="MONTE WO STRENGTH INDEX™"
-        title="Log a performance."
-        subtitle="A training set is not automatically a qualifying performance."
+        eyebrow="PILOT SERVER SUBMISSION"
+        title="Submit enrolled performance."
+        subtitle="For device-local Climb Scale tracking without pilot sign-in, use the Rank tab."
       />
-      <Notice text="DRAFT — NOT OFFICIAL. Unapproved standards cannot award official ranks. A tested single means one actual repetition, not a multi-rep estimate." />
+      <Notice text="DRAFT — NOT OFFICIAL. Server submissions require an enrolled pilot account. Official ranks remain unavailable until standards are approved." />
+      <Button
+        title="← Back to Climb Scale (Device Self-Report)"
+        secondary
+        onPress={() =>
+          navigation.navigate("Main", {
+            screen: "Rank",
+            params: { discipline },
+          })
+        }
+      />
       {!a.me ? (
         <SignInCard navigation={navigation} />
       ) : !a.me.profile ? (
@@ -1905,15 +2620,10 @@ function Performance({ navigation }: any) {
             <Check
               key={c.id}
               checked={!!checks[c.id]}
-              onChange={() => setChecks((v) => ({ ...v, [c.id]: !v[c.id] }))}
+              onChange={() => setChecks((prev) => ({ ...prev, [c.id]: !prev[c.id] }))}
               text={c.text}
             />
           ))}
-          <Body>
-            Uses your saved profile snapshot: {a.me.profile.data.bodyweight}{" "}
-            {a.me.profile.data.unit}. Updating your profile cannot fabricate a
-            new achievement.
-          </Body>
           <Button
             title="Submit performance"
             busy={op.busy}
@@ -1952,6 +2662,7 @@ function Performance({ navigation }: any) {
     </Screen>
   );
 }
+
 function DisciplinePicker({
   value,
   onChange,
@@ -1992,6 +2703,7 @@ function DisciplinePicker({
     </View>
   );
 }
+
 function Check({
   checked,
   onChange,
@@ -2006,7 +2718,7 @@ function Check({
       accessibilityRole="checkbox"
       accessibilityState={{ checked }}
       onPress={onChange}
-      style={{ flexDirection: "row", gap: 12, paddingVertical: 9 }}
+      style={{ flexDirection: "row", gap: 12, paddingVertical: 8 }}
     >
       <View
         style={{
@@ -2026,105 +2738,35 @@ function Check({
     </Pressable>
   );
 }
+
 function Discipline({ route, navigation }: any) {
-  const a = useApp(),
-    id = route.params.id,
-    d = disciplines.find((x) => x.id === id)!,
-    card = a.me?.disciplines?.find((x: any) => x.discipline === id),
-    rule = card?.rulebook || ruleFor(id);
+  const id = route.params?.id || "squat";
   return (
-    <Screen>
-      <PageHeader
-        eyebrow="DISCIPLINE RANK"
-        title={d.name}
-        subtitle="Independent performance. Versioned standards."
-      />
-      {!card?.modelApproved || !card?.ruleApproved ? (
-        <Notice text="DRAFT — NOT OFFICIAL. No approved thresholds are available for this discipline. No official MONTE Climb Scale percentage is shown." />
-      ) : null}
-      <Card>
-        <Label>RELATED TRAINING ANIMATION</Label>
-        <Button
-          title="Open related exercise"
-          secondary
-          onPress={() =>
-            navigation.navigate("Exercise", {
-              id: (
-                {
-                  squat: "back-squat",
-                  bench: "bench-press",
-                  deadlift: "deadlift",
-                  curl: "barbell-curl",
-                } as Record<string, string>
-              )[id],
-            })
-          }
-        />
-        <Text style={v.subtle}>
-          {id === "curl"
-            ? "A standard barbell curl animation does not demonstrate or satisfy the Strict Biceps Curl standard."
-            : "A training animation is not evidence of a qualifying performance."}
-        </Text>
-      </Card>
-      {["verified", "provisional"].map((kind) => (
-        <Card key={kind}>
-          <Label>
-            {kind === "verified"
-              ? "MONTE VERIFIED"
-              : "PROVISIONAL · SELF-REPORTED"}
-          </Label>
-          <Text style={s.title}>
-            {card?.[kind]?.rankId
-              ? rankNames[card[kind].rankId]
-              : "No rank earned"}
-          </Text>
-          <Body>
-            {card?.[kind]?.explanation ||
-              "Qualifying performance and the required approvals are necessary."}
-          </Body>
-          {card?.modelApproved &&
-            card?.ruleApproved &&
-            Number.isFinite(card?.[kind]?.progress) && (
-              <Body>
-                MONTE Climb Scale: {card[kind].progress}% · server-calculated
-              </Body>
-            )}
-        </Card>
-      ))}
-      <Card>
-        <Label>MONTE STANDARD</Label>
-        <Body>
-          Rank order: Debitan · Bati · Solid · Fò · Avanse · Mèt · Chanpyon ·
-          Titan · Lejand. Each discipline is independent.
-        </Body>
-        <Text style={s.heading}>{rule.variation}</Text>
-        <Text style={s.small}>{rule.id}</Text>
-        {rule.checks.map((c: any) => (
-          <Body key={c.id}>• {c.text}</Body>
-        ))}
-      </Card>
-      <Notice text={rule.safety} />
-      <Button
-        title="Log a performance"
-        onPress={() => navigation.navigate("Performance")}
-      />
-    </Screen>
+    <RankTabWrapper
+      navigation={navigation}
+      route={{ params: { discipline: id } }}
+    />
   );
 }
+
 function Profile() {
   const a = useApp(),
     op = useOperation(),
     p = a.me?.profile?.data,
-    [weight, setWeight] = useState(p?.bodyweight || ""),
-    [age, setAge] = useState(p?.ageYears ? String(p.ageYears) : ""),
-    [unit, setUnit] = useState(p?.unit || "kg"),
-    [category, setCategory] = useState(p?.sexCategory || "unclassified");
+    [weight, setWeight] = useState(p?.bodyweight || a.localProfile.bodyweight || ""),
+    [age, setAge] = useState(
+      p?.ageYears ? String(p.ageYears) : a.localProfile.ageYears || "",
+    ),
+    [unit, setUnit] = useState<"kg" | "lb">(p?.unit || a.localProfile.unit || "kg"),
+    [category, setCategory] = useState<"male" | "female" | "unclassified">(
+      p?.sexCategory || a.localProfile.sexCategory || "male",
+    );
   return (
     <Screen>
       <PageHeader
         eyebrow="PROFILE SNAPSHOT"
         title="Your reference details."
-        subtitle="Only collect what a discipline methodology needs. Existing records retain their original snapshot."
+        subtitle="Used for bodyweight-adjusted Climb Scale targets. Never awards a rank automatically."
       />
       <Card>
         <Field
@@ -2139,7 +2781,7 @@ function Profile() {
             { id: "lb", name: "lb" },
           ]}
           value={unit}
-          onChange={setUnit}
+          onChange={(u) => setUnit(u as "kg" | "lb")}
         />
         <Field
           label="Age · supported range 18–100"
@@ -2150,19 +2792,31 @@ function Profile() {
         <Label>REFERENCE CATEGORY</Label>
         <Chips
           items={[
-            { id: "unclassified", name: "Unclassified" },
-            { id: "female", name: "Female reference" },
             { id: "male", name: "Male reference" },
+            { id: "female", name: "Female reference" },
+            { id: "unclassified", name: "Open reference" },
           ]}
           value={category}
-          onChange={setCategory}
+          onChange={(c) => setCategory(c as any)}
         />
-        <Body>
-          Software limits are not proof that a standard has been validated for
-          your category.
-        </Body>
         <Button
-          title="Save profile revision"
+          title="Save on this device"
+          onPress={() =>
+            op.run(async () => {
+              await a.updateLocalProfile({
+                ...a.localProfile,
+                bodyweight: weight.trim(),
+                unit,
+                sexCategory: category,
+                ageYears: age.trim(),
+              });
+              op.setMessage("Device reference saved. No rank was awarded.");
+            })
+          }
+        />
+        <Button
+          title="Save pilot account profile revision"
+          secondary
           disabled={!a.me}
           busy={op.busy}
           onPress={() =>
@@ -2188,22 +2842,39 @@ function Profile() {
     </Screen>
   );
 }
+
 function Account({ navigation }: any) {
   const a = useApp(),
     op = useOperation();
   return (
     <Screen>
-      <PageHeader eyebrow="YOUR ACCOUNT" title="Private by default." />
+      <PageHeader eyebrow="YOUR ACCOUNT & PREFERENCES" title="Private by default." />
+      <Card accent="blue">
+        <Label>ATHLETE DEVICE REFERENCE</Label>
+        <Body>
+          Bodyweight:{" "}
+          {a.localProfile.bodyweight
+            ? `${a.localProfile.bodyweight} ${a.localProfile.unit}`
+            : "Not set"}{" "}
+          · Self-reported Climb checks: {a.selfLifts.length}
+        </Body>
+        <Button
+          title="Edit Athlete Reference"
+          onPress={() => navigation.navigate("Profile")}
+        />
+        <Button
+          title="Open Welcome Screen"
+          secondary
+          onPress={() => navigation.navigate("Welcome")}
+        />
+      </Card>
+
       {!a.me ? (
         <SignInCard navigation={navigation} />
       ) : (
         <Card>
           <Label>CONNECTED ACCOUNT</Label>
           <Body>Role: {a.me.actor.role}</Body>
-          <Button
-            title="Edit profile"
-            onPress={() => navigation.navigate("Profile")}
-          />
           {["reviewer", "admin"].includes(a.me.actor.role) && (
             <Button
               title="Verification queue"
@@ -2263,21 +2934,10 @@ function Account({ navigation }: any) {
         />
         {op.message && <Notice text={op.message} />}
       </Card>
-      <Card>
-        <Label>VITAFLEX BUSINESS GROUP</Label>
-        <Body>MONTE WO 0.1.0 · pre-release</Body>
-        <Body>{a.status}</Body>
-        <Button
-          title="Contact support"
-          secondary
-          onPress={() =>
-            Linking.openURL("mailto:Montewo@vitaflexbusinessgroup.com")
-          }
-        />
-      </Card>
     </Screen>
   );
 }
+
 function Reviews({ navigation }: any) {
   const a = useApp(),
     op = useOperation(),
@@ -2333,6 +2993,7 @@ function Reviews({ navigation }: any) {
     </Screen>
   );
 }
+
 function EvidenceVideo({ id }: { id: string }) {
   const player = useVideoPlayer(
     {
@@ -2351,6 +3012,7 @@ function EvidenceVideo({ id }: { id: string }) {
     />
   );
 }
+
 function Review({ route, navigation }: any) {
   const a = useApp(),
     op = useOperation(),
@@ -2380,7 +3042,7 @@ function Review({ route, navigation }: any) {
             key={c.id}
             checked={!!checks[c.id]}
             text={c.text}
-            onChange={() => setChecks((v) => ({ ...v, [c.id]: !v[c.id] }))}
+            onChange={() => setChecks((prev) => ({ ...prev, [c.id]: !prev[c.id] }))}
           />
         ))}
         <Field
@@ -2425,16 +3087,14 @@ function Review({ route, navigation }: any) {
           />
         ))}
       </Card>
-      <Body>
-        The server checks authorization, self-approval, published standards and
-        stale revisions before accepting a decision.
-      </Body>
       {op.message && <Notice text={op.message} error />}
     </Screen>
   );
 }
+
 const Tab = createBottomTabNavigator(),
   Stack = createNativeStackNavigator();
+
 function Tabs() {
   const insets = useSafeAreaInsets();
   return (
@@ -2446,47 +3106,56 @@ function Tabs() {
         screenOptions={({ route }) => ({
           headerShown: false,
           tabBarStyle: {
-            backgroundColor: "#030b15",
-            borderTopColor: "#194d7b",
+            backgroundColor: "#000000",
+            borderTopColor: "#1a2436",
             borderTopWidth: 1,
-            height: 70 + insets.bottom,
-            paddingBottom: 12 + insets.bottom,
+            height: 68 + insets.bottom,
+            paddingBottom: 10 + insets.bottom,
             paddingTop: 8,
           },
-          tabBarLabelStyle: { fontSize: 10, fontWeight: "600" },
-          tabBarActiveTintColor: C.cyan,
+          tabBarLabelStyle: { fontSize: 10.5, fontWeight: "700" },
+          tabBarActiveTintColor: route.name === "Rank" ? C.red : C.cyan,
           tabBarInactiveTintColor: C.muted,
           tabBarIcon: ({ color, size }) => {
             const Icon = (
               {
                 Home: House,
                 Train: Dumbbell,
+                Rank: Trophy,
+                Nutrition: Utensils,
                 Library: BookOpen,
-                History: History,
-                Account: UserRound,
               } as any
-            )[route.name];
+            )[route.name] || ShieldCheck;
             return <Icon color={color} size={size} />;
           },
         })}
       >
         <Tab.Screen name="Home" component={Home} />
-        <Tab.Screen name="Train" component={Train} />
+        <Tab.Screen
+          name="Train"
+          component={TrainTabWrapper}
+          options={{ title: "Workout" }}
+        />
+        <Tab.Screen
+          name="Rank"
+          component={RankTabWrapper}
+          options={{ title: "Rank" }}
+        />
+        <Tab.Screen
+          name="Nutrition"
+          component={NutritionTabWrapper}
+          options={{ title: "Nutrition" }}
+        />
         <Tab.Screen
           name="Library"
           component={Library}
           options={{ title: "Explore" }}
         />
-        <Tab.Screen name="History" component={HistoryScreen} />
-        <Tab.Screen
-          name="Account"
-          component={Account}
-          options={{ title: "Profile" }}
-        />
       </Tab.Navigator>
     </SafeAreaView>
   );
 }
+
 class Boundary extends React.Component<PropsWithChildren, { failed: boolean }> {
   state = { failed: false };
   static getDerivedStateFromError() {
@@ -2517,6 +3186,7 @@ class Boundary extends React.Component<PropsWithChildren, { failed: boolean }> {
     );
   }
 }
+
 export default function App() {
   return (
     <SafeAreaProvider>
@@ -2526,7 +3196,7 @@ export default function App() {
           <View
             style={{
               flex: 1,
-              backgroundColor: "#00040a",
+              backgroundColor: "#000000",
               alignItems: "center",
             }}
           >
@@ -2534,12 +3204,10 @@ export default function App() {
               style={{
                 flex: 1,
                 width: "100%",
-                // Stable navigator width prevents WebKit observer loops on map/gallery pops.
-                // Each Screen chooses compact (500) or wide (1100) content independently.
-                maxWidth: Platform.OS === "web" ? 1120 : 1100,
+                maxWidth: Platform.OS === "web" ? 900 : 900,
                 borderLeftWidth: Platform.OS === "web" ? 1 : 0,
                 borderRightWidth: Platform.OS === "web" ? 1 : 0,
-                borderColor: "#123554",
+                borderColor: "#141d2c",
               }}
             >
               <NavigationContainer
@@ -2556,33 +3224,13 @@ export default function App() {
                 }}
               >
                 <Stack.Navigator
-                  initialRouteName="Welcome"
+                  initialRouteName="Main"
                   screenOptions={{
                     headerStyle: { backgroundColor: C.bg },
                     headerTintColor: C.text,
                     contentStyle: { backgroundColor: C.bg },
                   }}
                 >
-                  <Stack.Screen
-                    name="Welcome"
-                    component={Welcome}
-                    options={{ headerShown: false }}
-                  />
-                  <Stack.Screen
-                    name="MuscleMap"
-                    component={MuscleMap}
-                    options={{ title: "Muscle map" }}
-                  />
-                  <Stack.Screen
-                    name="Notifications"
-                    component={Notifications}
-                    options={{ title: "Notifications" }}
-                  />
-                  <Stack.Screen
-                    name="Nutrition"
-                    component={Nutrition}
-                    options={{ title: "Nutrition" }}
-                  />
                   <Stack.Screen
                     name="Main"
                     component={Tabs}
@@ -2591,6 +3239,36 @@ export default function App() {
                       title: "MONTE WO",
                       headerTitleStyle: { fontWeight: "800" },
                     }}
+                  />
+                  <Stack.Screen
+                    name="Welcome"
+                    component={Welcome}
+                    options={{ headerShown: false }}
+                  />
+                  <Stack.Screen
+                    name="History"
+                    component={HistoryScreen}
+                    options={{ title: "Training history" }}
+                  />
+                  <Stack.Screen
+                    name="Account"
+                    component={Account}
+                    options={{ title: "Account & profile" }}
+                  />
+                  <Stack.Screen
+                    name="MuscleMap"
+                    component={MuscleMap}
+                    options={{ title: "Muscle map" }}
+                  />
+                  <Stack.Screen
+                    name="GainsCamera"
+                    component={GainsCameraScreen}
+                    options={{ title: "AI Muscle Definition Camera" }}
+                  />
+                  <Stack.Screen
+                    name="Notifications"
+                    component={Notifications}
+                    options={{ title: "Notifications" }}
                   />
                   <Stack.Screen
                     name="SignIn"
@@ -2610,7 +3288,7 @@ export default function App() {
                   <Stack.Screen
                     name="Performance"
                     component={Performance}
-                    options={{ title: "Log performance" }}
+                    options={{ title: "Pilot server submission" }}
                   />
                   <Stack.Screen
                     name="Profile"
