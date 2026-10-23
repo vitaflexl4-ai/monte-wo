@@ -1,0 +1,67 @@
+name: MONTE WO actual app screenshots
+
+on:
+  push:
+    branches:
+      - agent/mobile-screen-captures
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: monte-wo-mobile-screenshots
+  cancel-in-progress: true
+
+jobs:
+  capture:
+    name: Export app and capture requested screens
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Check out branch
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: |
+            package-lock.json
+            apps/mobile/package-lock.json
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install website and browser-test dependencies
+        run: npm install --no-audit --no-fund --package-lock=false
+
+      - name: Install mobile dependencies
+        run: npm ci --prefix apps/mobile
+
+      - name: Type-check the actual app
+        run: npm run typecheck --prefix apps/mobile
+
+      - name: Export the Expo app for browser capture
+        run: npm run export:web --prefix apps/mobile
+        env:
+          MONTEWO_WEB_PREVIEW: "true"
+          EXPO_PUBLIC_API_BASE_URL: http://127.0.0.1:8082
+
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Capture Home, Workout, Nutrition and Rank
+        run: node scripts/capture-mobile-screenshots.mjs
+
+      - name: Upload actual app screen captures
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: monte-wo-actual-app-screenshots
+          path: artifacts/mobile-screenshots/
+          if-no-files-found: warn
+          retention-days: 14
