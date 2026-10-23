@@ -8,6 +8,17 @@
       "android": {
         "buildType": "apk"
       }
+    },
+    "preview": {
+      "node": "22.13.0",
+      "distribution": "internal",
+      "credentialsSource": "remote",
+      "android": {
+        "buildType": "apk"
+      },
+      "env": {
+        "MONTEWO_INTERNAL_APK_RISK_ACCEPTED": "true"
+      }
     }
   }
 }
