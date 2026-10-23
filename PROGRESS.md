@@ -30,6 +30,7 @@ Updated: 2026-10-23
 - No production deploy, remote migration, account creation, store build, store publishing or spending is performed.
 - No ranking engine, thresholds or evidence storage are changed.
 - Last screenshot workflow run: website build passed, mobile typecheck and Expo web export passed. The full root test suite reported 4 failing test files; one was a stale assertion for the website-concept label and has been corrected. The other three failures appear unrelated to this preview task and need review.
-- The first browser capture attempt successfully produced Home, Workout and Nutrition PNGs, but failed while returning to Home before Rank. The capture script has been changed to open isolated guest contexts for each screen, avoiding the unreliable tab-return step.
-- Latest workflow run is queued after the capture-script and Nutrition updates; final four-screen artifact is not yet confirmed.
+- Final four-screen capture succeeded in GitHub Actions run https://github.com/vitaflexl4-ai/monte-wo/actions/runs/39980328481. Artifact `monte-wo-actual-app-screenshots` contains Home, Workout, Nutrition and Rank PNGs (390 × 844 CSS px, 2× scale). These are Expo web / React Native Web captures, not native Android emulator screenshots.
+- Website build passed. Mobile typecheck and mobile build-safety/UI guard tests passed (45 tests). The full root suite remains red: 129 pass, 4 fail across `tests/cockpit.test.js`, `tests/lab.test.js`, a stale service-connection assertion, and a protected-file diff expectation in `tests/website.test.js`. Those baseline mismatches need a separate audit.
+- The final Rank capture shows “Assessment pending” and neutral “Assessment status” headings. Nutrition starts blank and does not show sample measurements or derived estimates.
 - Branch handoff link: https://github.com/vitaflexl4-ai/monte-wo/tree/agent/mobile-screen-captures
