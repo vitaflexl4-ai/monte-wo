@@ -907,18 +907,20 @@ function Home({ navigation }: any) {
               </View>
               <View style={v.pill}>
                 <Text style={v.pillText}>
-                  {rank ? rankNames[rank.rankId] : "NOT RANKED"}
+                  {rank ? rankNames[rank.rankId] : "ASSESSMENT PENDING"}
                 </Text>
               </View>
               <Text style={{ fontSize: 21, fontWeight: "700", color: C.text }}>
                 {perf ? perf.data.load + " " + perf.data.unit : "—"}
               </Text>
               <Text style={v.subtle}>
-                {rank?.status === "verified"
-                  ? "MONTE Verified"
-                  : rank
-                    ? "Provisional · self-reported"
-                    : "No verified performance"}
+                {!approved
+                  ? "Assessment pending · standards not approved"
+                  : rank?.status === "verified"
+                    ? "MONTE Verified"
+                    : rank
+                      ? "Provisional · self-reported"
+                      : "No verified performance"}
               </Text>
               {rank && rank.next?.rankId && typeof rank.progress === "number" && (
                 <View style={{ gap: 4, width: "100%" }}>
@@ -2412,9 +2414,11 @@ function Discipline({ route, navigation }: any) {
               : "PROVISIONAL · SELF-REPORTED"}
           </Label>
           <Text style={s.title}>
-            {card?.[kind]?.rankId
-              ? rankNames[card[kind].rankId]
-              : "No rank earned"}
+            {!card?.modelApproved || !card?.ruleApproved
+              ? "Assessment pending"
+              : card?.[kind]?.rankId
+                ? rankNames[card[kind].rankId]
+                : "No rank earned"}
           </Text>
           <Body>
             {card?.[kind]?.explanation ||
