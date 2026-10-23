@@ -7,6 +7,8 @@ Updated: 2026-10-23
 - Latest known failing CI run: website build passed; test suite reported 4 failures out of 167. The known failures were stale route-count/canonical-origin assertions, a lockfile mutation during dependency installation, and a protected `wrangler.toml` comment that still advised reusing the waitlist database.
 - CI workflow is being corrected to preserve lockfiles, assert the generated 51-route site accurately, and keep production deployment out of this workflow. Ranking and evidence code are out of scope.
 - Mobile package has `typecheck` and `test:build-safety` scripts; root package has `npm test` and build scripts. No lint script or repository-wide lint configuration was found in the package scripts inspected so far.
+- App audit: `App.tsx` already uses React Navigation, safe-area context, dark navy/blue with crimson accents, and a Welcome screen; current bottom navigation has five entries (Home, Train, Library/Explore, History, Account/Profile), not the requested four. No explicit 18+ gate, reduced-motion handling, sound/haptics settings or `monte-wo-onboarding/` folder was found in the inspected mobile source/tree.
+- Content audit: `content/exercises.json` and the generated mobile exercise catalog contain 14 reviewed written exercises in 7 groups; the separate generated workout library has 57 records and 57 poster assets. The requested 90-exercise/eight-category catalog is not present as `catalog.json`. Existing workout media assets include loop/demo videos in the asset-pack tree, but the exact mobile catalog/media integration still needs review.
 
 ## Next
 1. Confirm all P0 CI checks pass on the agent branch; review the full failure output and verify mobile typecheck and safety tests actually execute.
@@ -25,7 +27,9 @@ Updated: 2026-10-23
 - Confirmed `PROGRESS.md` and `QUESTIONS.md` were absent from the default branch and created them on the agent branch.
 - Inspected root and mobile package scripts and the latest failing CI job logs.
 - Identified concrete CI failures rather than treating the successful website build as a successful test run.
-- Corrected the route-count and test-origin assertions; prevented CI dependency installation from rewriting the root lockfile.
+- Corrected the route-count assertion and made the sign-in callback page's minimal navigation exception explicit.
+- Kept the test-only SITE_ORIGIN consistent between build and test steps; prevented CI dependency installation from rewriting the root lockfile.
+- Added the guarded internal APK preview profile required by the existing build-safety test; no build was started and no store submission is configured.
 - Removed the production deployment job from the proposed CI workflow so this task cannot deploy to production.
 - Updated the Wrangler configuration comment to say the restricted strength/mobile data path must use a dedicated `APP_DB`, not the waitlist database; pinned that exact change in the protected-source allowlist.
 
@@ -33,6 +37,6 @@ Updated: 2026-10-23
 - Work branch: `agent/ci-deploy-gates` (all changes remain unmerged).
 - Main repository: `https://github.com/vitaflexl4-ai/monte-wo`.
 - Current PR: `https://github.com/vitaflexl4-ai/monte-wo/pull/4`.
-- Last known pre-fix test result: 167 total, 163 passed, 4 failed. This is historical; wait for a new CI run before stating the current result.
+- Last completed verification after the first fixes: website/platform tests passed and mobile typecheck passed; mobile build-safety test failed because the expected internal preview profile was absent. A new guarded preview profile has now been added; a fresh CI run is required to verify it.
 - The repository is not yet an autonomous self-repairing 24/7 coding agent. The scheduled workflow monitors and reports failures; actual code changes still need an authorized coding-agent runtime.
 - No local repository checkout was available in this execution environment, so validation is being performed through GitHub Actions after committing changes to the agent branch.
