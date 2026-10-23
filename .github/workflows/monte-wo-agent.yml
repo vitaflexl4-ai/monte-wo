@@ -42,6 +42,8 @@ jobs:
           SITE_ORIGIN: https://monte-wo.test
       - name: Run website and platform tests
         run: npm test
+        env:
+          SITE_ORIGIN: https://monte-wo.test
       - name: Install mobile dependencies
         run: npm ci --prefix apps/mobile
       - name: Type-check mobile app
