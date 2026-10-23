@@ -33,6 +33,14 @@ These items require Sony's decision or approval. Development should continue on 
 **Question:** What confirmed public origin should be used for the download page and `/downloads/android.json`?
 - **Recommended:** do not fabricate a permanent domain, APK URL, version, checksum, availability status or download button. Keep any download route honest until an artifact is signed, verified and explicitly approved.
 
+### Q7 — Missing onboarding source folder (P1)
+**Question:** The repository tree does not contain the requested `monte-wo-onboarding/` folder. Can Sony add it to the repository or provide the intended source asset bundle?
+- **Recommended:** use the supplied source assets as-is once present; do not fabricate onboarding artwork or replace the official transparent blue/red logo.
+
+### Q8 — Canonical Android application ID (P8)
+**Question:** Confirm the permanent Android application ID before any release build. Current `app.config.ts` says `com.vitaflex.montewovitaflex`, while prior project notes refer to `com.vitaflexbusinessgroup.montewo`. These identifiers are not interchangeable after publishing.
+- **Recommended:** resolve ownership/package identity with Sony before creating or publishing any release build. No build has been started as part of this work.
+
 ## Owner-only checklist
 - [ ] Approve ranking thresholds and judging protocols.
 - [ ] Choose authentication method.
@@ -42,6 +50,8 @@ These items require Sony's decision or approval. Development should continue on 
 - [ ] Approve French text.
 - [ ] Approve legal pages and privacy/data-safety answers.
 - [ ] Confirm public website origin and release-download details.
+- [ ] Supply or commit the missing `monte-wo-onboarding/` source folder.
+- [ ] Confirm the canonical Android application ID.
 
 ## Guardrails
 - Adults 18+ only; collect minimum necessary data.
