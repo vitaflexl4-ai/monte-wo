@@ -1,4 +1,4 @@
-name: MONTE WO Development Agent
+name: MONTE WO CI and Scheduled Health Checks
 
 on:
   pull_request:
@@ -35,7 +35,7 @@ jobs:
         with:
           python-version: '3.12'
       - name: Install website dependencies
-        run: npm install --no-audit --no-fund
+        run: npm install --no-audit --no-fund --package-lock=false
       - name: Build website using test-only origin
         run: npm run build
         env:
@@ -95,101 +95,3 @@ jobs:
             echo "- Production deployment only runs from main after verification succeeds."
           } >> "$GITHUB_STEP_SUMMARY"
 
-  deploy-production:
-    name: Deploy and smoke-test production
-    needs: verify
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-    runs-on: ubuntu-latest
-    timeout-minutes: 20
-    environment:
-      name: production
-      url: ${{ vars.SITE_ORIGIN }}
-    steps:
-      - name: Check deployment configuration
-        env:
-          CF_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          CF_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          SITE_ORIGIN: ${{ vars.SITE_ORIGIN }}
-        run: |
-          test -n "$CF_API_TOKEN" || { echo "::error::Add CLOUDFLARE_API_TOKEN in GitHub Actions secrets."; exit 1; }
-          test -n "$CF_ACCOUNT_ID" || { echo "::error::Add CLOUDFLARE_ACCOUNT_ID in GitHub Actions secrets."; exit 1; }
-          test -n "$SITE_ORIGIN" || { echo "::error::Set SITE_ORIGIN in the production GitHub Environment variables to the confirmed public HTTPS origin."; exit 1; }
-          python3 -c 'import os,urllib.parse; u=urllib.parse.urlparse(os.environ["SITE_ORIGIN"]); assert u.scheme=="https" and u.netloc and not u.hostname.endswith(".test"), "SITE_ORIGIN must be the confirmed public HTTPS production origin"'
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 22
-          cache: npm
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.12'
-      - name: Build release
-        run: |
-          npm install --no-audit --no-fund
-          npm run build
-        env:
-          SITE_ORIGIN: ${{ vars.SITE_ORIGIN }}
-      - name: Save rollback target
-        id: previous
-        env:
-          CF_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          CF_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-        run: |
-          curl --fail-with-body --silent --show-error             "https://api.cloudflare.com/client/v4/accounts/$CF_ACCOUNT_ID/pages/projects/vitaflex-monte-wo/deployments?env=production&per_page=20"             -H "Authorization: Bearer $CF_API_TOKEN" > "$RUNNER_TEMP/deployments.json"
-          python3 - <<'PY'
-          import json, os
-          data=json.load(open(os.environ["RUNNER_TEMP"] + "/deployments.json"))
-          if not data.get("success"):
-              raise SystemExit("Cloudflare did not return a successful deployment list.")
-          valid=[d for d in data.get("result", []) if d.get("environment")=="production" and d.get("latest_stage",{}).get("status")=="success" and d.get("id")]
-          if not valid:
-              raise SystemExit("No previous successful production deployment found; refusing deployment without rollback target.")
-          valid.sort(key=lambda d:d.get("created_on",""), reverse=True)
-          with open(os.environ["GITHUB_OUTPUT"],"a") as f:
-              f.write("id="+valid[0]["id"]+"\n")
-              f.write("url="+valid[0].get("url","")+"\n")
-          PY
-      - name: Deploy to Cloudflare Pages
-        run: npx wrangler@4 pages deploy public --project-name vitaflex-monte-wo --branch main --commit-hash "$GITHUB_SHA" --commit-message "MONTE WO agent deploy $GITHUB_SHA"
-        env:
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-      - name: Smoke-test public site
-        id: smoke
-        continue-on-error: true
-        env:
-          SITE_ORIGIN: ${{ vars.SITE_ORIGIN }}
-        run: |
-          set -e
-          for path in / /strength-lab/ /strength-lab/one-rep-max/; do
-            code="$(curl --location --silent --show-error --output /dev/null --write-out '%{http_code}' --max-time 20 "$SITE_ORIGIN$path")"
-            echo "$path -> HTTP $code"
-            test "$code" -ge 200 && test "$code" -lt 400
-          done
-      - name: Roll back if smoke checks fail
-        if: steps.smoke.outcome == 'failure'
-        env:
-          CF_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          CF_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          PREVIOUS_DEPLOYMENT_ID: ${{ steps.previous.outputs.id }}
-        run: |
-          curl --fail-with-body --silent --show-error             -X POST             "https://api.cloudflare.com/client/v4/accounts/$CF_ACCOUNT_ID/pages/projects/vitaflex-monte-wo/deployments/$PREVIOUS_DEPLOYMENT_ID/rollback"             -H "Authorization: Bearer $CF_API_TOKEN"
-          echo "Rollback requested to deployment $PREVIOUS_DEPLOYMENT_ID."
-      - name: Release notification summary
-        if: always()
-        env:
-          SMOKE_OUTCOME: ${{ steps.smoke.outcome }}
-          PREVIOUS_URL: ${{ steps.previous.outputs.url }}
-          SITE_ORIGIN: ${{ vars.SITE_ORIGIN }}
-        run: |
-          {
-            echo "## MONTE WO production release"
-            echo "- Commit: $GITHUB_SHA"
-            echo "- Smoke checks: $SMOKE_OUTCOME"
-            echo "- Production origin: $SITE_ORIGIN"
-            if [ "$SMOKE_OUTCOME" = "failure" ]; then
-              echo "- Rollback target: $PREVIOUS_URL"
-              echo "- Action required: inspect run logs and confirm rollback."
-            fi
-          } >> "$GITHUB_STEP_SUMMARY"
-          test "$SMOKE_OUTCOME" = "success"
