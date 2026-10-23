@@ -89,7 +89,7 @@ try {
   const rank = await newAppPage();
   await rank.getByLabel("Squat discipline").click();
   await rank.getByText("DRAFT — NOT OFFICIAL. No approved thresholds are available for this discipline. No official MONTE Climb Scale percentage is shown.").waitFor();
-  await rank.getByText("Assessment pending", { exact: true }).waitFor();
+  await rank.getByText("Assessment pending", { exact: true }).first().waitFor();
   await save(rank, "04-rank");
 
   if (pageErrors.length) throw new Error("App preview browser errors: " + pageErrors.join(" | "));
