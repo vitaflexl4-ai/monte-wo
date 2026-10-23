@@ -47,6 +47,8 @@
     "prebuild": "expo prebuild --no-install",
     "export:web": "expo export --platform web --output-dir web-build --max-workers 1",
     "export:native": "expo export --platform android --platform ios --output-dir native-export --max-workers 1",
+    "build:apk": "npm install --prefer-offline --no-audit --no-fund && ./node_modules/expo/bin/cli config --json >/dev/null && npx --yes eas-cli build --platform android --profile preview",
+    "publish:apk": "node ../../scripts/publish_apk_release.mjs",
     "test:build-safety": "node --test tests/*.test.cjs"
   },
   "private": true,
