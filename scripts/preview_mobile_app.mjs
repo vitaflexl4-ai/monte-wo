@@ -83,7 +83,7 @@ http
       const url = new URL(req.url, "http://" + req.headers.host);
       if (url.pathname === "/" && process.env.PREVIEW_ENTRY !== "/") {
         const entry = ["/app/", "/exercises/", "/mobile/"].includes(process.env.PREVIEW_ENTRY)
-          ? process.env.PREVIEW_ENTRY : "/app/";
+          ? process.env.PREVIEW_ENTRY : "/mobile/";
         res.writeHead(302, { Location: entry });
         res.end();
         return;
@@ -198,6 +198,6 @@ http
   })
   .listen(Number(process.env.PORT || 8082), "0.0.0.0", () =>
     console.log(
-      "MONTE WO website /, interactive app preview /app/, exercise cockpit /exercises/ · account API disabled · no production bindings.",
+      "MONTE WO preview: / and /mobile/ open the actual Expo app; /app/ is the separate website concept · account API disabled · no production bindings.",
     ),
   );

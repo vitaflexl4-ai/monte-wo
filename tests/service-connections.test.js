@@ -39,7 +39,7 @@ test('readiness UI performs only credential-free public GET checks, not fake sig
  const src=readFileSync('public/site-connections.js','utf8');assert.match(src,/method:'GET'/);assert.match(src,/credentials:'omit'/);assert.match(src,/redirect:'error'/);assert.doesNotMatch(src,/localStorage|Bearer|MOBILE_SESSION_KEY|APP_DB|method:'POST'/);
 });
 test('native unavailable-service paths clear stale account views but leave device archive separate',()=>{
- const src=readFileSync('apps/mobile/App.tsx','utf8');assert.match(src,/if \(!config.available \|\| !config.workoutSync\) \{\s*setMe\(null\); setWorkouts\(\[\]\); setNext\(null\)/);assert.match(src,/legal\("\/app\/#app-connections"\)/);
+ const src=readFileSync('apps/mobile/App.tsx','utf8');assert.match(src,/if \(!config.available \|\| !config.workoutSync\) \{\s*setMe\(null\); setWorkouts\(\[\]\); setNext\(null\)/);assert.doesNotMatch(src,/setDeviceArchive\(\[\]\)/);
 });
 test('preview launch supports app route and keeps home available in website mode',()=>{
  const src=readFileSync('scripts/preview_mobile_app.mjs','utf8');assert.match(src,/\["\/app\/", "\/exercises\/", "\/mobile\/"\]/);assert.match(src,/process.env.PREVIEW_ENTRY !== "\/"/);

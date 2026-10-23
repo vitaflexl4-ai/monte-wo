@@ -29,9 +29,9 @@ def phone_markup():
   rows+=f'<tr><th scope="row"><small>DEMO {i//3+1:02d}</small><span data-phone-text="{key}">{name}</span></th><td>{weight}<small>lb</small></td><td>{reps}</td><td>{weight*reps}</td></tr>'
  return f'''<div class="phone-widget-stage" id="app-preview" data-phone-cockpit>
  <div class="phone-widget-halo" aria-hidden="true"></div>
- <section class="phone-widget" aria-label="Interactive MONTE WO app simulation" lang="en">
+ <section class="phone-widget" aria-label="MONTE WO website concept simulation" lang="en">
  <div class="phone-hardware" aria-hidden="true"><span>9:41</span><i></i><span>▰ ▰</span></div>
- <header class="phone-brand"><span>MONTE <b>WO.</b></span><small data-phone-text="simulation">LIVE SIMULATION</small></header>
+ <header class="phone-brand"><span>MONTE <b>WO.</b></span><small data-phone-text="simulation">WEBSITE CONCEPT</small></header>
  <div class="phone-tabs" role="tablist" aria-label="App preview screens">
  <button type="button" role="tab" id="phone-tab-strength" aria-controls="phone-panel-strength" aria-selected="true" tabindex="0" data-phone-tab="strength" data-phone-text="strength">Strength Index</button>
  <button type="button" role="tab" id="phone-tab-history" aria-controls="phone-panel-history" aria-selected="false" tabindex="-1" data-phone-tab="history" data-phone-text="history">Training History</button>
@@ -54,8 +54,8 @@ def phone_markup():
  <div class="phone-map-views" role="group" aria-label="Avatar view"><button type="button" data-phone-facing="f" aria-pressed="true" data-phone-text="front">Front</button><button type="button" data-phone-facing="b" aria-pressed="false" data-phone-text="backView">Back</button></div>
  <p class="phone-region-detail" data-phone-region-detail data-phone-text="mapHint">Choose a muscle region.</p><div class="phone-avatar-stage">{svg}<span class="phone-avatar-note" data-phone-text="mapExample">EXAMPLE TIERS · NOT ACHIEVEMENTS</span></div><div class="phone-region-buttons">{buttons}</div></section>
  </div><div class="phone-live-status" role="status" aria-live="polite" data-phone-status></div>
- <footer class="phone-widget-footer"><span data-phone-text="disclosure">APP CONCEPT · NO ATHLETE DATA</span><i aria-hidden="true"></i></footer>
- </section><noscript><p class="phone-noscript">Enable JavaScript to switch preview screens. This is a simulation, not a ranking tool.</p></noscript>
+ <footer class="phone-widget-footer"><span data-phone-text="disclosure">WEBSITE CONCEPT · NOT THE NATIVE APP</span><i aria-hidden="true"></i></footer>
+ </section><noscript><p class="phone-noscript">Enable JavaScript to switch preview screens. This website concept is not the native app or a ranking tool.</p></noscript>
  </div>'''
 def attach_assets(doc):
  if '/phone-cockpit.css' not in doc:doc=doc.replace('</head>','<link rel="stylesheet" href="/phone-cockpit.css"><script type="module" src="/cockpit.js"></script></head>')
