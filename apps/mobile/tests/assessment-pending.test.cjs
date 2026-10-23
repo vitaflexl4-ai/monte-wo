@@ -9,5 +9,6 @@ test('unapproved discipline standards display assessment pending, not an invente
   assert.match(app, /!approved\s*\? "Assessment pending · standards not approved"/);
   assert.match(app, /!card\?\.modelApproved \|\| !card\?\.ruleApproved\s*\? "Assessment pending"/);
   assert.match(app, /"No rank earned"/);
+  assert.match(app, /\? "ASSESSMENT STATUS"/);
   assert.match(app, /DRAFT — NOT OFFICIAL\. No approved thresholds are available/);
 });
