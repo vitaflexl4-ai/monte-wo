@@ -3,34 +3,31 @@
 Updated: 2026-10-23
 
 ## Now
-- Fix the preview handoff: local preview root should open the actual Expo app, not the older website phone simulation.
-- Capture four app-source screens—Home, Workout, Nutrition, Rank—from the Expo web export with Playwright.
-- Make unapproved discipline cards say “Assessment pending”; no rank is shown until standards are approved.
-- Clear the Nutrition screen's preset bodyweight, height and age so no sample estimate is presented before the user enters their own inputs.
-- Keep the website phone component explicitly labelled as a website concept, separate from the app.
+- Reinvent the MONTE WO product experience instead of treating successful screenshot capture as product completion.
+- Define a versioned, reviewable standards methodology for the four independent disciplines and nine-rank Climb Scale.
+- Redesign Home, Workout, Nutrition, and Rank as real usable app screens with the official blue/red brand identity.
+- Preserve ranking engine/evidence protections until the new standards are reviewed, tested, and safely integrated.
 
 ## Next
-1. Verify the new screenshot workflow completes and inspect the four captured PNGs.
-2. If screenshots reveal actual app layout defects, fix those on a focused `agent/<task>` branch and rerun typecheck/tests.
-3. Continue the existing app backlog after the preview and capture handoff is stable.
+1. Review `docs/MONTE-WO-REINVENTION-STANDARD-v0.1.md` for product direction, judging principles, evidence rules, and release gates.
+2. Inspect existing UI/components and make a focused app-experience implementation on this branch.
+3. Validate ranking cutoffs against credible public strength-sport benchmarks and document rationale; do not fabricate final thresholds.
+4. Add regression tests for set logging, calculators, empty states, rank progression presentation, evidence-state separation, and accessibility.
+5. Run typecheck, mobile tests, website tests, and root tests; report all existing and new failures honestly.
+6. Capture refreshed screen images only after the experience materially improves, then inspect them.
 
-## Blocked
-- This environment cannot inspect the user's live Mac browser at localhost:8092 or capture the separate Arena session directly.
-- Native Android screenshots require an emulator/device session; the planned artifacts are actual Expo app source rendered through React Native Web, clearly labelled as web captures.
-- Official rank thresholds remain unapproved; the Rank screen must show pending/no rank, not sample awards.
+## Blocked / approval gates
+- Exact numerical thresholds and any body-mass/sex-category policy must be documented, reviewed for fairness, and signed off before being enforced as official standards.
+- Native Android screenshots require a working emulator/device; React Native Web captures are not a substitute.
+- Legal/privacy copy, account method, release identity, public download origin, and store accounts remain owner decisions.
+- No production deployment, remote migration, real-account creation, store publishing/build, or spending without separate explicit approval.
 
 ## Done
-- Created branch `agent/mobile-screen-captures` from `feature/monte-wo-experience-completion`.
-- Changed the local preview server's default root destination from the website concept to `/mobile/`, the actual Expo app.
-- Relabelled the website phone component as a concept rather than the native app.
-- Added a browser capture workflow for Home, Workout, Nutrition, and Rank. External requests are blocked in the browser; the local API has empty bindings.
+- Created isolated branch `agent/monte-wo-reinvention` from the latest preview branch.
+- Added `docs/MONTE-WO-REINVENTION-STANDARD-v0.1.md` as the redesign brief and standards methodology.
+- The earlier preview branch still has a verified four-screen Expo web capture artifact; it showed that the app source was loading, but also exposed an underdeveloped user experience.
 
-## Notes
-- All work is unmerged and isolated to the agent branch.
-- No production deploy, remote migration, account creation, store build, store publishing or spending is performed.
-- No ranking engine, thresholds or evidence storage are changed.
-- Last screenshot workflow run: website build passed, mobile typecheck and Expo web export passed. The full root test suite reported 4 failing test files; one was a stale assertion for the website-concept label and has been corrected. The other three failures appear unrelated to this preview task and need review.
-- Final four-screen capture succeeded in GitHub Actions run https://github.com/vitaflexl4-ai/monte-wo/actions/runs/39980328481. Artifact `monte-wo-actual-app-screenshots` contains Home, Workout, Nutrition and Rank PNGs (390 × 844 CSS px, 2× scale). These are Expo web / React Native Web captures, not native Android emulator screenshots.
-- Website build passed. Mobile typecheck and mobile build-safety/UI guard tests passed (45 tests). The full root suite remains red: 129 pass, 4 fail across `tests/cockpit.test.js`, `tests/lab.test.js`, a stale service-connection assertion, and a protected-file diff expectation in `tests/website.test.js`. Those baseline mismatches need a separate audit.
-- The final Rank capture shows “Assessment pending” and neutral “Assessment status” headings. Nutrition starts blank and does not show sample measurements or derived estimates.
-- Branch handoff link: https://github.com/vitaflexl4-ai/monte-wo/tree/agent/mobile-screen-captures
+## Known test state
+- The prior screenshot workflow passed website build, mobile typecheck, Expo web export, and mobile build-safety/UI guards.
+- The root suite was red at 129 passing / 4 failing in the earlier run; three unrelated failures were still open after one stale label assertion was corrected. Re-run before claiming the current branch is green.
+- All work remains unmerged. No production release, remote migration, account creation, store publishing, or spending has occurred.
