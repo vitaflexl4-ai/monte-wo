@@ -1,5 +1,5 @@
-// One-command publisher: finds or downloads the built Android .apk, hashes it, uploads it to
-// GitHub Releases on vitaflexl4-ai/monte-wo (avoiding Cloudflare Pages' 25 MiB static file cap),
+// Zero-copy one-command publisher: stages or downloads the built Android .apk without duplicating
+// disk usage, streams SHA-256 verification, uploads to GitHub Releases on vitaflexl4-ai/monte-wo,
 // updates content/mobile-release.json, rebuilds public/, runs tests, and deploys to Cloudflare Pages.
 import fs from "node:fs";
 import os from "node:os";
@@ -13,7 +13,7 @@ const rawArg = process.argv[2];
 const tag = process.argv[3] || "v2.0.0";
 const version = tag.replace(/^v/, "");
 const assetName = `monte-wo-${tag}-android.apk`;
-const tempDir = fs.mkdtempSync(path.join(root, ".apk-stage-"));
+const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), "montewo-apk-"));
 const stagedApk = path.join(tempDir, assetName);
 
 function findNewestDownloadedApk() {
@@ -29,10 +29,39 @@ function findNewestDownloadedApk() {
     })
     .filter((c) => c.size > 1_000_000)
     .sort((a, b) => b.mtimeMs - a.mtimeMs);
-  return candidates[0]?.full || null;
+  return candidates[0] || null;
+}
+
+function sha256File(filePath) {
+  const hash = crypto.createHash("sha256");
+  const fd = fs.openSync(filePath, "r");
+  const buf = Buffer.alloc(65536);
+  try {
+    let bytesRead = 0;
+    while ((bytesRead = fs.readSync(fd, buf, 0, buf.length, null)) > 0) {
+      hash.update(bytesRead === buf.length ? buf : buf.subarray(0, bytesRead));
+    }
+  } finally {
+    fs.closeSync(fd);
+  }
+  return hash.digest("hex");
+}
+
+function stageZeroCopy(src, dest) {
+  try {
+    fs.linkSync(src, dest);
+  } catch {
+    try {
+      fs.symlinkSync(src, dest);
+    } catch {
+      fs.copyFileSync(src, dest);
+    }
+  }
 }
 
 try {
+  let sourceApkForHash = stagedApk;
+
   if (rawArg && /^https:\/\/(expo\.dev|.*amazonaws\.com|github\.com)\//i.test(rawArg)) {
     console.log(`Downloading APK from ${rawArg}...`);
     execFileSync("curl", ["-fL", rawArg, "-o", stagedApk], {
@@ -40,32 +69,50 @@ try {
       stdio: "inherit",
     });
   } else {
-    let apkPath =
-      rawArg && !rawArg.includes("YOUR-DOWNLOADED-BUILD")
-        ? path.resolve(rawArg)
-        : findNewestDownloadedApk();
+    let apkPath = null;
+    if (rawArg && !rawArg.includes("YOUR-DOWNLOADED-BUILD")) {
+      apkPath = path.resolve(rawArg);
+    } else {
+      const newest = findNewestDownloadedApk();
+      if (newest) {
+        const ageHours = (Date.now() - newest.mtimeMs) / (1000 * 60 * 60);
+        if (ageHours > 6) {
+          console.error(
+            `\n⚠️  Found an older APK in ~/Downloads (${newest.name}, modified ${ageHours.toFixed(1)}h ago).\n` +
+              `   Build the fresh MONTE WO v2.0.0 APK first with:\n` +
+              `     npm run build:apk\n` +
+              `   (Or, if you intentionally want to publish that existing file, pass its path explicitly:\n` +
+              `     npm run publish:apk -- "${newest.full}")\n`,
+          );
+          process.exit(1);
+        }
+        apkPath = newest.full;
+      }
+    }
 
     if (!apkPath || !fs.existsSync(apkPath)) {
       console.error(
-        "\n❌ No .apk file found yet!\n" +
-          "1. First build your APK:  npm run build:apk\n" +
+        "\n❌ No fresh .apk file found yet!\n" +
+          "1. Build your v2.0.0 APK:  npm run build:apk\n" +
           "2. Download the finished .apk from the Expo link into ~/Downloads/\n" +
-          "3. Then run:              npm run publish:apk\n",
+          "3. Publish to website:     npm run publish:apk\n",
       );
       process.exit(1);
     }
-    console.log(`Using local APK: ${apkPath}`);
-    fs.copyFileSync(apkPath, stagedApk);
+
+    console.log(`Using local APK (zero-copy link): ${apkPath}`);
+    sourceApkForHash = apkPath;
+    stageZeroCopy(apkPath, stagedApk);
   }
 
-  const stat = fs.statSync(stagedApk);
+  const stat = fs.statSync(sourceApkForHash);
   if (stat.size < 1_000_000) {
     console.error("Error: File looks too small to be a valid Android APK:", stat.size);
     process.exit(1);
   }
 
   const header = Buffer.alloc(4);
-  const fd = fs.openSync(stagedApk, "r");
+  const fd = fs.openSync(sourceApkForHash, "r");
   fs.readSync(fd, header, 0, 4, 0);
   fs.closeSync(fd);
   if (header[0] !== 0x50 || header[1] !== 0x4b) {
@@ -73,10 +120,7 @@ try {
     process.exit(1);
   }
 
-  const sha256 = crypto
-    .createHash("sha256")
-    .update(fs.readFileSync(stagedApk))
-    .digest("hex");
+  const sha256 = sha256File(sourceApkForHash);
 
   console.log(`APK verified locally: ${assetName}`);
   console.log(`  Size:   ${(stat.size / (1024 * 1024)).toFixed(2)} MB (${stat.size} bytes)`);

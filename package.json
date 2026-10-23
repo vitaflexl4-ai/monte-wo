@@ -17,7 +17,7 @@
     "test:portable": "node tests/portable.mjs",
     "build": "python3 scripts/build_tools.py && python3 scripts/build_library.py && python3 scripts/build_strength.py && python3 scripts/build_lab.py && python3 scripts/build_website.py && node scripts/patch_mobile_web_index.mjs",
     "build:mobile-web": "(cd apps/mobile && MONTEWO_WEB_PREVIEW=true npx expo export --platform web --output-dir ../../public/mobile) && node scripts/patch_mobile_web_index.mjs",
-    "build:apk": "cd apps/mobile && npx --yes eas-cli build --platform android --profile preview",
+    "build:apk": "cd apps/mobile && npm install --no-audit --no-fund && ./node_modules/expo/bin/cli config --json >/dev/null && npx --yes eas-cli build --platform android --profile preview",
     "publish:apk": "node scripts/publish_apk_release.mjs",
     "test:library": "node tests/library.mjs",
     "test:strength": "node --test tests/strength*.test.js",
