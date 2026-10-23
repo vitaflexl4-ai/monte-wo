@@ -20,6 +20,7 @@ Updated: 2026-10-23
 - Created isolated branch `agent/monte-wo-reinvention`; PR #6 remains draft and unmerged.
 - Added `docs/MONTE-WO-REINVENTION-STANDARD-v0.1.md` with principles, judging direction, evidence handling, and release gates.
 - Added `apps/mobile/src/ranking-policy.ts`: fail-closed rank decision logic requiring an explicitly approved, version-matched standards table, verified evidence, technique/reviewer approval, and strictly increasing per-discipline thresholds. This module deliberately contains no invented cutoffs.
+- Added `apps/mobile/tests/ranking-policy.test.mjs` with regression coverage for all nine rank boundaries, unknown disciplines, unverified evidence, reviewer/technique gates, invalid loads/thresholds, version mismatch, and discipline-specific thresholds; added the `test:ranking` script. Tests have been authored but not executed in this connector session.
 - The earlier preview branch's four-screen Expo web capture artifact confirmed the app source loads, but exposed an underdeveloped user experience.
 
 ## Blocked / approval gates
