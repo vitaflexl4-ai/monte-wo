@@ -61,7 +61,7 @@ jobs:
               `Commit: ${context.sha}`,
               '',
               'Review the failing step and fix the underlying issue. This alert does not automatically modify application code.'
-            ].join('\\n');
+            ].join('\n');
             const { data: issues } = await github.rest.issues.listForRepo({
               owner: context.repo.owner,
               repo: context.repo.repo,
