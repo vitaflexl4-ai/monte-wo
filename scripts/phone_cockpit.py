@@ -102,7 +102,8 @@ def actual_app_screens():
   <div class="phone-shot-pane" data-app-shot-pane="nutrition" hidden>{nutrition_shot}</div>
  </div>
  <div class="phone-launch-bar">
-  <a href="/mobile/" class="phone-open-full">Open Full-Screen 5-Tab App ↗</a>
+  <a href="/mobile/" class="phone-open-full">Open Full-Screen App ↗</a>
+  <a href="/downloads/" class="phone-open-apk">Android APK ↓</a>
  </div>'''
 
 def phone_markup():
@@ -199,7 +200,7 @@ def publish():
   else:doc=doc.replace('<p class="launch-link">',navigation_links(True)+'<p class="launch-link">',1)
   path.write_text(doc)
  (P/'service-readiness.js').write_bytes((ROOT/'shared/service-readiness.js').read_bytes())
- sw=P/'sw.js';text=sw.read_text();text=re.sub(r"const CORE='[^']+';","const CORE='montewo-core-v18-account-workouts-v2';",text)
+ sw=P/'sw.js';text=sw.read_text();text=re.sub(r"const CORE='[^']+';","const CORE='montewo-core-v18-account-workouts-v3';",text)
  if '"/phone-cockpit.css"' not in text:text=text.replace('const COCKPIT_ASSETS=[','const COCKPIT_ASSETS=["/phone-cockpit.css", ')
  if '"/site-connections.js"' not in text:text=text.replace('const COCKPIT_ASSETS=[','const COCKPIT_ASSETS=["/site-connections.js", "/service-readiness.js", ')
  sw.write_text(text)

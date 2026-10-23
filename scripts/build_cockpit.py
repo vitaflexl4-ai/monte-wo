@@ -49,7 +49,7 @@ def build():
  (P/'cockpit-map.json').write_text(json.dumps(model,ensure_ascii=False,separators=(',',':'))+'\n')
  (P/'cockpit-nutrition.json').write_text(json.dumps(foods,ensure_ascii=False,indent=2)+'\n')
  sw=P/'sw.js';text=sw.read_text();assets=['/account-client.js','/account-workouts.js','/workouts.js','/workout-transfer.js','/site-connections.js','/service-readiness.js','/phone-cockpit.css','/cockpit-tools.js','/cockpit-session.js','/exercise-video.js','/cockpit.js','/cockpit.css','/cockpit-library.js','/cockpit-nutrition.js','/cockpit-catalog.json','/cockpit-map.json','/cockpit-nutrition.json']+[e['preview']['poster'] for e in catalog['exercises'] if e.get('preview')]
- text=re.sub(r"const CORE='[^']+';","const CORE='montewo-core-v18-account-workouts-v2';",text)
+ text=re.sub(r"const CORE='[^']+';","const CORE='montewo-core-v18-account-workouts-v3';",text)
  declaration='const COCKPIT_ASSETS='+json.dumps(assets)+';'
  if 'const COCKPIT_ASSETS=' in text:text=re.sub(r'const COCKPIT_ASSETS=.*?;',lambda _:declaration,text)
  else:text=text.replace('const ASSETS=[',declaration+'\nconst ASSETS=[...COCKPIT_ASSETS,')

@@ -1,5 +1,5 @@
 // Monte Wo v0.3 — caches the website and all free tools; NOT a workout sync engine.
-const CORE='montewo-core-v18-account-workouts-v2';
+const CORE='montewo-core-v18-account-workouts-v3';
 const MEDIA='montewo-media-v1';
 const LIBRARY_ASSETS=["/library.css", "/library.js", "/library-routes.json", "/exercises/", "/exercises/muscle/chest/", "/exercises/muscle/back/", "/exercises/muscle/shoulders/", "/exercises/muscle/arms/", "/exercises/muscle/legs/", "/exercises/muscle/core/", "/exercises/muscle/cardio/", "/exercises/bench-press/", "/exercises/push-up/", "/exercises/one-arm-dumbbell-row/", "/exercises/lat-pulldown/", "/exercises/overhead-press/", "/exercises/lateral-raise/", "/exercises/dumbbell-curl/", "/exercises/triceps-pushdown/", "/exercises/back-squat/", "/exercises/romanian-deadlift/", "/exercises/dead-bug/", "/exercises/forearm-plank/", "/exercises/brisk-walk/", "/exercises/stationary-bike/"];
 const LAB_ASSETS=["/strength-lab/", "/lab.css", "/lab.js", "/lab-math.js", "/lab-copy.js", "/strength-lab/one-rep-max/", "/strength-lab/percentages/", "/strength-lab/plates/", "/strength-lab/converter/", "/strength-lab/warm-up/"];

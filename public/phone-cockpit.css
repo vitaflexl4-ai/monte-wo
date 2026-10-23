@@ -10,9 +10,12 @@
 .phone-live-pane{overflow:hidden}
 .phone-live-backdrop{position:absolute;inset:0;z-index:1;pointer-events:none}
 .phone-live-iframe{position:relative;z-index:2;width:100%;height:100%;border:0;display:block;background:transparent}
-.phone-launch-bar{display:flex;justify-content:center;padding:6px 4px 2px;flex-shrink:0}
-.phone-open-full{display:block;width:100%;padding:8px 12px;border-radius:12px;background:linear-gradient(135deg,#111927,#0a101a);border:1px solid #258cf466;color:#7cc4ff;font-size:11px;font-weight:700;text-align:center;text-decoration:none;letter-spacing:.2px}
+.phone-launch-bar{display:grid;grid-template-columns:1.25fr .95fr;gap:6px;padding:6px 4px 2px;flex-shrink:0}
+.phone-open-full,.phone-open-apk{display:block;width:100%;padding:8px 10px;border-radius:12px;font-size:10.5px;font-weight:700;text-align:center;text-decoration:none;letter-spacing:.2px;white-space:nowrap}
+.phone-open-full{background:linear-gradient(135deg,#111927,#0a101a);border:1px solid #258cf466;color:#7cc4ff}
 .phone-open-full:hover{border-color:#60a5fa;color:#fff;background:#13233a}
+.phone-open-apk{background:linear-gradient(135deg,#1c0a0e,#0d111a);border:1px solid #dc262688;color:#fca5a5}
+.phone-open-apk:hover{border-color:#f87171;color:#fff;background:#2a0f15}
 .real-app-shot{display:flex;flex-direction:column;height:100%;padding:10px 11px 8px;background:#000000;color:#f5f7fb;gap:8px;font-family:inherit}
 .real-app-top{display:flex;align-items:center;justify-content:space-between;gap:6px}
 .real-app-logo{display:flex;align-items:center;gap:7px}
