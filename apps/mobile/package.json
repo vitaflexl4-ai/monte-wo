@@ -45,7 +45,8 @@
     "export:native": "expo export --platform android --platform ios --output-dir native-export --max-workers 1",
     "test:build-safety": "node --test tests/*.test.cjs",
     "eas-build-pre-install": "node scripts/check-build-security.cjs",
-    "eas-build-post-install": "npm run typecheck && npm run test:build-safety"
+    "eas-build-post-install": "npm run typecheck && npm run test:build-safety",
+    "test:ranking": "node --experimental-strip-types --test tests/ranking-policy.test.mjs"
   },
   "private": true,
   "engines": {
