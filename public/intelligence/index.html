@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow"><meta name="referrer" content="no-referrer">
+<title>MONTE WO Intelligence Command Center</title>
+<link rel="stylesheet" href="/intelligence/intelligence.css">
+<script defer src="/intelligence/intelligence.js"></script>
+</head>
+<body>
+<div class="shell">
+<aside class="rail">
+  <a class="brand" href="/" aria-label="MONTE WO home"><span class="brand-mark">MW</span><span>MONTE WO<small>INTELLIGENCE</small></span></a>
+  <div class="rail-label">COMMAND</div>
+  <a class="nav active" href="#overview">◈ <span>Overview</span></a>
+  <a class="nav" href="#agents">⌘ <span>Agents</span></a>
+  <a class="nav" href="#incidents">◎ <span>Incidents</span></a>
+  <a class="nav" href="#briefings">▤ <span>Briefings</span></a>
+  <a class="nav" href="#meeting">⟷ <span>AU meeting room</span></a>
+  <div class="rail-foot"><span class="dot amber"></span><span>Setup required</span><small>Not yet connected to live telemetry</small></div>
+</aside>
+<main>
+<header class="top"><div><div class="eyebrow">PRIVATE OPERATIONS / 001</div><h1>Intelligence Command Center</h1><p>One operating picture for the app, website, and executive decisions.</p></div><div class="top-right"><span class="status"><i class="dot amber"></i> NOT LIVE</span><button id="refresh" class="button secondary">↻ Refresh status</button></div></header>
+<section id="overview" class="hero panel"><div><div class="eyebrow">AU · EXECUTIVE PICTURE</div><h2>Know what is happening.<br><em>Act on verified evidence.</em></h2><p>The command center will consolidate app and website signals into prioritized intelligence. Live status remains unavailable until the protected API, D1 database, and scheduled worker are configured and tested.</p></div><div class="hero-orb" aria-hidden="true"><span></span><b>AU</b><i></i></div></section>
+<section class="metrics" aria-label="System status">
+<article class="metric panel"><div class="metric-top"><span>ARGON</span><span class="agent-icon blue">A</span></div><h3>App intelligence</h3><strong id="argon-status">NOT CONFIGURED</strong><p id="argon-detail">Mobile telemetry endpoint is not connected.</p></article>
+<article class="metric panel"><div class="metric-top"><span>ULTRON</span><span class="agent-icon red">U</span></div><h3>Website intelligence</h3><strong id="ultron-status">NOT CONFIGURED</strong><p id="ultron-detail">Scheduled checks are not verified.</p></article>
+<article class="metric panel"><div class="metric-top"><span>AU</span><span class="agent-icon violet">AU</span></div><h3>Executive analysis</h3><strong id="au-status">FOUNDATION</strong><p id="au-detail">Briefing generation and delivery need configuration.</p></article>
+<article class="metric panel"><div class="metric-top"><span>DATA</span><span class="agent-icon gray">↗</span></div><h3>Evidence pipeline</h3><strong id="data-status">OFFLINE</strong><p id="data-detail">No live counts are shown without a connected source.</p></article>
+</section>
+<section id="agents" class="section"><div class="section-head"><div><div class="eyebrow">SPECIALIST UNITS</div><h2>Agent status</h2></div><span class="subtle">Evidence first · no fabricated activity</span></div><div class="agent-grid">
+<article class="agent panel"><div class="agent-title"><span class="agent-icon blue">A</span><div><h3>ARGON</h3><small>MOBILE APP MONITORING</small></div><span class="pill amber">Awaiting integration</span></div><p>App crashes, failed requests, login issues, performance regressions, release health, and error spikes.</p><div class="tags"><span>Crash signals</span><span>API errors</span><span>Release health</span></div></article>
+<article class="agent panel"><div class="agent-title"><span class="agent-icon red">U</span><div><h3>ULTRON</h3><small>WEBSITE MONITORING</small></div><span class="pill amber">Awaiting setup</span></div><p>Availability, response time, broken routes, deployment health, aggregate traffic, and conversion friction.</p><div class="tags"><span>Health checks</span><span>Latency</span><span>Aggregate analytics</span></div></article>
+<article class="agent panel"><div class="agent-title"><span class="agent-icon violet">AU</span><div><h3>AU</h3><small>INTELLIGENCE COORDINATION</small></div><span class="pill amber">Foundation</span></div><p>Correlates findings, preserves evidence, ranks incidents, and prepares daily and weekly executive briefings.</p><div class="tags"><span>Correlation</span><span>Briefings</span><span>Audit trail</span></div></article>
+</div></section>
+<section id="incidents" class="section panel table-panel"><div class="section-head"><div><div class="eyebrow">LIVE EVIDENCE FEED</div><h2>Priority incidents</h2></div><span class="pill gray" id="incident-count">No live feed</span></div><div class="empty" id="incidents-empty"><span>◎</span><strong>Incident data is not connected</strong><p>When D1 and the protected API are configured, verified findings will appear here with severity, source agent, timestamps, confidence, and evidence.</p></div><div id="incidents-list" class="incident-list" hidden></div></section>
+<section id="briefings" class="section two-col"><article class="panel briefing"><div class="eyebrow">EXECUTIVE INTELLIGENCE</div><h2>Briefings</h2><div class="brief-row"><span class="brief-icon">!</span><div><strong>Urgent alerts</strong><p>Critical incidents and sustained outages.</p></div><span class="pill gray">Not configured</span></div><div class="brief-row"><span class="brief-icon">24</span><div><strong>Daily summary</strong><p>Last 24 hours, repeated failures, open risks.</p></div><span class="pill gray">Not configured</span></div><div class="brief-row"><span class="brief-icon">7d</span><div><strong>Weekly strategic report</strong><p>Seven-day trends, opportunities, and decisions.</p></div><span class="pill gray">Not configured</span></div></article>
+<article id="meeting" class="panel meeting"><div class="eyebrow">AU · SECURE ANALYSIS ROOM</div><h2>Agent meeting room</h2><p class="subtle">A structured review—not an unsourced conversation.</p><div class="meeting-line"><span class="agent-icon blue">A</span><div><strong>ARGON briefing</strong><small>App evidence and unresolved questions</small></div></div><div class="meeting-line"><span class="agent-icon red">U</span><div><strong>ULTRON briefing</strong><small>Website evidence and traffic trends</small></div></div><div class="meeting-line"><span class="agent-icon violet">AU</span><div><strong>AU synthesis</strong><small>Cross-signal analysis and prioritized action</small></div></div><div class="notice">The initial foundation uses deterministic, evidence-based summaries. AI model reasoning, alert delivery, and live agent-to-agent coordination are not active until explicitly configured and tested.</div></article></section>
+<section class="section panel safety"><div><div class="eyebrow">CONTROL & GOVERNANCE</div><h2>Safe by default</h2><p>Monitoring and analysis can run automatically after configuration. Remediation remains disabled until a specific reversible, low-risk rule is explicitly approved by an administrator.</p></div><div class="safety-list"><span>✓ Admin-only access required</span><span>✓ Audit trail for actions</span><span>✓ Aggregate visitor analytics</span><span>✓ No covert identity resolution</span><span>✓ No production changes without approved rule</span></div></section>
+<footer>MONTE WO · INTELLIGENCE SYSTEM / FOUNDATION BUILD <span id="last-checked">Status has not been checked in this session.</span></footer>
+</main>
+</div>
+</body></html>
