@@ -1,0 +1,17 @@
+name = "monte-wo-intelligence"
+main = "src/index.js"
+compatibility_date = "2026-10-01"
+
+# Create a dedicated D1 database before configuring this binding.
+# [[d1_databases]]
+# binding = "INTEL_DB"
+# database_name = "monte-wo-intelligence"
+# database_id = "REPLACE_WITH_REAL_D1_ID"
+
+[vars]
+INTELLIGENCE_ENABLED = "false"
+# SITE_URL must be the confirmed canonical production URL, not a guessed domain.
+# SITE_URL = "https://YOUR-CONFIRMED-DOMAIN"
+
+[triggers]
+crons = ["*/5 * * * *", "17 11 * * *", "23 11 * * 1"]
