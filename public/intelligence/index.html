@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<meta name="referrer" content="no-referrer">
+<title>MONTE WO · Intelligence Command Center</title>
+<link rel="stylesheet" href="/fonts.css">
+<link rel="stylesheet" href="/intelligence/intelligence.css">
+<script defer src="/intelligence/intelligence.js"></script>
+</head>
+<body>
+<div class="shell">
+  <aside class="rail">
+    <a class="brand" href="/" aria-label="MONTE WO home">
+      <span class="brand-mark" aria-hidden="true">MW</span>
+      <span class="brand-text">MONTE WO<small>INTELLIGENCE</small></span>
+    </a>
+    <div class="rail-label">Command</div>
+    <nav class="rail-nav" aria-label="Intelligence views">
+      <a class="nav" href="#/overview" data-nav="overview"><span class="nav-ico" aria-hidden="true">◈</span><span>Overview</span></a>
+      <a class="nav" href="#/incidents" data-nav="incidents"><span class="nav-ico" aria-hidden="true">◎</span><span>Incidents</span></a>
+      <a class="nav" href="#/agents" data-nav="agents"><span class="nav-ico" aria-hidden="true">⌘</span><span>Agents</span></a>
+      <a class="nav" href="#/analysis" data-nav="analysis"><span class="nav-ico" aria-hidden="true">⟷</span><span>Analysis room</span></a>
+      <a class="nav" href="#/briefings" data-nav="briefings"><span class="nav-ico" aria-hidden="true">▤</span><span>Briefings</span></a>
+      <a class="nav" href="#/automation" data-nav="automation"><span class="nav-ico" aria-hidden="true">⚖</span><span>Automation</span></a>
+      <a class="nav" href="#/audit" data-nav="audit"><span class="nav-ico" aria-hidden="true">▦</span><span>Audit</span></a>
+    </nav>
+    <div class="rail-foot">
+      <div class="rail-status"><span class="dot" id="rail-dot"></span><span id="rail-status">CONNECTING</span></div>
+      <small id="rail-sub">Checking intelligence backend…</small>
+    </div>
+  </aside>
+  <main class="main" id="main">
+    <header class="top">
+      <div>
+        <div class="eyebrow">PRIVATE OPERATIONS · VITAFLEX BUSINESS GROUP</div>
+        <h1>Intelligence Command Center</h1>
+        <p class="sub">One verified operating picture for the MONTE WO app, website and executive decisions.</p>
+      </div>
+      <div class="top-right">
+        <span class="status-pill" id="system-status"><span class="dot amber"></span>CONNECTING</span>
+        <button id="refresh" class="btn" type="button">↻ Refresh</button>
+      </div>
+    </header>
+    <div id="urgent-banner" class="urgent-banner" hidden></div>
+    <div id="view" class="view" aria-live="polite">
+      <section class="panel loading-panel"><span class="spin" aria-hidden="true"></span><p>Connecting to the intelligence backend…</p></section>
+    </div>
+    <footer class="foot">
+      <span>MONTE WO · INTELLIGENCE SYSTEM · EVIDENCE FIRST, NO FABRICATED DATA</span>
+      <span id="last-updated">Not yet checked in this session.</span>
+    </footer>
+  </main>
+</div>
+<div id="drawer-overlay" class="drawer-overlay" hidden></div>
+<aside id="drawer" class="drawer" aria-label="Detail panel" hidden></aside>
+<noscript><div class="noscript">The Intelligence Command Center requires JavaScript. All data shown is fetched from the protected, authenticated API — nothing is simulated.</div></noscript>
+</body>
+</html>
