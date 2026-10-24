@@ -74,16 +74,25 @@ const types = {
   ".png": "image/png",
   ".webp": "image/webp",
   ".jpg": "image/jpeg",
+  ".gif": "image/gif",
+  ".mp4": "video/mp4",
+  ".webm": "video/webm",
   ".ttf": "font/ttf",
+  ".woff2": "font/woff2",
   ".ico": "image/x-icon",
 };
 http
   .createServer(async (req, res) => {
     try {
       const url = new URL(req.url, "http://" + req.headers.host);
+      if (url.pathname === "/mobile") {
+        res.writeHead(302, { Location: "/mobile/" });
+        res.end();
+        return;
+      }
       if (url.pathname === "/" && process.env.PREVIEW_ENTRY !== "/") {
         const entry = ["/app/", "/exercises/", "/mobile/"].includes(process.env.PREVIEW_ENTRY)
-          ? process.env.PREVIEW_ENTRY : "/app/";
+          ? process.env.PREVIEW_ENTRY : "/mobile/";
         res.writeHead(302, { Location: entry });
         res.end();
         return;
@@ -165,10 +174,25 @@ http
         res.end(Buffer.from(await response.arrayBuffer()));
         return;
       }
-      const mobile = url.pathname.startsWith("/mobile/"),
-        base = path.join(root, mobile ? "apps/mobile/web-build" : "public");
+      const mobile =
+          url.pathname.startsWith("/mobile/") ||
+          url.pathname.startsWith("/_expo/"),
+        publicMobileDir = path.join(root, "public/mobile"),
+        hasPublicMobile = await stat(path.join(publicMobileDir, "index.html"))
+          .then((s) => s.isFile())
+          .catch(() => false),
+        base = path.join(
+          root,
+          mobile
+            ? hasPublicMobile
+              ? "public/mobile"
+              : "apps/mobile/web-build"
+            : "public",
+        );
       const relative = decodeURIComponent(
-        mobile ? url.pathname.slice(8) : url.pathname.slice(1),
+        url.pathname.startsWith("/mobile/")
+          ? url.pathname.slice(8)
+          : url.pathname.slice(1),
       );
       let file = path.resolve(base, relative || ".");
       if (!file.startsWith(base + path.sep) && file !== base) {
@@ -180,17 +204,48 @@ http
         if ((await stat(file)).isDirectory())
           file = path.join(file, "index.html");
       } catch {
-        res.writeHead(404, {"Content-Type":"text/html; charset=utf-8"});
-        res.end(await readFile(path.join(root,"public/404.html")));
-        return;
+        const webBuildFallback = path.resolve(
+          path.join(root, "apps/mobile/web-build"),
+          relative || ".",
+        );
+        const webBuildRoot = path.join(root, "apps/mobile/web-build");
+        let foundFallback = false;
+        if (webBuildFallback.startsWith(webBuildRoot + path.sep)) {
+          try {
+            if ((await stat(webBuildFallback)).isFile()) {
+              file = webBuildFallback;
+              foundFallback = true;
+            }
+          } catch {}
+        }
+        if (!foundFallback) {
+          if (mobile && !path.extname(relative)) {
+            file = path.join(base, "index.html");
+          } else {
+            res.writeHead(404, {"Content-Type":"text/html; charset=utf-8"});
+            res.end(await readFile(path.join(root,"public/404.html")));
+            return;
+          }
+        }
+      }
+      let payload = await readFile(file);
+      if (mobile && path.basename(file) === "index.html") {
+        payload = Buffer.from(
+          payload
+            .toString("utf8")
+            .replace(
+              "</head>",
+              "<style>html,body,#root{background-color:#000000 !important;color:#f5f7fb;margin:0;}</style></head>",
+            ),
+        );
       }
       res.writeHead(200, {
         "Content-Type": types[path.extname(file)] || "application/octet-stream",
         "Cache-Control": "no-store",
         "X-Content-Type-Options": "nosniff",
-        "Permissions-Policy": "camera=(self), microphone=(), geolocation=()",
+        "Permissions-Policy": "camera=*, microphone=(), geolocation=()",
       });
-      res.end(await readFile(file));
+      res.end(payload);
     } catch {
       res.writeHead(500);
       res.end("Preview request failed");

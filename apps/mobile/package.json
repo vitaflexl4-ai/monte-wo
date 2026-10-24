@@ -6,13 +6,18 @@
     "@react-navigation/bottom-tabs": "^7.21.0",
     "@react-navigation/native": "^7.5.1",
     "@react-navigation/native-stack": "^7.21.0",
+    "@zxing/browser": "^0.1.5",
+    "@zxing/library": "^0.21.3",
     "expo": "~57.0.30",
     "expo-auth-session": "~57.0.16",
+    "expo-camera": "~57.0.6",
     "expo-constants": "~57.0.22",
     "expo-crypto": "~57.0.4",
     "expo-document-picker": "~57.0.3",
     "expo-file-system": "~57.0.7",
+    "expo-media-library": "~57.0.5",
     "expo-secure-store": "~57.0.4",
+    "expo-sharing": "~57.0.24",
     "expo-splash-screen": "~57.0.10",
     "expo-status-bar": "~57.0.1",
     "expo-system-ui": "~57.0.4",
@@ -25,7 +30,8 @@
     "react-native-safe-area-context": "~5.7.0",
     "react-native-screens": "~4.26.0",
     "react-native-svg": "15.15.4",
-    "react-native-web": "^0.21.2"
+    "react-native-web": "^0.21.2",
+    "uuid": "^11.1.1"
   },
   "devDependencies": {
     "@types/react": "~19.2.2",
@@ -41,6 +47,8 @@
     "prebuild": "expo prebuild --no-install",
     "export:web": "expo export --platform web --output-dir web-build --max-workers 1",
     "export:native": "expo export --platform android --platform ios --output-dir native-export --max-workers 1",
+    "build:apk": "npm install --prefer-offline --no-audit --no-fund && ./node_modules/expo/bin/cli config --json >/dev/null && npx --yes eas-cli build --platform android --profile preview",
+    "publish:apk": "node ../../scripts/publish_apk_release.mjs",
     "test:build-safety": "node --test tests/*.test.cjs"
   },
   "private": true,

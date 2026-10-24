@@ -2,6 +2,25 @@
   "product": "MONTE WO",
   "operator": "VitaFlex Business Group",
   "sourceVersion": "0.1.0",
-  "android": {"status": "unreleased", "apkUrl": null, "playUrl": null, "version": null, "releasedAt": null, "bytes": null, "sha256": null, "minSdk": null, "signingCertificateSha256": null, "installationTest": null},
-  "ios": {"status": "unreleased", "testFlightUrl": null, "appStoreUrl": null}
+  "android": {
+    "status": "unreleased",
+    "apkUrl": null,
+    "playUrl": null,
+    "version": null,
+    "releasedAt": null,
+    "bytes": null,
+    "sha256": null,
+    "minSdk": null,
+    "signingCertificateSha256": null,
+    "installationTest": null,
+    "previewUrl": "https://expo.dev/accounts/vitaflex/projects/monte-wo/builds/7a8a3e7f-c088-45e9-8111-218fb60c5b52",
+    "previewLabel": "Android preview build",
+    "previewVersion": "0.1.0",
+    "previewNote": "Internal preview only; not an official public release. Access the EAS build page to install."
+  },
+  "ios": {
+    "status": "unreleased",
+    "testFlightUrl": null,
+    "appStoreUrl": null
+  }
 }

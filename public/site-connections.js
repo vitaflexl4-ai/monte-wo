@@ -1,5 +1,5 @@
-const labels={en:{preview:'Try the phone preview ↓',train:'Open training tools ↗',status:'Connection status ↓'},ht:{preview:'Eseye aperçu telefòn nan ↓',train:'Louvri zouti antrènman yo ↗',status:'Estati koneksyon ↓'},fr:{preview:'Essayer l’aperçu du téléphone ↓',train:'Ouvrir les outils d’entraînement ↗',status:'État des connexions ↓'}};
-function translateNavigation(){const copy=labels[document.documentElement.lang]||labels.en;document.querySelectorAll('[data-app-nav]').forEach(el=>{el.textContent=copy[el.dataset.appNav]})}
+const labels={en:{mobile:'Launch Live 5-Tab App ↗',preview:'Actual app preview ↓',train:'Open training tools ↗',status:'Connection status ↓'},ht:{mobile:'Lanse Aplikasyon 5-Onglè a ↗',preview:'Gade aplikasyon an ↓',train:'Louvri zouti antrènman yo ↗',status:'Estati koneksyon ↓'},fr:{mobile:'Lancer l’application 5 onglets ↗',preview:'Voir l’application ↓',train:'Ouvrir les outils d’entraînement ↗',status:'État des connexions ↓'}};
+function translateNavigation(){const copy=labels[document.documentElement.lang]||labels.en;document.querySelectorAll('[data-app-nav]').forEach(el=>{if(copy[el.dataset.appNav])el.textContent=copy[el.dataset.appNav]})}
 translateNavigation();new MutationObserver(translateNavigation).observe(document.documentElement,{attributes:true,attributeFilter:['lang']});
 import {servicePaths,serviceReadiness} from './service-readiness.js';
 const panel=document.querySelector('[data-app-connections]');

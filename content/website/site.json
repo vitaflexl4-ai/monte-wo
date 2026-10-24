@@ -2,7 +2,7 @@
   "brand": "MONTE WO",
   "operator": "VitaFlex Business Group",
   "email": "Montewo@vitaflexbusinessgroup.com",
-  "publicOrigin": "",
+  "publicOrigin": "https://montewo.vitaflexbusinessgroup.com",
   "defaultLocale": "en",
   "locales": ["en", "ht", "fr"],
   "navigation": [

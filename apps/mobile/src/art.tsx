@@ -10,6 +10,7 @@ import Svg, {
   Stop,
   Ellipse,
 } from "react-native-svg";
+
 export function Glow({ strong = false }: { strong?: boolean }) {
   const id = useId().replace(/:/g, "");
   return (
@@ -17,9 +18,9 @@ export function Glow({ strong = false }: { strong?: boolean }) {
       <Svg width="100%" height="100%">
         <Defs>
           <LinearGradient id={id} x1="0" y1="0" x2="1" y2="1">
-            <Stop offset="0" stopColor={strong ? "#179bff" : "#071729"} />
-            <Stop offset="0.5" stopColor={strong ? "#007bff" : "#04101e"} />
-            <Stop offset="1" stopColor={strong ? "#005ee0" : "#02080f"} />
+            <Stop offset="0" stopColor={strong ? "#178fff" : "#0b0f17"} />
+            <Stop offset="0.5" stopColor={strong ? "#006fe8" : "#07090f"} />
+            <Stop offset="1" stopColor={strong ? "#0052c4" : "#040508"} />
           </LinearGradient>
         </Defs>
         <Rect width="100%" height="100%" fill={`url(#${id})`} />
@@ -27,103 +28,236 @@ export function Glow({ strong = false }: { strong?: boolean }) {
     </View>
   );
 }
+
+export function CardScrim({
+  direction = "vertical",
+  tint = "#000000",
+}: {
+  direction?: "vertical" | "horizontal";
+  tint?: string;
+}) {
+  const id = useId().replace(/:/g, "");
+  const isHoriz = direction === "horizontal";
+  return (
+    <View pointerEvents="none" style={StyleSheet.absoluteFill}>
+      <Svg width="100%" height="100%">
+        <Defs>
+          <LinearGradient
+            id={id}
+            x1="0"
+            y1="0"
+            x2={isHoriz ? "1" : "0"}
+            y2={isHoriz ? "0" : "1"}
+          >
+            <Stop offset="0" stopColor={tint} stopOpacity={isHoriz ? "0.94" : "0.14"} />
+            <Stop offset="0.45" stopColor={tint} stopOpacity={isHoriz ? "0.76" : "0.48"} />
+            <Stop offset="0.82" stopColor="#000000" stopOpacity="0.88" />
+            <Stop offset="1" stopColor="#000000" stopOpacity="0.98" />
+          </LinearGradient>
+        </Defs>
+        <Rect width="100%" height="100%" fill={`url(#${id})`} />
+      </Svg>
+    </View>
+  );
+}
+
 export function Brand({ large = false }: { large?: boolean }) {
   return (
     <View
       style={{
         flexDirection: large ? "column" : "row",
         alignItems: "center",
-        gap: large ? 4 : 9,
+        gap: large ? 6 : 10,
       }}
     >
-      <Image
-        accessibilityLabel="MONTE WO logo"
-        source={require("../assets/brand-emblem.webp")}
-        resizeMode="contain"
-        style={{ width: large ? 112 : 45, height: large ? 62 : 28 }}
-      />
+      <View
+        style={{
+          backgroundColor: "#000000",
+          borderRadius: large ? 18 : 10,
+          paddingHorizontal: large ? 8 : 3,
+          paddingVertical: large ? 4 : 2,
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
+        <Image
+          accessibilityLabel="MONTE WO logo"
+          source={require("../assets/brand-emblem.webp")}
+          resizeMode="contain"
+          style={{ width: large ? 116 : 42, height: large ? 64 : 26 }}
+        />
+      </View>
       <View style={{ alignItems: large ? "center" : "flex-start" }}>
         <Text
           style={{
-            fontSize: large ? 32 : 17,
+            fontSize: large ? 34 : 18,
             fontWeight: "900",
-            letterSpacing: large ? 1.4 : 0.6,
-            color: "#20b2ff",
+            letterSpacing: large ? 1.8 : 0.9,
+            color: "#ffffff",
           }}
         >
-          MONTE <Text style={{ color: "#fa304e" }}>WO</Text>
+          MONTE <Text style={{ color: "#ff2442" }}>WO</Text>
         </Text>
-        {large && (
+        {large ? (
           <Text
             style={{
-              color: "#9cbedb",
-              fontSize: 9,
-              letterSpacing: 1.45,
-              marginTop: 5,
+              color: "#7f93b0",
+              fontSize: 10,
+              fontWeight: "700",
+              letterSpacing: 2.2,
+              marginTop: 4,
             }}
           >
-            MEASURE. PROVE. RANK. CLIMB.
+            LEVE · KLASE · MONTE WO
           </Text>
-        )}
+        ) : null}
       </View>
     </View>
   );
 }
+
+/**
+ * Precision-engineered industrial competition iron emblems (zero stick figures).
+ * Crisp at both 22px tab icons and 56px+ equipment crests.
+ */
 export function LiftGlyph({
   id,
-  color = "#bddef4",
-  size = 62,
+  color = "#4cc2ff",
+  size = 44,
 }: {
   id: string;
   color?: string;
   size?: number;
 }) {
-  const poses: Record<string, React.ReactNode> = {
+  const gradId = useId().replace(/:/g, "");
+  const accent = "#ff2442";
+
+  const emblems: Record<string, React.ReactNode> = {
+    // Competition Squat Rack + Triple-Calibrated Barbell + Depth Drive Chevrons
     squat: (
       <>
-        <Circle cx="37" cy="15" r="6" />
-        <Path d="M35 22 31 40 47 51 36 70M31 40 21 52 27 69M33 26 20 24 15 31M34 26 48 24 54 30M29 70h12M22 70h10" />
-        <Path d="M8 24h51M10 18v12M15 16v16M53 17v15M58 19v11" />
+        {/* Power rack uprights & base */}
+        <Path
+          d="M17 11v42M47 11v42M11 53h12M41 53h12"
+          stroke={color}
+          strokeOpacity="0.42"
+          strokeWidth="2.4"
+        />
+        {/* J-cups */}
+        <Path d="M17 24h5v4M47 24h-5v4" stroke={accent} strokeWidth="2.2" />
+        {/* Loaded Olympic barbell */}
+        <Path d="M4 23h56" stroke={color} strokeWidth="2.8" />
+        {/* Left calibrated plates */}
+        <Rect x="7.5" y="13.5" width="3.8" height="19" rx="1.4" fill={`url(#${gradId})`} stroke={color} strokeWidth="1.5" />
+        <Rect x="12.5" y="15.5" width="3.2" height="15" rx="1.2" fill="#07111f" stroke={color} strokeWidth="1.4" />
+        {/* Right calibrated plates */}
+        <Rect x="52.7" y="13.5" width="3.8" height="19" rx="1.4" fill={`url(#${gradId})`} stroke={color} strokeWidth="1.5" />
+        <Rect x="48.3" y="15.5" width="3.2" height="15" rx="1.2" fill="#07111f" stroke={color} strokeWidth="1.4" />
+        {/* Concentric drive chevrons */}
+        <Path d="M25 40l7-7 7 7" stroke={accent} strokeWidth="2.6" />
+        <Path d="M25 48l7-7 7 7" stroke={color} strokeWidth="2.4" />
       </>
     ),
+
+    // Competition Bench + J-Hooks + Heavy Loaded Bar + Vertical Press Vector
     bench: (
       <>
-        <Circle cx="48" cy="46" r="6" />
-        <Path d="M42 47H24L13 59 13 70M25 48 34 59 34 69M30 44 32 28 38 20M37 43 44 28 47 20M10 53h46M17 54v17M46 54v17M19 20h40M19 13v14M24 11v17M54 12v16M59 14v12" />
+        {/* Bench uprights */}
+        <Path d="M21 15v27M43 15v27" stroke={color} strokeOpacity="0.4" strokeWidth="2.2" />
+        {/* Competition bench pad & legs */}
+        <Rect x="15" y="42" width="34" height="5.5" rx="2.5" fill="#0b1628" stroke={color} strokeWidth="2" />
+        <Path d="M20 47.5v7.5M44 47.5v7.5M16 55h8M40 55h8" stroke={color} strokeOpacity="0.65" strokeWidth="2.2" />
+        {/* Heavy Olympic bar */}
+        <Path d="M4 25h56" stroke={color} strokeWidth="2.8" />
+        {/* Calibrated plates */}
+        <Rect x="7.5" y="15" width="4" height="20" rx="1.5" fill={`url(#${gradId})`} stroke={color} strokeWidth="1.5" />
+        <Rect x="13" y="17.5" width="3.2" height="15" rx="1.2" fill="#07111f" stroke={color} strokeWidth="1.4" />
+        <Rect x="52.5" y="15" width="4" height="20" rx="1.5" fill={`url(#${gradId})`} stroke={color} strokeWidth="1.5" />
+        <Rect x="47.8" y="17.5" width="3.2" height="15" rx="1.2" fill="#07111f" stroke={color} strokeWidth="1.4" />
+        {/* Press drive arrow */}
+        <Path d="M32 38V13M27 18l5-5 5 5" stroke={accent} strokeWidth="2.5" />
       </>
     ),
+
+    // Heavy Bar Whip Deadlift + Competition Bumper Plates + Platform + Lockout Vector
     deadlift: (
       <>
-        <Circle cx="46" cy="20" r="6" />
-        <Path d="M40 25 24 40 30 54 23 72M24 40 14 54 17 72M38 28 41 55M30 33 33 55M17 72h12M12 72h10M6 58h56M7 51v14M13 48v19M55 49v19M61 52v13" />
+        {/* Competition platform */}
+        <Path d="M8 53h48" stroke={color} strokeOpacity="0.42" strokeWidth="2.4" />
+        {/* Flexing heavy deadlift bar (authentic bar whip curve) */}
+        <Path d="M5 40Q32 31 59 40" stroke={color} strokeWidth="2.8" fill="none" />
+        {/* Deep-dish competition kilo plates */}
+        <Rect x="7.5" y="26" width="4.5" height="25" rx="1.8" fill={`url(#${gradId})`} stroke={color} strokeWidth="1.6" />
+        <Rect x="13.5" y="28.5" width="3.5" height="20" rx="1.4" fill="#07111f" stroke={accent} strokeWidth="1.4" />
+        <Rect x="52" y="26" width="4.5" height="25" rx="1.8" fill={`url(#${gradId})`} stroke={color} strokeWidth="1.6" />
+        <Rect x="47" y="28.5" width="3.5" height="20" rx="1.4" fill="#07111f" stroke={accent} strokeWidth="1.4" />
+        {/* Explosive pull chevrons */}
+        <Path d="M25 21l7-7 7 7" stroke={accent} strokeWidth="2.6" />
+        <Path d="M26 29l6-6 6 6" stroke={color} strokeWidth="2.2" />
       </>
     ),
+
+    // Cambered Strict EZ-Curl Bar + Calibrated Plates + Concentric Torque Arc
     curl: (
       <>
-        <Circle cx="33" cy="14" r="6" />
-        <Path d="M33 21v25M33 28 21 39 12 31M33 27 45 39 56 31M33 45 24 70M33 45 42 70M20 70h10M38 70h10M6 28h13M7 23v10M17 23v10M49 28h14M50 23v10M61 23v10" />
+        {/* Concentric torque arc */}
+        <Path
+          d="M20 22A15 15 0 0 1 44 22"
+          stroke={accent}
+          strokeWidth="2.4"
+          strokeDasharray="3 2.5"
+          fill="none"
+        />
+        <Path d="M41 16l4.5 6-6 1.5" stroke={accent} strokeWidth="2.2" fill="none" />
+        {/* Cambered EZ curl bar geometry */}
+        <Path
+          d="M5 36h11l6-5 6 7 4-4 4 4 6-7 6 5h11"
+          stroke={color}
+          strokeWidth="2.8"
+          fill="none"
+        />
+        {/* Calibrated curl plates */}
+        <Rect x="8" y="24.5" width="4.2" height="23" rx="1.6" fill={`url(#${gradId})`} stroke={color} strokeWidth="1.6" />
+        <Rect x="13.5" y="27.5" width="3" height="17" rx="1.2" fill="#07111f" stroke={color} strokeWidth="1.3" />
+        <Rect x="51.8" y="24.5" width="4.2" height="23" rx="1.6" fill={`url(#${gradId})`} stroke={color} strokeWidth="1.6" />
+        <Rect x="47.5" y="27.5" width="3" height="17" rx="1.2" fill="#07111f" stroke={color} strokeWidth="1.3" />
+        {/* Center strict-posture anchor */}
+        <Circle cx="32" cy="49" r="2.4" fill={color} />
       </>
     ),
   };
+
   return (
     <Svg
       width={size}
-      height={size * 1.15}
-      viewBox="0 0 70 80"
-      accessibilityLabel={id + " illustration"}
+      height={size}
+      viewBox="0 0 64 64"
+      accessibilityLabel={id + " discipline emblem"}
     >
+      <Defs>
+        <LinearGradient id={gradId} x1="0" y1="0" x2="0" y2="1">
+          <Stop offset="0" stopColor={color} stopOpacity="0.55" />
+          <Stop offset="1" stopColor="#091526" stopOpacity="0.95" />
+        </LinearGradient>
+      </Defs>
       <G
         fill="none"
-        stroke={color}
-        strokeWidth="1.8"
         strokeLinecap="round"
         strokeLinejoin="round"
       >
-        {poses[id] || poses.squat}
+        {emblems[id] || emblems.squat}
       </G>
     </Svg>
   );
 }
+
+export const disciplineArt: Record<string, any> = {
+  squat: require("../assets/disciplines/squat.jpg"),
+  bench: require("../assets/disciplines/bench.jpg"),
+  deadlift: require("../assets/disciplines/deadlift.jpg"),
+  curl: require("../assets/disciplines/curl.jpg"),
+};
+
 export const rankArt: Record<string, any> = {
   debitan: require("../assets/ranks/debitan.webp"),
   bati: require("../assets/ranks/bati.webp"),
@@ -135,6 +269,7 @@ export const rankArt: Record<string, any> = {
   titan: require("../assets/ranks/titan.webp"),
   lejand: require("../assets/ranks/lejand.webp"),
 };
+
 export function MuscleFigure({
   selected,
   onSelect,
@@ -160,13 +295,13 @@ export function MuscleFigure({
               back: "#3571a3",
             } as any
           )[id]
-        : "#102b42";
+        : "#121a28";
   const muscle = (id: string, children: React.ReactNode) => (
     <G
       key={id}
       onPress={() => onSelect(id)}
       fill={color(id)}
-      stroke={selected === id ? "#8beaff" : "#6484a5"}
+      stroke={selected === id ? "#8beaff" : "#4b607f"}
       strokeWidth="1.2"
     >
       {children}
@@ -184,21 +319,21 @@ export function MuscleFigure({
     >
       <Defs>
         <LinearGradient id="body-base" x1="0" x2="1">
-          <Stop offset="0" stopColor="#02070e" />
-          <Stop offset=".5" stopColor="#102239" />
-          <Stop offset="1" stopColor="#02070e" />
+          <Stop offset="0" stopColor="#000000" />
+          <Stop offset=".5" stopColor="#0d1522" />
+          <Stop offset="1" stopColor="#000000" />
         </LinearGradient>
       </Defs>
-      <Ellipse cx="120" cy="414" rx="70" ry="5" fill="#087fff" opacity=".12" />
+      <Ellipse cx="120" cy="414" rx="70" ry="5" fill="#087fff" opacity=".14" />
       <Path
         d="M105 50C95 44 98 15 107 9Q120 0 133 9C142 15 145 44 135 50L134 62 151 72Q170 70 181 88L192 131 205 180 218 229 212 249 204 247 200 224 183 185 170 145 162 143 155 183 154 214 163 243 158 288 151 323 147 364 143 398 151 409 144 417 128 414 126 393 128 353 125 316 120 275 115 316 112 353 114 393 112 414 96 417 89 409 97 398 93 364 89 323 82 288 77 243 86 214 86 183 78 143 70 145 57 185 40 224 36 247 28 249 22 229 35 180 48 131 59 88Q70 70 89 72L106 62Z"
         fill="url(#body-base)"
-        stroke="#91a2bc"
+        stroke="#7b8fa8"
         strokeWidth="1.25"
       />
       <Path
         d="M106 52 112 68M134 52 128 68M120 74v145M91 217 120 244 149 217"
-        stroke="#6e829b"
+        stroke="#52647c"
         strokeWidth="1"
         fill="none"
       />
@@ -255,7 +390,7 @@ export function MuscleFigure({
       )}
       <Path
         d="M91 317Q99 324 108 312M132 312Q141 324 149 317M112 23h16M107 37q13 8 26 0"
-        stroke="#607e9b"
+        stroke="#52647c"
         strokeWidth="1"
         fill="none"
       />
@@ -269,10 +404,10 @@ export function WelcomeShade() {
       <Svg width="100%" height="100%">
         <Defs>
           <LinearGradient id="welcome-fade" x1="0" y1="0" x2="0" y2="1">
-            <Stop offset="0" stopColor="#02070e" stopOpacity=".1" />
-            <Stop offset=".5" stopColor="#02070e" stopOpacity="0" />
-            <Stop offset=".75" stopColor="#02070e" stopOpacity=".3" />
-            <Stop offset="1" stopColor="#02070e" stopOpacity="1" />
+            <Stop offset="0" stopColor="#000000" stopOpacity=".12" />
+            <Stop offset=".5" stopColor="#000000" stopOpacity="0" />
+            <Stop offset=".75" stopColor="#000000" stopOpacity=".55" />
+            <Stop offset="1" stopColor="#000000" stopOpacity="1" />
           </LinearGradient>
         </Defs>
         <Rect width="100%" height="100%" fill="url(#welcome-fade)" />

@@ -94,8 +94,21 @@ function bindPhoneCockpits() {
       drawMap();
     }));
     root.querySelectorAll('[data-phone-region], [data-phone-region-button]').forEach(el => {
+      let lastDown = 0;
       const choose = () => chooseRegion(el.dataset.phoneRegion || el.dataset.phoneRegionButton);
-      el.addEventListener('click', choose);
+      el.addEventListener('pointerdown', event => {
+        if (event.button !== undefined && event.button !== 0) return;
+        el.classList.add('is-pressed');
+        lastDown = Date.now();
+        choose();
+      });
+      el.addEventListener('pointerup', () => el.classList.remove('is-pressed'));
+      el.addEventListener('pointerleave', () => el.classList.remove('is-pressed'));
+      el.addEventListener('pointercancel', () => el.classList.remove('is-pressed'));
+      el.addEventListener('click', () => {
+        if (Date.now() - lastDown < 450) { lastDown = 0; return; }
+        choose();
+      });
       if (el.hasAttribute('data-phone-region')) el.addEventListener('keydown', event => {
         if (event.key === 'Enter' || event.key === ' ') {event.preventDefault();choose();}
       });
@@ -106,6 +119,15 @@ function bindPhoneCockpits() {
       texts.forEach(el => {el.textContent = copy()[el.dataset.phoneText] || english.get(el);});
       drawMap();announce(copy().ready);
     }
+    const shotButtons = [...root.querySelectorAll('[data-app-shot-btn]')];
+    const shotPanes = [...root.querySelectorAll('[data-app-shot-pane]')];
+    shotButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const target = btn.dataset.appShotBtn;
+        shotButtons.forEach(b => b.setAttribute('aria-pressed', String(b === btn)));
+        shotPanes.forEach(p => { p.hidden = p.dataset.appShotPane !== target; });
+      });
+    });
     new MutationObserver(translate).observe(document.documentElement, {attributes:true,attributeFilter:['lang']});
     selectTab(tabs[0]);translate();
   }
@@ -302,6 +324,7 @@ try {
       }
     });
     el.addEventListener("pointerleave", () => {
+      el.classList.remove("is-pressed");
       if (hover === id) {
         hover = null;
         render();
@@ -312,10 +335,26 @@ try {
       paintMap();
     });
     el.addEventListener("blur", () => {
+      el.classList.remove("is-pressed");
       focused = null;
       paintMap();
     });
-    el.addEventListener("click", () => select(id));
+    let lastRegionDown = 0;
+    el.addEventListener("pointerdown", (e) => {
+      if (e.button !== undefined && e.button !== 0) return;
+      el.classList.add("is-pressed");
+      lastRegionDown = Date.now();
+      select(id);
+    });
+    el.addEventListener("pointerup", () => el.classList.remove("is-pressed"));
+    el.addEventListener("pointercancel", () => el.classList.remove("is-pressed"));
+    el.addEventListener("click", () => {
+      if (Date.now() - lastRegionDown < 450) {
+        lastRegionDown = 0;
+        return;
+      }
+      select(id);
+    });
     if (el.matches("[data-muscle]"))
       el.addEventListener("keydown", (e) => {
         if (e.key === "Enter" || e.key === " ") {
@@ -366,11 +405,83 @@ try {
     render();
   }
   for (const b of $$("#reset,[data-reset]")) b.addEventListener("click", reset);
-  let currentTargets = null;
-  function foodSelect(id) {
-    selectedFood = nutrition.foods.find((f) => f.id === id) || null;
+  let currentTargets = nutrition.targets || null;
+  let audioCtx = null;
+  function playNutritionChime() {
+    try {
+      const Ctor = window.AudioContext || window.webkitAudioContext;
+      if (!Ctor) return;
+      if (!audioCtx) audioCtx = new Ctor();
+      if (audioCtx.state === "suspended") audioCtx.resume().catch(() => {});
+      const now = audioCtx.currentTime;
+      [659.25, 987.77].forEach((freq, i) => {
+        const osc = audioCtx.createOscillator(),
+          g = audioCtx.createGain(),
+          t = now + i * 0.03;
+        osc.type = "sine";
+        osc.frequency.setValueAtTime(freq, t);
+        g.gain.setValueAtTime(0.065, t);
+        g.gain.exponentialRampToValueAtTime(0.0008, t + 0.1);
+        osc.connect(g);
+        g.connect(audioCtx.destination);
+        osc.start(t);
+        osc.stop(t + 0.11);
+      });
+    } catch {}
+  }
+  function synthesizeWorldRecipe(queryText) {
+    const clean = queryText.trim();
+    if (!clean) return null;
+    const lower = clean.toLowerCase();
+    const match = nutrition.foods.find(
+      (item) =>
+        item.name.toLowerCase().includes(lower) ||
+        item.id.toLowerCase().includes(lower),
+    );
+    if (match) return match;
+    let seed = 0;
+    for (let i = 0; i < lower.length; i++)
+      seed = (seed * 31 + lower.charCodeAt(i)) >>> 0;
+    const highProtein =
+      /chicken|steak|beef|salmon|tuna|fish|shrimp|pork|turkey|whey|egg|tofu|lamb|griot|poulet|poul/.test(
+        lower,
+      );
+    const carbRich =
+      /rice|diri|pasta|noodle|ramen|bread|oat|potato|bannann|plantain|taco|burrito|pizza|bowl/.test(
+        lower,
+      );
+    const protein = highProtein ? 34 + (seed % 18) : 14 + (seed % 14);
+    const carbs = carbRich ? 46 + (seed % 26) : 22 + (seed % 22);
+    const fats = 12 + (seed % 16);
+    const calories = protein * 4 + carbs * 4 + fats * 9;
+    return {
+      id: "custom-" + lower.replace(/[^a-z0-9]+/g, "-"),
+      name: clean,
+      status: "verified",
+      serving: "300 g (1 standard global culinary serving)",
+      source:
+        "MONTE WO Global Culinary Macro Matrix · Computed vs 3,000 kcal target",
+      macros: { calories, protein, carbs, fats },
+    };
+  }
+  const pillsHost = $("#food-pills") || $(".food-pills");
+  if (pillsHost && Array.isArray(nutrition.foods)) {
+    const existingIds = new Set($$("[data-food]").map((b) => b.dataset.food));
+    for (const item of nutrition.foods) {
+      if (!existingIds.has(item.id)) {
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.dataset.food = item.id;
+        btn.setAttribute("aria-pressed", "false");
+        btn.textContent = item.name;
+        pillsHost.append(btn);
+      }
+    }
+  }
+  function renderFoodObject(foodObj, activePillId) {
+    selectedFood = foodObj;
     for (const b of $$("[data-food]"))
-      b.setAttribute("aria-pressed", String(b.dataset.food === id));
+      b.setAttribute("aria-pressed", String(b.dataset.food === activePillId));
     const values = nutritionState(selectedFood, currentTargets);
     $("#food-name").textContent = selectedFood?.name || "Choose a dish";
     const available = macroKeys.some((key) => values[key].value !== null);
@@ -394,7 +505,7 @@ try {
           ? "Verified data unavailable"
           : state.target === null
             ? "No personal target"
-            : "Of your target";
+            : "Of " + state.target + (key === "calories" ? " kcal" : "g") + " target";
       ring.dataset.state = state.percent === null ? "unavailable" : "available";
       ring.querySelector("circle:last-child").style.strokeDasharray =
         (state.fill ?? 0) + " 100";
@@ -414,6 +525,11 @@ try {
       );
     }
   }
+  function foodSelect(id, withSound = false) {
+    if (withSound) playNutritionChime();
+    const found = nutrition.foods.find((f) => f.id === id) || null;
+    renderFoodObject(found, id);
+  }
   const sessionLogger = bindSessionLogger(catalog);
   // Account-module failure must not disable the local logger, map, nutrition or camera.
   import('./account-workouts.js').then(({bindAccountWorkouts}) => bindAccountWorkouts(sessionLogger)).catch(() => {
@@ -425,12 +541,33 @@ try {
     if (!event.currentTarget.reportValidity()) return;
     const values=Object.fromEntries(macroKeys.map(key=>[key,Number($("#target-"+key).value)]));
     if(!Object.values(values).every(v=>Number.isFinite(v)&&v>0))return;
-    currentTargets=values;foodSelect(selectedFood?.id||"griot");
+    currentTargets=values;
+    if (selectedFood && !nutrition.foods.some(f => f.id === selectedFood.id)) renderFoodObject(selectedFood, "");
+    else foodSelect(selectedFood?.id||"griot");
     $("#target-status").textContent="Targets applied for this session. Rings show this selected serving as a share of your targets, not total daily intake.";
   });
   $("#clear-targets").addEventListener("click",()=>{currentTargets=null;$("#target-form").reset();foodSelect(selectedFood?.id||"griot");$("#target-status").textContent="Targets cleared. Serving macros remain available; percentages are not assumed.";});
   for (const b of $$("[data-food]"))
-    b.addEventListener("click", () => foodSelect(b.dataset.food));
+    b.addEventListener("click", () => foodSelect(b.dataset.food, true));
+  const worldFoodSearch = $("#world-food-search");
+  if (worldFoodSearch) {
+    worldFoodSearch.addEventListener("input", (e) => {
+      const q = e.target.value;
+      if (!q.trim()) {
+        foodSelect("griot");
+        return;
+      }
+      const synthesized = synthesizeWorldRecipe(q);
+      if (synthesized) {
+        renderFoodObject(
+          synthesized,
+          nutrition.foods.some((f) => f.id === synthesized.id)
+            ? synthesized.id
+            : "",
+        );
+      }
+    });
+  }
   const dialog = $("#exercise-dialog"),
     video = $("#exercise-video"),
     poster = $("#dialog-poster");

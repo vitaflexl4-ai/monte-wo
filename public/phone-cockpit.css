@@ -1,7 +1,83 @@
-/* Isolated app-preview component; no page-wide phone transforms or data styling. */
-.phone-widget-stage{position:relative;isolation:isolate;contain:layout style;flex-shrink:0;width:100%;min-width:0;height:700px;margin:0;align-self:center;color:#e9f4ff;text-align:left}
-.phone-widget-halo{position:absolute;inset:9% 2%;border-radius:48%;background:radial-gradient(ellipse,#0878e52b,transparent 68%);pointer-events:none}
-.phone-widget{position:absolute;inset:18px auto 22px 50%;transform:translateX(-50%);width:min(384px,100%);max-width:100%;border:1px solid #54799c80;border-radius:43px;padding:13px 12px 10px;background:linear-gradient(145deg,#233a4cbd,#06101be8 35%,#132536e8);box-shadow:inset 0 0 0 5px #9bc7e40c,inset 0 1px 0 #d6efff44,0 25px 70px #0009,0 0 50px #087eff19;backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);display:flex;flex-direction:column;overflow:hidden}
+/* Isolated app-preview component; obsidian titanium iPhone frame with actual MONTE WO v2 app & screen captures. */
+.phone-widget-stage{position:relative;isolation:isolate;contain:layout style;flex-shrink:0;width:100%;min-width:0;height:760px;margin:0;align-self:center;color:#f5f7fb;text-align:left}
+.phone-widget-halo{position:absolute;inset:6% 2%;border-radius:48%;background:radial-gradient(ellipse at 50% 45%,#258cf433,#dc26261a 48%,transparent 72%);pointer-events:none}
+.phone-widget{position:absolute;inset:8px auto 12px 50%;transform:translateX(-50%);width:min(392px,100%);max-width:100%;border:1.5px solid #2b384e;border-radius:46px;padding:10px 10px 8px;background:#000000;box-shadow:inset 0 0 0 3px #141b26,inset 0 1px 0 #ffffff22,0 32px 80px #000d,0 0 60px #258cf424;display:flex;flex-direction:column;overflow:hidden}
+.phone-shot-bar{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:4px;padding:4px;margin:2px 2px 6px;border-radius:12px;background:#090c12;border:1px solid #1b2434;flex-shrink:0}
+.phone-widget .phone-shot-bar button{min-height:30px;padding:4px 3px;border-radius:8px;border:1px solid transparent;background:transparent;color:#94a3b8;font-size:9.5px;font-weight:700;letter-spacing:.2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.phone-widget .phone-shot-bar button[aria-pressed=true]{background:linear-gradient(135deg,#258cf4,#155cb0);border-color:#60a5fa;color:#fff;box-shadow:0 0 14px #258cf44d}
+.phone-oled-viewport{position:relative;flex:1;min-height:0;border-radius:28px;overflow:hidden;background:#000000;border:1px solid #151d2b}
+.phone-shot-pane{position:absolute;inset:0;background:#000000;overflow-y:auto;overflow-x:hidden}
+.phone-live-pane{overflow:hidden}
+.phone-live-backdrop{position:absolute;inset:0;z-index:1;pointer-events:none}
+.phone-live-iframe{position:relative;z-index:2;width:100%;height:100%;border:0;display:block;background:transparent}
+.phone-launch-bar{display:grid;grid-template-columns:1.25fr .95fr;gap:6px;padding:6px 4px 2px;flex-shrink:0}
+.phone-open-full,.phone-open-apk{display:block;width:100%;padding:8px 10px;border-radius:12px;font-size:10.5px;font-weight:700;text-align:center;text-decoration:none;letter-spacing:.2px;white-space:nowrap}
+.phone-open-full{background:linear-gradient(135deg,#111927,#0a101a);border:1px solid #258cf466;color:#7cc4ff}
+.phone-open-full:hover{border-color:#60a5fa;color:#fff;background:#13233a}
+.phone-open-apk{background:linear-gradient(135deg,#1c0a0e,#0d111a);border:1px solid #dc262688;color:#fca5a5}
+.phone-open-apk:hover{border-color:#f87171;color:#fff;background:#2a0f15}
+.real-app-shot{display:flex;flex-direction:column;height:100%;padding:10px 11px 8px;background:#000000;color:#f5f7fb;gap:8px;font-family:inherit}
+.real-app-top{display:flex;align-items:center;justify-content:space-between;gap:6px}
+.real-app-logo{display:flex;align-items:center;gap:7px}
+.real-app-logo img{width:34px;height:18px;object-fit:contain;background:#000}
+.real-app-logo strong{display:block;font-size:12px;letter-spacing:1.4px;font-weight:900;color:#fff}
+.real-app-logo strong em{font-style:normal;color:#ef4444}
+.real-app-logo small{display:block;font-size:7px;letter-spacing:1px;color:#64748b}
+.real-app-pill{font-size:8px;font-weight:800;letter-spacing:.8px;padding:4px 7px;border-radius:99px;background:#0f172a;border:1px solid #258cf466;color:#60a5fa}
+.real-app-pill.real-gold{border-color:#f59e0b88;color:#fbbf24;background:#1c1406}
+.real-app-hero-card{padding:10px 11px;border-radius:14px;background:linear-gradient(145deg,#0c1320,#05070c);border:1px solid #1e293b}
+.real-kicker{display:block;font-size:7.5px;font-weight:800;letter-spacing:1.2px;color:#38bdf8;margin-bottom:3px}
+.real-app-hero-card h3{margin:0 0 8px;font-size:16px;line-height:1.12;font-weight:900;color:#fff}
+.real-app-hero-card h3 em{font-style:normal;color:#258cf4}
+.real-power-grid{display:grid;grid-template-columns:1fr 1fr;gap:5px}
+.real-power-grid span{font-size:9px;font-weight:700;padding:5px 7px;border-radius:8px;background:#000;border:1px solid #1e293b;color:#cbd5e1}
+.real-section-row{display:flex;justify-content:space-between;align-items:center;font-size:8px;font-weight:800;letter-spacing:1px;color:#94a3b8;padding:0 2px}
+.real-disc-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;flex:1;min-height:0}
+.real-disc{position:relative;border-radius:11px;overflow:hidden;border:1px solid #1e293b;background:#05070c;min-height:74px}
+.real-disc img{width:100%;height:100%;object-fit:cover;opacity:.62;display:block}
+.real-disc div{position:absolute;inset:auto 0 0 0;padding:6px 7px;background:linear-gradient(transparent,#000e)}
+.real-disc b{display:block;font-size:10.5px;color:#fff}
+.real-disc small{display:block;font-size:7.5px;color:#60a5fa}
+.real-crest-strip{display:flex;align-items:center;gap:6px;padding:6px 8px;border-radius:11px;background:#060910;border:1px solid #172030}
+.real-crest-strip img{object-fit:contain;background:#000}
+.real-crest-strip span{font-size:8.5px;font-weight:700;color:#cbd5e1}
+.real-dual-stage{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.real-stage-card{padding:8px;border-radius:12px;background:#080c14;border:1px solid #1e293b;text-align:center}
+.real-stage-card.is-next{border-color:#f59e0b88;background:linear-gradient(160deg,#1a1205,#080c14)}
+.real-stage-card small{display:block;font-size:7px;letter-spacing:.8px;color:#94a3b8;margin-bottom:4px}
+.real-stage-card img{margin:0 auto 3px;display:block;object-fit:contain}
+.real-stage-card b{display:block;font-size:11px;color:#fff}
+.real-stage-card span{display:block;font-size:7.5px;color:#fbbf24;margin-top:2px}
+.real-cam-card{position:relative;flex:1;min-height:135px;border-radius:14px;background:radial-gradient(circle at 50% 42%,#1e293b,#020408 74%);border:1px solid #258cf466;display:flex;flex-direction:column;justify-content:space-between;padding:8px;overflow:hidden}
+.real-cam-hud{padding:5px 7px;border-radius:8px;background:#000b;border:1px solid #258cf455}
+.real-cam-hud b{display:block;font-size:7.2px;letter-spacing:.5px;color:#38bdf8}
+.real-cam-hud span{display:block;font-size:6.5px;color:#94a3b8;margin-top:2px}
+.real-cam-reticle{width:64px;height:64px;margin:auto;border:1.5px dashed #38bdf8aa;border-radius:50%;display:grid;place-items:center}
+.real-cam-reticle i{width:8px;height:8px;border-radius:50%;background:#258cf4;box-shadow:0 0 12px #258cf4}
+.real-cam-shutter{display:flex;justify-content:center}
+.real-cam-shutter span{width:34px;height:34px;border-radius:50%;border:2.5px solid #93c5fd;background:#258cf4;box-shadow:0 0 16px #258cf4aa}
+.real-story-bento{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.real-story-bento>div{padding:7px 8px;border-radius:10px;background:#090d16;border:1px solid #1e293b}
+.real-story-bento>div.is-story{border-color:#dc262688;background:linear-gradient(135deg,#1c0910,#091224)}
+.real-story-bento small{display:block;font-size:6.8px;color:#94a3b8;letter-spacing:.6px}
+.real-story-bento b{display:block;font-size:9.5px;color:#fff;margin-top:2px}
+.real-rings-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:5px}
+.real-rings-grid>div{padding:8px 4px;border-radius:11px;background:#080d16;border:1px solid #1e293b;text-align:center}
+.real-rings-grid b{display:block;font-size:11px;color:#38bdf8}
+.real-rings-grid small{display:block;font-size:6.5px;color:#94a3b8;margin-top:2px}
+.real-food-list{display:flex;flex-direction:column;gap:5px;flex:1}
+.real-food-list>div{display:flex;justify-content:space-between;align-items:center;padding:8px 9px;border-radius:10px;background:#080c14;border:1px solid #172234;font-size:9.5px}
+.real-food-list b{color:#f8fafc}
+.real-food-list span{color:#60a5fa;font-size:8.5px;font-weight:700}
+.real-scan-banner{padding:8px 9px;border-radius:11px;background:linear-gradient(135deg,#091e36,#07101d);border:1px solid #258cf466}
+.real-scan-banner b{display:block;font-size:8px;letter-spacing:.6px;color:#7dd3fc}
+.real-scan-banner span{display:block;font-size:8px;color:#cbd5e1;margin-top:2px}
+.real-app-tabs{display:grid;grid-template-columns:repeat(5,1fr);gap:2px;padding:6px 4px 4px;border-top:1px solid #161f2e;background:#000;margin-top:auto;text-align:center;font-size:8px;color:#64748b}
+.real-app-tabs span b{display:block;font-size:11px;margin-bottom:1px}
+.real-app-tabs span.is-on{color:#258cf4;font-weight:800}
+.phone-concept-drawer{margin-top:3px;border-top:1px solid #141c29;padding-top:3px;flex-shrink:0}
+.phone-concept-drawer summary{font-size:8.5px;color:#64748b;text-align:center;cursor:pointer;list-style:none;padding:2px 0}
+.phone-concept-drawer[open]{position:absolute;inset:38px 10px 30px;z-index:20;background:#050b14;border:1px solid #27425d;border-radius:22px;padding:8px;display:flex;flex-direction:column;overflow:hidden}
 .phone-widget *{box-sizing:border-box}.phone-widget [hidden]{display:none!important}.phone-widget button,.phone-widget input{font:inherit}.phone-widget button{cursor:pointer;border:1px solid #304a64;background:#101f30;color:#c4d8ec}.phone-widget button:focus-visible,.phone-widget input:focus-visible,.phone-widget [tabindex]:focus-visible{outline:2px solid #64cdff;outline-offset:2px}.phone-widget button:hover{border-color:#559bd7}
 .phone-hardware{height:25px;display:flex;align-items:center;justify-content:space-between;padding:0 17px;font-size:10px;font-weight:700;color:#a6bbcf;flex-shrink:0}.phone-hardware i{position:absolute;left:50%;transform:translateX(-50%);top:13px;width:90px;height:22px;border-radius:20px;background:#02070c;border:1px solid #233142}.phone-hardware span:last-child{font-size:9px;letter-spacing:2px}
 .phone-brand{display:flex;justify-content:space-between;align-items:center;padding:18px 10px 15px;gap:5px}.phone-brand>span{font-size:14px;letter-spacing:2px;font-weight:900}.phone-brand b{color:#50bcff}.phone-brand small{font-size:8px;letter-spacing:1px;color:#67cbff;border:1px solid #245779;border-radius:15px;padding:5px 7px}
