@@ -12,7 +12,7 @@ export const API_BASE = (
   configured ||
   (Platform.OS === "web"
     ? window.location.origin
-    : "https://vitaflex-monte-wo.pages.dev")
+    : "https://montewo.vitaflexbusinessgroup.com")
 ).replace(/\/$/, "");
 if (
   !/^https:\/\//.test(API_BASE) &&

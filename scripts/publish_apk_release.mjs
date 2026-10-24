@@ -204,7 +204,8 @@ try {
 
   console.log("\n✅ MONTE WO Android APK is now live at:");
   console.log("   Direct APK:", apkUrl);
-  console.log("   Downloads page: https://vitaflex-monte-wo.pages.dev/downloads/");
+  console.log("   Live website: https://montewo.vitaflexbusinessgroup.com/");
+  console.log("   Downloads page: https://montewo.vitaflexbusinessgroup.com/downloads/");
 } finally {
   fs.rmSync(tempDir, { recursive: true, force: true });
 }
