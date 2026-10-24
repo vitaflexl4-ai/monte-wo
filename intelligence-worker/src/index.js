@@ -1,73 +1,116 @@
-const json = (data, status = 200) => new Response(JSON.stringify(data), {
-  status, headers: { "content-type": "application/json; charset=utf-8", "cache-control": "no-store", "x-content-type-options": "nosniff" }
-});
-const id = () => crypto.randomUUID();
+// MONTE WO Intelligence Worker — the scheduled runtime for ARGON, ULTRON and AU.
+// Deployed separately from Cloudflare Pages; shares all logic with the Pages API through
+// server/intelligence/core.js. Every job records an agent run; failures never fail silently.
+//
+//   */5 * * * *   ULTRON  website availability/latency/route checks, dedup, escalation, recovery
+//   3 * * * *     ARGON   telemetry analysis (24h window) + AU cross-agent correlation
+//   17 11 * * *   AU      daily executive briefing + retention sweep (rule-gated)
+//   23 11 * * 1   AU      weekly strategic report
+//
+// Safety: this worker performs MONITORING and ANALYSIS only. It never deploys, never touches
+// production data stores other than the intelligence D1 database, and its only reversible
+// automated actions are the three rule-gated behaviors defined in intel_automation_rules.
+import {
+  runUltronChecks, analyzeArgonTelemetry, correlateAu, buildDailyBriefing, buildWeeklyBriefing,
+  retentionSweep, recordAgentRun, isRuleEnabled
+} from '../../server/intelligence/core.js';
 
-async function recordCheck(db, check) {
-  await db.prepare(`INSERT INTO intel_checks (id,agent,target,status,latency_ms,http_status,detail,evidence_json,checked_at)
-    VALUES (?1,?2,?3,?4,?5,?6,?7,?8,?9)`)
-    .bind(id(), check.agent, check.target, check.status, check.latencyMs ?? null, check.httpStatus ?? null,
-      check.detail || "", JSON.stringify(check.evidence || {}), new Date().toISOString()).run();
+const json = (data, status = 200) => new Response(JSON.stringify(data), {
+  status, headers: { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store', 'X-Content-Type-Options': 'nosniff' }
+});
+const safeEqual = (a, b) => {
+  const ea = new TextEncoder().encode(String(a)), eb = new TextEncoder().encode(String(b));
+  if (ea.length !== eb.length) return false;
+  let diff = 0; for (let i = 0; i < ea.length; i++) diff |= ea[i] ^ eb[i];
+  return diff === 0;
+};
+
+function configured(env) {
+  return env.INTELLIGENCE_ENABLED === 'true' && !!env.INTEL_DB;
 }
-async function recordIncident(db, incident) {
-  const now = new Date().toISOString();
-  await db.prepare(`INSERT INTO intel_incidents (id,fingerprint,agent,severity,title,summary,evidence_json,confidence,status,first_seen,last_seen)
-    VALUES (?1,?2,?3,?4,?5,?6,?7,?8,'open',?9,?9)
-    ON CONFLICT(fingerprint) DO UPDATE SET last_seen=excluded.last_seen, summary=excluded.summary, evidence_json=excluded.evidence_json,
-    severity=excluded.severity, confidence=excluded.confidence, status=CASE WHEN intel_incidents.status='resolved' THEN 'open' ELSE intel_incidents.status END`)
-    .bind(id(), incident.fingerprint, incident.agent, incident.severity, incident.title, incident.summary,
-      JSON.stringify(incident.evidence || {}), incident.confidence, now).run();
+
+async function ultronCycle(env) {
+  return recordAgentRun(env.INTEL_DB, 'ULTRON', 'website-checks', async () => {
+    const result = await runUltronChecks(env);
+    const summary = result.configured
+      ? result.results.length + ' targets checked: ' + result.results.map(c => c.target + '=' + c.status).join(', ')
+      : 'SITE_URL not configured; nothing was checked and nothing was reported healthy.';
+    return { summary, evidence: { configured: result.configured, results: result.results.map(c => ({ target: c.target, status: c.status, latencyMs: c.latencyMs, httpStatus: c.httpStatus ?? null })) } };
+  });
 }
-async function websiteCheck(env) {
-  const url = env.SITE_URL;
-  if (!url || !/^https:\/\//i.test(url) || !env.INTEL_DB) {
-    if (env.INTEL_DB) await recordCheck(env.INTEL_DB, {agent:"ULTRON",target:"website-home",status:"not_configured",detail:"SITE_URL or D1 binding is not configured"});
-    return;
-  }
-  const start = Date.now();
-  try {
-    const response = await fetch(url, { method:"GET", redirect:"manual", signal:AbortSignal.timeout(12000), headers:{"user-agent":"MONTE-WO-ULTRON-HealthCheck/1.0"} });
-    const latencyMs = Date.now() - start;
-    const status = response.status >= 200 && response.status < 400 ? "ok" : "degraded";
-    await recordCheck(env.INTEL_DB, {agent:"ULTRON",target:"website-home",status,latencyMs,httpStatus:response.status,detail:"HTTP availability check only; no visitor identities collected",evidence:{url,redirect:response.headers.get("location") ? "redirect-present" : "none"}});
-    if (response.status >= 500) await recordIncident(env.INTEL_DB, {fingerprint:"website-home-http-5xx",agent:"ULTRON",severity:"high",title:"Website returned a server error",summary:"The configured website health check returned HTTP "+response.status+".",confidence:0.99,evidence:{url,httpStatus:response.status,latencyMs}});
-    else if (response.status >= 400) await recordIncident(env.INTEL_DB, {fingerprint:"website-home-http-4xx",agent:"ULTRON",severity:"medium",title:"Website health check returned a client error",summary:"The configured website health check returned HTTP "+response.status+". Verify the intended public health endpoint.",confidence:0.95,evidence:{url,httpStatus:response.status,latencyMs}});
-  } catch (error) {
-    const detail = error?.name === "TimeoutError" ? "Website request timed out" : "Website request failed; see worker logs for diagnostic details";
-    await recordCheck(env.INTEL_DB, {agent:"ULTRON",target:"website-home",status:"down",latencyMs:Date.now()-start,detail,evidence:{url}});
-    await recordIncident(env.INTEL_DB, {fingerprint:"website-home-fetch-failed",agent:"ULTRON",severity:"critical",title:"Website health check failed",summary:detail+". Confirm this is not a monitor/network issue before declaring an outage.",confidence:0.85,evidence:{url}});
-  }
+
+async function argonAuCycle(env) {
+  return recordAgentRun(env.INTEL_DB, 'ARGON', 'telemetry-analysis', async () => {
+    const result = await analyzeArgonTelemetry(env.INTEL_DB, env);
+    return { summary: result.analyzed + ' events analyzed across ' + result.versions + ' versions; ' + result.raised.length + ' finding(s); ' + result.note, evidence: result };
+  });
 }
-async function createBriefing(env, kind) {
-  if (!env.INTEL_DB) return;
-  const since = new Date(Date.now() - (kind === "weekly" ? 7 : 1) * 86400000).toISOString();
-  const rows = await env.INTEL_DB.prepare("SELECT agent,severity,title,summary,status,confidence,first_seen,last_seen,evidence_json FROM intel_incidents WHERE last_seen >= ?1 ORDER BY CASE severity WHEN 'critical' THEN 5 WHEN 'high' THEN 4 WHEN 'medium' THEN 3 WHEN 'low' THEN 2 ELSE 1 END DESC LIMIT 100").bind(since).all();
-  const checks = await env.INTEL_DB.prepare("SELECT agent,target,status,latency_ms,http_status,checked_at FROM intel_checks WHERE checked_at >= ?1 ORDER BY checked_at DESC LIMIT 200").bind(since).all();
-  const title = kind === "weekly" ? "AU weekly strategic briefing" : "AU daily executive summary";
-  const body = [
-    "Evidence-based automated summary; no generative model is configured in this foundation.",
-    "Window start: " + since,
-    "Incidents observed: " + (rows.results || []).length,
-    "Health checks recorded: " + (checks.results || []).length,
-    ...(rows.results || []).slice(0,20).map(r => "["+r.severity.toUpperCase()+"] "+r.title+" — "+r.summary+" (source: "+r.agent+", confidence: "+Math.round(r.confidence*100)+"%)"),
-    ...(checks.results || []).length ? ["Latest check status: "+checks.results[0].target+" = "+checks.results[0].status] : ["No health-check records in this window."]
-  ].join("\n");
-  await env.INTEL_DB.prepare("INSERT INTO intel_briefings (id,kind,title,body,evidence_json,delivery_status) VALUES (?1,?2,?3,?4,?5,'not_configured')")
-    .bind(id(),kind,title,body,JSON.stringify({since,incidents:rows.results||[],checks:checks.results||[]})).run();
+
+async function auCorrelationCycle(env) {
+  return recordAgentRun(env.INTEL_DB, 'AU', 'correlation', async () => {
+    const result = await correlateAu(env.INTEL_DB, env);
+    return { summary: result.correlated + ' cross-agent correlation(s) this run.', evidence: result };
+  });
 }
+
+async function dailyCycle(env) {
+  return recordAgentRun(env.INTEL_DB, 'AU', 'daily-briefing', async () => {
+    const briefing = await buildDailyBriefing(env.INTEL_DB);
+    const retention = await retentionSweep(env.INTEL_DB);
+    return {
+      summary: 'Daily briefing ' + briefing.id + ' (' + briefing.recommendations + ' recommendations, ' + briefing.challenges + ' challenges). Retention: ' + (retention.skipped ? 'skipped (' + retention.skipped + ')' : 'purged ' + (retention.checks || 0) + ' checks, ' + (retention.telemetry || 0) + ' telemetry rows.'),
+      evidence: { briefing, retention }
+    };
+  });
+}
+
+async function weeklyCycle(env) {
+  return recordAgentRun(env.INTEL_DB, 'AU', 'weekly-briefing', async () => {
+    const briefing = await buildWeeklyBriefing(env.INTEL_DB);
+    return { summary: 'Weekly report ' + briefing.id + ' (' + briefing.recurring + ' recurring fingerprints, ' + briefing.recommendations + ' recommendations).', evidence: briefing };
+  });
+}
+
 export default {
   async scheduled(controller, env, ctx) {
-    if (env.INTELLIGENCE_ENABLED !== "true" || !env.INTEL_DB) {
-      console.warn("MONTE WO Intelligence is not configured; no production monitoring action taken.");
+    if (!configured(env)) {
+      console.warn('MONTE WO Intelligence is not enabled/configured; no monitoring action was taken. Set INTELLIGENCE_ENABLED=true and bind INTEL_DB.');
       return;
     }
-    if (controller.cron === "*/5 * * * *") ctx.waitUntil(websiteCheck(env));
-    else if (controller.cron === "17 11 * * *") ctx.waitUntil(createBriefing(env,"daily"));
-    else if (controller.cron === "23 11 * * 1") ctx.waitUntil(createBriefing(env,"weekly"));
+    const cron = controller.cron;
+    const jobs = {
+      '*/5 * * * *': ultronCycle,
+      '3 * * * *': argonAuCycle,
+      '17 11 * * *': dailyCycle,
+      '23 11 * * 1': weeklyCycle
+    };
+    const job = jobs[cron];
+    if (!job) { console.warn('No job mapped for cron "' + cron + '".'); return; }
+    // ARGON's hourly cycle also runs AU correlation: one scheduled entry, two agent runs.
+    ctx.waitUntil((async () => {
+      try {
+        await job(env);
+        if (job === argonAuCycle) await auCorrelationCycle(env);
+      } catch (error) {
+        console.error('MONTE WO Intelligence job failed for cron "' + cron + '":', error);
+      }
+    })());
   },
   async fetch(request, env) {
     const url = new URL(request.url);
-    if (url.pathname === "/health") return json({service:"MONTE WO Intelligence Worker",configured:env.INTELLIGENCE_ENABLED==="true" && !!env.INTEL_DB,live:false,detail:"Private admin/API integrations and notification delivery still require configuration."});
-    return json({error:"Not found"},404);
+    if (request.method === 'GET' && (url.pathname === '/' || url.pathname === '/health')) {
+      // Operational smoke test only; never reveals configuration values.
+      return json({ service: 'monte-wo-intelligence-worker', enabled: configured(env), dbBound: !!env.INTEL_DB, siteUrlConfigured: /^https:\/\//i.test(env.SITE_URL || '') });
+    }
+    if (request.method === 'POST' && url.pathname === '/run') {
+      // Key-gated manual trigger for testing after deployment. Uses the same jobs as cron.
+      if (!configured(env)) return json({ error: 'not-configured' }, 503);
+      if (!env.INTEL_WORKER_KEY || !safeEqual(request.headers.get('X-MW-Worker-Key') || '', env.INTEL_WORKER_KEY)) return json({ error: 'invalid-key' }, 401);
+      const job = { checks: ultronCycle, analysis: argonAuCycle, correlate: auCorrelationCycle, daily: dailyCycle, weekly: weeklyCycle }[url.searchParams.get('job') || 'checks'];
+      if (!job) return json({ error: 'unknown-job' }, 404);
+      try { const result = await job(env); return json({ ok: true, summary: result?.summary || 'completed' }); }
+      catch (error) { return json({ error: 'job-failed', detail: String(error?.message || error) }, 500); }
+    }
+    return json({ error: 'not-found' }, 404);
   }
 };

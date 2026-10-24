@@ -1,17 +1,37 @@
+# MONTE WO Intelligence Worker — scheduled monitoring runtime (separate from Cloudflare Pages).
+# Every binding below is REQUIRED before this worker does anything. It fails closed.
 name = "monte-wo-intelligence"
 main = "src/index.js"
-compatibility_date = "2026-10-01"
+compatibility_date = "2025-01-01"
 
-# Create a dedicated D1 database before configuring this binding.
+# 1. Create the dedicated intelligence database (do NOT reuse the waitlist or app databases):
+#      npx wrangler d1 create monte-wo-intelligence
+#    Apply BOTH migrations to it:
+#      npx wrangler d1 migrations apply monte-wo-intelligence --local   # test first
+#      npx wrangler d1 migrations apply monte-wo-intelligence           # remote
+#    (migrations live in ../../migrations: 0003_intelligence.sql then 0004_intelligence_ops.sql)
+# 2. Uncomment and paste the returned database_id:
 # [[d1_databases]]
 # binding = "INTEL_DB"
 # database_name = "monte-wo-intelligence"
 # database_id = "REPLACE_WITH_REAL_D1_ID"
+# migrations_dir = "../../migrations"
 
 [vars]
+# Master switch: the worker records NOTHING until this is "true" and INTEL_DB is bound.
 INTELLIGENCE_ENABLED = "false"
-# SITE_URL must be the confirmed canonical production URL, not a guessed domain.
+# Confirmed canonical production origin, no trailing slash. Never a guess.
 # SITE_URL = "https://YOUR-CONFIRMED-DOMAIN"
+# Optional extra monitored routes, JSON: [{"name":"tools","path":"/tools/"}]
+# INTEL_TARGETS = "[{\"name\":\"tools\",\"path\":\"/tools/\"},{\"name\":\"strength-lab\",\"path\":\"/strength-lab/\"}]"
+# Optional latency threshold in ms (default 2500) and fetch timeout (default 12000).
+# INTEL_SLOW_MS = "2500"
+# INTEL_TIMEOUT_MS = "12000"
+
+# SECRETS — set with `wrangler secret put`, never in this file:
+#   INTEL_WEBHOOK_URL      destination for urgent alerts (Slack/Discord/generic JSON webhook)
+#   INTEL_WEBHOOK_SECRET   HMAC-SHA256 signing secret for X-MW-Signature on webhook payloads
+#   INTEL_WORKER_KEY       key for the POST /run manual-trigger endpoint
 
 [triggers]
-crons = ["*/5 * * * *", "17 11 * * *", "23 11 * * 1"]
+crons = ["*/5 * * * *", "3 * * * *", "17 11 * * *", "23 11 * * 1"]

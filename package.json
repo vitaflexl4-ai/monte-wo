@@ -7,6 +7,7 @@
     "dev": "wrangler pages dev public --ip 0.0.0.0 --port 8080",
     "deploy": "wrangler pages deploy public --project-name vitaflex-monte-wo --branch main",
     "test": "node --test tests/*.test.js",
+    "test:intelligence": "node --test tests/intelligence.test.js",
     "test:browser": "node tests/browser.mjs",
     "db:local": "wrangler d1 migrations apply montewo-local-tests --local --config wrangler.local.toml",
     "dev:waitlist": "wrangler pages dev public --d1 DB --binding LOCAL_DEVELOPMENT=true --ip 0.0.0.0 --port 8081 --inspector-port 9230",
