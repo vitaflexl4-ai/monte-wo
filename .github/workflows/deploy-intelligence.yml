@@ -27,6 +27,7 @@ concurrency:
 
 permissions:
   contents: read
+  pull-requests: write   # only for reporting deploy results on the PR
 
 jobs:
   deploy:
@@ -51,4 +52,20 @@ jobs:
       - name: Deploy (all values from deploy.config.json)
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-        run: node scripts/deploy-intelligence.mjs
+        run: |
+          set -o pipefail
+          node scripts/deploy-intelligence.mjs 2>&1 | tee deploy-output.log
+      - name: Report result on the PR (output tail — never the token)
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if [ ! -f deploy-output.log ]; then echo 'no deploy output captured'; exit 0; fi
+          {
+            echo "## Deploy run ${{ github.run_id }} — status: \`${{ job.status }}\`"
+            echo
+            echo '```'
+            tail -n 80 deploy-output.log
+            echo '```'
+          } > /tmp/deploy-comment.md
+          gh pr comment "$GITHUB_REF_NAME" --repo "$GITHUB_REPOSITORY" --body-file /tmp/deploy-comment.md || echo 'could not post the PR comment'
