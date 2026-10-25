@@ -28,7 +28,7 @@ const wrangler = spawn('npx', ['wrangler', 'pages', 'dev', 'public',
   '--binding', `PREVIEW_TOKEN=${TOKEN}`,
   '--binding', `SITE_URL=${SITE_URL}`,
   '--binding', `INTELLIGENCE_INGEST_KEY=${INGEST_KEY}`,
-  '--ip', '0.0.0.0', '--port', String(UPSTREAM_PORT)
+  '--ip', '127.0.0.1', '--port', String(UPSTREAM_PORT)
 ], { stdio: ['ignore', 'pipe', 'pipe'] });
 const proxy = spawn('node', ['scripts/preview-proxy.mjs', String(PUBLIC_PORT), String(UPSTREAM_PORT)], { stdio: ['ignore', 'pipe', 'pipe'] });
 

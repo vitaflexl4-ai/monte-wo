@@ -18,6 +18,15 @@ const UPSTREAM_PORT = Number(process.argv[3] || process.env.UPSTREAM_PORT || 808
 const UPSTREAM_HOST = '127.0.0.1';
 
 const proxy = http.createServer((req, res) => {
+  // Preview convenience: the repo's committed root page is an unrelated legacy demo, so the
+  // preview lands directly on the Intelligence Command Center instead. Production never uses
+  // this proxy, and every other path (including the whole public website) is proxied untouched.
+  // Note: through this proxy a ULTRON '/' check therefore measures the dashboard page —
+  // production checks run without the proxy and measure the real site.
+  if (req.url === '/' || req.url === '/index.html') {
+    res.writeHead(302, { Location: '/intelligence/' });
+    return res.end();
+  }
   const headers = { ...req.headers, host: 'localhost' };
   const upstream = http.request({ host: UPSTREAM_HOST, port: UPSTREAM_PORT, method: req.method, path: req.url, headers }, upstreamRes => {
     res.writeHead(upstreamRes.statusCode, upstreamRes.headers);
