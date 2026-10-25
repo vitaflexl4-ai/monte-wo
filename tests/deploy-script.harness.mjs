@@ -155,6 +155,17 @@ await scenarioTest('SECURITY: an unauthenticated 200 from the API aborts the dep
   });
 });
 
+await scenarioTest('edge-guarded API: a 302 to the Access login counts as fail-closed', async dir => {
+  await withLocalOrigin((req, res) => {
+    if (req.url.startsWith('/api/intelligence/')) { res.writeHead(302, { location: 'https://team.cloudflareaccess.com/cdn-cgi/access/login/app?kid=abc' }); res.end(); }
+    else { res.writeHead(200, { 'content-type': 'text/html' }); res.end('<html>MONTE WO</html>'); }
+  }, async origin => {
+    const r = await runDeploy(dir, [...ACCESS], 'happy', origin);
+    assert.equal(r.status, 0, 'a redirect to the Access login must NOT abort the deploy:\n' + r.stdout + r.stderr);
+    assert.match(r.stdout, /-> 302 \(redirect/, 'redirect status and target reported');
+  });
+});
+
 await scenarioTest('no wrangler auth: exits 3 telling the owner to wrangler login', async dir => {
   const r = await runDeploy(dir, [...ACCESS], 'noauth');
   assert.equal(r.status, 3, 'exit 3:\n' + r.stdout + r.stderr);

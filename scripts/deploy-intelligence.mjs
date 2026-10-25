@@ -295,8 +295,10 @@ async function verifyDeployed(url) {
   for (const path of ['/api/intelligence/overview', '/']) {
     try {
       const res = await fetch(url + path, { redirect: 'manual', signal: AbortSignal.timeout(15000) });
-      results.push(path + ' -> ' + res.status);
-      if (path === '/api/intelligence/overview' && res.status < 400) die('SECURITY: the intelligence API answered ' + res.status + ' WITHOUT authentication. Investigate immediately.');
+      // 3xx here is a redirect to the Cloudflare Access login: the edge is guarding the
+      // route — that is fail-closed, exactly like 401/503. Only a 2xx means open data.
+      results.push(path + ' -> ' + res.status + (res.status >= 300 && res.status < 400 ? ' (redirect ' + String(res.headers.get('location') || '').slice(0, 60) + '…)' : ''));
+      if (path === '/api/intelligence/overview' && res.status >= 200 && res.status < 300) die('SECURITY: the intelligence API answered ' + res.status + ' WITHOUT authentication. Investigate immediately.');
     } catch (e) { results.push(path + ' -> unreachable (' + e.message + ')'); }
   }
   console.log('    ' + results.join(' · '));

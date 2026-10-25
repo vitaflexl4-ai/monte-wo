@@ -148,6 +148,15 @@ test('authenticated identity without operator provisioning is refused; provision
   const post = await call('/automation/retention-purge/approve', 'POST', { confirm: 'retention-purge' }, { __token: await token('viewer@monte.test'), Origin: 'https://monte.test' });
   assert.equal(post.status, 403);
 });
+test('CF_Authorization cookie (the Access login cookie) is accepted as the JWT source', async () => {
+  const t = await token('chief@monte.test');
+  const viaCookie = await call('/overview', 'GET', null, { Cookie: 'other=1; CF_Authorization=' + t + '; x=y' });
+  assert.equal(viaCookie.status, 200, 'same JWT in the login cookie must authenticate like the header');
+  const garbage = await call('/overview', 'GET', null, { Cookie: 'CF_Authorization=not.a.jwt' });
+  assert.equal(garbage.status, 401, 'garbage cookie is refused');
+  const none = await call('/overview', 'GET', null, { Cookie: 'session=abc' });
+  assert.equal(none.status, 401, 'unrelated cookies never authenticate');
+});
 test('local development bypass only works on localhost hostnames', async () => {
   const localEnv = { ...env, LOCAL_DEVELOPMENT: 'true' };
   const res = await handleIntelligence({ request: new Request('http://localhost/api/intelligence/overview'), env: localEnv }, { fetcher });
@@ -728,7 +737,11 @@ test('deploy script is fail-closed, credential-free, and idempotent; runbook doc
   assert.ok(!/token['"]?\s*[:=]\s*['"][A-Za-z0-9_-]{10,}/i.test(wf), 'no token VALUES in the workflow file');
   const cfg = JSON.parse(readFileSync('deploy.config.json', 'utf8'));
   assert.equal(typeof cfg.project_name, 'string', 'config names the direct-upload project');
-  assert.equal(cfg.access_issuer, null, 'no secrets in deploy.config.json (issuer)');
+  // issuer + aud are PUBLIC values (team domain + application id, visible in every login
+  // redirect); they are not credentials. What must NEVER appear here is a token/secret.
+  assert.match(cfg.access_issuer || '', /^https:\/\/[a-z0-9-]+\.cloudflareaccess\.com$/, 'issuer is the public team domain');
+  assert.match(cfg.access_aud || '', /^[a-f0-9]{64}$/, 'aud is the public 64-hex application id');
+  assert.ok(Object.keys(cfg).every(k => !/token|secret|password|credential/i.test(k)), 'no secret-named keys in deploy.config.json');
   assert.match(deploy, /deploy\.config\.json/, 'script reads config defaults');
 });
 

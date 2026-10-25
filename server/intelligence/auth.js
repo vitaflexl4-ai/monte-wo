@@ -41,7 +41,18 @@ export async function verifyAccessJwt(request, env, fetcher = fetch) {
     err.hint = 'Fail-closed: the Access login (INTELLIGENCE_ACCESS_ISSUER / INTELLIGENCE_ACCESS_AUD) is not configured, so no data is served even though the backend may be deployed. Live component status: GET /api/intelligence/status';
     throw err;
   }
-  const token = request.headers.get('Cf-Access-Jwt-Assertion');
+  // The Access JWT normally arrives as the Cf-Access-Jwt-Assertion header, injected by the
+  // Cloudflare edge for Access-protected paths. As a second source, the CF_Authorization
+  // cookie set on the hostname after login carries the same JWT (same-origin fetches send
+  // it automatically); it is accepted here and verified with identical cryptographic checks.
+  const cookieJwt = (() => {
+    for (const part of (request.headers.get('Cookie') || '').split(';')) {
+      const c = part.trim();
+      if (c.startsWith('CF_Authorization=')) return c.slice('CF_Authorization='.length);
+    }
+    return null;
+  })();
+  const token = request.headers.get('Cf-Access-Jwt-Assertion') || cookieJwt;
   requireThat(token && token.length < 12000, 'authentication-required', 401);
   try {
     const parts = token.split('.');
