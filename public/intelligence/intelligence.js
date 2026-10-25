@@ -220,7 +220,9 @@
 
   // ---------- overview ----------
   async function renderOverview() {
+    const navTag = navSeq; // abort if a newer navigation took the view
     const view = $('view');
+    if (navTag !== navSeq) return;
     view.replaceChildren(el('section', { class: 'panel loading-panel' }, el('span', { class: 'spin' }), el('p', {}, 'Loading verified intelligence…')));
     const data = await loadOverview(true);
     if (!data) { view.replaceChildren(errorPanel(state.overviewCode, state.overviewCode ? 503 : 0)); return; }
@@ -320,6 +322,7 @@
         el('p', { style: 'margin-top:8px;font-size:12.5px;color:#c3d1e2;line-height:1.7' }, 'Open the Briefings view for the full evidence-linked summary with recommendations and AU challenges.'))
         : el('div', { class: 'empty' }, el('span', { class: 'empty-ico' }, '▤'), el('strong', {}, 'No briefing has been generated'),
           el('p', {}, 'AU produces the daily executive summary automatically once the scheduled Worker runs its daily job.')));
+    if (navTag !== navSeq) return;
     view.replaceChildren(kpis, agentGrid, budgetPanel, el('div', { class: 'split' }, incidentsPanel, el('div', { style: 'display:grid;gap:13px' }, timelinePanel, briefingTeaser)));
   }
   const incidentRows = list => el('div', {}, ...list.map(i => el('div', {
@@ -339,8 +342,10 @@
 
   // ---------- incidents ----------
   async function renderIncidents() {
+    const navTag = navSeq; // abort if a newer navigation took the view
     const view = $('view');
     const f = state.incidentFilters;
+    if (navTag !== navSeq) return;
     view.replaceChildren(el('section', { class: 'panel loading-panel' }, el('span', { class: 'spin' }), el('p', {}, 'Loading incidents…')));
     const params = new URLSearchParams({ status: f.status, limit: '100' });
     if (f.agent) params.set('agent', f.agent);
@@ -366,6 +371,7 @@
         el('td', { class: 'hide-sm' }, String(i.occurrence_count ?? 1) + (i.correlation_group ? ' · linked' : '')),
         el('td', { class: 'hide-sm' }, relTime(i.last_seen)),
         el('td', {}, statusChip(i.status))))));
+    if (navTag !== navSeq) return;
     view.replaceChildren(
       panel(el('div', { class: 'section-head' },
         el('div', {}, el('div', { class: 'eyebrow' }, 'INCIDENT REGISTER'), el('h2', {}, 'Incidents'),
@@ -424,7 +430,9 @@
 
   // ---------- agents ----------
   async function renderAgents() {
+    const navTag = navSeq; // abort if a newer navigation took the view
     const view = $('view');
+    if (navTag !== navSeq) return;
     view.replaceChildren(el('section', { class: 'panel loading-panel' }, el('span', { class: 'spin' }), el('p', {}, 'Loading agent workspaces…')));
     const data = await loadOverview(true);
     if (!data) { view.replaceChildren(errorPanel(state.overviewCode, 503)); return; }
@@ -484,12 +492,15 @@
         el('tr', {}, el('td', {}, 'Implemented + rechecked'), el('td', {}, String(((t.counts && t.counts.implemented) || 0) + ((t.counts && t.counts.rechecked) || 0)))),
         el('tr', {}, el('td', {}, 'Approval-flagged'), el('td', {}, String(t.approvalPending || 0)))),
       el('div', { class: 'notice', style: 'margin-top:12px' }, 'TITAN audits app sources and telemetry for simpler, faster, more reliable, cheaper alternatives — preferring removal of complexity. It never edits code or ranking standards itself: low-risk items are implemented by operators, and anything touching ranking, migrations, destructive operations, sensitive data or production stays approval-flagged.'));
+    if (navTag !== navSeq) return;
     view.replaceChildren(ultronPanel, argonPanel, auPanel, titanPanel);
   }
 
   // ---------- analysis room ----------
   async function renderAnalysis() {
+    const navTag = navSeq; // abort if a newer navigation took the view
     const view = $('view');
+    if (navTag !== navSeq) return;
     view.replaceChildren(el('section', { class: 'panel loading-panel' }, el('span', { class: 'spin' }), el('p', {}, 'Loading cross-agent analysis…')));
     const [correlated, briefings] = await Promise.all([
       api('/api/intelligence/incidents?agent=AU&status=all&limit=20'),
@@ -502,6 +513,7 @@
       if (detail.ok) { challenges = detail.data.briefing.evidence.challenges || []; recommendations = (detail.data.briefing.evidence.recommendations || []).filter(r => r.decisionRequired); }
     }
     const au = correlated.data.incidents || [];
+    if (navTag !== navSeq) return;
     view.replaceChildren(
       panel(el('div', { class: 'section-head' },
         el('div', {}, el('div', { class: 'eyebrow' }, 'AU · SECURE ANALYSIS ROOM'), el('h2', {}, 'Cross-agent correlations'),
@@ -536,7 +548,9 @@
 
   // ---------- briefings ----------
   async function renderBriefings() {
+    const navTag = navSeq; // abort if a newer navigation took the view
     const view = $('view');
+    if (navTag !== navSeq) return;
     view.replaceChildren(el('section', { class: 'panel loading-panel' }, el('span', { class: 'spin' }), el('p', {}, 'Loading briefings…')));
     const kind = state.briefKind;
     const list = await api('/api/intelligence/briefings?kind=' + kind + '&limit=30');
@@ -567,6 +581,7 @@
         el('strong', {}, 'Select a briefing'),
         el('p', {}, 'Briefings are generated from recorded evidence only. Recommendations link to their evidence, state confidence and impact, and flag the decisions that require you.')));
     }
+    if (navTag !== navSeq) return;
     view.replaceChildren(panel(el('div', { class: 'section-head' },
       el('div', {}, el('div', { class: 'eyebrow' }, 'EXECUTIVE INTELLIGENCE'), el('h2', {}, 'Briefings'),
         el('p', { class: 'subtle', style: 'margin-top:6px' }, 'Three reporting levels: urgent alerts for critical incidents, daily executive summaries, and weekly strategic reports.')), tabs)),
@@ -590,11 +605,14 @@
 
   // ---------- automation ----------
   async function renderAutomation() {
+    const navTag = navSeq; // abort if a newer navigation took the view
     const view = $('view');
+    if (navTag !== navSeq) return;
     view.replaceChildren(el('section', { class: 'panel loading-panel' }, el('span', { class: 'spin' }), el('p', {}, 'Loading automation governance…')));
     const res = await api('/api/intelligence/automation');
     if (!res.ok) { view.replaceChildren(errorPanel(res.code, res.status)); return; }
     const rules = res.data.rules || [];
+    if (navTag !== navSeq) return;
     view.replaceChildren(
       panel(el('div', { class: 'section-head' },
         el('div', {}, el('div', { class: 'eyebrow' }, 'CONTROL & GOVERNANCE'), el('h2', {}, 'Bounded automation'),
@@ -630,11 +648,14 @@
 
   // ---------- audit ----------
   async function renderAudit() {
+    const navTag = navSeq; // abort if a newer navigation took the view
     const view = $('view');
+    if (navTag !== navSeq) return;
     view.replaceChildren(el('section', { class: 'panel loading-panel' }, el('span', { class: 'spin' }), el('p', {}, 'Loading audit trail…')));
     const res = await api('/api/intelligence/audit?limit=100');
     if (!res.ok) { view.replaceChildren(errorPanel(res.code, res.status)); return; }
     const events = res.data.events || [];
+    if (navTag !== navSeq) return;
     view.replaceChildren(panel(el('div', { class: 'section-head' },
       el('div', {}, el('div', { class: 'eyebrow' }, 'ACCOUNTABILITY'), el('h2', {}, 'Audit trail'),
         el('p', { class: 'subtle', style: 'margin-top:6px' }, 'Every operator action, automation decision, escalation and recovery is recorded with actor, target, outcome and timestamp.')),
@@ -653,6 +674,7 @@
   // ---------- TITAN improvement backlog ----------
   const riskChip = r => el('span', { class: 'sev-chip sev-' + ({ low: 'info', medium: 'low', high: 'medium' }[r] || 'info'), text: String(r || '—').toUpperCase() });
   async function renderTitan() {
+    const navTag = navSeq; // abort if a newer navigation took the view
     const view = $('view');
     const res = await api('/api/intelligence/improvements');
     if (!res.ok) { view.replaceChildren(errorPanel(res.code, res.status)); return; }
@@ -677,6 +699,7 @@
         el('td', { class: 'hide-sm' }, confidenceBar(i.confidence)),
         el('td', { class: 'hide-sm' }, riskChip(i.risk)),
         el('td', {}, statusChip(i.status))))));
+    if (navTag !== navSeq) return;
     view.replaceChildren(
       panel(el('div', { class: 'section-head' },
         el('div', {}, el('div', { class: 'eyebrow' }, 'CONTINUOUS IMPROVEMENT — SIMPLER · FASTER · MORE RELIABLE · CHEAPER'), el('h2', {}, 'TITAN improvement backlog'),
@@ -771,6 +794,7 @@
   // The room is a live visualization of the real agents: room.js derives every avatar state
   // and screen value from these same authenticated endpoints. If the module fails to load,
   // the tab degrades to an honest error instead of pretending.
+  let roomMounted = false;
   function renderRoom() {
     if (!window.MWRoom) {
       view.replaceChildren(panel(el('div', { class: 'empty' },
@@ -779,17 +803,29 @@
         el('p', {}, 'The 3D room module (/intelligence/room.js) failed to load. The rest of the Command Center is unaffected; nothing is simulated in its place.'))));
       return;
     }
+    // The room polls the real API itself (12s) and owns its own loop. Auto-refresh /
+    // hash re-navigation must NOT remount it — that would wipe demo mode and any
+    // in-flight lifecycle task. Remount only after a real unmount (leaving the route).
+    if (roomMounted) return;
+    roomMounted = true;
     MWRoom.mount(view, { api, el, relTime, dateTime });
   }
 
   // ---------- router ----------
   const routes = { overview: renderOverview, room: renderRoom, incidents: renderIncidents, agents: renderAgents, analysis: renderAnalysis, titan: renderTitan, briefings: renderBriefings, automation: renderAutomation, audit: renderAudit };
+  // Navigation epoch: async view renderers capture the epoch at entry and must abort if a
+  // newer navigation has taken the view — otherwise a stale continuation (e.g. a slow
+  // /analysis response arriving after the operator already navigated on) would evict the
+  // freshly mounted view. This is what protects the 3D room from being wiped by a late
+  // 2D render, and equally protects 2D views from each other.
+  let navSeq = 0;
   function navigate() {
+    navSeq++;
     const name = (location.hash.replace(/^#\/?/, '') || 'overview').split('?')[0];
     const route = routes[name] || renderOverview;
     const target = routes[name] ? name : 'overview';
     document.querySelectorAll('.nav').forEach(n => n.classList.toggle('active', n.dataset.nav === target));
-    if (window.MWRoom && target !== 'room') MWRoom.unmount(); // stop the room's loop/timers when leaving; the room route remounts/refreshes in place
+    if (window.MWRoom && target !== 'room') { MWRoom.unmount(); roomMounted = false; } // stop the room's loop/timers when leaving; the room refreshes itself in place while mounted
     closeDrawer();
     route();
   }

@@ -665,8 +665,32 @@ test('AU ROOM module exists, is CSP-safe, wired into the app, and visualizes onl
   assert.match(room, /traffic analytics: NOT CONNECTED/, 'ULTRON does not imply connected traffic analytics');
   assert.match(room, /proposals only until owner approval/, 'TITAN marked proposals-only');
   assert.match(room, /\/api\/intelligence\/briefings/, 'owner console reads the real briefings endpoint');
-  // honesty caption is permanent in the UI
   const css = readFileSync('public/intelligence/room.css', 'utf8');
+  // living portal: typed lifecycle phases drive avatar movement (concept image = visual spec)
+  assert.match(room, /PHASE_VERB/, 'lifecycle phase vocabulary defined');
+  for (const phase of ['task-assigned', 'investigating', 'evidence-found', 'reporting', 'task-completed', 'presenting-briefing', 'task-failed'])
+    assert.ok(room.includes("'" + phase + "'"), 'lifecycle phase ' + phase + ' exists');
+  assert.match(room, /function startTask\(/, 'lifecycle machine: startTask');
+  assert.match(room, /function enterStep\(/, 'lifecycle machine: enterStep');
+  assert.match(room, /function endTask\(/, 'lifecycle machine: endTask');
+  assert.match(room, /patrolIdx/, 'AU idle patrol is a deterministic station rotation, not random activity');
+  const rndLines = room.split('\n').filter(l => /Math\.random/.test(l));
+  assert.ok(rndLines.length > 0 && rndLines.every(l => /phase:|patrolAt|particles\.push|stars\.push|tw:|v:|p:/.test(l)), 'Math.random confined to cosmetic seeds (particles, stars, walk-cycle offsets)');
+  // interactive surfaces open the REAL application views
+  assert.match(room, /VIEW_ROUTES/, 'screens wired to real application views');
+  assert.match(room, /makeInteractive/, 'screens are clickable');
+  assert.ok(room.includes('#/analysis') && room.includes('#/agents') && room.includes('#/briefings') && room.includes('#/titan') && room.includes('#/overview') && room.includes('#/incidents'), 'screen routes cover analysis/agents/briefings/titan/overview/incidents');
+  // simulation mode: watermarked, labeled, and isolated from production records
+  assert.match(room, /SIMULATION \/ DEMO/, 'demo pill reads SIMULATION / DEMO');
+  assert.match(room, /never call the API \(zero mutations\)/, 'demo documented as zero-mutation');
+  assert.match(room, /SYNTHETIC EVENTS · NOT PRODUCTION DATA/, 'watermark text unmistakable');
+  assert.ok(room.includes('DEMO · '), 'demo artifacts are DEMO-prefixed');
+  assert.match(room, /isDemo: true/, 'demo tasks flagged isDemo');
+  assert.match(room, /state\(\) \{ return instance \? instance\.state\(\) : null; \}/, 'MWRoom.state() inspection hook');
+  assert.match(css, /room-watermark/, 'watermark styled');
+  assert.match(css, /room-demo-badge/, 'demo badge styled');
+  assert.match(css, /\.clickable/, 'clickable surfaces styled');
+  // honesty caption is permanent in the UI
   assert.ok(css.length > 1000, 'room styles exist');
   const html = readFileSync('public/intelligence/index.html', 'utf8');
   assert.match(html, /intelligence\/room\.js/, 'index.html loads room.js');

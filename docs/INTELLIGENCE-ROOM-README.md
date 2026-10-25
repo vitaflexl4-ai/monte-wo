@@ -73,3 +73,38 @@ A repeatable test must create a test-only incident through the actual API, have 
 ## Source of truth
 
 The implementation and runbook are tracked in [PR #16](https://github.com/vitaflexl4-ai/monte-wo/pull/16) and `docs/INTELLIGENCE-COMMAND-CENTER.md`. This README is the visual/interaction acceptance contract, not a deployment claim.
+
+## Living portal — implemented behavior (2026-10-25)
+
+The approved concept image is treated as the visual specification. The room is a continuously
+rendered, interactive 3D environment — not a static background, not a dashboard replacement.
+
+**Typed lifecycle (movement is event-driven, never random activity).** Every operator action
+runs a real server-side job and drives avatars through explicit phases:
+`task-assigned → investigating → evidence-found → reporting → task-completed`
+(`presenting-briefing` for AU at the owner station; `task-failed` on real API rejection,
+including honest 429 rate-limit handling). The `investigating` phase spans the actual in-flight
+request (with a minimum visual hold for pacing only). Phase verbs appear on the station tag
+chips and the HUD "what's real" column. Idle agents look idle; the only idle motion is ambient
+(particle drift, station light breathing, screen refresh, deterministic AU station patrol) and
+never implies work.
+
+**Interactive surfaces open the real application.** Every holographic screen, the globe chip,
+and table incident cards are clickable (mouse + keyboard) and route to the real 2D views:
+ARGON → `#/analysis`, ULTRON → `#/agents`, AU + owner console → `#/briefings`, TITAN → `#/titan`,
+globe → `#/overview`, incidents → `#/incidents`. Name tags open the agent's real run detail.
+
+**DEMO mode is watermarked and isolated.** A toggle runs synthetic demo tasks client-side only:
+zero API calls (asserted in tests), zero writes, visibly labeled `SIMULATION / DEMO` pill,
+diagonal watermark, dashed purple demo cards, `DEMO ·`-prefixed chips, and a badge explaining
+that production records are untouched. Demo tasks never interrupt real tasks. The 60s app
+auto-refresh no longer remounts the room (a navigation-epoch guard also protects all views
+from stale async renders), so simulation state and in-flight tasks survive refreshes.
+
+**Inspection hook.** `window.MWRoom.state()` exposes `{ demo, agents: { phase, mode, x, z } }`
+for tests and operator verification.
+
+**E2E coverage** (`tests/intelligence-browser.mjs`): real run → investigating during the
+in-flight POST → result card at the table → persisted `agent-run` evidence in the timeline →
+AU briefing presented at the owner station; screen click → real 2D route; demo mode →
+watermark + zero POSTs + auto-refresh survival; honest task-failed path on 429.

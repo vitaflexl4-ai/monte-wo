@@ -52,6 +52,7 @@
       if (instance) instance.destroy();
       instance = null;
     },
+    state() { return instance ? instance.state() : null; },
     mount(container, ctx) {
       if (!container || !ctx || typeof ctx.api !== 'function' || typeof ctx.el !== 'function') return null;
       if (instance && instance.container === container) { instance.poll(); return instance; } // re-navigate/refresh: keep the room, refresh data
@@ -73,11 +74,14 @@
 
     const livePill = el('span', { class: 'room-pill', text: 'CONNECTING' });
     const btnVerify = el('button', { class: 'btn room-act', type: 'button', text: 'Run ULTRON verification' });
-    const btnTitan = el('button', { class: 'btn room-act', type: 'button', text: 'Run TITAN audit' });
+    const btnAnalyze = el('button', { class: 'btn room-act', type: 'button', text: 'Run ARGON + AU analysis' });
+    const btnImprove = el('button', { class: 'btn room-act', type: 'button', text: 'Run TITAN audit' });
+    const btnBriefing = el('button', { class: 'btn room-act', type: 'button', text: 'Generate AU briefing' });
+    const btnDemo = el('button', { class: 'btn room-act demo-toggle', type: 'button', text: 'DEMO MODE: OFF', 'aria-pressed': 'false' });
     const hudTop = el('div', { class: 'room-hud room-hud-top' },
       el('div', { class: 'room-hud-title' }, el('strong', { text: 'AU ROOM' }), el('span', { class: 'room-hud-sub', text: 'live operations floor' }), livePill),
-      el('p', { class: 'room-note' }, 'The avatars visualize the real server-side agents. Every position, animation and screen value is derived from live API data — motions represent actual run states, not a literal office. Idle agents look idle.'),
-      el('div', { class: 'room-acts' }, btnVerify, btnTitan));
+      el('p', { class: 'room-note' }, 'The avatars visualize the real server-side agents. Every position, animation and screen value is derived from live API data — motions represent actual run states and events, not a literal office. Idle agents look idle. Click any holographic screen or name tag to open the real records behind it.'),
+      el('div', { class: 'room-acts' }, btnVerify, btnAnalyze, btnImprove, btnBriefing, btnDemo));
 
     const realList = el('div', { class: 'room-real-list' });
     const hudRight = el('div', { class: 'room-hud room-hud-right' },
@@ -89,6 +93,13 @@
       el('span', { class: 'room-src', text: 'Values: /api/intelligence/overview · timeline · incidents · improvements' }));
 
     const toast = el('div', { class: 'room-toast', role: 'status', hidden: true });
+    const watermark = el('div', { class: 'room-watermark', 'aria-hidden': 'true' },
+      el('span', { text: 'SIMULATION · DEMO · SYNTHETIC EVENTS · NOT PRODUCTION DATA · SIMULATION · DEMO' }),
+      el('span', { text: 'SIMULATION · DEMO · SYNTHETIC EVENTS · NOT PRODUCTION DATA · SIMULATION · DEMO' }),
+      el('span', { text: 'SIMULATION · DEMO · SYNTHETIC EVENTS · NOT PRODUCTION DATA · SIMULATION · DEMO' }));
+    const demoBadge = el('div', { class: 'room-demo-badge', hidden: true },
+      el('strong', { text: 'SIMULATION / DEMO' }), ' — synthetic events only. Real data stays on the screens; nothing is written to production records.');
+    stage.append(watermark, demoBadge);
     const wrap = el('div', { class: 'room-wrap' }, stage, hudRight, hudTop, hudBottom, toast);
     container.replaceChildren(el('section', { class: 'panel room-panel', 'aria-label': 'AU ROOM — live 3D operations floor' }, wrap));
 
@@ -102,7 +113,7 @@
     const pointers = new Map();
     let pinchDist = 0;
 
-    function onPointerDown(e) { canvas.setPointerCapture(e.pointerId); pointers.set(e.pointerId, { x: e.clientX, y: e.clientY }); interactedAt = performance.now(); }
+    function onPointerDown(e) { stage.setPointerCapture(e.pointerId); pointers.set(e.pointerId, { x: e.clientX, y: e.clientY }); interactedAt = performance.now(); }
     function onPointerMove(e) {
       if (!pointers.has(e.pointerId)) return;
       const prev = pointers.get(e.pointerId);
@@ -121,12 +132,12 @@
     function onPointerUp(e) { pointers.delete(e.pointerId); if (pointers.size < 2) pinchDist = 0; }
     function onWheel(e) { e.preventDefault(); cam.dist = clamp(cam.dist * (1 + e.deltaY * 0.0012), 12, 44); interactedAt = performance.now(); }
     function onDblClick() { Object.assign(cam, CAM0); interactedAt = performance.now(); }
-    canvas.addEventListener('pointerdown', onPointerDown);
-    canvas.addEventListener('pointermove', onPointerMove);
-    canvas.addEventListener('pointerup', onPointerUp);
-    canvas.addEventListener('pointercancel', onPointerUp);
-    canvas.addEventListener('wheel', onWheel, { passive: false });
-    canvas.addEventListener('dblclick', onDblClick);
+    stage.addEventListener('pointerdown', onPointerDown);
+    stage.addEventListener('pointermove', onPointerMove);
+    stage.addEventListener('pointerup', onPointerUp);
+    stage.addEventListener('pointercancel', onPointerUp);
+    stage.addEventListener('wheel', onWheel, { passive: false });
+    stage.addEventListener('dblclick', onDblClick);
 
     // ================= projection =================
     function project(x, y, z) {
@@ -176,6 +187,23 @@
       faces.push({ line: [a, b], depth: (a.depth + b.depth) / 2 + 0.01, stroke: color, glow, lw: lw || 1 });
     }
 
+    // Interactive surfaces: clicking a holographic screen / the globe chip / an incident card
+    // opens the corresponding REAL application view (the 2D Command Center routes).
+    const VIEW_ROUTES = { argon: '#/analysis', ultron: '#/agents', au: '#/briefings', titan: '#/titan', op: '#/briefings', core: '#/overview', incident: '#/incidents' };
+    function makeInteractive(node, label, hash) {
+      node.classList.add('clickable');
+      node.setAttribute('role', 'button');
+      node.setAttribute('tabindex', '0');
+      node.setAttribute('aria-label', label);
+      let downAt = null;
+      node.addEventListener('pointerdown', e => { downAt = { x: e.clientX, y: e.clientY }; });
+      node.addEventListener('click', e => {
+        if (downAt && Math.hypot(e.clientX - downAt.x, e.clientY - downAt.y) > 6) return; // was an orbit drag
+        location.hash = hash;
+      });
+      node.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); location.hash = hash; } });
+    }
+
     // ================= scene data =================
     const data = { overview: null, timeline: [], incidents: [], improvements: [], briefing: null, at: null, ok: false };
     const seen = new Set();
@@ -216,6 +244,7 @@
       const body = el('div', { class: 'room-holo' });
       const tag = el('button', { class: 'room-tag', type: 'button' });
       tag.addEventListener('click', () => selectAgent(key));
+      makeInteractive(body, 'Open the ' + A.name + ' view', VIEW_ROUTES[key]);
       overlays.append(body, tag);
       screens[key] = { corners, ang, body, tag, w };
     }
@@ -236,12 +265,14 @@
       tag: el('button', { class: 'room-tag human', type: 'button' }), w: opw
     };
     opScreen.tag.addEventListener('click', () => selectAgent('op'));
+    makeInteractive(opScreen.body, 'Open the briefings view (owner)', VIEW_ROUTES.op);
     overlays.append(opScreen.body, opScreen.tag);
     screens.op = opScreen;
 
     // central table + core + incident cards
     const tableCards = [];
     const coreChip = el('div', { class: 'room-core-chip' });
+    makeInteractive(coreChip, 'Open the overview view', VIEW_ROUTES.core);
     overlays.append(coreChip);
     let particles = [];
     function seedParticles() {
@@ -342,8 +373,25 @@
         bodyEl.append(el('p', { class: 'room-holo-line dim', text: data.improvements.length + ' finding(s) total · proposals only until owner approval' }));
       }
       rows.push(bodyEl);
-      rows.push(el('div', { class: 'room-holo-foot', text: data.ok ? 'live API · ' + ctx.relTime(data.overview && data.overview.generatedAt) : 'no connection' }));
+      rows.push(el('div', { class: 'room-holo-foot', text: (data.ok ? 'live API · ' + ctx.relTime(data.overview && data.overview.generatedAt) : 'no connection') + ' · click to open ↗' }));
       return rows;
+    }
+
+    // Live tag chip: shows the typed lifecycle phase while a task is active (DEMO-prefixed
+    // for synthetic tasks), otherwise the reality mode. Updated on every phase transition.
+    function updateTagChip(key) {
+      const S = screens[key];
+      if (!S || !S.tag) return;
+      const av = avatars[key];
+      const mode = modeLabel(activity(key));
+      const task = av.task;
+      const chip = task ? (task.isDemo ? 'DEMO · ' : '') + (PHASE_VERB[task.phase] || task.phase) : mode;
+      const cls = task ? (task.isDemo ? 'demo' : task.phase === 'task-failed' ? 'failed' : 'live') : (MODE_CLASS[mode] || '');
+      S.tag.replaceChildren(
+        el('span', { class: 'room-dot on', style: 'background:' + (task ? (task.isDemo ? '#b98cff' : AGENTS[key].color) : mode === 'LIVE' ? AGENTS[key].color : mode === 'FAILED' ? '#ff5a5f' : '#8b97a8') }),
+        el('strong', { text: AGENTS[key].name }),
+        el('span', { class: 'room-mode ' + cls, text: chip }));
+      S.tag.className = 'room-tag' + (task || mode === 'LIVE' ? '' : ' off');
     }
 
     function rebuildScreens() {
@@ -352,13 +400,7 @@
         S.body.replaceChildren(...screenContent(key));
         S.body.classList.toggle('off', activity(key).mode === 'offline');
         S.body.classList.toggle('waiting', activity(key).mode === 'awaiting');
-        const act = activity(key);
-        const mode = modeLabel(act);
-        S.tag.replaceChildren(
-          el('span', { class: 'room-dot on', style: 'background:' + (mode === 'LIVE' ? AGENTS[key].color : mode === 'FAILED' ? '#ff5a5f' : '#8b97a8') }),
-          el('strong', { text: AGENTS[key].name }),
-          el('span', { class: 'room-mode ' + (MODE_CLASS[mode] || ''), text: mode }));
-        S.tag.className = 'room-tag' + (mode === 'LIVE' ? '' : ' off');
+        updateTagChip(key);
       }
       // operator console (human — never an AI agent)
       opScreen.body.replaceChildren(...screenContent('op'));
@@ -367,8 +409,9 @@
         el('strong', { text: OPERATOR.name }),
         el('span', { class: 'room-tag-status', text: 'OWNER / OPERATOR' }));
       opScreen.tag.className = 'room-tag human';
-      // live pill
-      if (data.ok && data.overview) {
+      // live pill (simulation state is unmistakable while demo mode is on)
+      if (demo) { livePill.textContent = 'SIMULATION / DEMO'; livePill.className = 'room-pill demo'; }
+      else if (data.ok && data.overview) {
         livePill.textContent = data.overview.live ? 'LIVE · ' + String((data.overview.health || {}).label || 'MONITORING') : 'NOT LIVE';
         livePill.className = 'room-pill ' + (data.overview.live ? 'on' : '');
       } else { livePill.textContent = 'BACKEND UNAVAILABLE'; livePill.className = 'room-pill bad'; }
@@ -437,7 +480,7 @@
           const row = el('button', { class: 'room-real-row', type: 'button' },
             el('span', { class: 'room-dot on', style: 'background:' + (mode === 'LIVE' ? A.color : '#8b97a8') }),
             el('strong', { text: A.name }),
-            el('span', { class: 'room-real-verb room-mode ' + (MODE_CLASS[mode] || ''), text: (av.visitCard ? 'reviewing event' : mode) }),
+            el('span', { class: 'room-real-verb room-mode ' + (av.task ? (av.task.isDemo ? 'demo' : 'live') : (MODE_CLASS[mode] || '')), text: av.task ? ((av.task.isDemo ? 'demo — ' : '') + (PHASE_VERB[av.task.phase] || av.task.phase).toLowerCase()) : mode }),
             el('p', { class: 'room-why', text: act.why }));
           row.addEventListener('click', () => { selected = key; rebuildRealList(key); });
           nodes.push(row);
@@ -448,55 +491,108 @@
     }
     function selectAgent(key) { selected = key; rebuildRealList(key); }
 
-    // ================= behavior =================
-    function queueVisit(key, item) {
-      const av = avatars[key];
-      if (av.visitCard) return;
-      av.visitCard = item;
-      av.path = [{ ...av.approach }];
-      av.holdUntil = performance.now() + 6000;
-      showTableCard(key, item);
-    }
+    // ================= task lifecycle (typed, event-driven) =================
+    // Phases: task-assigned -> investigating -> evidence-found / reporting -> task-completed
+    // (+ presenting-briefing when AU reports to the owner, task-failed on real failures).
+    // Every phase is tied to a REAL trigger: a run actually executing server-side (the
+    // investigating phase spans the in-flight request — the extra visual hold is pacing only,
+    // the run itself is real), or a real persisted timeline event arriving via polling.
+    // DEMO tasks are synthetic, labeled, exist only while demo mode is on, and never call
+    // the API — see toggleDemo.
+    const PHASE_VERB = {
+      'task-assigned': 'TASK ASSIGNED',
+      'investigating': 'INVESTIGATING',
+      'evidence-found': 'EVIDENCE FOUND',
+      'reporting': 'REPORTING',
+      'task-completed': 'COMPLETED',
+      'presenting-briefing': 'PRESENTING BRIEFING',
+      'task-failed': 'TASK FAILED'
+    };
+    const sleep = ms => new Promise(r => setTimeout(r, ms));
     const cardEls = [];
-    function showTableCard(key, item) {
-      const card = el('div', { class: 'room-card' },
-        el('div', { class: 'room-card-head' }, el('span', { class: 'room-dot on', style: 'background:' + AGENTS[key].color }), el('strong', { text: AGENTS[key].name })),
-        el('p', { text: short(item.title || item.kind || 'event', 52) }),
-        el('p', { class: 'room-card-sub', text: ctx.relTime(item.at) + ' · real timeline event' }));
+
+    function phasePoint(key, phase) {
+      const av = avatars[key];
+      if (phase === 'evidence-found' || phase === 'reporting') return { ...av.approach };
+      if (phase === 'presenting-briefing') return { x: OPERATOR.pos.x + 2.5, z: OPERATOR.pos.z - 0.5 };
+      return { ...av.home };
+    }
+    function startTask(key, script, meta) {
+      const av = avatars[key];
+      if (av.task) return false; // one task at a time; real tasks are never interrupted by demos
+      av.task = { script, step: 0, phase: null, phaseUntil: 0, meta: meta || {}, isDemo: !!(meta && meta.isDemo) };
+      enterStep(key, 0);
+      return true;
+    }
+    function enterStep(key, i) {
+      const av = avatars[key], task = av.task;
+      if (!task) return;
+      task.step = i;
+      const step = task.script[i];
+      task.phase = step[0];
+      task.phaseUntil = performance.now() + step[1];
+      const point = phasePoint(key, task.phase);
+      if (point && (point.x !== av.x || point.z !== av.z)) av.path = [point];
+      if (task.phase === 'task-completed') av.flashUntil = performance.now() + 1500;
+      if ((task.phase === 'reporting' || task.phase === 'evidence-found' || task.phase === 'presenting-briefing') && task.meta.card) showLifecycleCard(key, task);
+      updateTagChip(key);
+    }
+    function endTask(key) {
+      const av = avatars[key];
+      av.task = null;
+      av.path = [{ ...av.home }];
+      updateTagChip(key);
+    }
+    function showLifecycleCard(key, task) {
+      const card = task.isDemo
+        ? el('div', { class: 'room-card demo', 'aria-label': 'Simulation card' },
+            el('div', { class: 'room-card-head' }, el('span', { class: 'room-demo-tag', text: 'SIMULATION' }), el('strong', { text: AGENTS[key].name })),
+            el('p', { text: short(task.meta.card.title, 56) }),
+            el('p', { class: 'room-card-sub', text: task.meta.card.sub || 'synthetic event — not production data' }))
+        : el('div', { class: 'room-card' },
+            el('div', { class: 'room-card-head' }, el('span', { class: 'room-dot on', style: 'background:' + AGENTS[key].color }), el('strong', { text: AGENTS[key].name })),
+            el('p', { text: short(task.meta.card.title, 56) }),
+            el('p', { class: 'room-card-sub', text: task.meta.card.sub || 'real record' }));
       overlays.append(card);
-      const entry = { el: card, until: performance.now() + 6000, ang: Math.random() * TAU, r: 4.1, y: 3.1 };
-      cardEls.push(entry);
-      setTimeout(() => { card.remove(); }, 6100);
+      cardEls.push({ el: card, anchor: task.phase === 'presenting-briefing' ? 'owner' : 'table', until: performance.now() + 6200 });
+      setTimeout(() => card.remove(), 6400);
+    }
+    // A real persisted timeline event arrived -> the producing agent reviews it at the table.
+    function queueVisit(key, item) {
+      if (avatars[key].task) return;
+      startTask(key, [['evidence-found', 6000], ['task-completed', 1200]],
+        { card: { title: item.title || item.kind || 'event', sub: ctx.relTime(item.at) + ' · real timeline event' } });
     }
 
     function updateAvatars(now, dt) {
       for (const key of KEYS) {
         const av = avatars[key];
         const act = activity(key);
-        let mode = act.mode === 'just-ran' ? 'working' : act.mode;
-        if (act.mode === 'just-ran' && now < (av.flashUntil || 0)) mode = 'just-ran';
-        if (act.mode === 'just-ran' && now >= (av.flashUntil || 0) && !av.flashed) { av.flashUntil = now + 1500; av.flashed = true; setTimeout(() => { av.flashed = false; }, 1600); }
+        const task = av.task;
 
-        if (av.visitCard) {
-          mode = 'visit';
-          if (!av.path.length && now > av.holdUntil) {
-            av.visitCard = null;
-            av.path = [{ ...av.home }];
+        // advance the typed lifecycle (scripts are data; real actions rewrite them on completion)
+        if (task) {
+          if (now > task.phaseUntil) {
+            if (task.step < task.script.length - 1) enterStep(key, task.step + 1);
+            else endTask(key);
           }
-        } else if (!av.path.length && act.mode === 'just-ran') {
-          // stay at home; flash handled below
+        } else if (act.mode === 'just-ran' && !av.flashed) {
+          av.flashUntil = now + 1500; av.flashed = true;
+          setTimeout(() => { av.flashed = false; }, 1600);
         }
 
-        // AU correlation patrol: only when operational and idle — represents its real
-        // cross-agent correlation job, which is exactly why AU moves the most.
-        if (key === 'au' && act.mode !== 'offline' && !av.visitCard && !av.path.length && now > av.patrolAt && !reduced) {
+        // AU correlation patrol: only when operational and taskless — represents its real
+        // cross-agent correlation job, which is exactly why AU moves the most. The route is a
+        // deterministic rotation through the real workstations (never random activity, and
+        // never while a lifecycle task owns the avatar).
+        if (key === 'au' && !task && act.mode !== 'offline' && !av.path.length && now > av.patrolAt && !reduced) {
           const targets = [{ ...av.approach }, ...KEYS.filter(k => k !== 'au').map(k => ({ x: AGENTS[k].station.x * 0.55, z: AGENTS[k].station.z * 0.55 }))];
-          const t = targets[Math.floor(Math.random() * targets.length)];
-          av.path = [t];
+          av.patrolIdx = ((av.patrolIdx || 0) + 1) % targets.length;
+          av.path = [targets[av.patrolIdx]];
           av.holdUntil = now + 3500;
           av.patrolVisit = true;
         }
-        if (av.patrolVisit && !av.path.length && now > av.holdUntil) { av.patrolVisit = false; av.path = [{ ...av.home }]; }
+        if (av.patrolVisit && !task && !av.path.length && now > av.holdUntil) { av.patrolVisit = false; av.path = [{ ...av.home }]; }
 
         // walking
         if (av.path.length && !reduced) {
@@ -516,16 +612,20 @@
           av.walking = true;
         } else {
           if (reduced && av.path.length) { const t = av.path.shift(); av.x = t.x; av.z = t.z; }
-          // face the screen / table when settled
-          const faceTo = av.visitCard ? { x: 0, z: 0 } : { x: AGENTS[key].station.x, z: AGENTS[key].station.z };
+          // purposeful idle: face the screen, the table, or the owner depending on phase
+          const ph = task ? task.phase : null;
+          const faceTo = ph === 'presenting-briefing' ? OPERATOR.pos
+            : (ph === 'reporting' || ph === 'evidence-found') ? { x: 0, z: 0 }
+            : { x: AGENTS[key].station.x, z: AGENTS[key].station.z };
           const want = Math.atan2(faceTo.x - av.x, faceTo.z - av.z);
           let dd = want - av.facing;
           while (dd > Math.PI) dd -= TAU; while (dd < -Math.PI) dd += TAU;
           av.facing += dd * Math.min(1, dt * 6);
-          av.phase += dt * (mode === 'working' ? 5.5 : mode === 'awaiting' ? 1.1 : 0.7);
+          const workish = ph === 'investigating' || ph === 'task-assigned' || (!ph && (act.mode === 'working' || act.mode === 'just-ran'));
+          av.phase += dt * (workish ? 5.5 : (!ph && act.mode === 'awaiting') ? 1.1 : 0.7);
           av.walking = false;
         }
-        av.mode = mode;
+        av.mode = task ? (task.isDemo ? 'demo' : task.phase) : (act.mode === 'just-ran' ? 'working' : act.mode);
       }
     }
 
@@ -602,20 +702,88 @@
       }
       // top face as fan
       for (let i = 1; i < N - 1; i++) quad(top[0], top[i], top[i + 1], top[i + 1], '#232f47', { both: true });
-      // core: rotating wireframe octahedron, colored by real health
+      // central holographic globe (the approved concept's centerpiece): wireframe sphere
+      // with latitude rings and rotating meridians, colored by REAL system health.
       const col = healthColor();
-      const pulse = data.incidents.length ? 0.12 : 0.05;
-      const sc = 0.85 * (1 + Math.sin(t * (data.incidents.length ? 3.4 : 1.6)) * pulse);
-      const cy = 2.5, rot = t * 0.7;
-      const P = [];
-      for (const [x, y, z] of [[0, 1, 0], [0, -1, 0], [1, 0, 0], [-1, 0, 0], [0, 0, 1], [0, 0, -1]]) {
-        const x1 = x * Math.cos(rot) - z * Math.sin(rot), z1 = x * Math.sin(rot) + z * Math.cos(rot);
-        P.push([x1 * sc, cy + y * sc, z1 * sc]);
+      const pulse = data.incidents.length ? 0.10 : 0.04;
+      const GR = 1.0 * (1 + Math.sin(t * (data.incidents.length ? 3.2 : 1.4)) * pulse);
+      const cy = 2.6, rot = t * 0.35;
+      const SP = (lat, lng) => {
+        const la = lat * Math.PI / 180, lo = lng * Math.PI / 180 + rot;
+        return [GR * Math.cos(la) * Math.sin(lo), cy + GR * Math.sin(la), GR * Math.cos(la) * Math.cos(lo)];
+      };
+      // meridians (great circles through the poles — rotating = spinning globe)
+      for (let m = 0; m < 6; m++) {
+        const base = m * 30;
+        for (let i = 0; i < 36; i++) {
+          const a = SP(-90 + i * 5, base), b = SP(-90 + (i + 1) * 5, base);
+          line3(a[0], a[1], a[2], b[0], b[1], b[2], shade(col, 1, 0.5), 1.2, true);
+        }
       }
-      const E = [[0, 2], [2, 1], [1, 3], [3, 0], [0, 4], [4, 1], [1, 5], [5, 0], [2, 4], [4, 3], [3, 5], [5, 2]];
-      for (const [a, b] of E) line3(P[a][0], P[a][1], P[a][2], P[b][0], P[b][1], P[b][2], col, 1.6, true);
-      // beam from table to core
-      line3(0, h, 0, 0, cy - sc, 0, shade(healthColor(), 1, 0.25), 1, false);
+      // latitude rings
+      for (const lat of [-60, -30, 0, 30, 60]) {
+        for (let i = 0; i < 36; i++) {
+          const a = SP(lat, i * 10), b = SP(lat, (i + 1) * 10);
+          line3(a[0], a[1], a[2], b[0], b[1], b[2], shade(col, 1, lat === 0 ? 0.75 : 0.35), lat === 0 ? 1.6 : 1, lat === 0);
+        }
+      }
+      // beam from table to globe + under-glow
+      line3(0, h, 0, 0, cy - GR, 0, shade(col, 1, 0.3), 1.2, true);
+      glowPool(0, 0.03, 0, 2.6, col, 0.16 + Math.sin(t * 1.4) * 0.05);
+    }
+
+    // soft colored light pool on the floor (station lighting / under-glow)
+    function glowPool(x, y, z, r, color, alpha) {
+      const c = project(x, y, z);
+      if (!c) return;
+      const pts = [];
+      for (let i = 0; i < 18; i++) {
+        const a = i / 18 * TAU;
+        const p = project(x + Math.cos(a) * r, y, z + Math.sin(a) * r);
+        if (!p) return;
+        pts.push(p);
+      }
+      const grd = g.createRadialGradient(c.x, c.y, 1, c.x, c.y, Math.max(4, Math.hypot(pts[0].x - c.x, pts[0].y - c.y)));
+      grd.addColorStop(0, shade(color, 1, alpha));
+      grd.addColorStop(1, shade(color, 1, 0));
+      g.fillStyle = grd;
+      g.beginPath(); g.moveTo(pts[0].x, pts[0].y);
+      for (let i = 1; i < pts.length; i++) g.lineTo(pts[i].x, pts[i].y);
+      g.closePath(); g.fill();
+    }
+
+    // panoramic window wall (back, z = -9.5): frames, night gradient, stars
+    const stars = [];
+    for (let i = 0; i < 46; i++) stars.push({ x: (Math.random() - 0.5) * 24, y: 2.2 + Math.random() * 3.4, tw: Math.random() * TAU });
+    function drawWindows(t) {
+      // glass
+      quad([-12.5, 0.9, -9.6], [12.5, 0.9, -9.6], [12.5, 6.2, -9.6], [-12.5, 6.2, -9.6], 'rgba(16,28,52,0.55)', { both: true });
+      // horizon glow strip
+      quad([-12.5, 0.9, -9.55], [12.5, 0.9, -9.55], [12.5, 1.7, -9.55], [-12.5, 1.7, -9.55], 'rgba(70,120,200,0.16)', { both: true });
+      // mullions
+      for (let x = -12; x <= 12; x += 3) line3(x, 0.9, -9.5, x, 6.2, -9.5, 'rgba(120,160,220,0.22)', 1.5);
+      line3(-12.5, 6.2, -9.5, 12.5, 6.2, -9.5, 'rgba(120,160,220,0.28)', 1.5);
+      line3(-12.5, 0.9, -9.5, 12.5, 0.9, -9.5, 'rgba(120,160,220,0.28)', 1.5);
+      // stars (twinkle only when motion is allowed)
+      for (const st of stars) {
+        const p = project(st.x, st.y, -9.4);
+        if (!p || p.s < 4) continue;
+        const a = reduced ? 0.5 : 0.25 + 0.35 * (0.5 + 0.5 * Math.sin(t * 1.3 + st.tw));
+        g.fillStyle = 'rgba(190,215,255,' + a.toFixed(3) + ')';
+        const sz = Math.max(1, p.s / 55);
+        g.fillRect(p.x, p.y, sz, sz);
+      }
+    }
+
+    // per-station colored light pools (ARGON blue left, ULTRON red right, AU gold, TITAN green)
+    function drawStationLight(t) {
+      for (const key of KEYS) {
+        const A = AGENTS[key];
+        const act = activity(key);
+        const a = act.mode === 'offline' ? 0.05 : 0.13 + Math.sin(t * 0.6 + A.station.x) * 0.04;
+        glowPool(A.station.x, 0.02, A.station.z, 3.1, A.color, a);
+      }
+      glowPool(OPERATOR.pos.x, 0.02, OPERATOR.pos.z, 2.6, OPERATOR.color, 0.10 + Math.sin(t * 0.5) * 0.03);
     }
 
     function drawAvatar(key, t) {
@@ -626,8 +794,11 @@
       const walking = av.walking;
       const sw = walking ? Math.sin(av.phase) : 0;
       const bob = walking ? Math.abs(Math.cos(av.phase)) * 0.05 : Math.sin(av.phase * 0.5) * 0.015;
-      const work = av.mode === 'working' || av.mode === 'just-ran';
-      const idle = av.mode === 'awaiting';
+      const ph = av.task ? av.task.phase : null;
+      const work = ph === 'investigating' || ph === 'task-assigned' || (!ph && (av.mode === 'working' || av.mode === 'just-ran'));
+      const presenting = ph === 'reporting' || ph === 'evidence-found' || ph === 'presenting-briefing';
+      const failed = ph === 'task-failed';
+      const idle = !ph && av.mode === 'awaiting';
       const dark = act.mode === 'offline';
       const accent = dark ? '#4a5262' : A.color;
 
@@ -643,16 +814,19 @@
       // shoulders
       part(-0.52, 1.72, 0, 0.2, 0.16, 0.34, accent, { glow: accent });
       part(0.52, 1.72, 0, 0.2, 0.16, 0.34, accent, { glow: accent });
-      // arms: typing/working when at console, swinging when walking, low when idle
+      // arms: typing while investigating, one arm presenting at the table, low when idle/failed
       const armY = work ? 1.45 : 1.34, armZ = work ? 0.42 : (walking ? -sw * 0.3 : idle ? 0.05 : 0.02);
-      const armLen = work ? 0.55 : 0.8;
-      part(-0.56, armY, armZ, 0.16, armLen, 0.2, '#222c40');
-      part(0.56, armY, armZ, 0.16, armLen, 0.2, '#222c40');
-      // head + visor
-      part(0, 2.02, 0.03, 0.46, 0.42, 0.42, '#313d5c');
+      const armLen = (work || presenting) ? 0.55 : 0.8;
+      const presZ = presenting ? 0.62 : armZ;
+      const presY = presenting ? 1.62 : armY;
+      const jitter = ph === 'investigating' ? Math.sin(t * 14) * 0.03 : 0;
+      part(-0.56, armY, armZ + jitter, 0.16, armLen, 0.2, '#222c40');
+      part(0.56, presenting ? presY : armY, presenting ? presZ : armZ - jitter, 0.16, armLen, 0.2, '#222c40');
+      // head + visor (lowered when a real task failed)
+      part(0, failed ? 1.92 : 2.02, 0.03, 0.46, 0.42, 0.42, '#313d5c');
       part(0, 2.06, 0.245, 0.34, 0.12, 0.03, dark ? '#39415a' : accent, { glow: dark ? null : accent, stroke: shade(accent, 1, 0.5) });
-      // just-ran flourish: expanding ring at feet
-      if (av.mode === 'just-ran' && av.flashUntil > performance.now()) {
+      // task-completed / just-ran flourish: expanding ring at feet
+      if (av.flashUntil > performance.now()) {
         const p = 1 - (av.flashUntil - performance.now()) / 1500;
         const r = 0.5 + p * 1.6;
         for (let i = 0; i < 28; i++) {
@@ -730,6 +904,7 @@
         const card = el('div', { class: 'room-card incident sev-' + sev },
           el('div', { class: 'room-card-head' }, el('span', { class: 'room-sev', text: sev.toUpperCase() }), el('strong', { text: short(inc.agent || '?', 6) })),
           el('p', { text: short(inc.title || inc.fingerprint || 'incident', 54) }));
+        makeInteractive(card, 'Open the incidents view', VIEW_ROUTES.incident);
         overlays.append(card);
         tableCards.push({ el: card, idx: i });
       }
@@ -742,10 +917,10 @@
         const s = clamp((1.7 * p.s) / 200, 0.4, 1.05);
         tc.el.style.transform = `translate(${p.x}px,${p.y}px) translate(-50%,-50%) scale(${s})`;
       }
-      // transient event cards
+      // transient lifecycle/event cards (table anchor, or the owner station for AU briefings)
       for (const c of cardEls) {
         if (!c.el.isConnected) continue;
-        const p = project(0, 4.3, 0);
+        const p = c.anchor === 'owner' ? project(OPERATOR.pos.x, 4.5, OPERATOR.pos.z) : project(0, 4.3, 0);
         if (!p) { c.el.style.display = 'none'; continue; }
         c.el.style.display = '';
         const s = clamp((2 * p.s) / 220, 0.45, 1.1);
@@ -765,6 +940,8 @@
         faces = [];
         g.clearRect(0, 0, W, H);
         drawFloor();
+        drawWindows(now / 1000);
+        drawStationLight(now / 1000);
         for (const key of KEYS) drawStation(key);
         drawOperator(now / 1000);
         drawTable(now / 1000);
@@ -792,23 +969,93 @@
       raf = requestAnimationFrame(frame);
     }
 
-    // ================= real actions =================
+    // ================= real actions (typed lifecycle over real runs) =================
+    // Each button triggers a REAL server-side run. The investigating phase spans the actual
+    // in-flight request (plus a minimum visual hold — pacing only); the reporting phase shows
+    // the real result card at the central table, or at the owner station for AU briefings.
+    const ACTIONS = {
+      verify: {
+        path: '/api/intelligence/verify', agents: ['ultron'], label: 'ULTRON verification', button: btnVerify,
+        card: res => ({ title: 'ULTRON verification — ' + (((res.data && res.data.results) || []).length) + ' target(s) checked', sub: 'real run · ' + (((res.data && res.data.results) || []).map(r => r.target + ' ' + r.status).join(', ') || 'no targets').slice(0, 58) })
+      },
+      analyze: {
+        path: '/api/intelligence/analyze', agents: ['argon', 'au'], label: 'ARGON + AU analysis', button: btnAnalyze,
+        card: res => ({ title: 'ARGON — ' + short((res.data && res.data.argon) || 'analysis complete', 42), sub: 'AU — ' + short((res.data && res.data.au) || 'correlation complete', 42) + ' · real run' })
+      },
+      improve: {
+        path: '/api/intelligence/improve', agents: ['titan'], label: 'TITAN audit', button: btnImprove,
+        card: res => ({ title: 'TITAN audit — ' + short((res.data && res.data.summary) || 'complete', 46), sub: 'real run · findings upserted by evidence key' })
+      },
+      briefing: {
+        path: '/api/intelligence/briefing', body: { kind: 'daily' }, agents: ['au'], label: 'AU daily briefing', button: btnBriefing, reportPhase: 'presenting-briefing',
+        card: res => ({ title: 'AU briefing ' + ((res.data && res.data.id) || '') + ' generated', sub: 'presented to Vitaflex (Sony) · real record' })
+      }
+    };
     let busy = false;
-    async function runAction(path, button, label) {
-      if (busy || !data.ok) return;
+    async function runAction(kind) {
+      const A = ACTIONS[kind];
+      if (busy || !data.ok || !A) return;
       busy = true;
-      button.disabled = true; const old = button.textContent; button.textContent = label + '…';
+      A.button.disabled = true; const old = A.button.textContent; A.button.textContent = A.label + '…';
       try {
-        const res = await ctx.api(path, { method: 'POST', body: {} });
-        if (res.ok) showToast(label + ' completed — ' + short(res.data && res.data.results ? res.data.results.length + ' target(s) checked' : (res.data && res.data.summary) || 'ok', 70), true);
-        else showToast(label + ' failed: ' + (res.code || res.status) + (res.status === 429 ? ' (real rate limit — try again later)' : ''), false);
-        await poll();
+        for (const k of A.agents) startTask(k, [['task-assigned', 900], ['investigating', 3600000]], { title: A.label });
+        await sleep(850);
+        const t0 = performance.now();
+        const res = await ctx.api(A.path, { method: 'POST', body: A.body || {} });
+        await sleep(Math.max(250, 1300 - (performance.now() - t0)));
+        if (res.ok) {
+          const card = A.card(res);
+          for (const k of A.agents) {
+            const task = avatars[k].task;
+            if (task) { task.meta.card = card; task.script = [[A.reportPhase || 'reporting', 6000], ['task-completed', 1800]]; enterStep(k, 0); }
+          }
+          showToast(A.label + ' completed — ' + short(card.title, 62), true);
+          await poll();
+        } else {
+          for (const k of A.agents) {
+            const task = avatars[k].task;
+            if (task) { task.script = [['task-failed', 2800]]; enterStep(k, 0); }
+          }
+          showToast(A.label + ' failed: ' + (res.code || res.status) + (res.status === 429 ? ' (real rate limit — try again later)' : ''), false);
+        }
       } finally {
-        button.disabled = false; button.textContent = old; busy = false;
+        A.button.disabled = false; A.button.textContent = old; busy = false;
       }
     }
-    btnVerify.addEventListener('click', () => runAction('/api/intelligence/verify', btnVerify, 'ULTRON verification'));
-    btnTitan.addEventListener('click', () => runAction('/api/intelligence/improve', btnTitan, 'TITAN audit'));
+    for (const kind of Object.keys(ACTIONS)) ACTIONS[kind].button.addEventListener('click', () => runAction(kind));
+
+    // ================= simulation / demo mode =================
+    // Synthetic, labeled, isolated: demo tasks exist only in this client's memory while the
+    // mode is on. They never call the API (zero mutations), never write D1, never appear in
+    // the 2D views, and never trigger automations. Real data keeps rendering on the screens;
+    // every demo artifact is visibly watermarked.
+    let demo = false, demoTimer = 0, demoIdx = 0;
+    const DEMO_SCRIPTS = [
+      { agent: 'ultron', title: 'DEMO · sample latency spike on api-status', sub: 'synthetic event — simulation only, not production data' },
+      { agent: 'argon', title: 'DEMO · sample crash cluster (3 sessions)', sub: 'synthetic event — simulation only, not production data' },
+      { agent: 'au', title: 'DEMO · sample cross-agent correlation', sub: 'synthetic event — simulation only, not production data' },
+      { agent: 'titan', title: 'DEMO · sample unused dependency finding', sub: 'synthetic event — simulation only, not production data' }
+    ];
+    function demoTick() {
+      if (destroyed || !demo) return;
+      const script = DEMO_SCRIPTS[demoIdx++ % DEMO_SCRIPTS.length];
+      if (avatars[script.agent].task) return; // never interrupt a real task
+      startTask(script.agent, [['task-assigned', 900], ['investigating', 2600], ['evidence-found', 5200], ['task-completed', 1400]],
+        { isDemo: true, card: { title: script.title, sub: script.sub } });
+    }
+    function toggleDemo() {
+      demo = !demo;
+      btnDemo.textContent = demo ? 'DEMO MODE: ON' : 'DEMO MODE: OFF';
+      btnDemo.classList.toggle('on', demo);
+      btnDemo.setAttribute('aria-pressed', demo ? 'true' : 'false');
+      watermark.classList.toggle('show', demo);
+      demoBadge.hidden = !demo;
+      clearInterval(demoTimer);
+      if (demo) { demoTick(); demoTimer = setInterval(demoTick, 9000); }
+      else for (const k of KEYS) if (avatars[k].task && avatars[k].task.isDemo) endTask(k);
+      rebuildScreens();
+    }
+    btnDemo.addEventListener('click', toggleDemo);
 
     let toastTimer = 0;
     function showToast(text, ok) {
@@ -872,21 +1119,36 @@
 
     raf = requestAnimationFrame(frame);
 
+    // Read-only test/inspection hook: current lifecycle phase + reality mode per agent.
+    function state() {
+      const agents = {};
+      for (const k of KEYS) {
+        const av = avatars[k];
+        agents[k] = {
+          phase: av.task ? (av.task.isDemo ? 'demo:' : '') + av.task.phase : 'idle',
+          mode: modeLabel(activity(k)),
+          x: Math.round(av.x * 10) / 10, z: Math.round(av.z * 10) / 10
+        };
+      }
+      return { demo, agents, ok: data.ok, at: data.at };
+    }
+
     return {
-      container, poll,
+      container, poll, state,
       destroy() {
         destroyed = true;
         cancelAnimationFrame(raf);
         clearInterval(pollTimer);
+        clearInterval(demoTimer);
         clearTimeout(toastTimer);
         ro.disconnect();
         window.removeEventListener('resize', resize);
-        canvas.removeEventListener('pointerdown', onPointerDown);
-        canvas.removeEventListener('pointermove', onPointerMove);
-        canvas.removeEventListener('pointerup', onPointerUp);
-        canvas.removeEventListener('pointercancel', onPointerUp);
-        canvas.removeEventListener('wheel', onWheel);
-        canvas.removeEventListener('dblclick', onDblClick);
+        stage.removeEventListener('pointerdown', onPointerDown);
+        stage.removeEventListener('pointermove', onPointerMove);
+        stage.removeEventListener('pointerup', onPointerUp);
+        stage.removeEventListener('pointercancel', onPointerUp);
+        stage.removeEventListener('wheel', onWheel);
+        stage.removeEventListener('dblclick', onDblClick);
         wrap.remove();
       }
     };

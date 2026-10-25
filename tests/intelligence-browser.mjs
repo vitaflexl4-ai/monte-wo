@@ -85,6 +85,7 @@ await page.setViewportSize({ width: 1500, height: 1000 });
 await page.goto('http://localhost:8080/intelligence/#/room');
 await page.waitForSelector('.room-canvas', { timeout: 15000 });
 await page.waitForSelector('.room-tag', { timeout: 15000 });
+await page.waitForSelector('.room-real-row', { timeout: 15000 }); // the "what's real" panel renders after the first real poll
 assert.equal(await page.locator('.room-tag').count(), 5, 'one name tag per agent + the human operator');
 assert.equal(await page.locator('.room-holo').count(), 5, 'one holographic screen per agent + the owner console');
 assert.equal(await page.locator('.room-real-row').count(), 5, 'one "what\'s real" row per agent + operator');
@@ -121,6 +122,69 @@ const before = await page.locator('.room-tag').first().evaluate(n => n.style.tra
 await page.mouse.move(700, 450); await page.mouse.down(); await page.mouse.move(950, 380, { steps: 8 }); await page.mouse.up();
 await page.waitForTimeout(200);
 assert.notEqual(await page.locator('.room-tag').first().evaluate(n => n.style.transform), before, 'drag orbits the camera');
+// LIVING PORTAL — typed lifecycle over a REAL run: event -> movement -> result -> persisted evidence.
+// The investigating phase must span the actual in-flight POST; the result card and timeline
+// evidence come from the real API. If the real API answers 429 the room must show the honest
+// task-failed path instead (never a fabricated success).
+const posts = [];
+page.on('request', r => { if (r.method() === 'POST') posts.push(r.url()); });
+const verifyStatuses = [];
+page.on('response', r => { if (r.url().includes('/api/intelligence/verify')) verifyStatuses.push(r.status()); });
+// A real 429 from the rate-limited endpoints is an EXPECTED, honestly-handled condition
+// (the room shows the task-failed path); the browser's own console line for it is not a defect.
+let sawRateLimit = false;
+await page.locator('.room-act', { hasText: 'ULTRON verification' }).click();
+await page.waitForFunction(() => window.MWRoom.state().agents.ultron.phase === 'investigating', null, { timeout: 8000 });
+assert.equal((await page.evaluate(() => window.MWRoom.state().agents.ultron.phase)), 'investigating', 'avatar is in investigating phase while the real request is in flight');
+await page.waitForFunction(() => ['reporting', 'task-completed', 'task-failed'].includes(window.MWRoom.state().agents.ultron.phase), null, { timeout: 25000 });
+const afterPhase = await page.evaluate(() => window.MWRoom.state().agents.ultron.phase);
+if (afterPhase === 'task-failed') {
+  assert.ok(verifyStatuses.includes(429), 'task-failed only on a real API rejection (statuses: ' + verifyStatuses.join(',') + ')');
+  sawRateLimit = true;
+} else {
+  assert.ok(await page.locator('.room-card:not(.demo)').filter({ hasText: 'ULTRON verification' }).count() >= 1, 'real result card rendered at the central table');
+  await page.waitForFunction(() => window.MWRoom.state().agents.ultron.phase === 'idle', null, { timeout: 20000 });
+  const evidence = await page.evaluate(async () => {
+    const d = await (await fetch('/api/intelligence/timeline?limit=10')).json();
+    return d.items.some(i => i.agent === 'ULTRON' && i.kind === 'agent-run');
+  });
+  assert.ok(evidence, 'persisted evidence (agent-run) visible in the real timeline');
+}
+// AU coordinates with the owner: the briefing is presented at the owner station
+await page.locator('.room-act', { hasText: 'AU briefing' }).click();
+await page.waitForFunction(() => ['presenting-briefing', 'task-failed'].includes(window.MWRoom.state().agents.au.phase), null, { timeout: 25000 });
+if ((await page.evaluate(() => window.MWRoom.state().agents.au.phase)) === 'task-failed') sawRateLimit = true;
+if ((await page.evaluate(() => window.MWRoom.state().agents.au.phase)) === 'presenting-briefing') {
+  await page.waitForFunction(() => window.MWRoom.state().agents.au.z > 1, null, { timeout: 20000 });
+  assert.ok(await page.locator('.room-card:not(.demo)').filter({ hasText: 'briefing' }).count() >= 1, 'briefing card anchored at the owner console');
+  await page.waitForFunction(() => window.MWRoom.state().agents.au.phase === 'idle', null, { timeout: 20000 });
+}
+// holographic screens open the REAL 2D views (evidence behind the visualization)
+const holo = page.locator('.room-holo.clickable').first();
+const holoBox = await holo.boundingBox();
+const holoHit = await page.evaluate(([x, y]) => { const n = document.elementFromPoint(x, y); return !!n && n.closest('.room-holo') !== null; }, [holoBox.x + holoBox.width / 2, holoBox.y + holoBox.height / 2]);
+assert.ok(holoHit, 'holographic screen clickable at its projected position');
+await holo.evaluate(n => n.click());
+await page.waitForFunction(() => location.hash !== '#/room', null, { timeout: 5000 });
+assert.match(await page.evaluate(() => location.hash), /^#\/(analysis|agents|briefings|titan)$/, 'screen click opens a real application view');
+await page.goBack();
+await page.waitForSelector('.room-tag', { timeout: 15000 });
+// SIMULATION / DEMO mode: watermarked, labeled, and isolated — zero API mutations
+const postsBeforeDemo = posts.length;
+await page.evaluate(() => document.querySelector('.demo-toggle').click());
+await page.waitForSelector('.room-watermark.show', { timeout: 5000 });
+assert.match(await page.locator('.room-pill').textContent(), /SIMULATION \/ DEMO/, 'pill reads SIMULATION / DEMO');
+await page.waitForFunction(() => Object.values(window.MWRoom.state().agents).some(a => a.phase.startsWith('demo:')), null, { timeout: 15000 });
+// the app's 60s auto-refresh must NOT remount the room (that would wipe the simulation
+// state and any in-flight lifecycle task) — the room refreshes itself in place
+await page.waitForTimeout(70000);
+assert.ok(await page.locator('.room-watermark.show').isVisible(), 'demo watermark survives the 60s auto-refresh (no remount)');
+assert.equal(await page.evaluate(() => window.MWRoom.state().demo), true, 'demo mode still on after auto-refresh');
+await page.waitForSelector('.room-card.demo', { timeout: 15000 });
+assert.match(await page.locator('.room-card.demo').first().textContent(), /SIMULATION/, 'demo cards labeled SIMULATION');
+assert.equal(posts.length, postsBeforeDemo, 'demo mode performs ZERO API mutations across ' + (postsBeforeDemo + 0) + ' tracked posts');
+await page.evaluate(() => document.querySelector('.demo-toggle').click());
+await page.waitForFunction(() => !document.querySelector('.room-watermark.show') && window.MWRoom.state().demo === false, null, { timeout: 5000 });
 // leaving the room unmounts cleanly and the rest of the app keeps working
 await page.goto('http://localhost:8080/intelligence/#/overview');
 await page.waitForSelector('.kpi', { timeout: 15000 });
@@ -140,7 +204,8 @@ try {
   if (!/ENOTFOUND|EAI_AGAIN|ECONNREFUSED/.test(String(e && e.message || e))) throw e;
   console.log('NOTE: external-origin 401 check unverifiable in this network (DNS blocked) — covered by unit tests.');
 }
-// No client errors anywhere
-assert.deepEqual(errors, []);
+// No client errors anywhere — except the browser's own console line for a real 429, which the
+// room handles honestly (task-failed phase + toast) and the lifecycle test asserts above.
+assert.deepEqual(errors.filter(e => !(sawRateLimit && e.includes('429'))), []);
 console.log('PASS: intelligence dashboard — overview KPIs, 8 views (incl. TITAN), budget panel, competitor matrix, incident drawer with evidence, briefings, automation governance, 5 responsive layouts, AU ROOM 3D floor with real data, security headers, no JS errors.');
 await browser.close();
