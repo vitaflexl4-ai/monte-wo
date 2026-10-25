@@ -477,7 +477,7 @@ export async function handleIntelligence({ request, env }, deps = {}) {
     if (route === '/audit' && request.method === 'GET') return await listAudit(db, url);
     return json({ error: 'not-found' }, 404);
   } catch (e) {
-    if (e instanceof IntelError) return json({ error: e.code }, e.status);
+    if (e instanceof IntelError) return json(e.hint ? { error: e.code, hint: e.hint } : { error: e.code }, e.status);
     return json({ error: 'intelligence-unavailable' }, 503);
   }
 }

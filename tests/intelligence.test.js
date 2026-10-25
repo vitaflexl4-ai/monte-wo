@@ -642,6 +642,37 @@ test('budget reports measured usage against documented free limits', async () =>
   assert.ok(ovBody.budget.costTriggers.length >= 1, 'cost triggers documented');
 });
 
+// ---------- production deployment tooling ----------
+test('deploy script is fail-closed, credential-free, and idempotent; runbook documents the owner steps', () => {
+  const deploy = readFileSync('scripts/deploy-intelligence.mjs', 'utf8');
+  // never handles credentials — the owner authenticates via wrangler login (browser OAuth)
+  assert.ok(!/CLOUDFLARE_API_TOKEN|cf_api|api[_-]?key\s*=/i.test(deploy), 'no credentials are read, stored, or prompted');
+  assert.match(deploy, /never sees or stores credentials/, 'credentials policy stated in the header');
+  // worker activation is an explicit, fail-closed decision
+  assert.match(deploy, /--enable-worker/, 'worker activation requires an explicit flag');
+  assert.match(deploy, /INTELLIGENCE_ENABLED = "\$\{enable \? 'true' : 'false'\}"/, 'master switch written explicitly per run');
+  // migrations are gated on table presence (never blind re-application, never the waitlist DB)
+  assert.match(deploy, /table: 'intel_operators'/, 'migrations gated on schema presence');
+  assert.match(deploy, /never the waitlist\/app databases/, 'dedicated intelligence DB only');
+  // post-deploy verification must abort on an open API
+  assert.match(deploy, /SECURITY: the intelligence API answered/, 'a 200 without authentication is a hard failure');
+  // unauthorized Access users get an actionable 403 with only their own subject
+  const auth = readFileSync('server/intelligence/auth.js', 'utf8');
+  assert.match(auth, /--grant-operator/, 'refusal tells the caller the exact grant command');
+  assert.match(auth, /reveal only the caller's own authenticated subject/, 'hint documented as own-subject only');
+  const api = readFileSync('server/intelligence/api.js', 'utf8');
+  assert.match(api, /e\.hint/, 'hint serialized in error bodies when present');
+  // runbook: owner steps, rollback, $0 budget, no secrets through chat
+  const runbook = readFileSync('docs/DEPLOYMENT-RUNBOOK.md', 'utf8');
+  assert.match(runbook, /wrangler login/, 'login step documented');
+  assert.match(runbook, /Cloudflare Access/, 'Access setup documented');
+  assert.match(runbook, /--grant-operator/, 'operator grant documented');
+  assert.match(runbook, /through chat/, 'secrets policy documented');
+  assert.match(runbook, /## 6\. Rollback/, 'rollback documented');
+  const pkg = JSON.parse(readFileSync('package.json', 'utf8'));
+  assert.match(pkg.scripts['deploy:intelligence'], /deploy-intelligence\.mjs/, 'npm script wired');
+});
+
 // ---------- AU ROOM (3D operations floor) ----------
 test('AU ROOM module exists, is CSP-safe, wired into the app, and visualizes only real data', () => {
   const room = readFileSync('public/intelligence/room.js', 'utf8');

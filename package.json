@@ -27,7 +27,9 @@
     "export:lab": "python3 scripts/export_preview.py --lab",
     "build:website": "npm run build",
     "test:website": "node tests/website-browser.mjs",
-    "export:website": "python3 scripts/export_preview.py --website"
+    "export:website": "python3 scripts/export_preview.py --website",
+    "deploy:intelligence": "node scripts/deploy-intelligence.mjs",
+    "deploy:intelligence:check": "node scripts/deploy-intelligence.mjs --check"
   },
   "devDependencies": {
     "@playwright/test": "^1.50.0",

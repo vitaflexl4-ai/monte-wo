@@ -82,7 +82,13 @@ export async function authenticateOperator(request, env, url, deps = {}) {
   }
   const claim = await verifyAccessJwt(request, env, deps.fetcher || fetch);
   const row = await env.INTEL_DB.prepare('SELECT subject, role FROM intel_operators WHERE subject=? AND active=1').bind(claim.sub).first();
-  requireThat(row, 'operator-not-provisioned', 403);
+  if (!row) {
+    // Actionable refusal: reveal only the caller's own authenticated subject (never anyone
+    // else's) with the exact command that grants it. Granting stays a deliberate owner action.
+    const err = new IntelError('operator-not-provisioned', 403);
+    err.hint = 'Authenticated as ' + claim.sub + '. Ask the deployment owner to run: node scripts/deploy-intelligence.mjs --grant-operator "' + claim.sub + '"';
+    throw err;
+  }
   return { id: row.subject, subject: row.subject, role: row.role, via: 'cloudflare-access' };
 }
 
