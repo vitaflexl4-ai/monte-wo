@@ -26,6 +26,10 @@ until Cloudflare Access is configured (`intelligence-not-configured` / `authenti
 
 ## 1. Deploy (OWNER — one login, one command)
 
+> **The deploy tooling lives on the PR branch, not `main`.** If `npm run deploy:intelligence`
+> says *"Missing script"* you are on `main` — check out the branch first:
+> `gh pr checkout 16` (or `git fetch && git checkout arena/42a98d64-monte-wo`).
+
 ```bash
 npx wrangler login          # opens your browser; the script never sees credentials
 npm run deploy:intelligence -- \
@@ -39,6 +43,11 @@ The script: ensures + migrates the D1 (0003→0004→0005, gated on table presen
 real bindings into `wrangler.toml` (marked, idempotent), grants your operator row, runs
 `npm run build`, deploys Pages by direct upload, deploys the worker, and verifies the live API
 **fails closed** (a 200 from `/api/intelligence/overview` without login aborts with an error).
+
+The full flow — including every failure path (no auth, missing flags, git-connected project,
+missing project, unauthenticated-200 abort, partial migrations, alternate project name) — is
+covered by a hermetic simulation of wrangler: `npm run test:deploy` (no Cloudflare account
+needed, ~2s).
 
 Useful modes:
 

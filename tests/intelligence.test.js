@@ -1,6 +1,6 @@
 import { test, before, after } from 'node:test';
 import assert from 'node:assert/strict';
-import { readFileSync, mkdtempSync, rmSync } from 'node:fs';
+import { readFileSync, mkdtempSync, rmSync, existsSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { execFileSync } from 'node:child_process';
@@ -671,6 +671,14 @@ test('deploy script is fail-closed, credential-free, and idempotent; runbook doc
   assert.match(runbook, /## 6\. Rollback/, 'rollback documented');
   const pkg = JSON.parse(readFileSync('package.json', 'utf8'));
   assert.match(pkg.scripts['deploy:intelligence'], /deploy-intelligence\.mjs/, 'npm script wired');
+  // the deploy flow is hermetically testable against a simulated wrangler
+  assert.match(deploy, /MW_WRANGLER/, 'wrangler override exists for hermetic tests');
+  const harness = readFileSync('tests/deploy-script.harness.mjs', 'utf8');
+  assert.match(harness, /SECURITY: an unauthenticated 200/, 'the security-abort scenario is covered');
+  assert.match(harness, /connected to git/, 'the git-rejection scenario is covered');
+  assert.match(harness, /NOT spawnSync/, 'harness documents why it must not block its origin server');
+  assert.ok(existsSync('tests/deploy-fake-wrangler.mjs'), 'simulated wrangler exists');
+  assert.match(pkg.scripts['test:deploy'], /deploy-script\.harness\.mjs/, 'deploy test script wired');
 });
 
 // ---------- AU ROOM (3D operations floor) ----------

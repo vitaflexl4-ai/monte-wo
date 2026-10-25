@@ -70,7 +70,12 @@ function run(cmd, args, opts = {}) {
   const r = spawnSync(cmd, args, { cwd: opts.cwd || ROOT, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'], env: process.env });
   return { code: r.status, out: (r.stdout || '') + (r.stderr || '') };
 }
-const wrangler = (args, opts) => run('npx', ['wrangler', ...args], opts);
+// MW_WRANGLER lets tests run the full flow against a simulated wrangler. Unset in real use.
+const wrangler = (args, opts) => {
+  const override = process.env.MW_WRANGLER;
+  if (override) { const parts = override.split(' '); return run(parts[0], [...parts.slice(1), ...args], opts); }
+  return run('npx', ['wrangler', ...args], opts);
+};
 
 // ---------- toml editing (idempotent, marker-based) ----------
 function intelBlockToml(dbId, accessIssuer, accessAud, waitlistId) {
@@ -147,7 +152,7 @@ function preflight() {
   if (!/pages_build_output_dir = "public"/.test(t)) die('wrangler.toml lost pages_build_output_dir');
   const w = readFileSync(resolve(ROOT, 'intelligence-worker/wrangler.toml'), 'utf8');
   if (!/INTELLIGENCE_ENABLED = "false"/.test(w) && w.indexOf(MARK_BEGIN) === -1) die('worker toml master switch not in fail-closed state');
-  if (!has('skip-build')) {
+  if (!has('skip-build') && !process.env.MW_DEPLOY_SKIP_BUILD) {
     log('[0/8]', 'Running npm run build (regenerates public/ pages)…');
     const b = run('npm', ['run', 'build']);
     if (b.code !== 0) die('npm run build failed:\n' + b.out.slice(-2000));
@@ -217,29 +222,38 @@ function grantOperator(subject) {
   console.log('    granted (admin, active). Revoke with: UPDATE intel_operators SET active=0 WHERE subject=\'' + subject + '\'');
 }
 
+function syncPagesProjectName(projectName) {
+  // Pages projects read their name from wrangler.toml — keep it in sync when --project-name differs.
+  const p = resolve(ROOT, 'wrangler.toml');
+  let s = readFileSync(p, 'utf8');
+  if (!new RegExp('^name = "' + projectName + '"$', 'm').test(s)) s = s.replace(/^name = ".*"$/m, 'name = "' + projectName + '"');
+  writeFileSync(p, s);
+}
+
 function deployPages(projectName, dbId, accessIssuer, accessAud, waitlistId) {
   log('[6/8]', 'Deploying Cloudflare Pages project ' + projectName + ' (direct upload)…');
-  let r = wrangler(['pages', 'deploy', 'public', '--project-name', projectName, '--branch', 'main', '--commit-dirty=true']);
-  if (r.code !== 0) {
-    if (/not found|doesn't exist|could not find/i.test(r.out)) {
-      console.log('    project does not exist — creating it (production branch: main)…');
-      const c = wrangler(['pages', 'project', 'create', projectName, '--production-branch', 'main']);
-      if (c.code !== 0) die('project creation failed:\n' + c.out.slice(-1500));
-      r = wrangler(['pages', 'deploy', 'public', '--project-name', projectName, '--branch', 'main', '--commit-dirty=true']);
-    }
-    if (r.code !== 0) {
-      if (/git|direct upload/i.test(r.out)) {
-        die('Cloudflare rejects direct upload because "' + projectName + '" is connected to git (its builds are the ones failing).\n' +
-          'Pick one:\n' +
-          '  A) Deploy to a NEW direct-upload project (old site keeps serving): re-run with  --project-name ' + projectName + '-live\n' +
-          '  B) Fix the git build instead: Cloudflare dashboard → Pages → ' + projectName + ' → Settings → Builds. The build log shows the cause.\n' +
-          '     (The repo builds cleanly: npm ci + npm run build both pass.)', 4);
-      }
-      die('pages deploy failed:\n' + r.out.slice(-2000));
-    }
+  syncPagesProjectName(projectName);
+  // Config (output dir, bindings, name) comes from wrangler.toml — pass only the branch.
+  const deployCmd = () => wrangler(['pages', 'deploy', '--branch', 'main', '--commit-dirty=true']);
+  let r = deployCmd();
+  if (r.code !== 0 && /not found|doesn't exist|could not find|run `wrangler pages project create`/i.test(r.out)) {
+    console.log('    project does not exist — creating it (production branch: main)…');
+    const c = wrangler(['pages', 'project', 'create', projectName, '--production-branch', 'main']);
+    if (c.code !== 0) die('project creation failed:\n' + c.out.slice(-1500));
+    r = deployCmd();
   }
-  const urlm = r.out.match(/https:\/\/[a-z0-9-]+\.pages\.dev/i);
-  return urlm ? urlm[0] : 'https://' + projectName + '.pages.dev';
+  if (r.code !== 0) {
+    if (/git|direct upload/i.test(r.out)) {
+      die('Cloudflare rejects direct upload because "' + projectName + '" is connected to git (its builds are the ones failing).\n' +
+        'Pick one:\n' +
+        '  A) Deploy to a NEW direct-upload project (old site keeps serving): re-run with  --project-name ' + projectName + '-live\n' +
+        '  B) Fix the git build instead: Cloudflare dashboard → Pages → ' + projectName + ' → Settings → Builds. The build log shows the cause.\n' +
+        '     (The repo builds cleanly: npm ci + npm run build both pass.)', 4);
+    }
+    die('pages deploy failed:\n' + r.out.slice(-2000));
+  }
+  const urlm = r.out.match(/peek over at (https?:\/\/\S+)/i) || r.out.match(/(https?:\/\/[a-z0-9.-]+\.pages\.dev\S*)/i);
+  return urlm ? urlm[1].replace(/[.,)]+$/, '') : 'https://' + projectName + '.pages.dev';
 }
 
 function deployWorker(dbId, siteUrl, enable) {
@@ -256,7 +270,7 @@ async function verifyDeployed(url) {
   const results = [];
   for (const path of ['/api/intelligence/overview', '/']) {
     try {
-      const res = await fetch(url + path, { redirect: 'manual' });
+      const res = await fetch(url + path, { redirect: 'manual', signal: AbortSignal.timeout(15000) });
       results.push(path + ' -> ' + res.status);
       if (path === '/api/intelligence/overview' && res.status < 400) die('SECURITY: the intelligence API answered ' + res.status + ' WITHOUT authentication. Investigate immediately.');
     } catch (e) { results.push(path + ' -> unreachable (' + e.message + ')'); }
@@ -276,7 +290,8 @@ const grantOnly = typeof flag('grant-operator') === 'string' ? flag('grant-opera
 if (has('check')) { preflight(); process.exit(0); }
 
 console.log('MONTE WO Intelligence — production deployment (free tier, fail-closed)');
-console.log('Repo: ' + ROOT + ' · commit ' + run('git', ['rev-parse', '--short', 'HEAD']).out.trim() + ' · branch ' + run('git', ['rev-parse', '--abbrev-ref', 'HEAD']).out.trim());
+const gitInfo = (() => { const c = run('git', ['rev-parse', '--short', 'HEAD']); if (c.code !== 0) return 'no-git'; return c.out.trim() + ' · ' + run('git', ['rev-parse', '--abbrev-ref', 'HEAD']).out.trim(); })();
+console.log('Repo: ' + ROOT + ' · ' + gitInfo);
 
 if (grantOnly) {
   requireAuth();
