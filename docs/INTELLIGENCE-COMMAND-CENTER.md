@@ -188,6 +188,29 @@ cheaper to operate — preferring removal of complexity over addition of feature
    own security test expects (internal-APK risk acceptance gate) — the test had failed since the
    profile's introduction; restored, suite now green.
 
+## AU ROOM — 3D operations floor (Phase 5)
+
+`#/room` renders the four agents as avatars on a 3D operations floor (custom dependency-free
+canvas renderer — no external libraries, CSP-clean). **It is a live visualization of real
+activity, not a simulation of fictitious work:**
+
+- **Every screen value comes from the authenticated API** (overview, timeline, incidents,
+  improvements — polled every 12 s): ULTRON's targets/uptime/latency, ARGON's telemetry state,
+  AU's correlations and open incidents, TITAN's finding backlog.
+- **Avatar states are computed from real run data:** an agent whose last run just finished
+  works at its console with a flourish; an agent with no telemetry (ARGON before the app
+  integrates the consent-gated client) stands idle with an explicit "awaiting data" screen;
+  a failed agent goes dark. Idle agents look idle — nothing is scripted busy-work.
+- **Motions are representational and labelled as such** (fixed caption in the HUD): AU patrols
+  because its real job is cross-agent correlation; when a **new real timeline event** arrives,
+  the agent that produced it walks to the central table and the event card (real title, real
+  timestamp) appears above it.
+- **"What's real right now"** lists, per agent, the exact real fact behind the current
+  animation; clicking a name tag opens the full run history. The action buttons trigger real
+  runs (`POST /verify`, `POST /improve`) and report their real results.
+- Camera: drag to orbit, scroll/pinch to zoom, double-click to reset; `prefers-reduced-motion`
+  disables auto-orbit, walking and flicker.
+
 ## Zero-budget framework (Phase 4)
 
 - `GET /api/intelligence/budget` + the overview **Free-allowance budget** panel measure usage
@@ -258,6 +281,13 @@ Until steps 1–8 are done and verified, the command center is not operational �
   headers, and **zero console/page errors**. Fixing this surfaced and removed CSP `style-src`
   violations (inline styles now applied via CSP-safe CSSOM in the SPA's `el()` helper — the
   strict CSP itself was not weakened).
+- **AU ROOM verified in a real browser (2026-10-25):** all 4 avatars/tags/holo screens render
+  with live API values; name tags are clickable at their projected positions (HUD boxes verified
+  not to intercept scene clicks); drag-orbit and zoom work; the in-room action button performed a
+  real `POST /verify` through the preview and reported its real result; leaving/remounting the
+  view leaks nothing (zero console/page errors). A static unit test additionally pins the
+  module's CSP-safety (no raw HTML injection), its data sources (the four real endpoints) and
+  its honesty markers (awaiting-data rendering, "nothing is simulated" labels).
 - **TITAN improvement loop verified end-to-end** (audit → approve → implement → test → record →
   recheck-pass) against the real app source; see "First real improvement loop" above.
 - **Mobile app:** `tsc --noEmit` clean and the build-security/catalog suite **37/37** after this

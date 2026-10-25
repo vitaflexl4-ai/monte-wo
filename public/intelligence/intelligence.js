@@ -767,12 +767,29 @@
       actions, note);
   }
 
+  // ---------- AU ROOM (3D operations floor) ----------
+  // The room is a live visualization of the real agents: room.js derives every avatar state
+  // and screen value from these same authenticated endpoints. If the module fails to load,
+  // the tab degrades to an honest error instead of pretending.
+  function renderRoom() {
+    if (!window.MWRoom) {
+      view.replaceChildren(panel(el('div', { class: 'empty' },
+        el('span', { class: 'empty-ico' }, '◉'),
+        el('strong', {}, 'AU ROOM unavailable'),
+        el('p', {}, 'The 3D room module (/intelligence/room.js) failed to load. The rest of the Command Center is unaffected; nothing is simulated in its place.'))));
+      return;
+    }
+    MWRoom.mount(view, { api, el, relTime, dateTime });
+  }
+
   // ---------- router ----------
-  const routes = { overview: renderOverview, incidents: renderIncidents, agents: renderAgents, analysis: renderAnalysis, titan: renderTitan, briefings: renderBriefings, automation: renderAutomation, audit: renderAudit };
+  const routes = { overview: renderOverview, room: renderRoom, incidents: renderIncidents, agents: renderAgents, analysis: renderAnalysis, titan: renderTitan, briefings: renderBriefings, automation: renderAutomation, audit: renderAudit };
   function navigate() {
     const name = (location.hash.replace(/^#\/?/, '') || 'overview').split('?')[0];
     const route = routes[name] || renderOverview;
-    document.querySelectorAll('.nav').forEach(n => n.classList.toggle('active', n.dataset.nav === (routes[name] ? name : 'overview')));
+    const target = routes[name] ? name : 'overview';
+    document.querySelectorAll('.nav').forEach(n => n.classList.toggle('active', n.dataset.nav === target));
+    if (window.MWRoom && target !== 'room') MWRoom.unmount(); // stop the room's loop/timers when leaving; the room route remounts/refreshes in place
     closeDrawer();
     route();
   }

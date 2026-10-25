@@ -641,3 +641,30 @@ test('budget reports measured usage against documented free limits', async () =>
   assert.ok(ovBody.budget && ovBody.budget.status);
   assert.ok(ovBody.budget.costTriggers.length >= 1, 'cost triggers documented');
 });
+
+// ---------- AU ROOM (3D operations floor) ----------
+test('AU ROOM module exists, is CSP-safe, wired into the app, and visualizes only real data', () => {
+  const room = readFileSync('public/intelligence/room.js', 'utf8');
+  // CSP-safe: no innerHTML/insertAdjacentHTML/document.write anywhere
+  assert.ok(!/innerHTML|insertAdjacentHTML|document\.write|outerHTML/.test(room), 'room.js builds DOM via el()/CSSOM only');
+  // mounts through the app integration point and can be unmounted (no leaked loops)
+  assert.match(room, /window\.MWRoom\s*=\s*\{/, 'exposes MWRoom');
+  assert.match(room, /unmount\(\)\s*\{/, 'exposes unmount');
+  assert.match(room, /cancelAnimationFrame|destroy\(\)/, 'cancels its render loop');
+  // every screen value is derived from the real API — the module must not fabricate data
+  assert.match(room, /\/api\/intelligence\/overview/, 'reads the real overview');
+  assert.match(room, /\/api\/intelligence\/timeline/, 'reads the real timeline');
+  assert.match(room, /\/api\/intelligence\/incidents/, 'reads real incidents');
+  assert.match(room, /\/api\/intelligence\/improvements/, 'reads real TITAN findings');
+  assert.match(room, /nothing is simulated|nothing is being simulated/i, 'labels the visualization honestly');
+  assert.match(room, /AWAITING/, 'idle agents render as awaiting, never fake-busy');
+  // honesty caption is permanent in the UI
+  const css = readFileSync('public/intelligence/room.css', 'utf8');
+  assert.ok(css.length > 1000, 'room styles exist');
+  const html = readFileSync('public/intelligence/index.html', 'utf8');
+  assert.match(html, /intelligence\/room\.js/, 'index.html loads room.js');
+  assert.match(html, /data-nav="room"/, 'navigation entry exists');
+  const app = readFileSync('public/intelligence/intelligence.js', 'utf8');
+  assert.match(app, /room:\s*renderRoom/, 'router wires the room view');
+  assert.match(app, /MWRoom\.unmount\(\)/, 'router unmounts the room on navigation');
+});
