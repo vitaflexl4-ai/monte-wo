@@ -283,9 +283,14 @@ node scripts/preview-intelligence.mjs
 # TITAN_SOURCES_URL if set) + the host-rewriting proxy on :8080. Prints the dashboard URL + token.
 # apply migrations to the local INTEL_DB (wrangler.intel-local.toml targets the same sqlite), then open
 # http://localhost:8080/intelligence/ and unlock with the printed token.
+#
+# gate-free mode for a throwaway sandbox you alone can reach:
+PREVIEW_TOKEN=none node scripts/preview-intelligence.mjs
+# (TITAN_SOURCES_URL=http://127.0.0.1:<port> additionally enables the source audit — point it at
+#  a private static server exposing the repo root.)
 ```
 
-Two preview-hardening behaviours, both tested:
+Preview-hardening behaviours, both tested:
 
 - **Preview token:** when `PREVIEW_TOKEN` (≥16 chars) is set together with `LOCAL_DEVELOPMENT=true`,
   the token is required from **every** host — including localhost. Setting it *hardens* the preview;
@@ -293,6 +298,10 @@ Two preview-hardening behaviours, both tested:
 - **Host-rewriting proxy:** `wrangler pages dev` only attaches CLI bindings (e.g. `--d1 INTEL_DB`)
   to localhost/127.0.0.1 Host headers. Remote preview tunnels therefore hit a binding-less
   environment where the API correctly fails closed. `scripts/preview-proxy.mjs` rewrites the Host
-  header to localhost so the preview URL works, while the API still enforces authentication.
+  header to localhost so the preview URL works, while the API still enforces authentication. It
+  also rewrites the `Origin` header of browser POSTs to match (the API's same-origin CSRF check
+  would otherwise reject actions made through the proxy); production never runs behind this proxy.
 - Without `PREVIEW_TOKEN`, the classic localhost local-admin bypass applies in local development
-  only; it can never run on a public hostname.
+  only; it can never run on a public hostname. `PREVIEW_TOKEN=none` runs the preview **gate-free**
+  (dashboard opens with no password through the proxy) — only for private throwaway sandboxes,
+  never a shared or long-lived host.

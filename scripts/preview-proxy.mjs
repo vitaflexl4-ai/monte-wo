@@ -28,6 +28,10 @@ const proxy = http.createServer((req, res) => {
     return res.end();
   }
   const headers = { ...req.headers, host: 'localhost' };
+  // Preview-only: the worker enforces same-origin POSTs (CSRF). Behind this proxy the public
+  // origin differs from the rewritten Host, so align Origin with it exactly ('http://localhost',
+  // no port — matching the Host above). Production never runs behind this proxy.
+  if (headers.origin) headers.origin = 'http://localhost';
   const upstream = http.request({ host: UPSTREAM_HOST, port: UPSTREAM_PORT, method: req.method, path: req.url, headers }, upstreamRes => {
     res.writeHead(upstreamRes.statusCode, upstreamRes.headers);
     upstreamRes.pipe(res, { end: true });
