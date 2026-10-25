@@ -9,6 +9,8 @@ import {
   runUltronChecks, rateLimit, logAudit, computeHealth, parseTargets, recordAgentRun, ingestTelemetry,
   siteUrlAllowed, analyzeArgonTelemetry, correlateAu, buildDailyBriefing, buildWeeklyBriefing
 } from './core.js';
+import { runTitanAudit, titanOverview } from './titan.js';
+import { budgetStatus } from './budget.js';
 
 const MAX_BODY = 65536;
 const json = (data, status = 200) => new Response(JSON.stringify(data), {
@@ -57,8 +59,9 @@ async function overview(db, env) {
   const checks24 = (await db.prepare(`SELECT target,status,latency_ms,checked_at FROM intel_checks WHERE checked_at>=? AND status<>'not_configured' ORDER BY checked_at DESC`).bind(dayAgo).all()).results || [];
   const openIncidents = (await db.prepare(`SELECT id,fingerprint,agent,severity,title,summary,confidence,status,first_seen,last_seen,occurrence_count,correlation_group FROM intel_incidents WHERE status='open' ORDER BY CASE severity WHEN 'critical' THEN 5 WHEN 'high' THEN 4 WHEN 'medium' THEN 3 WHEN 'low' THEN 2 ELSE 1 END DESC, last_seen DESC LIMIT 100`).all()).results || [];
   const lastRuns = {};
-  for (const agent of ['ARGON', 'ULTRON', 'AU']) {
+  for (const agent of ['ARGON', 'ULTRON', 'AU', 'TITAN']) {
     lastRuns[agent] = (await db.prepare('SELECT agent,run_type,status,summary,started_at,finished_at FROM intel_agent_runs WHERE agent=? ORDER BY started_at DESC LIMIT 1').bind(agent).first());
+    lastRuns[agent + ':ok'] = (await db.prepare("SELECT started_at FROM intel_agent_runs WHERE agent=? AND status='ok' ORDER BY started_at DESC LIMIT 1").bind(agent).first());
   }
   const lastCheck = (await db.prepare(`SELECT checked_at FROM intel_checks WHERE agent='ULTRON' AND status<>'not_configured' ORDER BY checked_at DESC LIMIT 1`).first())?.checked_at || null;
   const telemetry24 = (await db.prepare(`SELECT event_type, COUNT(*) AS n FROM intel_telemetry_events WHERE occurred_at>=? GROUP BY event_type`).bind(dayAgo).all()).results || [];
@@ -87,28 +90,39 @@ async function overview(db, env) {
   const argonRunAge = minutesSince(lastRuns.ARGON?.started_at);
   const telemetrySessions = telemetry24.find(t => t.event_type === 'session_start')?.n || 0;
   const telemetryErrors = telemetry24.filter(t => ['app_crash', 'js_error', 'http_error'].includes(t.event_type)).reduce((n, t) => n + t.n, 0);
+  // FAILED surfaces when the most recent scheduled/manual run threw; nextAction states exactly
+  // what an operator (or the deployment) must do next. Never guess health when a run failed.
+  const runFailed = agent => lastRuns[agent] && lastRuns[agent].status === 'failed';
   const agents = {
     ultron: {
-      status: !siteUrlConfigured ? 'NOT CONFIGURED' : ultronAge === null ? 'AWAITING FIRST CHECK' : ultronAge <= 15 ? 'OPERATIONAL' : ultronAge <= 60 ? 'STALE' : 'OFFLINE',
-      detail: !siteUrlConfigured ? 'SITE_URL is not configured, so no website checks can run.' : ultronAge === null ? 'No check has been recorded yet; the scheduled Worker has not run.' : 'Last check ' + ultronAge + ' minutes ago.',
-      lastRun: lastRuns.ULTRON || null, targets
+      status: runFailed('ULTRON') ? 'FAILED' : !siteUrlConfigured ? 'NOT CONFIGURED' : ultronAge === null ? 'AWAITING FIRST CHECK' : ultronAge <= 15 ? 'OPERATIONAL' : ultronAge <= 60 ? 'STALE' : 'OFFLINE',
+      detail: runFailed('ULTRON') ? 'The last ULTRON run failed: ' + (lastRuns.ULTRON.summary || 'unknown error') : !siteUrlConfigured ? 'SITE_URL is not configured, so no website checks can run.' : ultronAge === null ? 'No check has been recorded yet; the scheduled Worker has not run.' : 'Last check ' + ultronAge + ' minutes ago.',
+      lastRun: lastRuns.ULTRON || null, lastSuccess: lastRuns['ULTRON:ok'] || null,
+      nextAction: runFailed('ULTRON') ? 'Inspect the Worker logs and D1 access, then run a manual verification.' : !siteUrlConfigured ? 'Configure SITE_URL on the scheduled Worker.' : ultronAge === null ? 'Deploy the scheduled Worker with INTELLIGENCE_ENABLED=true.' : null,
+      targets
     },
     argon: {
-      status: !env.INTELLIGENCE_INGEST_KEY ? 'NOT CONFIGURED' : (telemetry24.length === 0 ? 'AWAITING DATA' : (argonRunAge !== null && argonRunAge <= 1560 ? 'OPERATIONAL' : 'INTAKE ONLY')),
-      detail: !env.INTELLIGENCE_INGEST_KEY ? 'INTELLIGENCE_INGEST_KEY is not set; the mobile app cannot submit telemetry.' : telemetry24.length === 0 ? 'Ingest is configured but no telemetry has been received in 24h.' : 'Telemetry received; analysis runs hourly in the scheduled Worker.',
-      lastRun: lastRuns.ARGON || null, telemetry24h: { sessions: telemetrySessions, errors: telemetryErrors }, topErrors
+      status: runFailed('ARGON') ? 'FAILED' : !env.INTELLIGENCE_INGEST_KEY ? 'NOT CONFIGURED' : (telemetry24.length === 0 ? 'AWAITING DATA' : (argonRunAge !== null && argonRunAge <= 1560 ? 'OPERATIONAL' : 'INTAKE ONLY')),
+      detail: runFailed('ARGON') ? 'The last ARGON analysis failed: ' + (lastRuns.ARGON.summary || 'unknown error') : !env.INTELLIGENCE_INGEST_KEY ? 'INTELLIGENCE_INGEST_KEY is not set; the mobile app cannot submit telemetry.' : telemetry24.length === 0 ? 'Ingest is configured but no telemetry has been received in 24h.' : 'Telemetry received; analysis runs hourly in the scheduled Worker.',
+      lastRun: lastRuns.ARGON || null, lastSuccess: lastRuns['ARGON:ok'] || null,
+      nextAction: runFailed('ARGON') ? 'Inspect the Worker logs, then rerun analysis.' : !env.INTELLIGENCE_INGEST_KEY ? 'Set INTELLIGENCE_INGEST_KEY to enable app telemetry intake.' : telemetry24.length === 0 ? 'Integrate the consent-gated telemetry client in the app.' : null,
+      telemetry24h: { sessions: telemetrySessions, errors: telemetryErrors }, topErrors
     },
     au: {
-      status: lastRuns.AU ? (minutesSince(lastRuns.AU.started_at) <= 1560 ? 'OPERATIONAL' : 'STALE') : 'NOT SCHEDULED',
-      detail: lastRuns.AU ? 'Correlation and briefing jobs are running on schedule.' : 'The scheduled Worker has not run any AU job yet.',
-      lastRun: lastRuns.AU || null, latestDaily: latestDaily || null, latestWeekly: latestWeekly || null, openUrgent
+      status: runFailed('AU') ? 'FAILED' : lastRuns.AU ? (minutesSince(lastRuns.AU.started_at) <= 1560 ? 'OPERATIONAL' : 'STALE') : 'NOT SCHEDULED',
+      detail: runFailed('AU') ? 'The last AU job failed: ' + (lastRuns.AU.summary || 'unknown error') : lastRuns.AU ? 'Correlation and briefing jobs are running on schedule.' : 'The scheduled Worker has not run any AU job yet.',
+      lastRun: lastRuns.AU || null, lastSuccess: lastRuns['AU:ok'] || null,
+      nextAction: runFailed('AU') ? 'Inspect the Worker logs and D1 access.' : !lastRuns.AU ? 'Deploy the scheduled Worker so correlation and briefings run.' : null,
+      latestDaily: latestDaily || null, latestWeekly: latestWeekly || null, openUrgent
     }
   };
+  agents.titan = await titanOverview(db, lastRuns.TITAN, lastRuns['TITAN:ok']);
+  const budget = await budgetStatus(db);
   const countsBySeverity = { critical: 0, high: 0, medium: 0, low: 0, info: 0 };
   for (const i of openIncidents) countsBySeverity[i.severity] = (countsBySeverity[i.severity] || 0) + 1;
-  const live = !!(checks24.length || telemetry24.length || lastRuns.ARGON || lastRuns.ULTRON || lastRuns.AU);
+  const live = !!(checks24.length || telemetry24.length || lastRuns.ARGON || lastRuns.ULTRON || lastRuns.AU || lastRuns.TITAN);
   return json({
-    live, generatedAt: new Date(now).toISOString(),
+    live, budget, generatedAt: new Date(now).toISOString(),
     config: {
       dbConfigured: !!env.INTEL_DB, accessConfigured: intelligenceConfigured(env),
       localDevelopment: localOperatorAllowed(env, new URL('http://localhost')) ? true : undefined,
@@ -255,6 +269,112 @@ async function verifyNow(db, env, request, url, operator, fetcher = fetch) {
   return json({ ok: true, results: result?.evidence?.results || [], note: 'Checks were recorded and incident logic ran. See the Incidents view for effects.' });
 }
 
+// ---------- TITAN improvement backlog ----------
+const IMPROVEMENT_STATUSES = ['proposed', 'approved', 'rejected', 'parked', 'in-progress', 'implemented', 'rechecked', 'failed'];
+
+async function improveNow(db, env, request, url, operator, fetcher = fetch) {
+  requireThat(sameOrigin(request, url), 'origin-rejected', 403);
+  const limit = await rateLimit(db, 'improve:' + operator.id, 3600000, 6);
+  requireThat(limit.allowed, 'rate-limit', 429);
+  const result = await recordAgentRun(db, 'TITAN', 'manual-audit', async () => {
+    const audit = await runTitanAudit(env, db, { fetcher, correlationId: operator.id });
+    return { summary: `TITAN audit: ${audit.summary.findings} finding(s), ${audit.summary.telemetryEventsReviewed} telemetry events reviewed`, evidence: { ...audit.summary, items: audit.items } };
+  });
+  return json({ ok: true, summary: result?.summary, items: result?.evidence?.items || [], note: 'Findings upserted by evidence key; human decisions are preserved. See the TITAN view.' });
+}
+
+async function listImprovements(db, url) {
+  const limit = limitOf(url, 50, 200);
+  const status = url.searchParams.get('status');
+  const where = status && IMPROVEMENT_STATUSES.includes(status) ? 'WHERE status=?' : '';
+  const stmt = `SELECT id,title,area,risk,status,priority,confidence,evidence_type,approval_flags_json,decision_note,decided_by,decided_at,implemented_at,rechecked_at,updated_at FROM intel_improvement_items ${where} ORDER BY priority DESC, updated_at DESC LIMIT ?`;
+  const rows = (await (where ? db.prepare(stmt).bind(status, limit) : db.prepare(stmt).bind(limit)).all()).results || [];
+  return json({ items: rows.map(r => ({ ...r, approvalFlags: JSON.parse(r.approval_flags_json || '[]') })) });
+}
+
+async function getImprovement(db, id) {
+  const row = await db.prepare('SELECT * FROM intel_improvement_items WHERE id=?').bind(id).first();
+  requireThat(row, 'not-found', 404);
+  let evidence = {}, flags = [], recheck = null;
+  try { evidence = JSON.parse(row.evidence_json); } catch { }
+  try { flags = JSON.parse(row.approval_flags_json || '[]'); } catch { }
+  try { recheck = row.recheck_result_json ? JSON.parse(row.recheck_result_json) : null; } catch { }
+  return json({ item: { ...row, evidence, approvalFlags: flags, recheckResult: recheck } });
+}
+
+// Operator decision on a backlog item. Ranking-affecting (and other hard-flagged) items
+// require an explicit acknowledgment so standards changes can never slip through silently.
+async function decideImprovement(db, request, url, operator, id) {
+  requireThat(sameOrigin(request, url), 'origin-rejected', 403);
+  const limit = await rateLimit(db, 'improve-decide:' + operator.id, 3600000, 60);
+  requireThat(limit.allowed, 'rate-limit', 429);
+  const row = await db.prepare('SELECT id,status,approval_flags_json FROM intel_improvement_items WHERE id=?').bind(id).first();
+  requireThat(row, 'not-found', 404);
+  const body = await readJson(request);
+  const decision = body.decision;
+  requireThat(['approved', 'rejected', 'parked', 'in-progress'].includes(decision), 'invalid-decision', 400);
+  requireThat(typeof (body.note || '') === 'string' && (body.note || '').length <= 500, 'invalid-note', 400);
+  const flags = JSON.parse(row.approval_flags_json || '[]');
+  if (flags.length && decision === 'approved') {
+    const acked = Array.isArray(body.acknowledged) ? body.acknowledged : [];
+    requireThat(flags.every(f => acked.includes(f)), 'approval-acknowledgment-required', 409);
+  }
+  await db.prepare('UPDATE intel_improvement_items SET status=?, decision_note=?, decided_by=?, decided_at=?, updated_at=? WHERE id=?')
+    .bind(decision, body.note || '', operator.id, new Date().toISOString(), new Date().toISOString(), id).run();
+  await logAudit(db, operator.id, 'improvement-decision', id, decision, { note: body.note || '', flags });
+  return json({ ok: true, id, status: decision, approvalFlags: flags });
+}
+
+// Recording that an approved item was actually implemented (with evidence of testing).
+async function implementImprovement(db, request, url, operator, id) {
+  requireThat(sameOrigin(request, url), 'origin-rejected', 403);
+  const limit = await rateLimit(db, 'improve-implement:' + operator.id, 3600000, 60);
+  requireThat(limit.allowed, 'rate-limit', 429);
+  const row = await db.prepare('SELECT id,status FROM intel_improvement_items WHERE id=?').bind(id).first();
+  requireThat(row, 'not-found', 404);
+  requireThat(row.status === 'approved', 'not-approved', 409);
+  const body = await readJson(request);
+  requireThat(typeof (body.note || '') === 'string' && (body.note || '').length >= 3, 'invalid-note', 400);
+  const now = new Date().toISOString();
+  await db.prepare('UPDATE intel_improvement_items SET status=?, implemented_at=?, implement_note=?, updated_at=? WHERE id=?')
+    .bind('implemented', now, body.note, now, id).run();
+  await logAudit(db, operator.id, 'improvement-implemented', id, 'implemented', { note: body.note });
+  return json({ ok: true, id, status: 'implemented', implementedAt: now });
+}
+
+// Regression recheck for a completed improvement: re-run the audit and see whether the
+// original detector still fires. detected=false means the problem is verified gone.
+async function recheckImprovement(db, env, request, url, operator, id, fetcher = fetch) {
+  requireThat(sameOrigin(request, url), 'origin-rejected', 403);
+  const limit = await rateLimit(db, 'improve-recheck:' + operator.id, 3600000, 30);
+  requireThat(limit.allowed, 'rate-limit', 429);
+  const row = await db.prepare('SELECT id,evidence_key,status FROM intel_improvement_items WHERE id=?').bind(id).first();
+  requireThat(row, 'not-found', 404);
+  requireThat(['implemented', 'rechecked', 'approved'].includes(row.status), 'not-implemented', 409);
+  const fresh = await runTitanAudit(env, db, { fetcher, correlationId: operator.id });
+  const stillDetected = fresh.items.some(i => i.evidenceKey === row.evidence_key);
+  const freshItem = stillDetected ? fresh.items.find(i => i.evidenceKey === row.evidence_key) : null;
+  const result = {
+    checkedAt: new Date().toISOString(),
+    detected: stillDetected,
+    passed: !stillDetected,
+    summary: stillDetected
+      ? 'Detector still fires — the problem is still present in current evidence. Treat as a regression or an incomplete fix.'
+      : 'Detector no longer fires — the improvement is verified effective against current evidence.',
+    freshPriority: freshItem ? freshItem.priority : null,
+    freshStatus: freshItem ? freshItem.status : 'resolved'
+  };
+  await db.prepare('UPDATE intel_improvement_items SET status=?, rechecked_at=?, recheck_result_json=?, updated_at=? WHERE id=?')
+    .bind(stillDetected ? 'failed' : 'rechecked', result.checkedAt, JSON.stringify(result), new Date().toISOString(), id).run();
+  await logAudit(db, operator.id, 'improvement-rechecked', id, stillDetected ? 'regression-detected' : 'verified', result);
+  return json({ ok: true, id, recheck: result });
+}
+
+async function budgetRoute(db, operator) {
+  const budget = await budgetStatus(db);
+  return json({ budget });
+}
+
 async function listAudit(db, url) {
   const limit = limitOf(url, 50, 200);
   const rows = (await db.prepare('SELECT actor,action,target,outcome,detail_json,created_at FROM intel_audit ORDER BY created_at DESC LIMIT ?').bind(limit).all()).results || [];
@@ -342,6 +462,18 @@ export async function handleIntelligence({ request, env }, deps = {}) {
     if (route === '/verify' && request.method === 'POST') return await verifyNow(db, env, request, url, operator, deps.fetcher || fetch);
     if (route === '/analyze' && request.method === 'POST') return await analyzeNow(db, env, request, url, operator);
     if (route === '/briefing' && request.method === 'POST') return await briefingNow(db, request, url, operator);
+    if (route === '/improve' && request.method === 'POST') return await improveNow(db, env, request, url, operator, deps.fetcher || fetch);
+    if (route === '/improvements' && request.method === 'GET') return await listImprovements(db, url);
+    const improveMatch = route.match(/^\/improvements\/([a-z0-9\-]{1,120})$/i);
+    if (improveMatch && request.method === 'GET') return await getImprovement(db, improveMatch[1]);
+    if (improveMatch && request.method === 'POST') {
+      const sub = url.searchParams.get('action');
+      if (sub === 'decide') return await decideImprovement(db, request, url, operator, improveMatch[1]);
+      if (sub === 'implement') return await implementImprovement(db, request, url, operator, improveMatch[1]);
+      if (sub === 'recheck') return await recheckImprovement(db, env, request, url, operator, improveMatch[1], deps.fetcher || fetch);
+      return json({ error: 'invalid-action' }, 400);
+    }
+    if (route === '/budget' && request.method === 'GET') return await budgetRoute(db, operator);
     if (route === '/audit' && request.method === 'GET') return await listAudit(db, url);
     return json({ error: 'not-found' }, 404);
   } catch (e) {

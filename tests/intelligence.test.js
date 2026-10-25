@@ -52,7 +52,7 @@ const okFetch = async (url) => new Response('ok', { status: 200, headers: { 'Con
 
 before(async () => {
   dir = mkdtempSync(join(tmpdir(), 'monte-intel-test-'));
-  sqlite({ script: readFileSync('migrations/0003_intelligence.sql', 'utf8') + readFileSync('migrations/0004_intelligence_ops.sql', 'utf8') });
+  sqlite({ script: readFileSync('migrations/0003_intelligence.sql', 'utf8') + readFileSync('migrations/0004_intelligence_ops.sql', 'utf8') + readFileSync('migrations/0005_intelligence_titan.sql', 'utf8') });
   db = { prepare: s => new Statement(s), batch: async statements => sqlite({ statements }) };
   keys = await crypto.subtle.generateKey({ name: 'RSASSA-PKCS1-v1_5', modulusLength: 2048, publicExponent: new Uint8Array([1, 0, 1]), hash: 'SHA-256' }, true, ['sign', 'verify']);
   jwk = { ...await crypto.subtle.exportKey('jwk', keys.publicKey), kid: 'test-key', alg: 'RS256' };
@@ -113,6 +113,32 @@ test('local development bypass only works on localhost hostnames', async () => {
   assert.equal(res.status, 200);
   const publicRes = await handleIntelligence({ request: new Request('https://demo.e2b.app/api/intelligence/overview'), env: localEnv }, { fetcher });
   assert.equal(publicRes.status, 401);
+});
+test('preview token gate: only valid bearer tokens on preview hosts, never without LOCAL_DEVELOPMENT', async () => {
+  // Public hostname without a token: refused (this is the preview-URL default posture).
+  assert.equal((await call('/overview')).status, 401);
+  // Wrong token: refused.
+  const wrong = await handleIntelligence({ request: new Request('https://preview.e2b.app/api/intelligence/overview', { headers: { Authorization: 'Bearer wrong-token-wrong-token' } }), env }, { fetcher });
+  assert.equal(wrong.status, 401);
+  // Correct token but LOCAL_DEVELOPMENT off (production posture): refused — the gate is preview-only.
+  const prod = await handleIntelligence({ request: new Request('https://preview.e2b.app/api/intelligence/overview', { headers: { Authorization: 'Bearer ' + 'x'.repeat(32) } }), env: { ...env, LOCAL_DEVELOPMENT: undefined, PREVIEW_TOKEN: 'x'.repeat(32) } }, { fetcher });
+  assert.equal(prod.status, 401);
+  // Correct token with LOCAL_DEVELOPMENT on: authenticated as preview operator.
+  const previewEnv = { ...env, PREVIEW_TOKEN: 'preview-token-1234567890abcdef' };
+  const ok = await handleIntelligence({ request: new Request('https://preview.e2b.app/api/intelligence/overview', { headers: { Authorization: 'Bearer preview-token-1234567890abcdef' } }), env: previewEnv }, { fetcher });
+  assert.equal(ok.status, 200);
+  const data = await ok.json();
+  assert.equal(data.config.localDevelopment, true);
+  // Short tokens are never honored.
+  const short = await handleIntelligence({ request: new Request('https://preview.e2b.app/api/intelligence/overview', { headers: { Authorization: 'Bearer short' } }), env: { ...env, PREVIEW_TOKEN: 'short' } }, { fetcher });
+  assert.equal(short.status, 401);
+  // Setting PREVIEW_TOKEN hardens localhost too: the token is mandatory everywhere.
+  const localNoToken = await handleIntelligence({ request: new Request('http://localhost/api/intelligence/overview'), env: previewEnv }, { fetcher });
+  assert.equal(localNoToken.status, 401);
+  const localWithToken = await handleIntelligence({ request: new Request('http://localhost/api/intelligence/overview', { headers: { Authorization: 'Bearer preview-token-1234567890abcdef' } }), env: previewEnv }, { fetcher });
+  assert.equal(localWithToken.status, 200);
+  // Without PREVIEW_TOKEN, the localhost bypass still works for plain local development.
+  assert.equal((await local('/overview')).status, 200);
 });
 test('cross-origin mutations are rejected', async () => {
   const res = await call('/automation/retention-purge/approve', 'POST', { confirm: 'retention-purge' }, { __token: await token('chief@monte.test'), Origin: 'https://evil.test' });
@@ -461,4 +487,157 @@ test('worker fails closed when not enabled and runs jobs when enabled', async ()
   assert.equal(auRun.agent, 'AU');
   const keyed = await worker.fetch(new Request('https://worker.test/run?job=checks', { method: 'POST', headers: { 'X-MW-Worker-Key': 'nope' } }), enabledEnv);
   assert.equal(keyed.status, 401);
+});
+
+
+// ---------- TITAN improvement agent ----------
+const TITAN_SOURCES = 'https://sources.test';
+const fixtureApp = `<Stack.Screen name="Exercise" />
+<Stack.Screen name="Performance" />
+${'<TouchableOpacity onPress={() => {}} />\n'.repeat(12)}
+`;
+const fixtureAppFixed = fixtureApp.split('<TouchableOpacity onPress={() => {}} />').join('<TouchableOpacity accessibilityLabel="Action" onPress={() => {}} />');
+const fixtureApi = 'const a = await fetch(x); const b = fetch(y); const c = fetch(z); const d = fetch(w);\n';
+const fixturePkg = JSON.stringify({ dependencies: { react: '18.2.0', 'left-pad': '1.3.0' } });
+let titanSourcesFixed = false;
+// TITAN tests run as the Access-JWT operator: the local-operator rate bucket is intentionally
+// exhausted by an earlier test, and reusing it would 429 at the auth layer.
+async function titanCall(route, method = 'GET', data = null, extra = {}) {
+  const init = { method, headers: { ...extra, 'Cf-Access-Jwt-Assertion': await token() } };
+  if (data !== null) { init.body = JSON.stringify(data); init.headers['Content-Type'] = 'application/json'; }
+  return handleIntelligence({ request: new Request('https://monte.test/api/intelligence' + route, init), env: { ...env, TITAN_SOURCES_URL: TITAN_SOURCES } }, { fetcher: titanFetcher });
+}
+const titanFetcher = async (url) => {
+  if (String(url).startsWith(TITAN_SOURCES)) {
+    const path = String(url).slice(TITAN_SOURCES.length);
+    const body = path.endsWith('App.tsx') ? (titanSourcesFixed ? fixtureAppFixed : fixtureApp)
+      : path.endsWith('api.ts') ? fixtureApi
+      : path.endsWith('package.json') ? fixturePkg
+      : 'export {};';
+    return new Response(body, { status: 200, headers: { 'Content-Type': 'text/plain' } });
+  }
+  return fetcher(url);
+};
+
+test('TITAN audit turns source + telemetry evidence into a prioritized backlog', async () => {
+  await ingestTelemetry(db, [1, 2, 3, 4, 5, 6].map(i => validateTelemetryEvent(event({ type: 'js_error', appVersion: '1.5.0', fingerprint: 'js-TypeError-/library', errorClass: 'TypeError', screen: '/library', eventId: crypto.randomUUID() }))));
+  const res = await titanCall('/improve', 'POST', {});
+  assert.equal(res.status, 200);
+  const body = await res.json();
+  assert.ok(body.ok);
+  assert.ok(body.items.length >= 3, 'expected a11y + api-cache + deps + nav + telemetry findings');
+  const keys = body.items.map(i => i.evidenceKey);
+  assert.ok(keys.includes('a11y-unlabelled-touchables'));
+  assert.ok(keys.includes('api-no-cache-headers'));
+  assert.ok(keys.includes('deps-unused-runtime'));
+  assert.ok(keys.includes('nav-recording-depth'));
+  assert.ok(keys.some(k => k.startsWith('telemetry-')), 'clustered error fingerprint becomes a finding');
+});
+
+test('TITAN findings require the source-fetch env; missing sources are reported, not fabricated', async () => {
+  // TITAN_SOURCES_URL is intentionally unset here: the audit must not invent source findings.
+  const before = (await db.prepare('SELECT COUNT(*) AS n FROM intel_improvement_items').first()).n;
+  const res = await call('/improve', 'POST', {}, { __token: await token() });
+  assert.equal(res.status, 200);
+  const body = await res.json();
+  const sourceKeys = body.items.filter(i => i.evidenceKey !== undefined && !i.evidenceKey.startsWith('telemetry-'));
+  assert.equal(sourceKeys.length, 0, 'no source findings without TITAN_SOURCES_URL');
+  // The telemetry finding is re-detected and upserted (no new row, decision preserved):
+  assert.equal((await db.prepare('SELECT COUNT(*) AS n FROM intel_improvement_items').first()).n, before);
+});
+
+test('improvement backlog lists items and a detail includes full evidence + plans', async () => {
+  const list = await titanCall('/improvements');
+  assert.equal(list.status, 200);
+  const { items } = await list.json();
+  assert.ok(items.length >= 5);
+  const a11y = items.find(i => i.id === 'titan-a11y-unlabelled-touchables');
+  assert.ok(a11y, 'a11y finding present');
+  assert.equal(a11y.status, 'proposed');
+  assert.equal(a11y.risk, 'low');
+  const detail = await titanCall('/improvements/titan-a11y-unlabelled-touchables');
+  assert.equal(detail.status, 200);
+  const { item } = await detail.json();
+  assert.ok(item.evidence.unlabelled >= 10, 'machine evidence attached');
+  assert.ok(item.test_plan.length > 20 && item.rollback_plan.length > 10);
+  assert.equal(item.evidence_type, 'static-analysis');
+});
+
+test('ranking-affecting improvements cannot be approved without explicit acknowledgment', async () => {
+  await db.prepare(`INSERT INTO intel_improvement_items (id, evidence_key, title, area, problem, evidence_json, evidence_type, confidence, proposed_change, benefit, cost, risk, approval_flags_json, test_plan, rollback_plan, status, priority, created_at, updated_at)
+    VALUES ('titan-manual-ranking','manual-ranking','Manual ranking change','ranking','x','{}','manual-review',0.9,'y','z','Low','high','["ranking-affecting"]','t','r','proposed',5,?,?)`).bind(new Date().toISOString(), new Date().toISOString()).run();
+  const refuse = await titanCall('/improvements/titan-manual-ranking?action=decide', 'POST', { decision: 'approved', note: 'ship it' });
+  assert.equal(refuse.status, 409);
+  assert.equal((await refuse.json()).error, 'approval-acknowledgment-required');
+  const accept = await titanCall('/improvements/titan-manual-ranking?action=decide', 'POST', { decision: 'approved', note: 'owner-approved standards change', acknowledged: ['ranking-affecting'] });
+  assert.equal(accept.status, 200);
+  assert.equal((await accept.json()).status, 'approved');
+  // The decision is audited.
+  const audit = (await db.prepare("SELECT action,outcome FROM intel_audit WHERE target='titan-manual-ranking'").all()).results;
+  assert.ok(audit.some(a => a.action === 'improvement-decision' && a.outcome === 'approved'));
+});
+
+test('implementation + recheck loop: fix verified when the detector no longer fires', async () => {
+  // Approve the low-risk a11y item and record a real implementation.
+  const approve = await titanCall('/improvements/titan-a11y-unlabelled-touchables?action=decide', 'POST', { decision: 'approved', note: 'labels are additive and safe' });
+  assert.equal(approve.status, 200);
+  const tooEarly = await titanCall('/improvements/titan-nav-recording-depth?action=implement', 'POST', { note: 'not approved yet' });
+  assert.equal(tooEarly.status, 409);
+  const done = await titanCall('/improvements/titan-a11y-unlabelled-touchables?action=implement', 'POST', { note: 'accessibilityLabel added to all controls; mobile suite green' });
+  assert.equal(done.status, 200);
+  assert.ok((await done.json()).implementedAt);
+  // Sources now contain labels: the recheck must verify the problem is gone.
+  titanSourcesFixed = true;
+  const recheck = await titanCall('/improvements/titan-a11y-unlabelled-touchables?action=recheck', 'POST', {});
+  assert.equal(recheck.status, 200);
+  const { recheck: result } = await recheck.json();
+  assert.equal(result.passed, true);
+  assert.equal(result.detected, false);
+  // The nav item is approved but NOT fixed in sources: recheck reports a regression.
+  await titanCall('/improvements/titan-nav-recording-depth?action=decide', 'POST', { decision: 'approved', note: 'direct log action approved' });
+  const navRecheck = await titanCall('/improvements/titan-nav-recording-depth?action=recheck', 'POST', {});
+  assert.equal(navRecheck.status, 200);
+  const navResult = (await navRecheck.json()).recheck;
+  assert.equal(navResult.passed, false);
+  assert.equal(navResult.detected, true);
+});
+
+test('re-running the audit preserves human decisions (status and notes survive)', async () => {
+  const before = await db.prepare('SELECT id,status,decision_note,decided_by FROM intel_improvement_items WHERE id=?').bind('titan-a11y-unlabelled-touchables').first();
+  assert.equal(before.status, 'rechecked');
+  await titanCall('/improve', 'POST', {});
+  const after = await db.prepare('SELECT id,status,decision_note,decided_by FROM intel_improvement_items WHERE id=?').bind('titan-a11y-unlabelled-touchables').first();
+  assert.equal(after.status, 'rechecked');
+  assert.equal(after.decision_note, before.decision_note);
+  assert.equal(after.decided_by, before.decided_by);
+});
+
+test('overview reports the TITAN agent with honest state and next action', async () => {
+  const res = await titanCall('/overview');
+  assert.equal(res.status, 200);
+  const { agents } = await res.json();
+  assert.ok(agents.titan, 'titan agent present in overview');
+  assert.ok(['OPERATIONAL', 'STALE', 'FAILED', 'NOT CONFIGURED'].includes(agents.titan.status));
+  assert.ok(agents.titan.nextAction && agents.titan.nextAction.length > 10);
+  assert.ok(agents.titan.counts && typeof agents.titan.counts.proposed === 'number');
+});
+
+// ---------- $0-budget framework ----------
+test('budget reports measured usage against documented free limits', async () => {
+  const res = await titanCall('/budget');
+  assert.equal(res.status, 200);
+  const { budget } = await res.json();
+  assert.ok(budget.limits.d1RowsWrittenPerDay === 100000);
+  assert.ok(budget.limits.sources.length >= 3, 'limits cite their sources');
+  assert.ok(budget.limits.verifiedAt, 'limits record their verification date');
+  assert.equal(budget.usage.rowsWrittenToday.measured, true);
+  assert.ok(budget.usage.rowsWrittenToday.value >= 0);
+  assert.equal(budget.usage.rowsReadToday.measured, false, 'reads are labelled as estimates, never meter readings');
+  assert.ok(['OK', 'WARN', 'CRITICAL'].includes(budget.status));
+  assert.ok(budget.nextAction.length > 10);
+  // Overview carries the budget summary too.
+  const ov = await titanCall('/overview');
+  const ovBody = await ov.json();
+  assert.ok(ovBody.budget && ovBody.budget.status);
+  assert.ok(ovBody.budget.costTriggers.length >= 1, 'cost triggers documented');
 });

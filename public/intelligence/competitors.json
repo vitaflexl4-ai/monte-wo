@@ -1,0 +1,189 @@
+{
+  "$schema": "living-competitor-matrix-v1",
+  "note": "Living competitor matrix for MONTE WO. Research is batched (quarterly or on major competitor releases) — never crawled continuously. Every entry records its source links and research date. 'verified' = confirmed from official pages/listings; 'reviewer-opinion' = credible third-party reviews; 'marketing' = vendor claims not independently verified.",
+  "lastResearched": "2026-10-24",
+  "researchCadence": "quarterly + on major competitor release notes",
+  "comparisonDimensions": [
+    "set-recording speed", "next-action clarity", "onboarding friction", "1RM/progression/history",
+    "ranking transparency/verification/fairness", "offline/low-bandwidth", "accessibility",
+    "free-tier limits", "complexity", "privacy", "reliability", "operating cost"
+  ],
+  "competitors": [
+    {
+      "name": "Hevy",
+      "type": "workout tracker",
+      "researchedAt": "2026-10-24",
+      "setRecording": {
+        "speed": "verified: every set is ~2 taps (weight, reps); previous session values prefilled on the logging screen; automatic rest timer starts when a set is marked complete",
+        "sources": ["https://www.hevyapp.com/features/track-workouts/", "https://www.hevyapp.com/compare/fitbod/"]
+      },
+      "nextActionClarity": "verified: rest timer notifies next set; last session's weights visible inline",
+      "onboarding": "reviewer-opinion: start with empty workout or routine; low friction",
+      "oneRmProgressionHistory": "verified: per-exercise graphs, PR notifications, warm-up calculator (Pro); 1RM charts per exercise",
+      "ranking": "verified: exercise leaderboards (social/gym-based, not standards-based); no verification of claims",
+      "offline": "reviewer-opinion: works offline, syncs when connected (not stated on official features page)",
+      "accessibility": "unknown — not documented on official pages",
+      "freeTier": "verified: unlimited workout logging free; 4 routines, 7 custom exercises, 3 months of advanced history; Pro $2.99-$3.99/mo, $23.99/yr, $74.99 lifetime; 150-set cap per workout even on Pro",
+      "privacy": "verified: social feed is core (friends, shared workouts); account-based",
+      "sources": [
+        "https://www.hevyapp.com/features/",
+        "https://help.hevyapp.com/hc/en-us/articles/33106320824727-Everything-You-Need-to-Know-About-the-Hevy-App-2026-Features-Guide",
+        "https://apps.apple.com/us/app/hevy-workout-tracker-gym-log/id1458862350",
+        "https://aitoolsbakery.com/blog/hevy-review/"
+      ]
+    },
+    {
+      "name": "Strong",
+      "type": "workout tracker",
+      "researchedAt": "2026-10-24",
+      "setRecording": {
+        "speed": "reviewer-opinion: 'arguably the fastest and most intuitive on the market' (strive-workout.com); supersets supported with older UI (aitoolsbakery)",
+        "sources": ["https://strong.app/", "https://strive-workout.com/2026/03/13/best-apps-for-tracking-exercise-goals-2/"]
+      },
+      "nextActionClarity": "verified: rest timer; plate calculator and warm-up calculator are Pro-gated",
+      "onboarding": "verified: free forever account; unlimited workouts from day one",
+      "oneRmProgressionHistory": "verified: 1RM calculator free (per RepReturn); full charts Pro-gated; CSV export; history never locked ('will never be locked out' of data)",
+      "ranking": "none",
+      "offline": "reviewer-opinion: workouts stored locally, sync to iCloud/Google when connected — 'reliable in gyms with poor cell service' (RepReturn)",
+      "accessibility": "unknown — not documented",
+      "freeTier": "verified: unlimited logging free; 3 routine cap; PRO $4.99/mo, $29.99/yr, $99.99 lifetime",
+      "privacy": "verified: no social feed; account sync optional",
+      "sources": [
+        "https://strong.app/",
+        "https://apps.apple.com/us/app/strong-workout-tracker-gym-log/id464254577",
+        "https://repreturn.com/strong-app-review/",
+        "https://www.sensai.fit/blog/strong-app-review-2026"
+      ]
+    },
+    {
+      "name": "Boostcamp",
+      "type": "programs + tracker",
+      "researchedAt": "2026-10-24",
+      "setRecording": {
+        "speed": "verified: full tracker free — RPE/RIR on every set, native supersets and drop sets, plate calculator (10 free uses)",
+        "sources": ["https://www.boostcamp.app/features"]
+      },
+      "nextActionClarity": "verified: 'every workout laid out for you, with the progression already written in'; Auto Progression (weight targets adjusting to performance) is Pro",
+      "onboarding": "verified: program finder by goal/level/equipment/days; beginner defaults named (GZCLP, 5/3/1 for Beginners)",
+      "oneRmProgressionHistory": "verified: PRs flagged live, estimated 1RMs free; advanced analytics Pro",
+      "ranking": "verified: Strength Score 0-100 DOTS-based across 5 movement patterns — free view; Level/Max/Balance views Pro. Score is self-reported input, not verified lifts",
+      "offline": "unknown — not documented",
+      "accessibility": "unknown — not documented",
+      "freeTier": "verified: 14,000+ programs free (130+ coach-designed mostly free), unlimited custom program builder, no ads, no time limit; Pro $59.99/yr or $14.99/mo",
+      "privacy": "marketing: 'no ads' confirmed free; data practices not reviewed",
+      "sources": [
+        "https://www.boostcamp.app/",
+        "https://www.boostcamp.app/features",
+        "https://www.boostcamp.app/free-workout-app",
+        "https://www.boostcamp.app/vs/stronglifts"
+      ]
+    },
+    {
+      "name": "StrengthLog",
+      "type": "workout tracker + programs",
+      "researchedAt": "2026-10-24",
+      "setRecording": {
+        "speed": "verified: automatic set-timer; import sets/weights/reps from previous workouts; RPE/RiR optional with auto 1RM calculation",
+        "sources": ["https://www.strengthlog.com/"]
+      },
+      "nextActionClarity": "verified: quick-stats while training (rep-PR at this weight? usual reps at this weight?); progression decisions remain with the lifter (reviewer-opinion: gap for lifters who need the app to decide — SteelRep)",
+      "onboarding": "verified: free logging from day one, no ads",
+      "oneRmProgressionHistory": "verified: 1RM estimate + suggested PR warm-ups free; IPF/Wilks points and Sinclair calculators free",
+      "ranking": "verified: IPF/Wilks + Sinclair coefficient calculators — transparent, federation-standard formulas, but self-entered numbers (not verified lifts)",
+      "offline": "unknown — not documented",
+      "accessibility": "unknown — not documented",
+      "freeTier": "verified: 'most generous free tier' — unlimited workouts, unlimited routines, 450-500+ exercises, basic programs, calculators, no ads; Premium (annual, ~$16.90/mo equiv per SteelRep / $89.95-109/yr per reviews) adds advanced programs + analytics",
+      "privacy": "verified: no ads, no social feed; Health Connect/Apple Health integration optional",
+      "sources": [
+        "https://www.strengthlog.com/",
+        "https://play.google.com/store/apps/details?id=com.styrkelabbet.Styrkelabbet&hl=en",
+        "https://www.strengthlog.com/training-programs/",
+        "https://steelrep.app/blog/best-workout-apps-strength-training/"
+      ]
+    },
+    {
+      "name": "StrongLifts 5x5",
+      "type": "single-program app",
+      "researchedAt": "2026-10-24",
+      "setRecording": {
+        "speed": "verified: log sets from the rest-timer notification via long-press — phone stays locked; watch app logs full workouts",
+        "sources": ["https://stronglifts.com/app/"]
+      },
+      "nextActionClarity": "verified: plans every exercise, set and weight; auto-progression +2.5kg/5kg with deload after 3 failures; zero decisions required",
+      "onboarding": "verified: starts light, guided; subscription required after trial",
+      "oneRmProgressionHistory": "verified: progress graphs, history; warm-up and plate calculators built in",
+      "ranking": "none (no ranking)",
+      "offline": "reviewer-opinion: works fully offline (Lift5x5 comparison); not confirmed on official page",
+      "accessibility": "unknown — not documented",
+      "freeTier": "verified: free to download but REQUIRES A SUBSCRIPTION TO USE (own App/Play Store listing): $11.99/mo, $59.99/yr or $199.99 lifetime; 7-day trial only on yearly plan; reviewer-opinion + user reports: history access tied to active subscription",
+      "privacy": "verified: no ads (subscription-funded)",
+      "sources": [
+        "https://stronglifts.com/app/",
+        "https://apps.apple.com/us/app/stronglifts-5x5-workout-plan/id488580022",
+        "https://play.google.com/store/apps/details?id=com.stronglifts.app&hl=en_US",
+        "https://lift5x5.app/blog/lift5x5-vs-stronglifts"
+      ]
+    },
+    {
+      "name": "OpenPowerlifting (ranking platform reference)",
+      "type": "verified-competition ranking data",
+      "researchedAt": "2026-10-24",
+      "ranking": {
+        "model": "verified: percentile tiers over judged competition results — intermediate = median competitor, advanced = top 20%, elite = top 5%, world class = top 1% per weight class; data CC0 public domain; 3.5M+ meet entries, 500k+ lifters, 100+ federations",
+        "fairness": "verified: every lift performed in public to a defined standard with judges and official weigh-ins; federations filterable; equipment categories kept separate",
+        "contrast": "verified: self-reported standards (e.g. Strength Level, 195M+ community-submitted lifts since 2015) run higher than judged-meet data; credible sites (FitnessVolt) keep verified and self-reported populations strictly separate and label both"
+      },
+      "lessonsForMonteWo": "verified: (1) percentile-of-verified-data is the understandable standard model; (2) never blend verified and self-reported numbers; (3) publish the method — OpenPowerlifting's acceptance comes from open data + open method",
+      "sources": [
+        "https://powerliftingrecords.com/tools/strength-standards/",
+        "https://fitnessvolt.com/powerlifting/standards/",
+        "https://strengthlevel.com/strength-standards",
+        "https://fitnessvolt.com/strength-standards/strength-data/",
+        "https://www.openpowerlifting.org"
+      ]
+    }
+  ],
+  "monteWoRecommendations": [
+    {
+      "recommendation": "Set recording must stay minimal-tap with previous performance visible",
+      "lesson": "Hevy's 2-tap logging with prefilled previous values is the category bar; StrongLifts logs from notifications",
+      "fitsMonteWo": "Recording a verified performance is our core loop — fewer taps means more complete evidence",
+      "evidenceLabel": "verified (official docs) + reviewer-opinion on relative ranking"
+    },
+    {
+      "recommendation": "Show the athlete exactly what to do next (next set, next weight, next verification step)",
+      "lesson": "StrongLifts and Boostcamp remove decisions; StrengthLog leaves progression to the lifter and reviewers call it a gap for many users",
+      "fitsMonteWo": "Next-action clarity is already our intelligence-system philosophy (agent nextAction) — apply the same to athlete-facing flows",
+      "evidenceLabel": "verified feature comparison"
+    },
+    {
+      "recommendation": "Never lock an athlete's history or verification evidence behind payment",
+      "lesson": "StrongLifts' subscription-to-use model and reported history lock-in is the single most-cited trust damage in reviews; Strong explicitly promises the opposite",
+      "fitsMonteWo": "Ranks are effort-earned; the record of that effort must remain accessible. Free tier keeps full personal history",
+      "evidenceLabel": "verified (own store listings) + reviewer/user reports"
+    },
+    {
+      "recommendation": "Keep provisional / estimated / verified strength results visually and semantically distinct",
+      "lesson": "FitnessVolt and OpenPowerlifting-derived sites never blend judged-meet data with self-reported data and label both with source and sample size",
+      "fitsMonteWo": "Already our standard — competitor practice confirms it is the credible model; estimated 1RM never displays as a verified rank",
+      "evidenceLabel": "verified methodology"
+    },
+    {
+      "recommendation": "Design for offline and low-bandwidth first (local storage, sync when connected, small payloads)",
+      "lesson": "Strong stores workouts locally and syncs when connected; reviewers highlight reliability in poor-signal gyms",
+      "fitsMonteWo": "Our athletes train where connectivity is unreliable; ETag/304 caching and local-first storage are already TITAN backlog items",
+      "evidenceLabel": "reviewer-opinion + verified local-storage behavior"
+    },
+    {
+      "recommendation": "A generous free tier is a viable long-term position",
+      "lesson": "StrengthLog ('most generous free tier', no ads) and Boostcamp (14,000+ free programs) built loyal user bases on generosity; StrongLifts' hard paywall drove an exodus to alternatives",
+      "fitsMonteWo": "Aligned with our $0-budget, free-access mission; monetization (if ever) must not touch rank verification or personal history",
+      "evidenceLabel": "verified free-tier facts + reviewer-opinion on outcomes"
+    }
+  ],
+  "excludedFromEmulation": [
+    "Social feeds and gym leaderboards (Hevy): unverified claims + social pressure conflict with effort-earned, verified ranks",
+    "AI-generated adaptive programming (Fitbod, Jefit): high operating cost, unauditable recommendations; conflicts with $0 budget and transparent standards",
+    "Program marketplaces with paid exclusives (Boostcamp Pro programs): not our model — our standards are open and published"
+  ]
+}

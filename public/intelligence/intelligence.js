@@ -10,6 +10,14 @@
       if (v === undefined || v === null || v === false) continue;
       if (k === 'class') node.className = v;
       else if (k === 'text') node.textContent = v;
+      else if (k === 'style' && typeof v === 'string') {
+        // CSP-safe styling: the style attribute itself is blocked by style-src 'self',
+        // but CSSOM property assignment is not. One rule here keeps every call site clean.
+        for (const decl of v.split(';')) {
+          const idx = decl.indexOf(':');
+          if (idx > 0) node.style.setProperty(decl.slice(0, idx).trim(), decl.slice(idx + 1).trim());
+        }
+      }
       else if (k.startsWith('on') && typeof v === 'function') node.addEventListener(k.slice(2), v);
       else node.setAttribute(k, v);
     }
@@ -40,8 +48,11 @@
   const agentStatusClass = st => 'st-' + String(st || '').toLowerCase().replace(/\s+/g, '-');
 
   // ---------- API ----------
+  const previewToken = () => { try { return sessionStorage.getItem('mwPreviewToken') || ''; } catch { return ''; } };
   async function api(path, options = {}) {
     const init = { headers: { accept: 'application/json' }, cache: 'no-store', credentials: 'same-origin' };
+    const token = previewToken();
+    if (token) init.headers.Authorization = 'Bearer ' + token;
     if (options.method) { init.method = options.method; }
     if (options.body !== undefined) { init.headers['Content-Type'] = 'application/json'; init.body = JSON.stringify(options.body); }
     let response;
@@ -83,10 +94,13 @@
   // ---------- error / setup panels ----------
   function errorPanel(code, status) {
     if (code === 'authentication-required' || code === 'invalid-token' || code === 'authentication-failed' || status === 401) {
+      const input = el('input', { type: 'password', placeholder: 'Preview access token', 'aria-label': 'Preview access token', style: 'background:#0a0f18;color:var(--text);border:1px solid var(--line2);border-radius:8px;padding:9px 11px;font:inherit;font-size:12px;width:min(280px,80vw)' });
       return panel(el('div', { class: 'empty' },
         el('span', { class: 'empty-ico' }, '🔒'),
-        el('strong', {}, 'Cloudflare Access authentication required'),
-        el('p', {}, 'This command center and its API are protected. Open this page through your Access-protected deployment URL and sign in with an authorized identity. The API also verifies every request server-side.')));
+        el('strong', {}, 'Authentication required'),
+        el('p', {}, 'In production this page is protected by Cloudflare Access — open it through your Access-protected deployment URL. In a development preview, enter the preview access token supplied by the operator.'),
+        el('div', { style: 'display:flex;gap:8px;justify-content:center;margin-top:12px;flex-wrap:wrap' }, input,
+          el('button', { class: 'btn primary', onclick: () => { try { sessionStorage.setItem('mwPreviewToken', input.value.trim()); } catch { } location.reload(); } }, 'Unlock preview'))));
     }
     if (code === 'operator-not-provisioned') {
       return panel(el('div', { class: 'empty' },
@@ -220,22 +234,42 @@
     const agentCard = (key, name, role, desc, agent) => {
       const a = agents[key] || {};
       const stats = key === 'ultron'
-        ? [el('div', { class: 'agent-stat' }, el('b', {}, String((a.targets || []).length)), el('span', {}, 'targets')), el('div', { class: 'agent-stat' }, el('b', {}, relTime(a.lastRun ? a.lastRun.started_at : null)), el('span', {}, 'last run'))]
+        ? [el('div', { class: 'agent-stat' }, el('b', {}, String((a.targets || []).length)), el('span', {}, 'targets')), el('div', { class: 'agent-stat' }, el('b', {}, relTime(a.lastRun ? a.lastRun.started_at : null)), el('span', {}, 'last run')), el('div', { class: 'agent-stat' }, el('b', {}, relTime(a.lastSuccess ? a.lastSuccess.started_at : null)), el('span', {}, 'last success'))]
         : key === 'argon'
-          ? [el('div', { class: 'agent-stat' }, el('b', {}, String((a.telemetry24h && a.telemetry24h.sessions) || 0)), el('span', {}, 'sessions 24h')), el('div', { class: 'agent-stat' }, el('b', {}, String((a.telemetry24h && a.telemetry24h.errors) || 0)), el('span', {}, 'error events'))]
-          : [el('div', { class: 'agent-stat' }, el('b', {}, relTime(a.lastRun ? a.lastRun.started_at : null)), el('span', {}, 'last run')), el('div', { class: 'agent-stat' }, el('b', {}, String(a.openUrgent || 0)), el('span', {}, 'urgent 48h'))];
+          ? [el('div', { class: 'agent-stat' }, el('b', {}, String((a.telemetry24h && a.telemetry24h.sessions) || 0)), el('span', {}, 'sessions 24h')), el('div', { class: 'agent-stat' }, el('b', {}, String((a.telemetry24h && a.telemetry24h.errors) || 0)), el('span', {}, 'error events')), el('div', { class: 'agent-stat' }, el('b', {}, relTime(a.lastSuccess ? a.lastSuccess.started_at : null)), el('span', {}, 'last success'))]
+          : key === 'titan'
+            ? [el('div', { class: 'agent-stat' }, el('b', {}, String(a.total || 0)), el('span', {}, 'backlog items')), el('div', { class: 'agent-stat' }, el('b', {}, String((a.counts && a.counts.proposed) || 0)), el('span', {}, 'proposed')), el('div', { class: 'agent-stat' }, el('b', {}, String(a.approvalPending || 0)), el('span', {}, 'need approval'))]
+            : [el('div', { class: 'agent-stat' }, el('b', {}, relTime(a.lastRun ? a.lastRun.started_at : null)), el('span', {}, 'last run')), el('div', { class: 'agent-stat' }, el('b', {}, String(a.openUrgent || 0)), el('span', {}, 'urgent 48h')), el('div', { class: 'agent-stat' }, el('b', {}, relTime(a.lastSuccess ? a.lastSuccess.started_at : null)), el('span', {}, 'last success'))];
       return el('section', { class: 'panel agent-card ' + key },
         el('div', { class: 'agent-head' }, agentIco(agent, key === 'au' ? 'AU' : key.charAt(0).toUpperCase()),
           el('div', {}, el('h3', {}, name), el('small', {}, role)),
           el('span', { class: 'status-pill ' + agentStatusClass(a.status) }, a.status || '—')),
         el('p', { class: 'agent-desc' }, desc),
         el('div', { class: 'agent-stat-row' }, ...stats),
-        el('p', { class: 'subtle' }, a.detail || ''));
+        el('p', { class: 'subtle' }, a.detail || ''),
+        a.nextAction ? el('p', { class: 'subtle', style: 'color:var(--amber)' }, 'Next action: ' + a.nextAction) : null);
     };
     const agentGrid = el('div', { class: 'grid grid-3' },
       agentCard('argon', 'ARGON', 'MOBILE APP INTELLIGENCE', 'Monitors app crashes, failed requests, login problems, release regressions and unusual usage patterns from privacy-bounded, untrusted telemetry.', 'argon'),
       agentCard('ultron', 'ULTRON', 'WEBSITE INTELLIGENCE', 'Runs scheduled availability, latency and route checks against the production website and verifies recovery after failures.', 'ultron'),
-      agentCard('au', 'AU', 'INTELLIGENCE COORDINATION', 'Correlates ARGON and ULTRON findings, challenges weak conclusions, preserves history and briefs the executive with evidence-linked recommendations.', 'au'));
+      agentCard('au', 'AU', 'INTELLIGENCE COORDINATION', 'Correlates ARGON and ULTRON findings, challenges weak conclusions, preserves history and briefs the executive with evidence-linked recommendations.', 'au'),
+      agentCard('titan', 'TITAN', 'CONTINUOUS APP IMPROVEMENT', 'Audits the app for simpler, faster, more reliable and cheaper-to-operate alternatives — preferring removal of complexity — and maintains the evidence-backed improvement backlog.', 'titan'));
+    // $0-budget panel: measured usage vs documented free allowances
+    const budget = data.budget || null;
+    const fmtBytes = b => b === null || b === undefined ? '—' : (b / 1024 / 1024).toFixed(2) + ' MB';
+    const budgetPanel = budget ? panel(
+      el('div', { class: 'section-head' },
+        el('div', {}, el('div', { class: 'eyebrow' }, 'ZERO-BUDGET OPERATIONS'), el('h2', {}, 'Free-allowance budget'),
+          el('p', { class: 'subtle', style: 'margin-top:6px' }, 'Measured usage against Cloudflare free allowances (limits verified ' + (budget.limits.verifiedAt || '—') + '; D1 daily caps are hard-enforced since 2026-09-01). Nothing here is claimed to be permanently free.')),
+        el('span', { class: 'status-pill ' + (budget.status === 'OK' ? 'st-operational' : budget.status === 'WARN' ? 'st-risk' : 'st-failed') }, budget.status)),
+      el('div', { class: 'agent-stat-row' },
+        el('div', { class: 'agent-stat' }, el('b', {}, budget.usage.rowsWrittenToday.value.toLocaleString()), el('span', {}, 'D1 rows written today (measured) · limit ' + budget.limits.d1RowsWrittenPerDay.toLocaleString())),
+        el('div', { class: 'agent-stat' }, el('b', {}, budget.usage.rowsReadToday.value.toLocaleString() + '~'), el('span', {}, 'D1 rows read today (estimated) · limit ' + (budget.limits.d1RowsReadPerDay / 1000000) + 'M')),
+        el('div', { class: 'agent-stat' }, el('b', {}, fmtBytes(budget.usage.storageBytes.value)), el('span', {}, 'D1 storage (measured) · limit ' + fmtBytes(budget.usage.storageBytes.limitBytes))),
+        el('div', { class: 'agent-stat' }, el('b', {}, Math.round((budget.usage.rowsWrittenToday.usedPct || 0) * 100) + '% / ' + Math.round((budget.usage.rowsReadToday.usedPct || 0) * 100) + '%~'), el('span', {}, 'daily allowance used (write / read~)'))),
+      el('p', { class: 'subtle', style: 'margin-top:8px' }, budget.nextAction),
+      el('p', { class: 'subtle' }, 'Cost trigger: leaving the Workers Free plan. Full framework: docs/ZERO-BUDGET-OPERATIONS.md.')) : null;
+
     // priority incidents + timeline
     const incidentsPanel = panel(
       el('div', { class: 'section-head' },
@@ -260,7 +294,7 @@
         el('p', { style: 'margin-top:8px;font-size:12.5px;color:#c3d1e2;line-height:1.7' }, 'Open the Briefings view for the full evidence-linked summary with recommendations and AU challenges.'))
         : el('div', { class: 'empty' }, el('span', { class: 'empty-ico' }, '▤'), el('strong', {}, 'No briefing has been generated'),
           el('p', {}, 'AU produces the daily executive summary automatically once the scheduled Worker runs its daily job.')));
-    view.replaceChildren(kpis, agentGrid, el('div', { class: 'split' }, incidentsPanel, el('div', { style: 'display:grid;gap:13px' }, timelinePanel, briefingTeaser)));
+    view.replaceChildren(kpis, agentGrid, budgetPanel, el('div', { class: 'split' }, incidentsPanel, el('div', { style: 'display:grid;gap:13px' }, timelinePanel, briefingTeaser)));
   }
   const incidentRows = list => el('div', {}, ...list.map(i => el('div', {
     class: 'tl-item', style: 'cursor:pointer', onclick: () => openIncident(i.id), role: 'button', tabindex: '0',
@@ -410,7 +444,21 @@
         el('tr', {}, el('td', {}, 'Latest weekly report'), el('td', {}, au.latestWeekly ? dateTime(au.latestWeekly.created_at) : 'none generated')),
         el('tr', {}, el('td', {}, 'Urgent alerts (48h)'), el('td', {}, String(au.openUrgent || 0)))),
       el('div', { class: 'notice', style: 'margin-top:12px' }, 'AU is deterministic and evidence-first: it correlates only temporally co-occurring findings, challenges every conclusion below the 0.6 confidence threshold, and never invents agent conversations. Every recommendation links to its evidence.'));
-    view.replaceChildren(ultronPanel, argonPanel, auPanel);
+
+    const t = a.titan || {};
+    const titanPanel = panel(
+      el('div', { class: 'section-head' }, el('div', {}, el('div', { class: 'eyebrow' }, 'CONTINUOUS APP IMPROVEMENT'), el('h2', {}, 'TITAN'), el('p', { class: 'subtle' }, t.detail || '')), el('span', { class: 'status-pill ' + agentStatusClass(t.status) }, t.status || '—')),
+      el('div', { class: 'action-row', style: 'margin-top:12px' },
+        el('button', { class: 'btn', onclick: async e => { e.target.disabled = true; e.target.textContent = 'Auditing…'; const r = await api('/api/intelligence/improve', { method: 'POST', body: {} }); e.target.disabled = false; e.target.textContent = '⬢ Run improvement audit now'; if (r.ok) { await renderAgents(); } else { alert('Audit failed: ' + (r.code || r.status)); } } }, '⬢ Run improvement audit now'),
+        el('button', { class: 'btn ghost', onclick: () => { location.hash = '#/titan'; } }, 'Open backlog →')),
+      el('table', { class: 'kv-table' },
+        el('tr', {}, el('td', {}, 'Last audit'), el('td', {}, relTime(t.lastRun ? t.lastRun.started_at : null))),
+        el('tr', {}, el('td', {}, 'Backlog items'), el('td', {}, String(t.total || 0))),
+        el('tr', {}, el('td', {}, 'Proposed / approved'), el('td', {}, ((t.counts && t.counts.proposed) || 0) + ' / ' + ((t.counts && t.counts.approved) || 0))),
+        el('tr', {}, el('td', {}, 'Implemented + rechecked'), el('td', {}, String(((t.counts && t.counts.implemented) || 0) + ((t.counts && t.counts.rechecked) || 0)))),
+        el('tr', {}, el('td', {}, 'Approval-flagged'), el('td', {}, String(t.approvalPending || 0)))),
+      el('div', { class: 'notice', style: 'margin-top:12px' }, 'TITAN audits app sources and telemetry for simpler, faster, more reliable, cheaper alternatives — preferring removal of complexity. It never edits code or ranking standards itself: low-risk items are implemented by operators, and anything touching ranking, migrations, destructive operations, sensitive data or production stays approval-flagged.'));
+    view.replaceChildren(ultronPanel, argonPanel, auPanel, titanPanel);
   }
 
   // ---------- analysis room ----------
@@ -576,8 +624,125 @@
         : el('div', { class: 'empty' }, el('span', { class: 'empty-ico' }, '▦'), el('strong', {}, 'No audit events yet'), el('p', {}, 'Events appear as operators act and automation runs.'))));
   }
 
+  // ---------- TITAN improvement backlog ----------
+  const riskChip = r => el('span', { class: 'sev-chip sev-' + ({ low: 'info', medium: 'low', high: 'medium' }[r] || 'info'), text: String(r || '—').toUpperCase() });
+  async function renderTitan() {
+    const view = $('view');
+    const res = await api('/api/intelligence/improvements');
+    if (!res.ok) { view.replaceChildren(errorPanel(res.code, res.status)); return; }
+    const items = res.data.items || [];
+    const f = (state.titanFilters ||= { status: '', risk: '' });
+    const filtered = items.filter(i => (!f.status || i.status === f.status) && (!f.risk || i.risk === f.risk));
+    const n = s => items.filter(i => i.status === s).length;
+    const flagged = items.filter(i => i.status === 'proposed' && (i.approvalFlags || []).length).length;
+    const select = (label, value, options, onchange) => el('label', { class: 'subtle', style: 'display:flex;align-items:center;gap:7px' }, label,
+      el('select', { onchange: e => onchange(e.target.value) }, ...options.map(o => el('option', { value: o[0], selected: value === o[0] ? '' : null }, o[1]))));
+    const filters = el('div', { class: 'filters' },
+      select('Status', f.status, [['', 'All'], ['proposed', 'Proposed'], ['approved', 'Approved'], ['in-progress', 'In progress'], ['implemented', 'Implemented'], ['rechecked', 'Rechecked'], ['failed', 'Recheck failed'], ['rejected', 'Rejected'], ['parked', 'Parked']], v => { f.status = v; renderTitan(); }),
+      select('Risk', f.risk, [['', 'All'], ['low', 'Low'], ['medium', 'Medium'], ['high', 'High']], v => { f.risk = v; renderTitan(); }));
+    const table = el('table', { class: 'incident-table' },
+      el('thead', {}, el('tr', {},
+        el('th', {}, 'Priority'), el('th', {}, 'Improvement'), el('th', { class: 'hide-sm' }, 'Area'), el('th', { class: 'hide-sm' }, 'Evidence'),
+        el('th', { class: 'hide-sm' }, 'Risk'), el('th', {}, 'Status'))),
+      el('tbody', {}, ...filtered.map(i => el('tr', { onclick: () => openImprovement(i.id), tabindex: '0', onkeydown: e => { if (e.key === 'Enter') openImprovement(i.id); } },
+        el('td', { class: 'mono' }, String(i.priority ?? '—')),
+        el('td', {}, el('div', { class: 't-title' }, i.title), el('div', { class: 't-sub' }, (i.approvalFlags || []).length ? '⚑ ' + i.approvalFlags.join(', ') : i.evidence_type)),
+        el('td', { class: 'hide-sm' }, String(i.area)),
+        el('td', { class: 'hide-sm' }, confidenceBar(i.confidence)),
+        el('td', { class: 'hide-sm' }, riskChip(i.risk)),
+        el('td', {}, statusChip(i.status))))));
+    view.replaceChildren(
+      panel(el('div', { class: 'section-head' },
+        el('div', {}, el('div', { class: 'eyebrow' }, 'CONTINUOUS IMPROVEMENT — SIMPLER · FASTER · MORE RELIABLE · CHEAPER'), el('h2', {}, 'TITAN improvement backlog'),
+          el('p', { class: 'subtle', style: 'margin-top:6px' }, 'Every item carries machine evidence, confidence, a test plan and a rollback plan. TITAN prefers removing complexity over adding features; nothing touches ranking standards without explicit approval.')),
+        el('div', { style: 'display:flex;gap:8px;align-items:center' },
+          el('span', { class: 'status-pill' }, items.length + ' items'),
+          el('button', { class: 'btn', onclick: async e => { e.target.disabled = true; e.target.textContent = 'Auditing…'; const r = await api('/api/intelligence/improve', { method: 'POST', body: {} }); e.target.disabled = false; e.target.textContent = '⬢ Run audit now'; if (r.ok) { alert((r.data.summary || 'Audit complete') + '\n\n' + (r.data.items || []).length + ' finding(s) upserted; decisions preserved.'); renderTitan(); } else { alert('Audit failed: ' + (r.code || r.status)); } } }, '⬢ Run audit now'))),
+        el('div', { class: 'agent-stat-row', style: 'margin:10px 0 4px' },
+          el('div', { class: 'agent-stat' }, el('b', {}, String(n('proposed'))), el('span', {}, 'proposed')),
+          el('div', { class: 'agent-stat' }, el('b', {}, String(n('approved'))), el('span', {}, 'approved')),
+          el('div', { class: 'agent-stat' }, el('b', {}, String(n('implemented') + n('rechecked'))), el('span', {}, 'implemented')),
+          el('div', { class: 'agent-stat' }, el('b', {}, String(flagged)), el('span', {}, 'approval-flagged'))),
+        filters,
+        filtered.length ? table : el('div', { class: 'empty' }, el('span', { class: 'empty-ico' }, '⬢'), el('strong', {}, 'No improvement items match this filter'), el('p', {}, 'Run an audit to generate findings from current app sources and telemetry.'))));
+    view.append(await competitorPanel());
+  }
+
+  // ---------- competitor research (batched, sourced, labelled) ----------
+  async function competitorPanel() {
+    const res = await api('/intelligence/competitors.json');
+    if (!res.ok) return el('section', { class: 'panel' }, el('p', { class: 'subtle' }, 'Competitor research unavailable.'));
+    const d = res.data || {};
+    const recs = (d.monteWoRecommendations || []).map(r =>
+      el('tr', {}, el('td', {}, el('strong', {}, r.recommendation)), el('td', { class: 'hide-sm' }, r.lesson), el('td', { class: 'hide-sm subtle' }, r.evidenceLabel || '')));
+    const comp = (d.competitors || []).map(c =>
+      el('tr', {}, el('td', {}, el('strong', {}, c.name), el('div', { class: 't-sub' }, c.type)), el('td', { class: 'hide-sm' }, (c.freeTier || c.ranking && c.ranking.model || '').slice(0, 140)), el('td', { class: 'hide-sm' }, (c.sources || []).length + ' source(s)')));
+    return panel(
+      el('div', { class: 'section-head' },
+        el('div', {}, el('div', { class: 'eyebrow' }, 'COMPETITOR RESEARCH — BATCHED QUARTERLY, NEVER CRAWLED'), el('h2', {}, 'Living competitor matrix'),
+          el('p', { class: 'subtle', style: 'margin-top:6px' }, 'Last researched ' + (d.lastResearched || '—') + '. Every entry is labelled verified / reviewer-opinion / marketing and carries its source links. Full detail: content/intelligence/competitors.json and docs/COMPETITOR-MATRIX.md.'))),
+      el('h4', { style: 'margin:14px 0 6px' }, 'Lessons adopted (only what fits MONTE WO)'),
+      el('table', { class: 'incident-table' },
+        el('thead', {}, el('tr', {}, el('th', {}, 'Recommendation'), el('th', { class: 'hide-sm' }, 'Lesson'), el('th', { class: 'hide-sm' }, 'Evidence'))),
+        el('tbody', {}, ...recs)),
+      el('h4', { style: 'margin:16px 0 6px' }, 'Researched apps'),
+      el('table', { class: 'incident-table' },
+        el('thead', {}, el('tr', {}, el('th', {}, 'Competitor'), el('th', { class: 'hide-sm' }, 'Free tier / ranking model'), el('th', { class: 'hide-sm' }, 'Sources'))),
+        el('tbody', {}, ...comp)));
+  }
+
+  async function openImprovement(id) {
+    const drawer = $('drawer'), overlay = $('drawer-overlay');
+    drawer.hidden = false; overlay.hidden = false;
+    drawer.replaceChildren(el('div', { class: 'loading-panel' }, el('span', { class: 'spin' }), el('p', {}, 'Loading improvement item…')));
+    const res = await api('/api/intelligence/improvements/' + id);
+    if (!res.ok) { drawer.replaceChildren(el('div', { class: 'drawer-head' }, el('h3', {}, 'Improvement'), el('button', { class: 'drawer-close', 'aria-label': 'Close panel', onclick: closeDrawer }, '✕')), errorPanel(res.code, res.status)); return; }
+    const i = res.data.item;
+    const section = (title, ...body) => el('div', { class: 'd-section' }, el('h4', {}, title), ...body);
+    const evidenceRows = Object.entries(i.evidence || {}).map(([k, v]) => el('div', { class: 'kv' }, el('span', { class: 'k' }, k), el('span', { class: 'v mono' }, typeof v === 'object' ? JSON.stringify(v) : String(v))));
+    const note = el('textarea', { rows: '2', placeholder: 'Decision / implementation note (recorded in the audit trail)', style: 'width:100%;background:var(--bg);color:var(--text);border:1px solid var(--line);border-radius:8px;padding:8px;font:inherit' });
+    const ack = el('input', { type: 'checkbox', id: 'ack-flags' });
+    const act = async (action, body) => {
+      const r = await api('/api/intelligence/improvements/' + id + '?action=' + action, { method: 'POST', body });
+      if (r.ok) { openImprovement(id); renderTitan(); } else { alert('Action failed: ' + (r.code || r.status) + (r.code === 'approval-acknowledgment-required' ? '\n\nThis item is approval-flagged: acknowledge the flags to proceed.' : '')); }
+      return r.ok;
+    };
+    const actions = el('div', { class: 'd-actions', style: 'display:flex;flex-direction:column;gap:8px' });
+    if (['proposed', 'parked', 'rejected', 'in-progress'].includes(i.status)) {
+      const flags = i.approvalFlags || [];
+      let approveBtn = null;
+      if (flags.length) {
+        actions.append(el('label', { style: 'display:flex;gap:8px;align-items:flex-start;color:var(--amber)' }, ack,
+          el('span', {}, 'This item is flagged: ', el('b', {}, flags.join(', ')), '. Approving affects official standards or sensitive surfaces and requires explicit acknowledgment.')));
+        ack.addEventListener('change', () => { if (approveBtn) approveBtn.disabled = !ack.checked; });
+      }
+      approveBtn = el('button', { class: 'btn', disabled: flags.length ? '' : null, onclick: async e => { e.target.disabled = true; await act('decide', { decision: 'approved', note: note.value, acknowledged: ack.checked ? flags : [] }); e.target.disabled = false; } }, flags.length ? 'Approve (acknowledge flags first)' : 'Approve');
+      actions.append(el('div', { style: 'display:flex;gap:8px;flex-wrap:wrap' },
+        approveBtn,
+        el('button', { class: 'btn ghost', onclick: () => act('decide', { decision: 'rejected', note: note.value }) }, 'Reject'),
+        el('button', { class: 'btn ghost', onclick: () => act('decide', { decision: 'parked', note: note.value }) }, 'Park')));
+    }
+    if (i.status === 'approved') actions.append(el('button', { class: 'btn', onclick: async e => { e.target.disabled = true; await act('implement', { note: note.value || 'implemented' }); e.target.disabled = false; } }, 'Record implementation (with test evidence in the note)'));
+    if (['implemented', 'rechecked', 'approved'].includes(i.status)) actions.append(el('button', { class: 'btn ghost', onclick: async e => { e.target.disabled = true; e.target.textContent = 'Rechecking…'; await act('recheck', {}); e.target.disabled = false; e.target.textContent = '⟳ Recheck for regressions'; } }, '⟳ Recheck for regressions'));
+    drawer.replaceChildren(
+      el('div', { class: 'drawer-head' }, el('h3', {}, 'Improvement item'), el('button', { class: 'drawer-close', 'aria-label': 'Close panel', onclick: closeDrawer }, '✕')),
+      el('div', { class: 'd-meta' }, statusChip(i.status), riskChip(i.risk), el('span', { class: 'agent-chip' }, i.area), el('span', { class: 'agent-chip' }, i.evidence_type)),
+      el('h3', { style: 'margin:10px 0 4px' }, i.title),
+      section('Problem', el('p', {}, i.problem)),
+      section('Evidence (' + i.evidence_type + ', confidence ' + confPct(i.confidence) + ')', ...evidenceRows),
+      section('Proposed change', el('p', {}, i.proposed_change)),
+      section('Benefit · Cost', el('p', {}, i.benefit), el('p', { class: 'subtle' }, 'Cost: ' + i.cost)),
+      section('Test plan', el('p', {}, i.test_plan)),
+      section('Rollback plan', el('p', {}, i.rollback_plan)),
+      (i.approvalFlags || []).length ? section('Approval flags', el('p', { style: 'color:var(--amber)' }, i.approvalFlags.join(', ') + ' — human approval required; can never be auto-applied.')) : null,
+      i.decided_by ? section('Decision', el('p', {}, (i.decided_by || '—') + ' · ' + dateTime(i.decided_at)), i.decision_note ? el('p', { class: 'subtle' }, '"' + i.decision_note + '"') : null) : null,
+      i.implemented_at ? section('Implementation', el('p', {}, dateTime(i.implemented_at)), i.implement_note ? el('p', { class: 'subtle' }, '"' + i.implement_note + '"') : null) : null,
+      i.recheckResult ? section('Recheck ' + (i.recheckResult.passed ? '✓ verified' : '✗ regression detected'), el('p', {}, i.recheckResult.summary || ''), el('p', { class: 'subtle' }, 'Checked ' + dateTime(i.recheckResult.checkedAt))) : null,
+      actions, note);
+  }
+
   // ---------- router ----------
-  const routes = { overview: renderOverview, incidents: renderIncidents, agents: renderAgents, analysis: renderAnalysis, briefings: renderBriefings, automation: renderAutomation, audit: renderAudit };
+  const routes = { overview: renderOverview, incidents: renderIncidents, agents: renderAgents, analysis: renderAnalysis, titan: renderTitan, briefings: renderBriefings, automation: renderAutomation, audit: renderAudit };
   function navigate() {
     const name = (location.hash.replace(/^#\/?/, '') || 'overview').split('?')[0];
     const route = routes[name] || renderOverview;

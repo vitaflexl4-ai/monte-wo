@@ -20,6 +20,21 @@ export function localOperatorAllowed(env, url) {
   return env.LOCAL_DEVELOPMENT === 'true' && ['localhost', '127.0.0.1', '[::1]'].includes(url.hostname);
 }
 
+const timingSafeEqual = (a, b) => {
+  const ea = new TextEncoder().encode(String(a)), eb = new TextEncoder().encode(String(b));
+  if (ea.length !== eb.length) return false;
+  let diff = 0; for (let i = 0; i < ea.length; i++) diff |= ea[i] ^ eb[i];
+  return diff === 0;
+};
+// Private PREVIEW access for development environments only (e.g. ephemeral preview hosts).
+// Honored ONLY when LOCAL_DEVELOPMENT=true AND PREVIEW_TOKEN is set; production uses Cloudflare
+// Access. A preview host without the bearer token is refused exactly like any public hostname.
+export function previewTokenAllowed(env, url, request) {
+  if (env.LOCAL_DEVELOPMENT !== 'true' || typeof env.PREVIEW_TOKEN !== 'string' || env.PREVIEW_TOKEN.length < 16) return false;
+  const match = /^Bearer ([A-Za-z0-9_-]{16,128})$/.exec(request.headers.get('Authorization') || '');
+  return !!match && timingSafeEqual(match[1], env.PREVIEW_TOKEN);
+}
+
 export async function verifyAccessJwt(request, env, fetcher = fetch) {
   requireThat(intelligenceConfigured(env), 'intelligence-not-configured', 503);
   const token = request.headers.get('Cf-Access-Jwt-Assertion');
@@ -54,6 +69,14 @@ export async function verifyAccessJwt(request, env, fetcher = fetch) {
 // Returns {id, subject, role} or throws. Mutations require role 'admin'.
 export async function authenticateOperator(request, env, url, deps = {}) {
   requireThat(!!env.INTEL_DB, 'intelligence-not-configured', 503);
+  // Setting PREVIEW_TOKEN HARDENS the preview: the token becomes mandatory for every host,
+  // including localhost. Without it, the classic localhost bypass applies in local development.
+  if (previewTokenAllowed(env, url, request)) {
+    return { id: 'preview-operator', subject: 'preview-token', role: 'admin', via: 'preview-token' };
+  }
+  if (env.LOCAL_DEVELOPMENT === 'true' && typeof env.PREVIEW_TOKEN === 'string' && env.PREVIEW_TOKEN.length >= 16) {
+    throw new IntelError('authentication-required', 401);
+  }
   if (localOperatorAllowed(env, url)) {
     return { id: 'local-operator', subject: 'local-development', role: 'admin', via: 'local-development' };
   }

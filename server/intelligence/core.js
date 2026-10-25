@@ -9,7 +9,7 @@
 import { IntelError, requireThat } from './errors.js';
 
 export const SEVERITY_RANK = Object.freeze({ info: 1, low: 2, medium: 3, high: 4, critical: 5 });
-export const AGENTS = Object.freeze(['ARGON', 'ULTRON', 'AU']);
+export const AGENTS = Object.freeze(['ARGON', 'ULTRON', 'AU', 'TITAN']);
 export const uid = () => crypto.randomUUID();
 export const nowIso = () => new Date().toISOString();
 export const maxSeverity = (a, b) => SEVERITY_RANK[a] >= SEVERITY_RANK[b] ? a : b;

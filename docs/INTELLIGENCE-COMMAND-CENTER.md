@@ -11,6 +11,7 @@ Agents:
 | **ARGON** | Mobile app | Crash/error/login-failure telemetry intake (privacy-bounded, untrusted), release-regression detection, new error signatures |
 | **ULTRON** | Website | Scheduled availability/latency/route checks, escalation, recovery verification |
 | **AU** | Coordination | Cross-agent correlation, challenging weak conclusions, daily/weekly/urgent briefings, bounded automation governance |
+| **TITAN** | Continuous app improvement | Audits the app's own sources + telemetry for simpler/faster/more reliable/cheaper alternatives (preferring REMOVAL of complexity), maintains the evidence-backed improvement backlog, verifies implemented improvements for regressions |
 
 ## Architecture
 
@@ -37,12 +38,15 @@ so the manual "Verify now" button and the scheduled cron behave identically.
 
 ### Files
 
-- `migrations/0003_intelligence.sql`, `migrations/0004_intelligence_ops.sql` — schema (apply both, in order)
-- `server/intelligence/` — `auth.js` (Access JWT + operator RBAC), `api.js` (routes), `core.js` (shared engine), `telemetry.js` (intake contract), `errors.js`
+- `migrations/0003_intelligence.sql` → `0005_intelligence_titan.sql` — schema (apply in order; 0005 adds the TITAN improvement backlog and registers TITAN in the agent-run log)
+- `server/intelligence/` — `auth.js` (Access JWT + operator RBAC + preview-token hardening), `api.js` (routes), `core.js` (shared engine), `titan.js` (improvement audit engine), `budget.js` ($0-allowance measurement), `telemetry.js` (intake contract), `errors.js`
 - `intelligence-worker/` — scheduled runtime (`src/index.js`, `wrangler.toml`)
-- `public/intelligence/` — private dashboard SPA (no framework, no dependencies, CSP-strict)
+- `public/intelligence/` — private dashboard SPA (no framework, no dependencies, CSP-strict) + `competitors.json` (living competitor matrix data)
 - `apps/mobile/src/telemetry.ts` — consent-gated ARGON client for the Expo app
-- `tests/intelligence.test.js` — 27 tests: real SQLite, real RS256 keys, full pipelines
+- `content/intelligence/competitors.json` + `docs/COMPETITOR-MATRIX.md` — batched, sourced, labelled competitor research
+- `docs/ZERO-BUDGET-OPERATIONS.md` — the $0 framework: allowances, measurements, cost triggers
+- `scripts/preview-intelligence.mjs` + `scripts/preview-proxy.mjs` — one-command private local preview
+- `tests/intelligence.test.js` — 37 tests: real SQLite, real RS256 keys, full pipelines
 
 ## Monitoring model
 
@@ -147,6 +151,66 @@ Approving a rule requires an admin, a typed confirmation matching the rule id, a
 record. **Never automated:** production deployments, destructive database operations, account
 restrictions, security-blocking decisions. Every automated effect is auditable and reversible.
 
+## TITAN — continuous app improvement (Phase 2)
+
+TITAN's mandate is to make the app **simpler, faster, more reliable, easier to understand and
+cheaper to operate — preferring removal of complexity over addition of features.**
+
+- **Audit** (`POST /api/intelligence/improve`, or the ⬢ button): runs deterministic checks over
+  the app sources (fetched read-only from `TITAN_SOURCES_URL` — local/CI only) and the telemetry
+  ARGON actually collected. Every finding carries machine evidence (file refs, counts, telemetry
+  fingerprints), an evidence type (`static-analysis` / `telemetry` / `manual-review`), a confidence
+  value, a proposed change, benefit/cost/risk, a test plan and a rollback plan.
+- **Findings that no longer fire are parked automatically** (with an honest note); if sources are
+  unavailable, source-based findings are *not* judged — silence is not evidence of a fix.
+- **Human decisions are authoritative and preserved across re-runs.** Approve / reject / park /
+  implement / recheck are operator actions, each audited. TITAN itself never edits code.
+- **Approval guardrails:** items touching ranking standards, major redesigns, migrations,
+  destructive operations, sensitive data or production are hard-flagged (`approval_flags_json`)
+  and can NEVER be approved without an explicit per-flag acknowledgment (`acknowledged` array).
+  MONTE WO's rank thresholds can never be weakened by an improvement item.
+- **Recheck** (`?action=recheck`): re-runs the audit and reports whether the original detector
+  still fires. `passed: true` = verified effective; `passed: false` = regression/incomplete fix.
+- **Dashboard:** dedicated *TITAN improvements* view (backlog table, full-item drawer with
+  evidence/plans/decision trail, action buttons with acknowledgment checkbox for flagged items).
+
+### First real improvement loop (completed 2026-10-24)
+
+1. Audit detected `a11y-unlabelled-touchables` from real source analysis (10 of 19 touchable
+   controls had no `accessibilityLabel`) — approved as low-risk via the API.
+2. Implemented for real: 11 labels added in `apps/mobile/App.tsx` (19/19 controls labelled).
+   Verified: `tsc --noEmit` clean, mobile suite 37/37 (see below).
+3. Recorded with test evidence, then **recheck passed** — the detector no longer fires against
+   the fixed source. The loop is closed and repeatable.
+4. A false-positive finding (`nav-recording-depth` — the app already has a direct "Log a
+   performance" action) was caught by re-verification and **auto-parked with an honest note**.
+5. Related fix outside TITAN: `apps/mobile/eas.json` was missing the `preview` build profile its
+   own security test expects (internal-APK risk acceptance gate) — the test had failed since the
+   profile's introduction; restored, suite now green.
+
+## Zero-budget framework (Phase 4)
+
+- `GET /api/intelligence/budget` + the overview **Free-allowance budget** panel measure usage
+  against Cloudflare's free allowances (limits verified 2026-10-24, sources cited in the API).
+- **Measured:** D1 rows written today (per table, from our own timestamped writes) and storage
+  (when the platform exposes page statistics). **Estimated and labelled as such:** rows read.
+  Unavailable values are reported as `null`, never as zero.
+- D1 daily caps are **hard-enforced since 2026-09-01** (queries fail until 00:00 UTC), so the
+  dashboard warns at **80%** of any allowance before the stop. Full framework, cost triggers and
+  the if-$0-fails procedure: `docs/ZERO-BUDGET-OPERATIONS.md`.
+
+## Competitor research (Phase 3)
+
+- Living matrix: `content/intelligence/competitors.json` (rendered in the TITAN view) +
+  `docs/COMPETITOR-MATRIX.md`. Researched 2026-10-24 from official pages, store listings and help
+  centres; reviewer opinions and marketing claims are labelled as such; every entry carries source
+  links and the research date.
+- Cadence: **batched quarterly or on major releases** — never continuous crawling ($0 rule).
+- Only lessons that fit MONTE WO's identity are adopted (minimal-tap recording, next-action
+  clarity, never locking history behind payment, keeping provisional/estimated/verified distinct,
+  offline-first). Social feeds, unverified leaderboards and paid AI programming are explicitly
+  NOT emulated.
+
 ## Deployment checklist (exact order)
 
 1. `npx wrangler d1 create monte-wo-intelligence` (dedicated database — do not reuse the waitlist/app DB).
@@ -173,7 +237,7 @@ Until steps 1–8 are done and verified, the command center is not operational �
 
 ## Verification performed (this branch)
 
-- `npm run test:intelligence` — **28/28 passing** (auth incl. forged/expired/wrong-issuer tokens,
+- `npm run test:intelligence` — **37/37 passing** (auth incl. forged/expired/wrong-issuer tokens,
   RBAC, local-bypass scope, telemetry contract, ingest idempotency + rate limits, ULTRON
   dedup/escalation/recovery/auto-resolve gating, ARGON detectors incl. missing-denominator honesty,
   AU correlation + follow-the-members resolution, daily/weekly briefings, health computation,
@@ -187,6 +251,18 @@ Until steps 1–8 are done and verified, the command center is not operational �
   release regression, and a daily briefing with decision-required recommendations. A DOM smoke test
   of the dashboard (all 7 views, incident drawer with evidence, briefings, automation governance,
   audit, no JS errors) passed against those live API responses.
+- **Real-browser e2e (this branch, 2026-10-24):** `tests/intelligence-browser.mjs` against the
+  token-gated private preview with a real Chromium — overview KPIs, all 8 views (incl. TITAN
+  backlog + competitor matrix + budget panel), incident drawer with evidence, briefings,
+  automation governance, 5 responsive layouts (390–1500px) with no horizontal overflow, security
+  headers, and **zero console/page errors**. Fixing this surfaced and removed CSP `style-src`
+  violations (inline styles now applied via CSP-safe CSSOM in the SPA's `el()` helper — the
+  strict CSP itself was not weakened).
+- **TITAN improvement loop verified end-to-end** (audit → approve → implement → test → record →
+  recheck-pass) against the real app source; see "First real improvement loop" above.
+- **Mobile app:** `tsc --noEmit` clean and the build-security/catalog suite **37/37** after this
+  branch's changes (accessibility labels; eas.json preview profile restored — one test had failed
+  since the profile was introduced on `main`).
 - `npx wrangler deploy --dry-run --config intelligence-worker/wrangler.toml` — the worker bundles
   correctly (44 KiB / 12 KiB gzip) including the shared core imported from `server/intelligence/`.
 - Full suite `npm test` after `npm run build`: 190/194 — the 4 failures are pre-existing on `main`
@@ -199,12 +275,24 @@ Until steps 1–8 are done and verified, the command center is not operational �
   `_headers`.
 - No production deployment, database change or Cloudflare configuration was performed.
 
-## Local preview
+## Local preview (private)
 
 ```sh
-npx wrangler pages dev public --d1 DB --d1 INTEL_DB --binding LOCAL_DEVELOPMENT=true --ip 0.0.0.0 --port 8080
-# apply migrations to the local INTEL_DB, then open /intelligence/
+node scripts/preview-intelligence.mjs
+# one command: wrangler pages dev on :8081 (INTEL_DB, LOCAL_DEVELOPMENT, generated PREVIEW_TOKEN,
+# TITAN_SOURCES_URL if set) + the host-rewriting proxy on :8080. Prints the dashboard URL + token.
+# apply migrations to the local INTEL_DB (wrangler.intel-local.toml targets the same sqlite), then open
+# http://localhost:8080/intelligence/ and unlock with the printed token.
 ```
 
-With `LOCAL_DEVELOPMENT=true` on a localhost hostname the API accepts a local admin (same preview
-convention as the waitlist). This bypass can never run on a public hostname.
+Two preview-hardening behaviours, both tested:
+
+- **Preview token:** when `PREVIEW_TOKEN` (≥16 chars) is set together with `LOCAL_DEVELOPMENT=true`,
+  the token is required from **every** host — including localhost. Setting it *hardens* the preview;
+  it never widens access. Comparison is constant-time.
+- **Host-rewriting proxy:** `wrangler pages dev` only attaches CLI bindings (e.g. `--d1 INTEL_DB`)
+  to localhost/127.0.0.1 Host headers. Remote preview tunnels therefore hit a binding-less
+  environment where the API correctly fails closed. `scripts/preview-proxy.mjs` rewrites the Host
+  header to localhost so the preview URL works, while the API still enforces authentication.
+- Without `PREVIEW_TOKEN`, the classic localhost local-admin bypass applies in local development
+  only; it can never run on a public hostname.

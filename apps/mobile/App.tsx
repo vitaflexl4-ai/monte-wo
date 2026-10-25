@@ -656,6 +656,7 @@ function Home({ navigation }: any) {
           </Text>
           <Pressable
             accessibilityRole="button"
+            accessibilityLabel="Start training"
             onPress={() => navigation.navigate("Train")}
             style={{
               flexDirection: "row",
@@ -774,6 +775,7 @@ function Home({ navigation }: any) {
         <Pressable
           style={v.quick}
           accessibilityRole="button"
+          accessibilityLabel="Open muscle map"
           onPress={() => navigation.navigate("MuscleMap")}
         >
           <ScanLine color={C.cyan} size={23} />
@@ -783,6 +785,7 @@ function Home({ navigation }: any) {
         <Pressable
           style={v.quick}
           accessibilityRole="button"
+          accessibilityLabel="Log a performance"
           onPress={() => navigation.navigate("Performance")}
         >
           <ShieldCheck color={C.cyan} size={23} />
@@ -827,6 +830,7 @@ function Home({ navigation }: any) {
       <Pressable
         style={[s.card, s.row]}
         accessibilityRole="button"
+        accessibilityLabel="Open nutrition guidance"
         onPress={() => navigation.navigate("Nutrition")}
       >
         <Utensils size={24} color={C.cyan} />
@@ -993,6 +997,7 @@ function Nutrition() {
           key={id}
           style={[s.card, s.row]}
           accessibilityRole="button"
+          accessibilityLabel={"Open " + name}
           onPress={() => legal("/tools/" + id + "/")}
         >
           <Utensils size={23} color={C.cyan} />
@@ -1066,6 +1071,7 @@ function SignIn({ navigation }: any) {
       {op.message && <Notice text={op.message} error />}
       <Pressable
         accessibilityRole="button"
+        accessibilityLabel="Explore the app without an account"
         onPress={() => navigation.replace("Main")}
         style={{ padding: 13, alignItems: "center" }}
       >
@@ -1075,6 +1081,7 @@ function SignIn({ navigation }: any) {
         <Text style={v.subtle}>Need pilot access?</Text>
         <Pressable
           accessibilityRole="button"
+          accessibilityLabel="Email for pilot access"
           onPress={() =>
             Linking.openURL(
               "mailto:Montewo@vitaflexbusinessgroup.com?subject=MONTE%20WO%20pilot%20access",
@@ -1347,6 +1354,7 @@ function Library({ navigation, route }: any) {
         <View style={{ flexDirection: "row", gap: 8, flexWrap: "wrap" }}>
           <Pressable
             accessibilityRole="button"
+            accessibilityLabel="Equipment filter"
             accessibilityState={{ expanded: equipmentOpen }}
             onPress={() => setEquipmentOpen(!equipmentOpen)}
             style={s.chip}
@@ -1370,6 +1378,7 @@ function Library({ navigation, route }: any) {
           {filtered && (
             <Pressable
               accessibilityRole="button"
+              accessibilityLabel="Reset filters"
               onPress={reset}
               style={[s.chip, { borderColor: "#375d7c" }]}
             >
@@ -2004,6 +2013,7 @@ function Check({
   return (
     <Pressable
       accessibilityRole="checkbox"
+      accessibilityLabel={text}
       accessibilityState={{ checked }}
       onPress={onChange}
       style={{ flexDirection: "row", gap: 12, paddingVertical: 9 }}
@@ -2310,6 +2320,7 @@ function Reviews({ navigation }: any) {
               key={r.id}
               style={s.card}
               accessibilityRole="button"
+              accessibilityLabel={"Open evidence review " + String(r.id).slice(0, 8)}
               onPress={() => navigation.navigate("Review", { record: r })}
             >
               <Label>
