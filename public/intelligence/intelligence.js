@@ -48,7 +48,17 @@
   const agentStatusClass = st => 'st-' + String(st || '').toLowerCase().replace(/\s+/g, '-');
 
   // ---------- API ----------
-  const previewToken = () => { try { return sessionStorage.getItem('mwPreviewToken') || ''; } catch { return ''; } };
+  // Token storage: sessionStorage when available, plus an in-memory fallback so the preview
+  // still unlocks inside sandboxed iframes where storage access throws. Never logged anywhere.
+  let mwTokenMemory = '';
+  let mwUnlockFailed = false;
+  const storePreviewToken = value => {
+    mwTokenMemory = value;
+    try { sessionStorage.setItem('mwPreviewToken', value); } catch { /* storage unavailable */ }
+  };
+  const previewToken = () => {
+    try { return sessionStorage.getItem('mwPreviewToken') || mwTokenMemory; } catch { return mwTokenMemory; }
+  };
   async function api(path, options = {}) {
     const init = { headers: { accept: 'application/json' }, cache: 'no-store', credentials: 'same-origin' };
     const token = previewToken();
@@ -95,12 +105,28 @@
   function errorPanel(code, status) {
     if (code === 'authentication-required' || code === 'invalid-token' || code === 'authentication-failed' || status === 401) {
       const input = el('input', { type: 'password', placeholder: 'Preview access token', 'aria-label': 'Preview access token', style: 'background:#0a0f18;color:var(--text);border:1px solid var(--line2);border-radius:8px;padding:9px 11px;font:inherit;font-size:12px;width:min(280px,80vw)' });
+      if (mwTokenMemory) input.value = mwTokenMemory;
+      const status = el('p', { class: 'subtle', style: 'margin-top:10px;min-height:1.2em' }, mwUnlockFailed ? 'That token was not accepted (401). Check it for missing characters — it is case-sensitive.' : '');
+      const attempt = async () => {
+        const value = input.value.trim();
+        if (!value) { status.textContent = 'Enter the preview access token first.'; return; }
+        status.textContent = 'Checking token…';
+        storePreviewToken(value);
+        const probe = await api('/api/intelligence/overview');
+        if (probe.ok) { mwUnlockFailed = false; state.overview = null; refresh(); return; }
+        mwUnlockFailed = true;
+        status.textContent = probe.status === 401
+          ? 'That token was not accepted (401). Check it for missing characters — it is case-sensitive.'
+          : 'Unlock failed: ' + (probe.code || probe.status) + '. The backend may be down — try again.';
+      };
+      input.addEventListener('keydown', e => { if (e.key === 'Enter') attempt(); });
       return panel(el('div', { class: 'empty' },
         el('span', { class: 'empty-ico' }, '🔒'),
         el('strong', {}, 'Authentication required'),
         el('p', {}, 'In production this page is protected by Cloudflare Access — open it through your Access-protected deployment URL. In a development preview, enter the preview access token supplied by the operator.'),
         el('div', { style: 'display:flex;gap:8px;justify-content:center;margin-top:12px;flex-wrap:wrap' }, input,
-          el('button', { class: 'btn primary', onclick: () => { try { sessionStorage.setItem('mwPreviewToken', input.value.trim()); } catch { } location.reload(); } }, 'Unlock preview'))));
+          el('button', { class: 'btn primary', onclick: attempt }, 'Unlock preview')),
+        status));
     }
     if (code === 'operator-not-provisioned') {
       return panel(el('div', { class: 'empty' },
