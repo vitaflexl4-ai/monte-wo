@@ -138,3 +138,12 @@ is your pipeline).
 $0 budget · official sources only · fail-closed · no fabricated data · automation disabled by
 default and enabled only with explicit approval · production mutations only through the
 reviewed API paths · demo/simulation always watermarked and isolated from production records.
+
+### Deploy marker semantics
+
+A push deploys **only** when the head commit message contains the literal marker
+`[deploy]`. Mentioning the marker in prose (docs, comments) can trigger a run, so keep
+the marker out of ordinary commit messages. A run without the `CLOUDFLARE_API_TOKEN`
+secret stops at the token check (exit 3) with setup instructions in the run log —
+nothing is deployed, nothing is half-deployed; every step is resumable once the secret
+exists.
