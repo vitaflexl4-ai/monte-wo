@@ -658,6 +658,13 @@ test('AU ROOM module exists, is CSP-safe, wired into the app, and visualizes onl
   assert.match(room, /\/api\/intelligence\/improvements/, 'reads real TITAN findings');
   assert.match(room, /nothing is simulated|nothing is being simulated/i, 'labels the visualization honestly');
   assert.match(room, /AWAITING/, 'idle agents render as awaiting, never fake-busy');
+  // product brief: owner labelled as human, reality-mode taxonomy, honest not-connected markers
+  assert.match(room, /VITAFLEX \(SONY\)/, 'operator station labelled Vitaflex (Sony)');
+  assert.match(room, /never portrayed as an AI agent/, 'owner never portrayed as an AI agent');
+  assert.match(room, /modeLabel/, 'derives the LIVE/IDLE/NOT CONNECTED/FAILED mode from real state');
+  assert.match(room, /traffic analytics: NOT CONNECTED/, 'ULTRON does not imply connected traffic analytics');
+  assert.match(room, /proposals only until owner approval/, 'TITAN marked proposals-only');
+  assert.match(room, /\/api\/intelligence\/briefings/, 'owner console reads the real briefings endpoint');
   // honesty caption is permanent in the UI
   const css = readFileSync('public/intelligence/room.css', 'utf8');
   assert.ok(css.length > 1000, 'room styles exist');

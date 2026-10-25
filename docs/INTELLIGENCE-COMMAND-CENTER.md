@@ -190,9 +190,20 @@ cheaper to operate — preferring removal of complexity over addition of feature
 
 ## AU ROOM — 3D operations floor (Phase 5)
 
-`#/room` renders the four agents as avatars on a 3D operations floor (custom dependency-free
-canvas renderer — no external libraries, CSP-clean). **It is a live visualization of real
-activity, not a simulation of fictitious work:**
+`#/room` renders the agents on a 3D operations floor (custom dependency-free canvas renderer —
+no external libraries, CSP-clean). Layout follows the product brief: **ARGON's blue mobile/app
+station left, ULTRON's red website-health station right, AU central coordinator at the holo
+table, TITAN at a distinct side station (research/proposals only), and the human owner —
+Vitaflex (Sony) — seated at the central command console**, labelled Owner/Operator and never
+portrayed as an AI agent. Visual target: `docs/INTELLIGENCE-ROOM-README.md` +
+`docs/assets/intelligence-command-center-concept.png` (concept art only — its sample metrics
+are never copied into the product as real data).
+
+Every agent carries a reality-mode chip from a fixed taxonomy derived only from real API state:
+**LIVE** (runs recorded), **IDLE / WAITING** (e.g. ARGON before telemetry exists), **NOT
+CONNECTED** (backend unreachable / integration absent — ULTRON's screen states "traffic
+analytics: NOT CONNECTED" until an aggregate-only provider integration exists), **FAILED**.
+**The room is a live visualization of real activity, not a simulation of fictitious work:**
 
 - **Every screen value comes from the authenticated API** (overview, timeline, incidents,
   improvements — polled every 12 s): ULTRON's targets/uptime/latency, ARGON's telemetry state,
@@ -206,8 +217,10 @@ activity, not a simulation of fictitious work:**
   the agent that produced it walks to the central table and the event card (real title, real
   timestamp) appears above it.
 - **"What's real right now"** lists, per agent, the exact real fact behind the current
-  animation; clicking a name tag opens the full run history. The action buttons trigger real
-  runs (`POST /verify`, `POST /improve`) and report their real results.
+  animation; clicking a name tag opens the full run history. The owner console shows the latest
+  real AU briefing and states that automation + TITAN proposals require explicit owner approval.
+  The action buttons trigger real runs (`POST /verify`, `POST /improve`) and report their real
+  results. TITAN's screen is marked "proposals only until owner approval".
 - Camera: drag to orbit, scroll/pinch to zoom, double-click to reset; `prefers-reduced-motion`
   disables auto-orbit, walking and flicker.
 

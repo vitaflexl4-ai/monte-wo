@@ -19,14 +19,18 @@
   const VERSION = '1.0';
   let instance = null;
 
-  // Agent identities — colors match the Command Center palette exactly.
+  // Agent identities — colors match the Command Center palette exactly. Layout per the
+  // product brief: ARGON's blue mobile/app station LEFT, ULTRON's red website-health station
+  // RIGHT, AU central coordinator, TITAN at a distinct side station (research/proposals only),
+  // and the human owner seated at the central command position (never portrayed as an agent).
   const AGENTS = {
-    ultron: { name: 'ULTRON', color: '#ff444f', station: { x: -7.6, z: -4.4 }, side: -1 },
-    argon: { name: 'ARGON', color: '#5aadff', station: { x: 7.6, z: -4.4 }, side: 1 },
-    titan: { name: 'TITAN', color: '#7ee0c0', station: { x: -7.6, z: 4.4 }, side: -1 },
-    au: { name: 'AU', color: '#e9ba63', station: { x: 7.6, z: 4.4 }, side: 1 }
+    argon: { name: 'ARGON', color: '#5aadff', station: { x: -8.6, z: 0 }, side: 1 },
+    ultron: { name: 'ULTRON', color: '#ff444f', station: { x: 8.6, z: 0 }, side: -1 },
+    au: { name: 'AU', color: '#e9ba63', station: { x: 0, z: -4.6 }, side: 1 },
+    titan: { name: 'TITAN', color: '#7ee0c0', station: { x: -8.6, z: -5.8 }, side: 1 }
   };
   const KEYS = Object.keys(AGENTS);
+  const OPERATOR = { name: 'VITAFLEX (SONY)', role: 'Owner / Operator', color: '#c9d7ee', pos: { x: 0, z: 3.6 } };
 
   const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
   const TAU = Math.PI * 2;
@@ -173,7 +177,7 @@
     }
 
     // ================= scene data =================
-    const data = { overview: null, timeline: [], incidents: [], improvements: [], at: null, ok: false };
+    const data = { overview: null, timeline: [], incidents: [], improvements: [], briefing: null, at: null, ok: false };
     const seen = new Set();
     let seeded = false;
 
@@ -216,6 +220,25 @@
       screens[key] = { corners, ang, body, tag, w };
     }
 
+    // owner/operator station (human — Vitaflex (Sony)) — command console facing the table
+    const opAng = Math.atan2(-OPERATOR.pos.x, -OPERATOR.pos.z);
+    const opw = 3.6, oph = 2.0, opBase = 1.15;
+    const orx = Math.cos(opAng), orz = -Math.sin(opAng);
+    const opc = OPERATOR.pos;
+    const opScreen = {
+      corners: [
+        [opc.x - orx * opw / 2, opBase, opc.z - orz * opw / 2],
+        [opc.x + orx * opw / 2, opBase, opc.z + orz * opw / 2],
+        [opc.x + orx * opw / 2, opBase + oph, opc.z + orz * opw / 2],
+        [opc.x - orx * opw / 2, opBase + oph, opc.z - orz * opw / 2]
+      ],
+      ang: opAng, body: el('div', { class: 'room-holo human' }),
+      tag: el('button', { class: 'room-tag human', type: 'button' }), w: opw
+    };
+    opScreen.tag.addEventListener('click', () => selectAgent('op'));
+    overlays.append(opScreen.body, opScreen.tag);
+    screens.op = opScreen;
+
     // central table + core + incident cards
     const tableCards = [];
     const coreChip = el('div', { class: 'room-core-chip' });
@@ -236,6 +259,15 @@
       return l === 'HEALTHY' ? '#48e5a0' : l === 'AT RISK' ? '#ffb454' : '#ff5a5f';
     }
 
+    // Reality-mode taxonomy required by the product brief. Derived only from real API state.
+    function modeLabel(act) {
+      if (!data.ok || !data.overview) return 'NOT CONNECTED';
+      if (act.label.includes('FAIL')) return 'FAILED';
+      if (act.label.includes('AWAITING')) return 'IDLE / WAITING';
+      return 'LIVE';
+    }
+    const MODE_CLASS = { 'LIVE': 'live', 'IDLE / WAITING': 'idle', 'NOT CONNECTED': 'nc', 'FAILED': 'failed' };
+
     function activity(key) {
       const d = data.overview && data.overview.agents ? data.overview.agents[key] : null;
       if (!data.ok || !data.overview) return { mode: 'offline', label: 'NO DATA', why: 'The intelligence API could not be reached. The room shows nothing rather than simulate activity.' };
@@ -252,7 +284,7 @@
     function short(t, n) { t = String(t || ''); return t.length > n ? t.slice(0, n - 1) + '…' : t; }
 
     function screenContent(key) {
-      const A = AGENTS[key];
+      const A = AGENTS[key] || { name: OPERATOR.name, color: OPERATOR.color };
       const act = activity(key);
       const d = data.ok && data.overview && data.overview.agents ? data.overview.agents[key] : null;
       const rows = [];
@@ -262,7 +294,14 @@
         el('span', { class: 'room-holo-status', text: act.label }));
       rows.push(head);
       const bodyEl = el('div', { class: 'room-holo-body' });
-      if (!d) {
+      if (key === 'op') {
+        bodyEl.append(el('p', { class: 'room-holo-line', text: 'Owner console — briefings from AU' }));
+        if (data.briefing) {
+          bodyEl.append(el('div', { class: 'room-holo-line' }, el('span', { class: 'room-holo-mono', text: short(data.briefing.title, 34) })));
+          bodyEl.append(el('div', { class: 'room-holo-line' }, el('span', { class: 'room-holo-dim', text: ctx.relTime(data.briefing.created_at) + ' · delivery ' + (data.briefing.delivery_status || '—') })));
+        } else bodyEl.append(el('p', { class: 'room-holo-line dim', text: 'No briefing generated yet.' }));
+        bodyEl.append(el('p', { class: 'room-holo-line dim', text: 'Automation + TITAN proposals need explicit approval here.' }));
+      } else if (!d) {
         bodyEl.append(el('p', { class: 'room-holo-line dim', text: data.ok ? 'No data for this agent.' : 'API unreachable — nothing simulated.' }));
       } else if (key === 'ultron') {
         const tg = Array.isArray(d.targets) ? d.targets : [];
@@ -273,6 +312,7 @@
             el('span', { text: 'up ' + Math.round((t.uptime24h || 0) * 100) + '%' }),
             el('span', { class: 'room-holo-dim', text: Math.round(t.avgLatencyMs || 0) + 'ms · ' + ctx.relTime(t.lastCheckedAt) })));
         } else bodyEl.append(el('p', { class: 'room-holo-line dim', text: 'No targets configured.' }));
+        bodyEl.append(el('p', { class: 'room-holo-line dim', text: 'traffic analytics: NOT CONNECTED' }));
       } else if (key === 'argon') {
         const t24 = d.telemetry24h || {};
         if (!t24.sessions && !t24.errors) {
@@ -299,7 +339,7 @@
             el('span', { class: 'room-holo-chip ' + String(it.status || '').toLowerCase(), text: short(it.status || '?', 4) }),
             el('span', { class: 'room-holo-mono', text: short(it.title || it.id, 34) })));
         } else bodyEl.append(el('p', { class: 'room-holo-line dim', text: 'No findings in the backlog.' }));
-        bodyEl.append(el('p', { class: 'room-holo-line dim', text: data.improvements.length + ' finding(s) total' }));
+        bodyEl.append(el('p', { class: 'room-holo-line dim', text: data.improvements.length + ' finding(s) total · proposals only until owner approval' }));
       }
       rows.push(bodyEl);
       rows.push(el('div', { class: 'room-holo-foot', text: data.ok ? 'live API · ' + ctx.relTime(data.overview && data.overview.generatedAt) : 'no connection' }));
@@ -313,12 +353,20 @@
         S.body.classList.toggle('off', activity(key).mode === 'offline');
         S.body.classList.toggle('waiting', activity(key).mode === 'awaiting');
         const act = activity(key);
+        const mode = modeLabel(act);
         S.tag.replaceChildren(
-          el('span', { class: 'room-dot ' + (act.mode === 'offline' ? '' : 'on') , style: 'background:' + (act.mode === 'offline' ? '#6b7688' : AGENTS[key].color) }),
+          el('span', { class: 'room-dot on', style: 'background:' + (mode === 'LIVE' ? AGENTS[key].color : mode === 'FAILED' ? '#ff5a5f' : '#8b97a8') }),
           el('strong', { text: AGENTS[key].name }),
-          el('span', { class: 'room-tag-status', text: act.label }));
-        S.tag.className = 'room-tag' + (act.mode === 'offline' ? ' off' : '');
+          el('span', { class: 'room-mode ' + (MODE_CLASS[mode] || ''), text: mode }));
+        S.tag.className = 'room-tag' + (mode === 'LIVE' ? '' : ' off');
       }
+      // operator console (human — never an AI agent)
+      opScreen.body.replaceChildren(...screenContent('op'));
+      opScreen.tag.replaceChildren(
+        el('span', { class: 'room-dot on', style: 'background:' + OPERATOR.color }),
+        el('strong', { text: OPERATOR.name }),
+        el('span', { class: 'room-tag-status', text: 'OWNER / OPERATOR' }));
+      opScreen.tag.className = 'room-tag human';
       // live pill
       if (data.ok && data.overview) {
         livePill.textContent = data.overview.live ? 'LIVE · ' + String((data.overview.health || {}).label || 'MONITORING') : 'NOT LIVE';
@@ -339,7 +387,20 @@
     function modeVerb(m) { return m === 'working' || m === 'just-ran' ? 'at console — working' : m === 'awaiting' ? 'idle — awaiting data' : m === 'visit' ? 'reviewing a new event at the table' : 'offline'; }
     function rebuildRealList(sel) {
       const nodes = [];
-      if (sel) {
+      if (sel === 'op') {
+        const back = el('button', { class: 'btn room-back', type: 'button', text: '← all agents' });
+        back.addEventListener('click', () => { selected = null; rebuildRealList(null); });
+        nodes.push(el('div', { class: 'room-real-row big human' },
+          el('div', { class: 'room-real-head' }, el('span', { class: 'room-dot on', style: 'background:' + OPERATOR.color }), el('strong', { text: OPERATOR.name }), el('span', { class: 'room-tag-status', text: 'OWNER / OPERATOR' })),
+          back,
+          el('p', { class: 'room-why', text: OPERATOR.role + ' — a human, never portrayed as an AI agent. AU correlates ARGON and ULTRON evidence and prepares briefings for this station.' }),
+          el('dl', { class: 'room-facts' },
+            el('div', {}, el('dt', { text: 'Latest briefing' }), el('dd', { text: data.briefing ? short(data.briefing.title, 60) : 'none generated yet' })),
+            el('div', {}, el('dt', { text: 'Generated' }), el('dd', { text: data.briefing ? ctx.dateTime(data.briefing.created_at) : '—' })),
+            el('div', {}, el('dt', { text: 'Delivery' }), el('dd', { text: data.briefing ? String(data.briefing.delivery_status || '—') : '—' })),
+            el('div', {}, el('dt', { text: 'Approvals' }), el('dd', { text: 'All automation disabled by default; TITAN proposals wait for explicit owner action.' }))),
+          el('p', { class: 'room-why dim', text: 'In production this station is the Cloudflare Access-authenticated owner. In this preview the local-operator bypass stands in (gate-free mode by owner request).' })));
+      } else if (sel) {
         const A = AGENTS[sel], act = activity(sel);
         const d = data.ok && data.overview && data.overview.agents ? data.overview.agents[sel] : null;
         const lr = (d && d.lastRun) || {};
@@ -362,18 +423,26 @@
             ...mine.map(t => el('div', { class: 'room-holo-line' }, el('span', { class: 'room-holo-dim', text: ctx.relTime(t.at) }), el('span', { text: short(t.title, 40) })))));
         }
       } else {
+        const opRow = el('button', { class: 'room-real-row human', type: 'button' },
+          el('span', { class: 'room-dot on', style: 'background:' + OPERATOR.color }),
+          el('strong', { text: OPERATOR.name }),
+          el('span', { class: 'room-real-verb', text: 'owner / operator — human' }),
+          el('p', { class: 'room-why', text: 'Not an AI agent. AU prepares briefings for the owner; automation rules and TITAN proposals require explicit approval from this station.' + (data.briefing ? ' Latest briefing: ' + short(data.briefing.title, 44) + ' (' + ctx.relTime(data.briefing.created_at) + ').' : '') }));
+        opRow.addEventListener('click', () => { selected = 'op'; rebuildRealList('op'); });
+        nodes.push(opRow);
         for (const key of KEYS) {
           const A = AGENTS[key], act = activity(key);
           const av = avatars[key];
+          const mode = modeLabel(act);
           const row = el('button', { class: 'room-real-row', type: 'button' },
-            el('span', { class: 'room-dot on', style: 'background:' + (act.mode === 'offline' ? '#6b7688' : A.color) }),
+            el('span', { class: 'room-dot on', style: 'background:' + (mode === 'LIVE' ? A.color : '#8b97a8') }),
             el('strong', { text: A.name }),
-            el('span', { class: 'room-real-verb', text: (av.visitCard ? 'reviewing event' : modeVerb(act.mode)) }),
+            el('span', { class: 'room-real-verb room-mode ' + (MODE_CLASS[mode] || ''), text: (av.visitCard ? 'reviewing event' : mode) }),
             el('p', { class: 'room-why', text: act.why }));
           row.addEventListener('click', () => { selected = key; rebuildRealList(key); });
           nodes.push(row);
         }
-        nodes.push(el('p', { class: 'room-why foot', text: data.ok ? 'Data checked ' + ctx.relTime(data.at) + '. The room re-checks every 12 seconds.' : 'Backend unreachable — nothing is being simulated.' }));
+        nodes.push(el('p', { class: 'room-why foot', text: data.ok ? 'Data checked ' + ctx.relTime(data.at) + '. The room re-checks every 12 seconds. Modes: LIVE (real runs recorded), IDLE / WAITING, NOT CONNECTED — never fabricated.' : 'Backend unreachable — nothing is being simulated.' }));
       }
       realList.replaceChildren(...nodes);
     }
@@ -495,6 +564,29 @@
     }
     function act_alpha(key) { const m = activity(key).mode; return m === 'offline' ? 0.03 : m === 'awaiting' ? 0.05 : 0.09; }
 
+    // Owner/operator station: command desk facing the central table + a seated hooded figure.
+    // Human — no work animations, no visor; only a subtle breathing bob.
+    function drawOperator(t) {
+      const c = OPERATOR.pos, ang = screens.op.ang;
+      // wide command desk
+      box(c.x, 0.55, c.z, 4.4, 1.1, 1.5, '#20304a', { yaw: ang, stroke: 'rgba(150,180,220,0.3)' });
+      box(c.x, 1.13, c.z, 3.9, 0.06, 1.15, '#2b3d5c', { yaw: ang });
+      // console on the desk
+      box(c.x, 1.32, c.z, 1.9, 0.34, 0.5, '#16223a', { yaw: ang });
+      // high-backed chair behind (further from the table)
+      box(c.x - Math.sin(ang) * 1.05, 1.05, c.z - Math.cos(ang) * 1.05, 1.1, 2.1, 0.28, '#1a2438', { yaw: ang });
+      // seated figure: torso, hooded head, forearms on the desk — anonymous silhouette
+      const bob = reduced ? 0 : Math.sin(t * 0.9) * 0.012;
+      const fx = Math.sin(ang), fz = Math.cos(ang);
+      const bx = c.x - fx * 0.55, bz = c.z - fz * 0.55; // seated behind the desk
+      box(bx, 1.28 + bob, bz, 0.95, 1.05, 0.62, '#242e46', { yaw: ang });           // torso
+      box(bx, 1.98 + bob, bz, 0.55, 0.5, 0.52, '#2c3854', { yaw: ang });            // head
+      box(bx, 2.14 + bob, bz, 0.68, 0.34, 0.62, '#1d2740', { yaw: ang });           // hood over the head
+      box(c.x + fx * 0.15, 1.22 + bob, c.z + fz * 0.15, 1.3, 0.16, 0.5, '#242e46', { yaw: ang }); // forearms on desk
+      // owner console holo screen
+      quad(screens.op.corners[0], screens.op.corners[1], screens.op.corners[2], screens.op.corners[3], 'rgba(150,180,225,0.07)', { both: true, stroke: 'rgba(170,195,235,0.5)', glow: '#a9c4ec', lw: 1.5 });
+    }
+
     function drawTable(t) {
       // hexagonal table
       const R = 2.15, h = 1.0, N = 6;
@@ -606,6 +698,23 @@
           S.tag.style.transform = `translate(${hp.x}px,${hp.y}px) translate(-50%,-50%) scale(${s})`;
         }
       }
+      // operator console screen + tag (seated figure, head ~y2.2)
+      {
+        const pr = opScreen.corners.map(c => project(c[0], c[1], c[2]));
+        if (pr.some(p => !p)) opScreen.body.style.display = 'none';
+        else {
+          opScreen.body.style.display = '';
+          const cx = (pr[0].x + pr[1].x + pr[2].x + pr[3].x) / 4, cy = (pr[0].y + pr[1].y + pr[2].y + pr[3].y) / 4;
+          const wpx = Math.hypot(pr[1].x - pr[0].x, pr[1].y - pr[0].y);
+          opScreen.body.style.transform = `translate(${cx}px,${cy}px) translate(-50%,-50%) scale(${clamp(wpx / 320, 0.32, 1.25)})`;
+        }
+        const hp = project(OPERATOR.pos.x, 2.62, OPERATOR.pos.z);
+        if (!hp) opScreen.tag.style.display = 'none';
+        else {
+          opScreen.tag.style.display = '';
+          opScreen.tag.style.transform = `translate(${hp.x}px,${hp.y}px) translate(-50%,-50%) scale(${clamp((2.6 * hp.s) / 170, 0.6, 1.05)})`;
+        }
+      }
       // core chip
       const cp = project(0, 3.6, 0);
       if (!cp) coreChip.style.display = 'none';
@@ -657,6 +766,7 @@
         g.clearRect(0, 0, W, H);
         drawFloor();
         for (const key of KEYS) drawStation(key);
+        drawOperator(now / 1000);
         drawTable(now / 1000);
         for (const key of KEYS) drawAvatar(key, now / 1000);
         drawParticles(dt);
@@ -712,11 +822,12 @@
     // ================= data polling =================
     async function poll() {
       if (destroyed) return;
-      const [ov, tl, inc, imp] = await Promise.all([
+      const [ov, tl, inc, imp, br] = await Promise.all([
         ctx.api('/api/intelligence/overview'),
         ctx.api('/api/intelligence/timeline?limit=20'),
         ctx.api('/api/intelligence/incidents?status=open&limit=8'),
-        ctx.api('/api/intelligence/improvements?limit=12')
+        ctx.api('/api/intelligence/improvements?limit=12'),
+        ctx.api('/api/intelligence/briefings?limit=1')
       ]);
       if (destroyed) return;
       data.overview = ov.ok ? ov.data : null;
@@ -725,6 +836,7 @@
       data.timeline = tl.ok ? (tl.data.items || []) : [];
       data.incidents = inc.ok ? (inc.data.incidents || inc.data.items || []) : [];
       data.improvements = imp.ok ? (imp.data.items || []) : [];
+      data.briefing = br.ok ? ((br.data.briefings || [])[0] || null) : null;
       // clear stale incident cards
       for (const tc of tableCards) tc.el.remove();
       tableCards.length = 0;

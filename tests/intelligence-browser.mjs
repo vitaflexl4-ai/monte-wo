@@ -85,13 +85,29 @@ await page.setViewportSize({ width: 1500, height: 1000 });
 await page.goto('http://localhost:8080/intelligence/#/room');
 await page.waitForSelector('.room-canvas', { timeout: 15000 });
 await page.waitForSelector('.room-tag', { timeout: 15000 });
-assert.equal(await page.locator('.room-tag').count(), 4, 'one name tag per agent');
-assert.equal(await page.locator('.room-holo').count(), 4, 'one holographic screen per agent');
-assert.equal(await page.locator('.room-real-row').count(), 4, 'one "what\'s real" row per agent');
+assert.equal(await page.locator('.room-tag').count(), 5, 'one name tag per agent + the human operator');
+assert.equal(await page.locator('.room-holo').count(), 5, 'one holographic screen per agent + the owner console');
+assert.equal(await page.locator('.room-real-row').count(), 5, 'one "what\'s real" row per agent + operator');
 const realList = await page.locator('.room-real-list').textContent();
 assert.match(realList, /ULTRON/); assert.match(realList, /ARGON/); assert.match(realList, /AU/); assert.match(realList, /TITAN/);
+// the owner is labelled as the human operator, never an AI agent
+assert.match(realList, /VITAFLEX \(SONY\)/);
+assert.match(realList, /owner \/ operator — human/);
+// reality-mode taxonomy from the product brief is visible per agent
+const modes = await page.locator('.room-mode').allTextContents();
+assert.ok(modes.length >= 4, 'mode chips rendered');
+assert.ok(modes.every(m => /^LIVE$|^IDLE \/ WAITING$|^NOT CONNECTED$|^FAILED$/.test(m.trim())), 'modes use the LIVE/IDLE/NOT CONNECTED/FAILED taxonomy only');
+// honesty markers required by the brief
+assert.equal(await page.locator('.room-holo', { hasText: 'traffic analytics: NOT CONNECTED' }).count(), 1, 'ULTRON screen states traffic analytics is not connected');
+assert.equal(await page.locator('.room-holo', { hasText: 'proposals only until owner approval' }).count(), 1, 'TITAN screen states proposals-only');
+assert.equal(await page.locator('.room-holo', { hasText: 'Owner console' }).count(), 1, 'owner console renders');
 // screens show live API values, not placeholders
 assert.match(await page.locator('.room-holo').first().textContent(), /live API/);
+// operator detail opens with the human-owner explanation
+await page.locator('.room-tag.human').first().evaluate(n => n.click());
+await page.waitForSelector('.room-back', { timeout: 5000 });
+assert.match(await page.locator('.room-real-list').textContent(), /never portrayed as an AI agent/);
+await page.locator('.room-back').click();
 // name tags are actually clickable (HUD must not block the scene)
 const tagBox = await page.locator('.room-tag', { hasText: 'ULTRON' }).first().boundingBox();
 const hit = await page.evaluate(([x, y]) => { const n = document.elementFromPoint(x, y); return !!n && !!n.closest('.room-tag'); }, [tagBox.x + tagBox.width / 2, tagBox.y + tagBox.height / 2]);

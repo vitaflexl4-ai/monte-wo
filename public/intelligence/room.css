@@ -149,3 +149,18 @@
   .room-holo { animation: none; }
   .room-scan { animation: none; }
 }
+
+/* ---------- reality-mode chips (LIVE / IDLE / NOT CONNECTED / FAILED) ---------- */
+.room-mode { font-size: 8.5px; font-weight: 700; letter-spacing: .1em; padding: 1px 6px; border-radius: 4px; border: 1px solid #3f5a7d; color: #9fc3ec; }
+.room-mode.live { color: #48e5a0; border-color: #2f6e58; }
+.room-mode.idle { color: #ffb454; border-color: #7d6531; }
+.room-mode.nc { color: #8b97a8; border-color: #44536b; }
+.room-mode.failed { color: #ff5a5f; border-color: #7a2f38; }
+.room-real-verb.room-mode { border: none; padding: 0; }
+
+/* ---------- human operator (never an AI agent) ---------- */
+.room-tag.human { border-style: dashed; color: #e7eefb; letter-spacing: .08em; }
+.room-tag.human .room-tag-status { color: #c9d7ee; }
+.room-holo.human { border-color: rgba(170,195,235,0.45); box-shadow: 0 0 22px rgba(150,180,225,0.14), inset 0 0 26px rgba(150,180,225,0.05); }
+.room-holo.human .room-holo-head strong { color: #e2ebf9; }
+.room-real-row.human { border-style: dashed; border-color: rgba(170,195,235,0.4); }
