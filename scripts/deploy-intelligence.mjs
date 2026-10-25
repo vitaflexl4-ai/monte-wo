@@ -66,6 +66,7 @@ function loadConfigDefaults() {
     const cfg = JSON.parse(raw);
     const ok = v => typeof v === 'string' && v.length > 0;
     return {
+      accountId: ok(cfg.account_id) ? cfg.account_id : null,
       projectName: ok(cfg.project_name) ? cfg.project_name : null,
       accessIssuer: ok(cfg.access_issuer) ? cfg.access_issuer : null,
       accessAud: ok(cfg.access_aud) ? cfg.access_aud : null,
@@ -193,7 +194,11 @@ function requireAuth() {
 
 function d1List() {
   const r = wrangler(['d1', 'list', '--json']);
-  if (r.code !== 0) die('wrangler d1 list failed:\n' + r.out.slice(-1500));
+  if (r.code !== 0) {
+    if (/memberships|code: 10000/i.test(r.out)) die('wrangler needs the account lookup (/memberships), which this API token does not have.\n' +
+      'Fix: add "account_id" to deploy.config.json (it is the id shown in your Cloudflare dashboard URL) — the deploy pins it as CLOUDFLARE_ACCOUNT_ID and never calls /memberships.');
+    die('wrangler d1 list failed:\n' + r.out.slice(-1500));
+  }
   try { return JSON.parse(r.out); } catch { die('could not parse `wrangler d1 list --json` output:\n' + r.out.slice(500)); }
 }
 
@@ -300,6 +305,9 @@ async function verifyDeployed(url) {
 // ---------- main (guarded so tests can import the editors without side effects) ----------
 const isMain = process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1])).href;
 if (isMain) {
+// Pin the account (public id, from deploy.config.json) so wrangler never needs the
+// /memberships lookup — API tokens commonly lack User->Memberships->Read.
+if (configDefaults.accountId && !process.env.CLOUDFLARE_ACCOUNT_ID) process.env.CLOUDFLARE_ACCOUNT_ID = configDefaults.accountId;
 // CLI flags override deploy.config.json, which overrides built-in defaults.
 const projectName = (typeof flag('project-name') === 'string' ? flag('project-name') : null) || configDefaults.projectName || 'vitaflex-monte-wo';
 const accessIssuer = (typeof flag('access-issuer') === 'string' ? flag('access-issuer') : null) || configDefaults.accessIssuer || null;
@@ -311,7 +319,7 @@ if (has('check')) { preflight(); process.exit(0); }
 
 console.log('MONTE WO Intelligence — production deployment (free tier, fail-closed)');
 const gitInfo = (() => { const c = run('git', ['rev-parse', '--short', 'HEAD']); if (c.code !== 0) return 'no-git'; return c.out.trim() + ' · ' + run('git', ['rev-parse', '--abbrev-ref', 'HEAD']).out.trim(); })();
-console.log('Repo: ' + ROOT + ' · ' + gitInfo);
+console.log('Repo: ' + ROOT + ' · ' + gitInfo + (process.env.CLOUDFLARE_ACCOUNT_ID ? ' · account ' + process.env.CLOUDFLARE_ACCOUNT_ID : ''));
 
 if (grantOnly) {
   requireAuth();

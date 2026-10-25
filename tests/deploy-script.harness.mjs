@@ -179,6 +179,7 @@ await scenarioTest('--require-access: strict mode still blocks without Access va
 await scenarioTest('config defaults: zero flags deploys the configured project + worker', async dir => {
   writeFileSync(join(dir, 'deploy.config.json'), JSON.stringify({
     project_name: 'vitaflex-monte-wo-live', enable_worker: true, with_waitlist: true,
+    account_id: 'cafebabe-0000-1111-2222-333333333333',
     access_issuer: 'https://cfg.cloudflareaccess.com', access_aud: 'cfg-aud', operator: 'cfg@example.com'
   }));
   await withLocalOrigin((req, res) => { res.writeHead(req.url.includes('/api/') ? 401 : 200); res.end(''); }, async origin => {
@@ -193,6 +194,7 @@ await scenarioTest('config defaults: zero flags deploys the configured project +
     assert.ok(wtoml.includes('SITE_URL = "' + origin + '"'), 'worker SITE_URL defaults to deployed URL');
     const log = readFileSync(join(dir, 'fake.log'), 'utf8');
     assert.match(log, /cfg@example.com/, 'operator from config');
+    assert.match(log, /cafebabe-0000-1111-2222-333333333333/, 'CLOUDFLARE_ACCOUNT_ID pinned from config');
     assert.match(log, /monte-wo-waitlist/, 'waitlist binding applied');
   });
 });

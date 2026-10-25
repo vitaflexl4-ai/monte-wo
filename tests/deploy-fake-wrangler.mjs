@@ -17,7 +17,7 @@ const scenario = process.env.FAKE_SCENARIO || 'happy';
 const fakeUrl = process.env.FAKE_URL || 'https://vitaflex-monte-wo.pages.dev';
 const DB_ID = 'aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee';
 const args = process.argv.slice(2);
-const log = line => appendFileSync(process.env.FAKE_LOG || '/tmp/fake-wrangler.log', JSON.stringify({ args, line }) + '\n');
+const log = line => appendFileSync(process.env.FAKE_LOG || '/tmp/fake-wrangler.log', JSON.stringify({ args, line, account: process.env.CLOUDFLARE_ACCOUNT_ID || null }) + '\n');
 const out = line => { console.log(line); log(line); };
 
 const joined = args.join(' ');

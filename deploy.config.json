@@ -1,10 +1,11 @@
 {
-  "_note": "Deployment defaults for scripts/deploy-intelligence.mjs (and CI). No secrets here — secrets live in Cloudflare/GitHub only. CLI flags override these values. project_name is a NEW direct-upload project: the original vitaflex-monte-wo project is git-connected and rejects direct upload; the old site keeps serving there until you choose to switch.",
+  "_note": "Deployment defaults for scripts/deploy-intelligence.mjs (and CI). No secrets here \u2014 secrets live in Cloudflare/GitHub only. CLI flags override these values. project_name is a NEW direct-upload project: the original vitaflex-monte-wo project is git-connected and rejects direct upload; the old site keeps serving there until you choose to switch. account_id is public (dashboard URL) and lets wrangler skip /memberships, which API tokens often lack.",
   "project_name": "vitaflex-monte-wo-live",
   "enable_worker": true,
   "with_waitlist": true,
   "access_issuer": null,
   "access_aud": null,
   "operator": null,
-  "site_url": null
+  "site_url": null,
+  "account_id": "328b002cfefe3bfa43064c5721f4e998"
 }
