@@ -54,6 +54,73 @@ function sameOrigin(request, url) {
 const parseEvidence = row => row ? { ...row, evidence: JSON.parse(row.evidence_json) } : null;
 
 // ---------- route handlers ----------
+// Public, read-only component status. No authentication: it exposes configuration state,
+// liveness evidence and aggregate counts ONLY — never intelligence content, operator
+// identities or secrets. This is what the locked dashboard screen renders so a visitor
+// can see WHICH piece is missing instead of guessing the backend is absent.
+async function publicStatus(env) {
+  const out = {
+    service: 'monte-wo-intelligence',
+    generated_at: new Date().toISOString(),
+    fail_closed: true,
+    note: 'Every /api/intelligence route except this one (and the key-gated POST /events) requires an authenticated Cloudflare Access operator.',
+    components: {
+      d1_database: null,
+      cloudflare_access: null,
+      scheduled_worker: { expected: true, detail: 'evidence: monitoring.ultron_last_check — written by the ULTRON cron every 5 minutes' }
+    },
+    monitoring: null,
+    data_counts: null
+  };
+  const configured = intelligenceConfigured(env);
+  out.components.cloudflare_access = configured
+    ? { configured: true, detail: 'login active; dashboards authorize via cryptographically verified Access JWT' }
+    : { configured: false, action_required: 'owner', detail: 'INTELLIGENCE_ACCESS_ISSUER / INTELLIGENCE_ACCESS_AUD are not set. Every intelligence route fails closed (503): data exists but is not served until the owner creates the Cloudflare Access application and redeploys with its issuer + AUD.' };
+  const db = env.INTEL_DB;
+  if (!db) {
+    out.components.d1_database = { bound: false, detail: 'INTEL_DB binding missing — no other component can be verified' };
+    return json(out, 200);
+  }
+  out.components.d1_database = { bound: true };
+  try {
+    const tables = ((await db.prepare("SELECT name FROM sqlite_master WHERE type='table' AND name LIKE 'intel_%'").all()).results || []).map(r => r.name).sort();
+    const need = ['intel_checks', 'intel_incidents', 'intel_briefings', 'intel_agent_runs', 'intel_operators', 'intel_telemetry_events', 'intel_improvement_items'];
+    out.components.d1_database.tables = tables;
+    out.components.d1_database.migrations = need.every(t => tables.includes(t)) ? '0003 + 0004 + 0005 applied' : 'partial — missing: ' + need.filter(t => !tables.includes(t)).join(', ');
+  } catch {
+    out.components.d1_database.detail = 'database unreachable';
+  }
+  try {
+    const last = await db.prepare("SELECT status, target, latency_ms, http_status, checked_at FROM intel_checks WHERE agent='ULTRON' ORDER BY checked_at DESC LIMIT 1").first();
+    const total = (await db.prepare("SELECT COUNT(*) AS n FROM intel_checks WHERE agent='ULTRON'").first())?.n ?? null;
+    const runs = (await db.prepare('SELECT agent, run_type, status, started_at FROM intel_agent_runs ORDER BY started_at DESC LIMIT 6').all()).results || [];
+    out.monitoring = {
+      ultron_last_check: last || null,
+      ultron_total_checks: total,
+      recent_agent_runs: runs,
+      interpretation: last ? 'The scheduled worker is live and writing to the production D1 database.' : 'No ULTRON checks recorded yet — the cron may not have fired since deployment.'
+    };
+  } catch {
+    out.monitoring = { error: 'intel_checks unavailable' };
+  }
+  try {
+    const count = async t => (await db.prepare('SELECT COUNT(*) AS n FROM ' + t).first())?.n ?? null;
+    out.data_counts = {
+      intel_checks: await count('intel_checks'),
+      intel_incidents: await count('intel_incidents'),
+      intel_briefings: await count('intel_briefings'),
+      intel_agent_runs: await count('intel_agent_runs'),
+      intel_telemetry_events: await count('intel_telemetry_events')
+    };
+  } catch {
+    out.data_counts = { error: 'unavailable' };
+  }
+  return new Response(JSON.stringify(out), { status: 200, headers: {
+    'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'public, max-age=30',
+    'X-Content-Type-Options': 'nosniff'
+  } });
+}
+
 async function overview(db, env) {
   const now = Date.now(), dayAgo = new Date(now - 86400000).toISOString(), twoDaysAgo = new Date(now - 2 * 86400000).toISOString();
   const checks24 = (await db.prepare(`SELECT target,status,latency_ms,checked_at FROM intel_checks WHERE checked_at>=? AND status<>'not_configured' ORDER BY checked_at DESC`).bind(dayAgo).all()).results || [];
@@ -433,7 +500,12 @@ export async function handleIntelligence({ request, env }, deps = {}) {
   const route = url.pathname.slice('/api/intelligence'.length) || '/';
   const db = env.INTEL_DB;
   try {
-    if (!db) return json({ error: 'intelligence-not-configured', detail: 'INTEL_DB binding is missing. Fail closed: no data is served or accepted.' }, 503);
+    // Public read-only status: works even with nothing configured (that is the point).
+    if (route === '/status') {
+      if (request.method !== 'GET') return new Response(null, { status: 405, headers: { Allow: 'GET' } });
+      return await publicStatus(env);
+    }
+    if (!db) return json({ error: 'intelligence-not-configured', detail: 'INTEL_DB binding is missing. Fail closed: no data is served or accepted. Component status: GET /api/intelligence/status' }, 503);
     // Telemetry intake is key-gated, not operator-gated.
     if (route === '/events' && request.method === 'POST') return await ingestEvents(db, env, request, url);
     if (route === '/events') return new Response(null, { status: 405, headers: { Allow: 'POST' } });

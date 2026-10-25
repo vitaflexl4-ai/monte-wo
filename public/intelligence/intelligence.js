@@ -135,13 +135,47 @@
         el('p', {}, 'You authenticated successfully, but this identity has no active row in the intel_operators table. Ask the administrator to add your Access subject with a role, then reload.')));
     }
     if (code === 'intelligence-not-configured' || status === 503) {
+      // Render immediately, then read the PUBLIC component status so the screen proves
+      // which parts are live instead of implying nothing is deployed.
+      const list = el('ul', { class: 'setup-list' }, el('li', {}, 'Reading live component status from /api/intelligence/status…'));
+      const footnote = el('p', { class: 'subtle', style: 'margin-top:12px' }, 'Full checklist: docs/INTELLIGENCE-COMMAND-CENTER.md');
+      const row = (ok, label, detail) => el('li', {},
+        el('strong', { style: 'color:' + (ok ? '#3fb68b' : '#e2704f') }, (ok ? '✓ ' : '✗ ') + label),
+        detail ? ' — ' + detail : '');
+      const fill = async () => {
+        const probe = await api('/api/intelligence/status');
+        if (!probe.ok || !probe.data || !probe.data.components) {
+          list.textContent = '';
+          list.append(el('li', {}, 'Live status unavailable (' + (probe.code || probe.status || 'error') + '). To go live: bind the INTEL_DB D1 database, apply migrations 0003 and 0004, set the Cloudflare Access variables, and deploy the scheduled Worker.'));
+          return;
+        }
+        const st = probe.data;
+        list.textContent = '';
+        const d1 = st.components.d1_database || {};
+        list.append(row(!!d1.bound, 'D1 database', d1.bound
+          ? ((d1.tables ? d1.tables.length + ' intelligence tables' : '') + (d1.migrations ? (d1.tables ? ', ' : '') + d1.migrations : '')).replace(/^, /, '')
+          : (d1.detail || 'not bound')));
+        const mon = st.monitoring || {};
+        list.append(row(!!mon.ultron_last_check, 'Scheduled worker (ULTRON cron)', mon.ultron_last_check
+          ? 'last check ' + String(mon.ultron_last_check.checked_at || '').replace('T', ' ').replace(/\.\d+Z$/, ' UTC') + ' · ' + (mon.ultron_total_checks || 0) + ' checks recorded in production'
+          : (mon.error || 'no checks recorded yet — the cron may not have fired since deployment')));
+        const acc = st.components.cloudflare_access || {};
+        list.append(row(!!acc.configured, 'Cloudflare Access (owner login)', acc.configured
+          ? 'configured'
+          : 'not configured — the one remaining step. Create the Access application for /intelligence/ and /api/intelligence/, then redeploy with its issuer + AUD. Data is not served until then.'));
+        const counts = st.data_counts && !st.data_counts.error ? ' · recorded so far: ' + (mon.ultron_total_checks || 0) + ' checks, ' + (st.data_counts.intel_agent_runs || 0) + ' agent runs' : '';
+        footnote.textContent = '';
+        footnote.append(
+          el('a', { href: '/api/intelligence/status', target: '_blank', rel: 'noopener' }, 'View raw live status JSON'),
+          document.createTextNode(counts + ' · checklist: docs/INTELLIGENCE-COMMAND-CENTER.md'));
+      };
+      fill();
       return panel(el('div', { class: 'empty' },
         el('span', { class: 'empty-ico' }, '⚙'),
-        el('strong', {}, 'Intelligence backend is not configured'),
-        el('p', {}, 'The API failed closed. Nothing is simulated. To go live: bind the INTEL_DB D1 database, apply migrations 0003 and 0004, set the Cloudflare Access variables, and deploy the scheduled Worker.'),
-        el('ul', { class: 'setup-list' },
-          ['INTEL_DB D1 binding on Pages (dedicated database)', 'Migrations 0003_intelligence.sql + 0004_intelligence_ops.sql applied', 'INTELLIGENCE_ACCESS_ISSUER / INTELLIGENCE_ACCESS_AUD set; Access app covers /intelligence/ and /api/intelligence/*', 'Cloudflare Access application + intel_operators provisioning', 'Scheduled Worker deployed with INTELLIGENCE_ENABLED=true'].map(s => el('li', {}, s))),
-        el('p', { class: 'subtle', style: 'margin-top:12px' }, 'Full checklist: docs/INTELLIGENCE-COMMAND-CENTER.md')));
+        el('strong', {}, 'Intelligence locked — fail-closed'),
+        el('p', {}, 'The API refuses to serve intelligence data until the owner login (Cloudflare Access) is configured. Nothing is simulated. The component states below are read live from this deployment — a ✓ is proof the backend exists and is running.'),
+        list,
+        footnote));
     }
     return panel(el('div', { class: 'empty' },
       el('span', { class: 'empty-ico' }, '⚠'),

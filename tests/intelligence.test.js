@@ -86,6 +86,47 @@ test('unconfigured access fails closed', async () => {
   const missingDb = await handleIntelligence({ request: new Request('https://monte.test/api/intelligence/overview'), env: { INTELLIGENCE_ACCESS_ISSUER: env.INTELLIGENCE_ACCESS_ISSUER } }, { fetcher });
   assert.equal(missingDb.status, 503);
 });
+test('public status endpoint reports honest component state without authentication', async () => {
+  // Nothing configured at all: still answers 200 with bound:false — never pretends, never leaks.
+  const bare = await handleIntelligence({ request: new Request('https://monte.test/api/intelligence/status'), env: {} }, { fetcher });
+  assert.equal(bare.status, 200);
+  const bareBody = await bare.json();
+  assert.equal(bareBody.fail_closed, true);
+  assert.equal(bareBody.components.d1_database.bound, false);
+  assert.equal(bareBody.components.cloudflare_access.configured, false);
+  assert.ok(bareBody.components.cloudflare_access.detail.length > 20);
+  assert.equal(bareBody.data_counts, null); // no db -> nothing claimed
+
+  // Database present, Access missing: reports the real split — backend live, login missing.
+  await db.prepare("INSERT INTO intel_checks (id,agent,target,status,latency_ms,http_status,detail,evidence_json,checked_at) VALUES ('status-c1','ULTRON','public-site','ok',120,200,'','{}','2026-10-25T21:40:00.000Z')").run();
+  await db.prepare("INSERT INTO intel_agent_runs (id,agent,run_type,status,summary,evidence_json,started_at,finished_at) VALUES ('status-r1','ULTRON','site-monitor','ok','3 target(s) checked','{}','2026-10-25T21:40:00.000Z','2026-10-25T21:40:01.000Z')").run();
+  const live = await handleIntelligence({ request: new Request('https://monte.test/api/intelligence/status'), env: { INTEL_DB: db } }, { fetcher });
+  assert.equal(live.status, 200);
+  const lb = await live.json();
+  assert.equal(lb.components.d1_database.bound, true);
+  assert.ok(lb.components.d1_database.tables.includes('intel_checks'));
+  assert.equal(lb.components.d1_database.migrations, '0003 + 0004 + 0005 applied');
+  assert.equal(lb.components.cloudflare_access.configured, false);
+  assert.equal(lb.monitoring.ultron_last_check.status, 'ok');
+  assert.ok(lb.monitoring.ultron_total_checks >= 1);
+  assert.ok(lb.data_counts.intel_checks >= 1);
+  assert.ok(lb.data_counts.intel_agent_runs >= 1);
+  assert.ok((lb.monitoring.interpretation || '').includes('live'));
+  // Aggregates only: the public payload must not carry intelligence content or subjects.
+  const raw = JSON.stringify(lb);
+  assert.ok(!raw.includes('"subject"'), 'status payload must not expose operator subjects');
+  assert.ok(!raw.includes('"body"') && !raw.includes('"evidence_json"'), 'status payload must not expose content');
+  // Restore the pristine database for the tests that follow (they expect zero checks).
+  await db.prepare("DELETE FROM intel_checks WHERE id='status-c1'").run();
+  await db.prepare("DELETE FROM intel_agent_runs WHERE id='status-r1'").run();
+});
+test('fail-closed 503 carries an actionable hint pointing at the public status endpoint', async () => {
+  const res = await handleIntelligence({ request: new Request('https://monte.test/api/intelligence/overview'), env: { INTEL_DB: db } }, { fetcher });
+  assert.equal(res.status, 503);
+  const body = await res.json();
+  assert.equal(body.error, 'intelligence-not-configured');
+  assert.ok((body.hint || '').includes('/api/intelligence/status'));
+});
 test('forged, expired, wrong-issuer and wrong-audience tokens are rejected', async () => {
   await db.prepare("INSERT INTO intel_operators(subject,role) VALUES('chief@monte.test','admin')").run();
   for (const changes of [{ exp: 1 }, { iss: 'https://evil.test' }, { aud: ['wrong'] }, { iat: 9999999999 }]) {

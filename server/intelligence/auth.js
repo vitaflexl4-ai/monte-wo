@@ -36,7 +36,11 @@ export function previewTokenAllowed(env, url, request) {
 }
 
 export async function verifyAccessJwt(request, env, fetcher = fetch) {
-  requireThat(intelligenceConfigured(env), 'intelligence-not-configured', 503);
+  if (!intelligenceConfigured(env)) {
+    const err = new IntelError('intelligence-not-configured', 503);
+    err.hint = 'Fail-closed: the Access login (INTELLIGENCE_ACCESS_ISSUER / INTELLIGENCE_ACCESS_AUD) is not configured, so no data is served even though the backend may be deployed. Live component status: GET /api/intelligence/status';
+    throw err;
+  }
   const token = request.headers.get('Cf-Access-Jwt-Assertion');
   requireThat(token && token.length < 12000, 'authentication-required', 401);
   try {

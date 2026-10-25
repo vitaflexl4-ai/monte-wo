@@ -105,6 +105,10 @@ all briefings are deterministic assemblies of recorded evidence.
 
 ## Security model
 
+- **Public status:** `GET /api/intelligence/status` is the one unauthenticated GET route: read-only
+  component states (D1 bound/migrations, Access configured, last ULTRON cron check) and aggregate
+  counts only — no intelligence content, no subjects, no secrets. The locked dashboard screen renders
+  it live so a visitor can see *which* piece is missing rather than assuming no backend exists.
 - **Authentication:** Cloudflare Access JWT (RS256, verified against the Access CDN keys, issuer/audience
   pinned via `INTELLIGENCE_ACCESS_ISSUER`/`INTELLIGENCE_ACCESS_AUD`). Protect BOTH `/intelligence/` and
   `/api/intelligence/*` with the same Access application; the API verifies every request independently —
