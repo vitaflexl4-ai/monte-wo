@@ -286,8 +286,8 @@ node scripts/preview-intelligence.mjs
 #
 # gate-free mode for a throwaway sandbox you alone can reach:
 PREVIEW_TOKEN=none node scripts/preview-intelligence.mjs
-# (TITAN_SOURCES_URL=http://127.0.0.1:<port> additionally enables the source audit — point it at
-#  a private static server exposing the repo root.)
+# (run scripts/preview-sources.mjs too and pass TITAN_SOURCES_URL=http://127.0.0.1:8082 —
+#  it serves the repo root privately on 127.0.0.1 so the TITAN source audit works.)
 ```
 
 Preview-hardening behaviours, both tested:
