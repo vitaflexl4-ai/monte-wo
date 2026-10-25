@@ -24,7 +24,26 @@ until Cloudflare Access is configured (`intelligence-not-configured` / `authenti
 
 ---
 
-## 1. Deploy (OWNER — one login, one command)
+## 1a. Deploy with NO local machine — GitHub Actions (recommended)
+
+One secret, then the deployment runs on GitHub and can be triggered from the PR conversation:
+
+1. **Create a Cloudflare API token** (My Profile → API Tokens → Create Token → *Custom token*):
+   - Account · **Cloudflare Pages** · Edit
+   - Account · **D1** · Edit
+   - Account · **Workers Scripts** · Edit
+2. **Add it as a repository secret** named `CLOUDFLARE_API_TOKEN`:
+   GitHub → this repo → Settings → Secrets and variables → Actions → New repository secret.
+   (The value never appears in chat, the repo, or any log.)
+3. **Deploy**: ask the agent to deploy (a `[deploy]` commit is pushed and the run is monitored),
+   or after merging the PR use the *Run workflow* button on the *Deploy Intelligence Command
+   Center* workflow. All deployment values come from the committed `deploy.config.json`
+   (project name, worker on/off, waitlist binding — no secrets there).
+
+The workflow only deploys on an explicit `[deploy]` commit marker or a manual dispatch —
+a normal push never touches production.
+
+## 1b. Deploy from a local machine (alternative)
 
 > **The deploy tooling lives on the PR branch, not `main`.** If `npm run deploy:intelligence`
 > says *"Missing script"* you are on `main` — check out the branch first:

@@ -28,6 +28,7 @@ function makeRepoCopy() {
   cpSync(join(ROOT, 'intelligence-worker/wrangler.toml'), join(dir, 'intelligence-worker/wrangler.toml'));
   for (const f of ['0003_intelligence.sql', '0004_intelligence_ops.sql', '0005_intelligence_titan.sql']) cpSync(join(ROOT, 'migrations', f), join(dir, 'migrations', f));
   cpSync(join(ROOT, 'scripts/deploy-intelligence.mjs'), join(dir, 'scripts/deploy-intelligence.mjs'));
+  if (existsSync(join(ROOT, 'deploy.config.json'))) cpSync(join(ROOT, 'deploy.config.json'), join(dir, 'deploy.config.json'));
   // minimal but REAL files the preflight validates (paths + parseability)
   mkdirSync(join(dir, 'public/intelligence'), { recursive: true });
   mkdirSync(join(dir, 'functions/api'), { recursive: true });
@@ -55,9 +56,14 @@ async function withLocalOrigin(handler, fn) {
 
 // Async spawn (NOT spawnSync): the harness's local origin server must keep serving the
 // child's post-deploy verification fetches, which requires the parent event loop to stay alive.
+// most scenarios exercise explicit flags; wipe the config file so defaults never leak in
+function withoutConfig(dir) { try { rmSync(join(dir, 'deploy.config.json'), { force: true }); } catch { } }
+
 function runDeploy(dir, args, scenario, fakeUrl) {
   const env = { ...process.env, MW_WRANGLER: 'node ' + FAKE, FAKE_SCENARIO: scenario, MW_DEPLOY_SKIP_BUILD: '1', FAKE_LOG: join(dir, 'fake.log') };
   if (fakeUrl) env.FAKE_URL = fakeUrl;
+  const useConfig = args.includes('--use-config');
+  if (!useConfig) withoutConfig(dir); else args = args.filter(a => a !== '--use-config');
   return new Promise(resolve => {
     const child = spawn('node', [join(dir, 'scripts/deploy-intelligence.mjs'), ...args], { cwd: dir, env });
     let stdout = '', stderr = '';
@@ -155,10 +161,40 @@ await scenarioTest('no wrangler auth: exits 3 telling the owner to wrangler logi
   assert.match(r.stdout + r.stderr, /npx wrangler login/);
 });
 
-await scenarioTest('missing Access flags: exits 2 with the Access setup pointer', async dir => {
-  const r = await runDeploy(dir, [], 'happy');
+await scenarioTest('missing Access flags: deploys anyway, API stays fail-closed, warning printed', async dir => {
+  await withLocalOrigin((req, res) => { res.writeHead(req.url.includes('/api/') ? 401 : 200); res.end(''); }, async origin => {
+    const r = await runDeploy(dir, [], 'happy', origin);
+    assert.equal(r.status, 0, 'exit 0 (deploy proceeds, fail-closed):\n' + r.stdout + r.stderr);
+    assert.match(r.stdout, /Deploying WITHOUT Cloudflare Access values/, 'warning printed');
+    assert.match(r.stdout, /DEPLOYMENT SEQUENCE COMPLETE/);
+  });
+});
+
+await scenarioTest('--require-access: strict mode still blocks without Access values', async dir => {
+  const r = await runDeploy(dir, ['--require-access'], 'happy');
   assert.equal(r.status, 2, 'exit 2:\n' + r.stdout + r.stderr);
   assert.match(r.stdout + r.stderr, /Cloudflare Access/);
+});
+
+await scenarioTest('config defaults: zero flags deploys the configured project + worker', async dir => {
+  writeFileSync(join(dir, 'deploy.config.json'), JSON.stringify({
+    project_name: 'vitaflex-monte-wo-live', enable_worker: true, with_waitlist: true,
+    access_issuer: 'https://cfg.cloudflareaccess.com', access_aud: 'cfg-aud', operator: 'cfg@example.com'
+  }));
+  await withLocalOrigin((req, res) => { res.writeHead(req.url.includes('/api/') ? 401 : 200); res.end(''); }, async origin => {
+    const r = await runDeploy(dir, ['--use-config'], 'missing', origin);
+    assert.equal(r.status, 0, 'exit 0:\n' + r.stdout + r.stderr);
+    assert.match(r.stdout, /Deploying Cloudflare Pages project vitaflex-monte-wo-live/, 'project from config');
+    assert.match(r.stdout, /worker deployed\. INTELLIGENCE_ENABLED=true/, 'worker enabled by config');
+    const toml = readFileSync(join(dir, 'wrangler.toml'), 'utf8');
+    assert.match(toml, /^name = "vitaflex-monte-wo-live"$/m, 'config project name synced to toml');
+    assert.match(toml, /INTELLIGENCE_ACCESS_AUD = "cfg-aud"/, 'Access values from config');
+    const wtoml = readFileSync(join(dir, 'intelligence-worker/wrangler.toml'), 'utf8');
+    assert.ok(wtoml.includes('SITE_URL = "' + origin + '"'), 'worker SITE_URL defaults to deployed URL');
+    const log = readFileSync(join(dir, 'fake.log'), 'utf8');
+    assert.match(log, /cfg@example.com/, 'operator from config');
+    assert.match(log, /monte-wo-waitlist/, 'waitlist binding applied');
+  });
 });
 
 await scenarioTest('grant-operator only: single SQL grant, no deploy', async dir => {

@@ -679,6 +679,16 @@ test('deploy script is fail-closed, credential-free, and idempotent; runbook doc
   assert.match(harness, /NOT spawnSync/, 'harness documents why it must not block its origin server');
   assert.ok(existsSync('tests/deploy-fake-wrangler.mjs'), 'simulated wrangler exists');
   assert.match(pkg.scripts['test:deploy'], /deploy-script\.harness\.mjs/, 'deploy test script wired');
+  // zero-local-machine path: GitHub Actions deploys from repo config, token only via secrets
+  const wf = readFileSync('.github/workflows/deploy-intelligence.yml', 'utf8');
+  assert.match(wf, /CLOUDFLARE_API_TOKEN: \$\{\{ secrets\.CLOUDFLARE_API_TOKEN \}\}/, 'token sourced only from GitHub secrets');
+  assert.match(wf, /contains\(github\.event\.head_commit\.message, '\[deploy\]'\)/, 'push deploys need an explicit [deploy] commit marker — never a surprise deploy');
+  assert.match(wf, /workflow_dispatch/, 'manual dispatch trigger supported');
+  assert.ok(!/token['"]?\s*[:=]\s*['"][A-Za-z0-9_-]{10,}/i.test(wf), 'no token VALUES in the workflow file');
+  const cfg = JSON.parse(readFileSync('deploy.config.json', 'utf8'));
+  assert.equal(typeof cfg.project_name, 'string', 'config names the direct-upload project');
+  assert.equal(cfg.access_issuer, null, 'no secrets in deploy.config.json (issuer)');
+  assert.match(deploy, /deploy\.config\.json/, 'script reads config defaults');
 });
 
 // ---------- AU ROOM (3D operations floor) ----------

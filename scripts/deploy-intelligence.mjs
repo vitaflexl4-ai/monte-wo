@@ -58,6 +58,25 @@ const MARK_END = '# <<< intelligence-production';
 export { writeRootToml, writeWorkerToml, intelBlockToml, MARK_BEGIN, MARK_END, MIGRATIONS, DB_NAME }; // test surface (no side effects on import)
 
 const argv = process.argv.slice(2);
+// Optional defaults file (committed, no secrets): lets `npm run deploy:intelligence` run
+// with zero flags, and lets CI (GitHub Actions) deploy from repo configuration.
+function loadConfigDefaults() {
+  try {
+    const raw = readFileSync(resolve(ROOT, 'deploy.config.json'), 'utf8');
+    const cfg = JSON.parse(raw);
+    const ok = v => typeof v === 'string' && v.length > 0;
+    return {
+      projectName: ok(cfg.project_name) ? cfg.project_name : null,
+      accessIssuer: ok(cfg.access_issuer) ? cfg.access_issuer : null,
+      accessAud: ok(cfg.access_aud) ? cfg.access_aud : null,
+      operator: ok(cfg.operator) ? cfg.operator : null,
+      siteUrl: ok(cfg.site_url) ? cfg.site_url : null,
+      enableWorker: cfg.enable_worker === true,
+      withWaitlist: cfg.with_waitlist === true
+    };
+  } catch { return null; }
+}
+const configDefaults = loadConfigDefaults() || {};
 const flag = name => {
   const i = argv.indexOf('--' + name);
   return i === -1 ? null : (argv[i + 1] && !argv[i + 1].startsWith('--') ? argv[i + 1] : true);
@@ -281,10 +300,11 @@ async function verifyDeployed(url) {
 // ---------- main (guarded so tests can import the editors without side effects) ----------
 const isMain = process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1])).href;
 if (isMain) {
-const projectName = typeof flag('project-name') === 'string' ? flag('project-name') : 'vitaflex-monte-wo';
-const accessIssuer = typeof flag('access-issuer') === 'string' ? flag('access-issuer') : null;
-const accessAud = typeof flag('access-aud') === 'string' ? flag('access-aud') : null;
-const operator = typeof flag('operator') === 'string' ? flag('operator') : null;
+// CLI flags override deploy.config.json, which overrides built-in defaults.
+const projectName = (typeof flag('project-name') === 'string' ? flag('project-name') : null) || configDefaults.projectName || 'vitaflex-monte-wo';
+const accessIssuer = (typeof flag('access-issuer') === 'string' ? flag('access-issuer') : null) || configDefaults.accessIssuer || null;
+const accessAud = (typeof flag('access-aud') === 'string' ? flag('access-aud') : null) || configDefaults.accessAud || null;
+const operator = (typeof flag('operator') === 'string' ? flag('operator') : null) || configDefaults.operator || null;
 const grantOnly = typeof flag('grant-operator') === 'string' ? flag('grant-operator') : null;
 
 if (has('check')) { preflight(); process.exit(0); }
@@ -302,14 +322,14 @@ if (grantOnly) {
 }
 
 preflight();
-if (!has('skip-pages') && !(accessIssuer && accessAud)) {
-  die('The dashboard API fails closed without Cloudflare Access.\n' +
-    'Create the Access app first (2 min — see docs/DEPLOYMENT-RUNBOOK.md §2), then re-run with:\n' +
-    '  --access-issuer https://YOURTEAM.cloudflareaccess.com --access-aud THE_APP_AUDIENCE_ID\n' +
-    'To deploy WITHOUT Access anyway (API stays closed, site static only), add --skip-pages-check.',
-    2);
+if (!(accessIssuer && accessAud)) {
+  const msg = '\n⚠ Deploying WITHOUT Cloudflare Access values: the site, D1 and worker deploy,\n' +
+    '  but /api/intelligence/* stays 503 intelligence-not-configured (fail-closed, verified\n' +
+    '  post-deploy) and the dashboard cannot authorize you until Access is configured.\n' +
+    '  Re-run with --access-issuer/--access-aud (or add them to deploy.config.json) to activate.';
+  if (has('require-access')) die(msg.trim(), 2);
+  console.log(msg);
 }
-if (has('skip-pages-check') && !(accessIssuer && accessAud)) console.log('\n⚠ Deploying without Access vars: /api/intelligence/* will answer 503 intelligence-not-configured until configured.');
 
 log('[1/8]', 'Verifying wrangler authentication…');
 requireAuth();
@@ -321,7 +341,7 @@ if (!/^[0-9a-f-]{30,}$/i.test(String(dbId))) die('unexpected database id: ' + db
 applyMigrations();
 
 let waitlistId = null;
-if (has('with-waitlist')) {
+if (has('with-waitlist') || configDefaults.withWaitlist === true) {
   const wl = d1List().find(d => d.name === 'monte-wo-waitlist');
   if (wl) { waitlistId = wl.uuid; console.log('    waitlist DB found: ' + wl.uuid + ' (binding DB for signup continuity)'); }
   else console.log('    no monte-wo-waitlist database found on this account — skipping the DB binding (waitlist stays fail-closed)');
@@ -341,8 +361,9 @@ if (!has('skip-pages')) {
   await verifyDeployed(deployedUrl);
 }
 
-if (has('enable-worker')) {
-  const siteUrl = typeof flag('site-url') === 'string' ? flag('site-url') : deployedUrl;
+const workerEnabled = has('enable-worker') || configDefaults.enableWorker === true;
+if (workerEnabled) {
+  const siteUrl = (typeof flag('site-url') === 'string' ? flag('site-url') : null) || configDefaults.siteUrl || deployedUrl;
   writeWorkerToml(dbId, siteUrl, true);
   deployWorker(dbId, siteUrl, true);
 } else {
