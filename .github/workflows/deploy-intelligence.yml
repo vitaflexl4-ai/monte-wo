@@ -94,6 +94,28 @@ jobs:
               ACCOUNT2="$ACCOUNT"
               curl -sS --max-time 30 -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" \
                 "https://api.cloudflare.com/client/v4/accounts/$ACCOUNT2/pages/projects/vitaflex-monte-wo/deployments" > /tmp/old-deployments.json 2>/dev/null || true
+              LATEST_ID=$(node -e '
+                try { const d = JSON.parse(require("fs").readFileSync("/tmp/old-deployments.json", "utf8"));
+                  console.log((d.result || [])[0].id || ""); } catch { console.log(""); }
+              ')
+              if [ -n "$LATEST_ID" ]; then
+                curl -sS --max-time 30 -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" \
+                  "https://api.cloudflare.com/client/v4/accounts/$ACCOUNT/pages/projects/vitaflex-monte-wo/deployments/$LATEST_ID/history/logs" > /tmp/old-build-logs.json 2>/dev/null || true
+                node -e '
+                  try {
+                    const d = JSON.parse(require("fs").readFileSync("/tmp/old-build-logs.json", "utf8"));
+                    if (d.success && d.result && d.result.data) {
+                      const lines = d.result.data.map(l => l.line).join("\n");
+                      console.log("### Old project — build log tail (latest deployment)");
+                      console.log("```");
+                      console.log(lines.slice(-3500));
+                      console.log("```");
+                    } else {
+                      console.log("logs endpoint: " + JSON.stringify(d).slice(0, 200));
+                    }
+                  } catch { console.log("build logs unavailable"); }
+                ' || true
+              fi
               node -e '
                 try {
                   const d = JSON.parse(require("fs").readFileSync("/tmp/old-deployments.json", "utf8"));
@@ -124,21 +146,31 @@ jobs:
           ACCOUNT=$(node -e "console.log(require('./deploy.config.json').account_id)")
           API="https://api.cloudflare.com/client/v4/accounts/$ACCOUNT/pages/projects/vitaflex-monte-wo"
           curl -sS --max-time 30 -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" "$API" > /tmp/old-project.json
-          BROKEN=$(node -e '
+          NEEDS_WORK=no
+          node -e '
             const d = JSON.parse(require("fs").readFileSync("/tmp/old-project.json", "utf8"));
-            const bc = (d.result && d.result.build_config && d.result.build_config.build_command) || "";
-            process.exit(String(bc).includes("Build command:") ? 0 : 1);
-          ' && echo yes || echo no)
-          if [ "$BROKEN" != "yes" ]; then
-            echo 'Old project build command is already sane — no repair needed.'
+            const r = d.result || {};
+            const bc = (r.build_config && r.build_config.build_command) || "";
+            const prodEnv = (r.deployment_configs && r.deployment_configs.production && r.deployment_configs.production.env_vars) || {};
+            const bad = String(bc).includes("Build command:") || !prodEnv.NODE_VERSION;
+            process.exit(bad ? 0 : 1);
+          ' && NEEDS_WORK=yes || true
+          if [ "$NEEDS_WORK" != "yes" ]; then
+            echo 'Old project build command and NODE_VERSION are already sane — no repair needed.'
             exit 0
           fi
-          echo 'Old project build command contains dashboard placeholder text — repairing to the repo build command.'
+          echo 'Old project needs repair (placeholder build command and/or missing NODE_VERSION) — applying both.'
           CODE=$(curl -sS --max-time 30 -X PATCH \
             -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" -H "Content-Type: application/json" \
             --data '{"build_config":{"build_command":"npm run build","destination_dir":"public","root_dir":""}}' \
             -o /tmp/patch-result.json -w '%{http_code}' "$API" || true)
           echo "config PATCH returned HTTP $CODE"
+          # Pin the build node version to the one the passing GitHub Actions builds use.
+          VCODE=$(curl -sS --max-time 30 -X PATCH \
+            -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" -H "Content-Type: application/json" \
+            --data '{"deployment_configs":{"production":{"env_vars":{"NODE_VERSION":{"type":"plain_text","value":"22"}}},"preview":{"env_vars":{"NODE_VERSION":{"type":"plain_text","value":"22"}}}}}' \
+            -o /tmp/nodever-result.json -w '%{http_code}' "$API" || true)
+          echo "NODE_VERSION PATCH returned HTTP $VCODE"
           TRIG=""
           if [ "$CODE" = "200" ]; then
             TCODE=$(curl -sS --max-time 30 -X POST \
@@ -152,12 +184,13 @@ jobs:
               } catch { console.log("no deployment body"); }
             ' || true)
           fi
-          { echo "## Old project (vitaflex-monte-wo) build command repaired"
+          { echo "## Old project (vitaflex-monte-wo) build repair"
             echo
-            echo "The build command was the dashboard placeholder text. It is now \`npm run build\` (the repo build, output \`public\`)."
+            echo "Build command \`npm run build\` (output \`public\`) and NODE_VERSION=22, then a fresh deployment was triggered."
             echo
             echo '```'
-            echo "config PATCH: HTTP $CODE"
+            echo "build command PATCH: HTTP $CODE"
+            echo "NODE_VERSION PATCH: HTTP $VCODE"
             echo "deploy trigger: $TRIG"
             echo '```'
           } > /tmp/repair-comment.md
