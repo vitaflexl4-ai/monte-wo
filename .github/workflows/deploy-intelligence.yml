@@ -65,12 +65,19 @@ jobs:
           CODE=$(curl -sS --max-time 30 -o /tmp/pages-projects.json -w '%{http_code}' \
             -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" \
             "https://api.cloudflare.com/client/v4/accounts/$ACCOUNT/pages/projects?per_page=50" || true)
+          export DIAG_CODE="$CODE"
           {
             echo "## Old project (vitaflex-monte-wo) build configuration — diagnostic"
             echo
             echo '```json'
             if [ "$CODE" != "200" ]; then
-              echo "{ \"http_status\": \"$CODE\", \"note\": \"Cloudflare API call did not return 200\" }"
+              echo "Cloudflare API returned HTTP $CODE for account $ACCOUNT"
+              node -e '
+                const fs = require("fs");
+                try { const d = JSON.parse(fs.readFileSync("/tmp/pages-projects.json", "utf8"));
+                  console.log(JSON.stringify({ http_status: process.env.DIAG_CODE, errors: d.errors || [], messages: d.messages || [] }, null, 2));
+                } catch { console.log("non-JSON body: " + fs.readFileSync("/tmp/pages-projects.json", "utf8").slice(0, 300)); }
+              ' || true
             else
               node -e '
                 const fs = require("fs");
