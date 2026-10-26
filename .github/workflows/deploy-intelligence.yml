@@ -91,6 +91,26 @@ jobs:
                 const out = { name: p.name, production_branch: p.production_branch, source: p.source || null, build_config: p.build_config || null, env_var_names: envNames };
                 console.log(JSON.stringify(out, null, 2));
               ' || echo '{ "note": "parse failed" }'
+              ACCOUNT2="$ACCOUNT"
+              curl -sS --max-time 30 -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" \
+                "https://api.cloudflare.com/client/v4/accounts/$ACCOUNT2/pages/projects/vitaflex-monte-wo/deployments" > /tmp/old-deployments.json 2>/dev/null || true
+              node -e '
+                try {
+                  const d = JSON.parse(require("fs").readFileSync("/tmp/old-deployments.json", "utf8"));
+                  const ds = (d.result || []).slice(0, 3).map(x => ({
+                    id: x.id, branch: x.deployment_trigger && x.deployment_trigger.metadata ? x.deployment_trigger.metadata.branch : null,
+                    commit: x.deployment_trigger && x.deployment_trigger.metadata ? x.deployment_trigger.metadata.commit_hash : null,
+                    created: x.created_on,
+                    stages: Object.entries(x.stages || {}).map(([k, v]) => k + ":" + v.status).join(", "),
+                    latest_stage: x.latest_stage ? x.latest_stage.name + ":" + x.latest_stage.status : null,
+                    url: x.url || null
+                  }));
+                  console.log("### Old project — latest deployments");
+                  console.log("```json");
+                  console.log(JSON.stringify(ds, null, 2));
+                  console.log("```");
+                } catch { console.log("deployment status unavailable"); }
+              ' || true
             fi
             echo '```'
           } > /tmp/diag-comment.md
