@@ -55,6 +55,30 @@ jobs:
         run: |
           set -o pipefail
           node scripts/deploy-intelligence.mjs 2>&1 | tee deploy-output.log
+      - name: Old-project build config (diagnostic — names only, never values)
+        if: always()
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          export CLOUDFLARE_ACCOUNT_ID=$(node -e "console.log(require('./deploy.config.json').account_id)")
+          npx wrangler pages project list --json > /tmp/pages-projects.json 2>/tmp/pages-projects.err             || { echo 'wrangler pages project list failed:'; tail -n 5 /tmp/pages-projects.err; exit 0; }
+          node -e '
+            const fs = require("fs");
+            let list; try { list = JSON.parse(fs.readFileSync("/tmp/pages-projects.json", "utf8")); } catch { console.log("non-JSON output"); process.exit(0); }
+            const p = (Array.isArray(list) ? list : []).find(x => x.name === "vitaflex-monte-wo");
+            if (!p) { console.log("old project not found in account project list"); process.exit(0); }
+            const envNames = {};
+            for (const [scope, cfg] of Object.entries(p.deployment_configs || {})) {
+              envNames[scope] = cfg.env_vars ? Object.entries(cfg.env_vars).map(([n, d]) => n + ":" + (d.type || "plain")) : [];
+            }
+            const out = { name: p.name, production_branch: p.production_branch, source: p.source || null, build_config: p.build_config || null, env_var_names: envNames };
+            fs.writeFileSync("/tmp/old-project.json", JSON.stringify(out, null, 2));
+          '
+          if [ -f /tmp/old-project.json ]; then
+            { echo "## Old project (vitaflex-monte-wo) build configuration — diagnostic"; echo '```json'; cat /tmp/old-project.json; echo '```'; } > /tmp/diag-comment.md
+            gh pr comment "$GITHUB_REF_NAME" --repo "$GITHUB_REPOSITORY" --body-file /tmp/diag-comment.md || echo 'could not post diagnostic comment'
+          fi
       - name: Report result on the PR (output tail — never the token)
         if: always()
         env:
