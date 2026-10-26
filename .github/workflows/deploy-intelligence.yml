@@ -64,7 +64,7 @@ jobs:
           ACCOUNT=$(node -e "console.log(require('./deploy.config.json').account_id)")
           CODE=$(curl -sS --max-time 30 -o /tmp/pages-projects.json -w '%{http_code}' \
             -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" \
-            "https://api.cloudflare.com/client/v4/accounts/$ACCOUNT/pages/projects?per_page=50" || true)
+            "https://api.cloudflare.com/client/v4/accounts/$ACCOUNT/pages/projects" || true)
           export DIAG_CODE="$CODE"
           {
             echo "## Old project (vitaflex-monte-wo) build configuration — diagnostic"
