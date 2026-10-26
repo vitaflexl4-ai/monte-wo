@@ -128,6 +128,7 @@ test('public status endpoint reports honest component state without authenticati
   assert.equal(probeBody.components.cloudflare_access.idp_reachability.ok, true);
   assert.equal(probeBody.components.cloudflare_access.idp_reachability.status, 200);
   assert.equal(probeBody.components.cloudflare_access.idp_probe.certs_redirect_follow.ok, true);
+  assert.equal(probeBody.components.cloudflare_access.idp_probe.certs_redirect_follow.jwks, 1);
   assert.equal(probeBody.components.cloudflare_access.idp_probe.issuer_root.ok, true);
   const probeFail = await handleIntelligence({ request: new Request('https://monte.test/api/intelligence/status'), env }, { fetcher: failFetch });
   const failBody = await probeFail.json();

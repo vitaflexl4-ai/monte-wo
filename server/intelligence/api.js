@@ -95,7 +95,24 @@ async function publicStatus(env, fetcher = fetch) {
     out.components.cloudflare_access.idp_reachability = certsError;
     out.components.cloudflare_access.idp_probe = {
       issuer_root: await probe(base, { signal: signal(), redirect: 'follow' }),
-      certs_redirect_follow: await probe(base + '/cdn-cgi/access/certs', { signal: signal(), redirect: 'follow' })
+      // The follow-mode fetch is what the verifier's fallback uses: confirm the body
+      // is really a JWK set (key count), not a login page that happens to return 200.
+      certs_redirect_follow: await (async () => {
+        const t0 = Date.now();
+        try {
+          const res = await fetcher(base + '/cdn-cgi/access/certs', { signal: signal(), redirect: 'follow' });
+          if (!res.ok) return { ok: false, status: res.status };
+          try {
+            const j = await res.json();
+            const n = Array.isArray(j && j.keys) ? j.keys.length : 0;
+            return { ok: n > 0, status: res.status, ms: Date.now() - t0, jwks: n };
+          } catch {
+            return { ok: false, status: res.status, body: 'not-json' };
+          }
+        } catch (e) {
+          return { ok: false, error: e && e.name ? e.name : 'fetch-failed' };
+        }
+      })()
     };
   }
   const db = env.INTEL_DB;
