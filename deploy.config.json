@@ -5,7 +5,7 @@
   "with_waitlist": true,
   "access_issuer": "https://jmalexis.cloudflareaccess.com",
   "access_aud": "8b7aac1786c4eeb25ef1b7f04c833eacf146b82f6b2178483745875e5b30f7e1",
-  "operator": null,
+  "operator": "Jmalexis@liberty.edu",
   "site_url": null,
   "account_id": "328b002cfefe3bfa43064c5721f4e998"
 }
