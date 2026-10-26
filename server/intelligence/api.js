@@ -58,7 +58,7 @@ const parseEvidence = row => row ? { ...row, evidence: JSON.parse(row.evidence_j
 // liveness evidence and aggregate counts ONLY — never intelligence content, operator
 // identities or secrets. This is what the locked dashboard screen renders so a visitor
 // can see WHICH piece is missing instead of guessing the backend is absent.
-async function publicStatus(env) {
+async function publicStatus(env, fetcher = fetch) {
   const out = {
     service: 'monte-wo-intelligence',
     generated_at: new Date().toISOString(),
@@ -76,6 +76,18 @@ async function publicStatus(env) {
   out.components.cloudflare_access = configured
     ? { configured: true, detail: 'login active; dashboards authorize via cryptographically verified Access JWT' }
     : { configured: false, action_required: 'owner', detail: 'INTELLIGENCE_ACCESS_ISSUER / INTELLIGENCE_ACCESS_AUD are not set. Every intelligence route fails closed (503): data exists but is not served until the owner creates the Cloudflare Access application and redeploys with its issuer + AUD.' };
+  if (configured) {
+    // Can this deployment reach the Access identity provider to fetch signing keys?
+    // (This is the exact fetch verifyAccessJwt performs; surfacing it here makes the
+    // auth chain observable from outside. No secrets — status and error class only.)
+    try {
+      const t0 = Date.now();
+      const res = await fetcher(env.INTELLIGENCE_ACCESS_ISSUER + '/cdn-cgi/access/certs', { signal: AbortSignal.timeout(5000), redirect: 'error' });
+      out.components.cloudflare_access.idp_reachability = { ok: res.ok, status: res.status, ms: Date.now() - t0 };
+    } catch (e) {
+      out.components.cloudflare_access.idp_reachability = { ok: false, error: e && e.name ? e.name : 'fetch-failed' };
+    }
+  }
   const db = env.INTEL_DB;
   if (!db) {
     out.components.d1_database = { bound: false, detail: 'INTEL_DB binding missing — no other component can be verified' };
@@ -503,7 +515,7 @@ export async function handleIntelligence({ request, env }, deps = {}) {
     // Public read-only status: works even with nothing configured (that is the point).
     if (route === '/status') {
       if (request.method !== 'GET') return new Response(null, { status: 405, headers: { Allow: 'GET' } });
-      return await publicStatus(env);
+      return await publicStatus(env, deps.fetcher || fetch);
     }
     if (!db) return json({ error: 'intelligence-not-configured', detail: 'INTEL_DB binding is missing. Fail closed: no data is served or accepted. Component status: GET /api/intelligence/status' }, 503);
     // Telemetry intake is key-gated, not operator-gated.

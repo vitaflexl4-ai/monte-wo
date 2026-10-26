@@ -119,6 +119,34 @@ test('public status endpoint reports honest component state without authenticati
   // Restore the pristine database for the tests that follow (they expect zero checks).
   await db.prepare("DELETE FROM intel_checks WHERE id='status-c1'").run();
   await db.prepare("DELETE FROM intel_agent_runs WHERE id='status-r1'").run();
+
+  // Configured deployment: the status probes IdP reachability with the same fetch the
+  // verifier uses, and reports it honestly both when reachable and when not.
+  const probeOk = await handleIntelligence({ request: new Request('https://monte.test/api/intelligence/status'), env }, { fetcher });
+  const probeBody = await probeOk.json();
+  assert.equal(probeBody.components.cloudflare_access.configured, true);
+  assert.equal(probeBody.components.cloudflare_access.idp_reachability.ok, true);
+  assert.equal(probeBody.components.cloudflare_access.idp_reachability.status, 200);
+  const probeFail = await handleIntelligence({ request: new Request('https://monte.test/api/intelligence/status'), env }, { fetcher: failFetch });
+  const failBody = await probeFail.json();
+  assert.equal(failBody.components.cloudflare_access.idp_reachability.ok, false);
+  assert.ok(String(failBody.components.cloudflare_access.idp_reachability.error).length > 0, 'error class reported');
+});
+test('verifyAccessJwt reports the failing stage when an unexpected error occurs', async () => {
+  const t = await token('chief@monte.test');
+  const res = await handleIntelligence({ request: new Request('https://monte.test/api/intelligence/overview', { headers: { 'Cf-Access-Jwt-Assertion': t } }), env }, { fetcher: failFetch });
+  assert.equal(res.status, 401);
+  const body = await res.json();
+  assert.equal(body.error, 'authentication-failed');
+  assert.ok(String(body.hint).includes('idp-certs-fetch'), 'hint names the failing stage: ' + body.hint);
+  assert.ok(!String(body.hint).includes('network down'), 'hint never includes raw error messages');
+});
+test('a quoted CF_Authorization cookie value still authenticates', async () => {
+  const t = await token('chief@monte.test');
+  const viaQuotedCookie = await call('/overview', 'GET', null, { Cookie: 'CF_Authorization="' + t + '"' });
+  assert.equal(viaQuotedCookie.status, 403, 'quoted cookie must pass full JWT verification (no operator provisioned yet, so 403 is the expected terminal state)');
+  const body = await viaQuotedCookie.json();
+  assert.equal(body.error, 'operator-not-provisioned', 'the refusal proves authentication succeeded and authorization correctly took over');
 });
 test('fail-closed 503 carries an actionable hint pointing at the public status endpoint', async () => {
   const res = await handleIntelligence({ request: new Request('https://monte.test/api/intelligence/overview'), env: { INTEL_DB: db } }, { fetcher });

@@ -74,7 +74,7 @@
   }
 
   // ---------- shared state ----------
-  const state = { overview: null, overviewCode: null, briefKind: 'daily', briefSelected: null, incidentFilters: { status: 'open', agent: '', severity: '' } };
+  const state = { overview: null, overviewCode: null, overviewHint: null, briefKind: 'daily', briefSelected: null, incidentFilters: { status: 'open', agent: '', severity: '' } };
   const setRail = (text, cls, sub) => {
     $('rail-status').textContent = text;
     $('rail-dot').className = 'dot ' + (cls || '');
@@ -94,8 +94,8 @@
   async function loadOverview(force) {
     if (state.overview && !force && Date.now() - state.overviewAt < 30000) return state.overview;
     const res = await api('/api/intelligence/overview');
-    if (res.ok) { state.overview = res.data; state.overviewAt = Date.now(); state.overviewCode = null; }
-    else { state.overviewCode = res.code || 'error-' + res.status; }
+    if (res.ok) { state.overview = res.data; state.overviewAt = Date.now(); state.overviewCode = null; state.overviewHint = null; }
+    else { state.overviewCode = res.code || 'error-' + res.status; state.overviewHint = (res.data && res.data.hint) || null; }
     systemPill(res.ok ? res.data : null);
     if (!res.ok) setRail('BACKEND UNAVAILABLE', 'red', 'The intelligence API returned an error (' + (res.code || res.status) + ').');
     return res.ok ? res.data : null;
@@ -120,13 +120,16 @@
           : 'Unlock failed: ' + (probe.code || probe.status) + '. The backend may be down — try again.';
       };
       input.addEventListener('keydown', e => { if (e.key === 'Enter') attempt(); });
+      const diag = state.overviewHint && code === 'authentication-failed'
+        ? el('p', { class: 'subtle', style: 'margin-top:10px' }, 'Backend diagnostic: ' + state.overviewHint)
+        : null;
       return panel(el('div', { class: 'empty' },
         el('span', { class: 'empty-ico' }, '🔒'),
         el('strong', {}, 'Authentication required'),
         el('p', {}, 'In production this page is protected by Cloudflare Access — open it through your Access-protected deployment URL. In a development preview, enter the preview access token supplied by the operator.'),
         el('div', { style: 'display:flex;gap:8px;justify-content:center;margin-top:12px;flex-wrap:wrap' }, input,
           el('button', { class: 'btn primary', onclick: attempt }, 'Unlock preview')),
-        status));
+        status, diag));
     }
     if (code === 'operator-not-provisioned') {
       return panel(el('div', { class: 'empty' },

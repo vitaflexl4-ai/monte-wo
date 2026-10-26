@@ -48,12 +48,20 @@ export async function verifyAccessJwt(request, env, fetcher = fetch) {
   const cookieJwt = (() => {
     for (const part of (request.headers.get('Cookie') || '').split(';')) {
       const c = part.trim();
-      if (c.startsWith('CF_Authorization=')) return c.slice('CF_Authorization='.length);
+      if (!c.startsWith('CF_Authorization=')) continue;
+      let v = c.slice('CF_Authorization='.length).trim();
+      // Some cookie flows quote or percent-encode the value; normalize both.
+      if (v.length > 1 && v.startsWith('"') && v.endsWith('"')) v = v.slice(1, -1);
+      try { v = decodeURIComponent(v); } catch { /* keep the raw value */ }
+      return v || null;
     }
     return null;
   })();
   const token = request.headers.get('Cf-Access-Jwt-Assertion') || cookieJwt;
   requireThat(token && token.length < 12000, 'authentication-required', 401);
+  // Stage tracking: when an unexpected exception escapes, the error says WHICH layer
+  // failed (stage name + error class only — never messages, never token material).
+  let stage = 'token-parse';
   try {
     const parts = token.split('.');
     requireThat(parts.length === 3, 'invalid-token', 401);
@@ -67,17 +75,22 @@ export async function verifyAccessJwt(request, env, fetcher = fetch) {
       && Number.isInteger(claim.iat) && claim.iat <= now + 30
       && (!claim.nbf || claim.nbf <= now)
       && typeof claim.sub === 'string' && claim.sub.length <= 200, 'invalid-token', 401);
+    stage = 'idp-certs-fetch';
     const res = await fetcher(env.INTELLIGENCE_ACCESS_ISSUER + '/cdn-cgi/access/certs', { signal: AbortSignal.timeout(5000), redirect: 'error' });
     requireThat(res.ok, 'identity-provider-unavailable', 503);
+    stage = 'idp-certs-parse';
     const keys = await res.json();
     const jwk = keys.keys?.find(k => k.kid === header.kid && k.kty === 'RSA' && (!k.alg || k.alg === 'RS256'));
     requireThat(jwk, 'invalid-token', 401);
+    stage = 'signature-verify';
     const key = await crypto.subtle.importKey('jwk', jwk, { name: 'RSASSA-PKCS1-v1_5', hash: 'SHA-256' }, false, ['verify']);
     requireThat(await crypto.subtle.verify('RSASSA-PKCS1-v1_5', key, decode(parts[2]), new TextEncoder().encode(parts[0] + '.' + parts[1])), 'invalid-token', 401);
     return claim;
   } catch (e) {
     if (e instanceof IntelError) throw e;
-    throw new IntelError('authentication-failed', 401);
+    const err = new IntelError('authentication-failed', 401);
+    err.hint = 'Verification failed at stage "' + stage + '" (' + (e && e.name ? e.name : 'unknown error') + ')';
+    throw err;
   }
 }
 
