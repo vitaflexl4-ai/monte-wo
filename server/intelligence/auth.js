@@ -76,7 +76,16 @@ export async function verifyAccessJwt(request, env, fetcher = fetch) {
       && (!claim.nbf || claim.nbf <= now)
       && typeof claim.sub === 'string' && claim.sub.length <= 200, 'invalid-token', 401);
     stage = 'idp-certs-fetch';
-    const res = await fetcher(env.INTELLIGENCE_ACCESS_ISSUER + '/cdn-cgi/access/certs', { signal: AbortSignal.timeout(5000), redirect: 'error' });
+    // Strict mode first; if the edge rejects the subrequest in strict mode (observed as
+    // TypeError from inside Pages Functions on /cdn-cgi/ paths), retry allowing redirects.
+    // Either way the fetched keys still undergo full cryptographic verification below.
+    let res;
+    try {
+      res = await fetcher(env.INTELLIGENCE_ACCESS_ISSUER + '/cdn-cgi/access/certs', { signal: AbortSignal.timeout(5000), redirect: 'error' });
+    } catch {
+      stage = 'idp-certs-fetch-follow';
+      res = await fetcher(env.INTELLIGENCE_ACCESS_ISSUER + '/cdn-cgi/access/certs', { signal: AbortSignal.timeout(5000), redirect: 'follow' });
+    }
     requireThat(res.ok, 'identity-provider-unavailable', 503);
     stage = 'idp-certs-parse';
     const keys = await res.json();

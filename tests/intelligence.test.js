@@ -127,10 +127,26 @@ test('public status endpoint reports honest component state without authenticati
   assert.equal(probeBody.components.cloudflare_access.configured, true);
   assert.equal(probeBody.components.cloudflare_access.idp_reachability.ok, true);
   assert.equal(probeBody.components.cloudflare_access.idp_reachability.status, 200);
+  assert.equal(probeBody.components.cloudflare_access.idp_probe.certs_redirect_follow.ok, true);
+  assert.equal(probeBody.components.cloudflare_access.idp_probe.issuer_root.ok, true);
   const probeFail = await handleIntelligence({ request: new Request('https://monte.test/api/intelligence/status'), env }, { fetcher: failFetch });
   const failBody = await probeFail.json();
   assert.equal(failBody.components.cloudflare_access.idp_reachability.ok, false);
   assert.ok(String(failBody.components.cloudflare_access.idp_reachability.error).length > 0, 'error class reported');
+});
+test('verifyAccessJwt falls back to redirect-follow when the strict certs fetch is rejected', async () => {
+  const t = await token('chief@monte.test');
+  // Strict (redirect:error) subrequest rejected by the edge; follow mode succeeds.
+  const resilientFetcher = (url, init) => {
+    if (init && init.redirect === 'error') throw new TypeError('fetch failed');
+    return fetcher(url, init);
+  };
+  const res = await handleIntelligence({ request: new Request('https://monte.test/api/intelligence/overview', { headers: { 'Cf-Access-Jwt-Assertion': t } }), env: { ...env, INTEL_DB: db } }, { fetcher: resilientFetcher });
+  // No operator provisioned yet at this point, so the expected terminal state is 403
+  // operator-not-provisioned — which proves the JWT fully verified via the fallback.
+  assert.equal(res.status, 403, 'verification completes via the follow-mode fallback');
+  const body = await res.json();
+  assert.equal(body.error, 'operator-not-provisioned', 'cryptographic verification passed; authorization correctly refused');
 });
 test('verifyAccessJwt reports the failing stage when an unexpected error occurs', async () => {
   const t = await token('chief@monte.test');

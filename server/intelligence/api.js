@@ -78,15 +78,25 @@ async function publicStatus(env, fetcher = fetch) {
     : { configured: false, action_required: 'owner', detail: 'INTELLIGENCE_ACCESS_ISSUER / INTELLIGENCE_ACCESS_AUD are not set. Every intelligence route fails closed (503): data exists but is not served until the owner creates the Cloudflare Access application and redeploys with its issuer + AUD.' };
   if (configured) {
     // Can this deployment reach the Access identity provider to fetch signing keys?
-    // (This is the exact fetch verifyAccessJwt performs; surfacing it here makes the
-    // auth chain observable from outside. No secrets — status and error class only.)
-    try {
+    // Same fetch modes verifyAccessJwt can use; surfacing them here makes the auth chain
+    // observable from outside. No secrets — status codes and error classes only.
+    const probe = async (url, init) => {
       const t0 = Date.now();
-      const res = await fetcher(env.INTELLIGENCE_ACCESS_ISSUER + '/cdn-cgi/access/certs', { signal: AbortSignal.timeout(5000), redirect: 'error' });
-      out.components.cloudflare_access.idp_reachability = { ok: res.ok, status: res.status, ms: Date.now() - t0 };
-    } catch (e) {
-      out.components.cloudflare_access.idp_reachability = { ok: false, error: e && e.name ? e.name : 'fetch-failed' };
-    }
+      try {
+        const res = await fetcher(url, init);
+        return { ok: res.ok, status: res.status, ms: Date.now() - t0 };
+      } catch (e) {
+        return { ok: false, error: e && e.name ? e.name : 'fetch-failed' };
+      }
+    };
+    const base = env.INTELLIGENCE_ACCESS_ISSUER;
+    const signal = () => AbortSignal.timeout(5000);
+    const certsError = await probe(base + '/cdn-cgi/access/certs', { signal: signal(), redirect: 'error' });
+    out.components.cloudflare_access.idp_reachability = certsError;
+    out.components.cloudflare_access.idp_probe = {
+      issuer_root: await probe(base, { signal: signal(), redirect: 'follow' }),
+      certs_redirect_follow: await probe(base + '/cdn-cgi/access/certs', { signal: signal(), redirect: 'follow' })
+    };
   }
   const db = env.INTEL_DB;
   if (!db) {
