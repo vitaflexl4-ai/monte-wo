@@ -98,6 +98,7 @@ jobs:
                 try { const d = JSON.parse(require("fs").readFileSync("/tmp/old-deployments.json", "utf8"));
                   console.log((d.result || [])[0].id || ""); } catch { console.log(""); }
               ')
+              export LATEST_ID
               if [ -n "$LATEST_ID" ]; then
                 curl -sS --max-time 30 -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" \
                   "https://api.cloudflare.com/client/v4/accounts/$ACCOUNT/pages/projects/vitaflex-monte-wo/deployments/$LATEST_ID/history/logs" > /tmp/old-build-logs.json 2>/dev/null || true
@@ -106,7 +107,7 @@ jobs:
                     const d = JSON.parse(require("fs").readFileSync("/tmp/old-build-logs.json", "utf8"));
                     if (d.success && d.result && d.result.data) {
                       const lines = d.result.data.map(l => l.line).join("\n");
-                      console.log("### Old project — build log tail (latest deployment)");
+                      console.log("### Old project — build log tail (latest deployment " + process.env.LATEST_ID + ")");
                       console.log("```");
                       console.log(lines.slice(-3500));
                       console.log("```");
