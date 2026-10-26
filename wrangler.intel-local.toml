@@ -1,0 +1,13 @@
+# Local preview database for the Intelligence Command Center — LOCAL ONLY, never deploy.
+# Used to apply the intelligence migrations to the same local D1 state that
+# `wrangler pages dev --d1 INTEL_DB` (and scripts/preview-intelligence.mjs) reads.
+# The database_id matches the pages-dev binding name so both target one sqlite file.
+name = "monte-wo-intel-local"
+compatibility_date = "2025-01-01"
+pages_build_output_dir = "public"
+[[d1_databases]]
+binding = "INTEL_DB"
+database_name = "monte-wo-intel-local"
+database_id = "INTEL_DB"
+[vars]
+LOCAL_DEVELOPMENT = "true"
