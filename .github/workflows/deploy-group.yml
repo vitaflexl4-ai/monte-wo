@@ -1,0 +1,51 @@
+name: Deploy VitaFlex Business Group
+on:
+  push:
+    branches: [arena/beb13e2a-monte-wo]
+  workflow_dispatch: {}
+concurrency:
+  group: production-deploy
+  cancel-in-progress: false
+permissions:
+  contents: read
+jobs:
+  deploy:
+    if: github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[deploy]')
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: {node-version: 22}
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.12'}
+      - run: npm ci
+      - name: Inspect current production before deployment
+        run: |
+          mkdir -p evidence
+          curl --fail --location --retry 2 --max-time 40 -D evidence/before-headers.txt https://vitaflexbusinessgroup.com -o evidence/before.html
+      - run: npm run build
+      - run: npx playwright install --with-deps chromium
+      - name: Browser and layout tests
+        run: |
+          python3 -m http.server 8080 --bind 0.0.0.0 --directory public > /tmp/site.log 2>&1 &
+          node tests/group-browser.mjs
+      - name: Deploy via existing supported provisioning workflow
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: |
+          test -n "$CLOUDFLARE_API_TOKEN" || { echo 'Missing configured Cloudflare secret'; exit 3; }
+          set -o pipefail
+          node scripts/deploy-intelligence.mjs 2>&1 | tee evidence/deploy.log
+      - name: Verify public domain and protected API
+        run: |
+          node scripts/verify-group.mjs | tee evidence/verification.txt
+          git rev-parse HEAD > evidence/revision.txt
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: group-deployment-evidence
+          path: |
+            evidence/
+            /tmp/vitaflex-desktop.png
+            /tmp/vitaflex-mobile.png

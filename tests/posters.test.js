@@ -23,7 +23,7 @@ test('Posters: originals preserved; served copies only normalize namespace',()=>
  }
 });
 test('Posters: homepage images available before JavaScript, with correct labels',()=>{
- const home=read('public/index.html');
+ const home=read('public/monte-wo/index.html');
  for(const p of Object.values(workoutPosters))assert.ok(home.includes('src="'+p.src+'"'));
  assert.equal((home.match(/class="exercise-image has-workout-poster"/g)||[]).length,3);
  assert.equal((home.match(/data-i18n="workoutPoster"/g)||[]).length,3);
@@ -43,7 +43,7 @@ test('Posters: library posters never masquerade as technique demonstrations',()=
 });
 test('Posters: contained artwork and offline assets remain explicit',()=>{
  assert.ok(read('public/website.css').includes('object-fit:contain'));
- const sw=read('public/sw.js');assert.ok(sw.includes('montewo-core-v18-account-workouts'));
+ const sw=read('public/sw.js');assert.ok(sw.includes('montewo-core-v19-venture-group'));
  assert.ok(sw.includes('/workout-posters.js'));
  for(const p of Object.values(workoutPosters))assert.ok(sw.includes(p.src));
 });
