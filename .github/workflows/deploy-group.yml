@@ -47,6 +47,12 @@ jobs:
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
         run: node scripts/group-deployment-diagnostics.mjs
+      - name: Verify deployed Pages routes and API
+        env:
+          VERIFY_ORIGIN: https://vitaflex-monte-wo-live.pages.dev
+        run: |
+          set -o pipefail
+          node scripts/verify-group.mjs | tee evidence/pages-verification.txt
       - name: Verify public domain and protected API
         run: |
           set -o pipefail
