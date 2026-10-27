@@ -23,7 +23,12 @@ jobs:
       - name: Inspect current production before deployment
         run: |
           mkdir -p evidence
-          curl --fail --location --retry 2 --max-time 40 -D evidence/before-headers.txt https://vitaflexbusinessgroup.com -o evidence/before.html
+          set +e
+          curl --fail --location --retry 2 --max-time 40 -D evidence/before-headers.txt https://vitaflexbusinessgroup.com -o evidence/before.html 2> evidence/before-error.txt
+          result=$?
+          echo "Pre-deployment domain inspection exit code: $result" | tee -a "$GITHUB_STEP_SUMMARY"
+          cat evidence/before-error.txt >> "$GITHUB_STEP_SUMMARY"
+          exit 0
       - run: npm run build
       - run: npx playwright install --with-deps chromium
       - name: Browser and layout tests
@@ -39,6 +44,7 @@ jobs:
           node scripts/deploy-intelligence.mjs 2>&1 | tee evidence/deploy.log
       - name: Verify public domain and protected API
         run: |
+          set -o pipefail
           node scripts/verify-group.mjs | tee evidence/verification.txt
           git rev-parse HEAD > evidence/revision.txt
       - uses: actions/upload-artifact@v4
