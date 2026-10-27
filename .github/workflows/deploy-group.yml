@@ -42,10 +42,15 @@ jobs:
           test -n "$CLOUDFLARE_API_TOKEN" || { echo 'Missing configured Cloudflare secret'; exit 3; }
           set -o pipefail
           node scripts/deploy-intelligence.mjs 2>&1 | tee evidence/deploy.log
+      - name: Diagnose deployed origin and domain routing
+        if: always()
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: node scripts/group-deployment-diagnostics.mjs
       - name: Verify public domain and protected API
         run: |
           set -o pipefail
-          node scripts/verify-group.mjs | tee evidence/verification.txt
+          node scripts/verify-group.mjs 2>&1 | tee evidence/verification.txt
           git rev-parse HEAD > evidence/revision.txt
       - uses: actions/upload-artifact@v4
         if: always()
