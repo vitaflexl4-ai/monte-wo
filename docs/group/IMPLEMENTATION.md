@@ -46,3 +46,7 @@ No DNS, WAF, challenge, Access, SSL or zone-security configuration was changed. 
 - Private intelligence API: HTTP 401 without authentication on both aliases.
 - Cloudflare project API confirms that the project owning the apex and www domains now has the new deployed revision.
 - Public-domain automated request still returns Cloudflare's `Just a moment...` challenge (HTTP 403). The workflow intentionally remains red at that strict external check. The project mismatch is resolved and the domain-owning production project is updated, but a successful human-browser visit through the challenge was not independently verified. Do not claim an HTTP 200 custom-domain verification or disable security to make the check green.
+
+## Owner-supplied logo update
+
+The owner supplied two original PNG logos. They are retained unchanged in `brand-assets/group/`. The black-background logo replaces the abstract hero artwork; its actual VF monogram replaces the placeholder header mark and supplies the favicon. The textured/tagline variant is preserved as an alternate. Optimized web assets total about 83 KB. No recreated or generated logo is used. Browser checks explicitly decode image assets and assert the official hero/header paths.

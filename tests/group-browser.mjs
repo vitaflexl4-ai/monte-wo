@@ -7,6 +7,9 @@ const base=process.env.TEST_ORIGIN||'http://localhost:8080';
 for(const route of JSON.parse(readFileSync('public/group-routes.json'))){
  assert.equal((await page.goto(base+route)).status(),200);
  assert.equal(await page.locator('h1').count(),1);
+ const broken=await page.locator('img').evaluateAll(async images=>{await Promise.all(images.map(async image=>{image.loading='eager';try{await image.decode()}catch{}}));return images.filter(image=>!image.naturalWidth).map(image=>image.src)});
+ assert.deepEqual(broken,[],route+' decoded image assets');
+ if(route==='/'){assert.equal(await page.locator('.hero-art img').getAttribute('src'),'/assets/group/vitaflex-business-group.webp');assert.equal(await page.locator('.brand-logo').count(),1);}
  for(const width of [320,390,768,1024,1440]){await page.setViewportSize({width,height:900});assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),route+' '+width)}
  for(const href of await page.locator('a').evaluateAll(as=>as.map(a=>a.getAttribute('href')))){
   if(!href||href.startsWith('mailto:')||href.startsWith('http'))continue;
