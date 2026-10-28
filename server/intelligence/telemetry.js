@@ -1,14 +1,14 @@
-// ARGON telemetry contract. The mobile app is an UNTRUSTED source: payloads are strictly
+// ARGON & ULTRON telemetry contracts. Client inputs are UNTRUSTED: payloads are strictly
 // validated, identifiers and free-form text are rejected, and every field is bounded.
-// Nothing here may carry user identity, credentials, message contents or location.
+// Nothing here may carry user identity, credentials, message contents, raw IP or location.
 import { requireThat } from './errors.js';
 
 export const EVENT_TYPES = Object.freeze(['session_start', 'app_crash', 'js_error', 'http_error', 'login_failed', 'slow_interaction', 'feature_used']);
-export const PLATFORMS = Object.freeze(['android', 'ios']);
+export const PLATFORMS = Object.freeze(['android', 'ios', 'web']);
 export const ERROR_TYPES = Object.freeze(['app_crash', 'js_error', 'http_error', 'login_failed']);
 const VERSION_RE = /^[a-z0-9][a-z0-9.\-+]{0,31}$/i;
 const FINGERPRINT_RE = /^[a-z0-9][a-z0-9_.:/\-]{0,99}$/i;
-const SESSION_REF_RE = /^[a-z0-9]{8,64}$/i;
+const SESSION_REF_RE = /^[a-z0-9\-]{8,64}$/i;
 
 // Per-event-type whitelisted detail keys. Any other key rejects the whole batch.
 export const DETAIL_KEYS = Object.freeze({
@@ -27,6 +27,17 @@ const ERROR_CLASS_RE = /^[A-Za-z0-9_.\-$ ]{0,80}$/;
 const FEATURE_RE = /^[a-z0-9_.\-]{0,60}$/;
 const STAGES = Object.freeze(['authorize', 'token', 'session', 'other']);
 const METHODS = Object.freeze(['GET', 'POST', 'PUT', 'PATCH', 'DELETE']);
+
+// ULTRON privacy-first aggregate visitor pulse contract (zero identifiers, aggregate rollups only).
+export const PULSE_METRICS = Object.freeze([
+  'pageviews',
+  'cta_click',
+  'waitlist_focus',
+  'waitlist_submit_ok',
+  'waitlist_submit_err',
+  'apk_download'
+]);
+const PULSE_DIM_RE = /^(\/[a-z0-9/_\-]{0,60}|[a-z0-9_.\-]{1,48})$/i;
 
 const clean = (value, re, field) => {
   requireThat(typeof value === 'string' && re.test(value), 'invalid-' + field, 400);
@@ -53,13 +64,16 @@ export function validateTelemetryEvent(raw, now = new Date()) {
     platform: clean(raw.platform, new RegExp('^(' + PLATFORMS.join('|') + ')$'), 'platform'),
     fingerprint: ERROR_TYPES.includes(raw.type) ? clean(raw.fingerprint, FINGERPRINT_RE, 'fingerprint') : '',
     session_ref: optional(raw.sessionRef, SESSION_REF_RE, 'sessionRef') || null,
-    duration_ms: raw.durationMs === undefined || raw.durationMs === null ? null : boundedInt(raw.durationMs, 0, 600000, 'durationMs'),
+    duration_ms: raw.durationMs === undefined || raw.durationMs === null
+      ? (raw.type === 'slow_interaction' && raw.durationMs === undefined && Number.isInteger(Number(raw.durationMs)) ? Number(raw.durationMs) : null)
+      : boundedInt(raw.durationMs, 0, 600000, 'durationMs'),
     detail_json: '{}',
     occurred_at: typeof raw.occurredAt === 'string' && !Number.isNaN(Date.parse(raw.occurredAt))
       ? new Date(raw.occurredAt).toISOString()
       : now.toISOString()
   };
   requireThat(Date.parse(row.occurred_at) > Date.parse(now) - 7 * 86400000, 'stale-event', 400);
+  requireThat(Date.parse(row.occurred_at) <= Date.parse(now) + 5 * 60000, 'future-event', 400);
   const detail = {};
   for (const key of DETAIL_KEYS[raw.type] || []) {
     const value = raw[key];
@@ -72,7 +86,10 @@ export function validateTelemetryEvent(raw, now = new Date()) {
       case 'method': detail.method = clean(value, new RegExp('^(' + METHODS.join('|') + ')$'), 'method'); break;
       case 'stage': detail.stage = clean(value, new RegExp('^(' + STAGES.join('|') + ')$'), 'stage'); break;
       case 'statusCode': detail.statusCode = boundedInt(value, 100, 599, 'statusCode'); break;
-      case 'durationMs': detail.durationMs = boundedInt(value, 0, 600000, 'durationMs'); break;
+      case 'durationMs':
+        detail.durationMs = boundedInt(value, 0, 600000, 'durationMs');
+        if (row.duration_ms === null) row.duration_ms = detail.durationMs;
+        break;
       case 'isFatal': detail.isFatal = value === true; break;
       case 'locale': detail.locale = clean(value, /^(en|ht|fr)$/, 'locale'); break;
       default: requireThat(false, 'unexpected-field:' + key, 400);
@@ -88,4 +105,21 @@ export function validateTelemetryBatch(payload, now = new Date()) {
   requireThat(Array.isArray(payload.events), 'invalid-events', 400);
   requireThat(payload.events.length > 0 && payload.events.length <= 50, 'invalid-batch-size', 400);
   return payload.events.map(e => validateTelemetryEvent(e, now));
+}
+
+// Validates a single aggregate ULTRON visitor pulse (no user IDs, no cookies, no free-form text).
+export function validatePulseEvent(payload, now = new Date()) {
+  requireThat(payload && typeof payload === 'object' && !Array.isArray(payload), 'invalid-pulse', 400);
+  const allowed = new Set(['metric', 'dimension']);
+  for (const k of Object.keys(payload)) requireThat(allowed.has(k), 'unexpected-field:' + k, 400);
+  requireThat(PULSE_METRICS.includes(payload.metric), 'invalid-metric', 400);
+  const dimension = payload.dimension === undefined || payload.dimension === null || payload.dimension === ''
+    ? 'all'
+    : clean(payload.dimension, PULSE_DIM_RE, 'dimension');
+  return {
+    metric_date: now.toISOString().slice(0, 10),
+    metric: payload.metric,
+    dimension,
+    source: 'ultron-pulse'
+  };
 }

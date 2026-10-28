@@ -19,13 +19,14 @@
 // The ingest key is a rotatable public key, not a secret: mobile clients cannot hold
 // real secrets, so the server treats this telemetry as untrusted input, rate-limits it,
 // and caps the confidence of every conclusion derived from it.
+import { Platform } from "react-native";
 import * as Crypto from "expo-crypto";
 import Constants from "expo-constants";
 
 export type TelemetryEvent = {
   type: "session_start" | "app_crash" | "js_error" | "http_error" | "login_failed" | "slow_interaction" | "feature_used";
   appVersion: string;
-  platform: "android" | "ios";
+  platform: "android" | "ios" | "web";
   fingerprint?: string;
   sessionRef?: string;
   durationMs?: number;
@@ -74,8 +75,9 @@ class Telemetry {
     return /^[a-z0-9][a-z0-9.\-+]{0,31}$/i.test(String(v)) ? String(v) : "unknown";
   }
 
-  private platform(): "android" | "ios" {
-    return Constants.platform?.ios ? "ios" : "android";
+  private platform(): "android" | "ios" | "web" {
+    if (Platform.OS === "web") return "web";
+    return Platform.OS === "ios" || Constants.platform?.ios ? "ios" : "android";
   }
 
   // Random, daily-rotating reference. NOT a user identifier: it only links events

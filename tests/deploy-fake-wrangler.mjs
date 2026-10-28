@@ -40,7 +40,7 @@ if (args[0] === 'd1' && args[1] === 'create') {
 }
 if (args[0] === 'd1' && args[1] === 'execute' && args.includes('--command')) {
   if (joined.includes('sqlite_master')) {
-    const ALL = ['intel_runs', 'intel_operators', 'intel_improvement_items'];
+    const ALL = ['intel_runs', 'intel_operators', 'intel_improvement_items', 'intel_incident_notes'];
     const tables = { happy: ALL, missing: ALL, git: ALL, openapi: ALL, noauth: ALL, nodb: [], fresh: [], partial: ['intel_runs'] }[scenario] || ALL;
     out(JSON.stringify([{ results: tables.map(name => ({ name })) }]));
     process.exit(0);

@@ -1,6 +1,7 @@
 import {saveWorkoutCopy} from "../../../shared/workout-transfer.js";
 import type {WorkoutRecord} from "../../../shared/workouts.js";
 import {mobileConfigSupported} from "../../../shared/service-readiness.js";
+import { telemetry } from "./telemetry";
 import { Platform } from "react-native";
 import * as SecureStore from "expo-secure-store";
 import * as Crypto from "expo-crypto";
@@ -22,6 +23,12 @@ if (
   )
 )
   throw Error("Production API must use HTTPS.");
+if (process.env.EXPO_PUBLIC_INTELLIGENCE_KEY) {
+  telemetry.configure({
+    endpoint: API_BASE + "/api/intelligence/events",
+    key: process.env.EXPO_PUBLIC_INTELLIGENCE_KEY,
+  });
+}
 const listeners = new Set<() => void>();
 export function onSessionCleared(fn: () => void) {
   listeners.add(fn);
@@ -93,6 +100,11 @@ export async function request<T = any>(
       throw new ApiError("mobile-api-not-deployed", res.status);
     if (!res.ok) {
       if (res.status === 401) await clearSession();
+      const safeRoute = ("/api/mobile" + path.split("?")[0]).replace(/[^a-z0-9/_\-]/gi, "").slice(0, 80);
+      const safeMethod = (options.method || "GET").toUpperCase();
+      if (res.status >= 400 && res.status <= 599) {
+        telemetry.httpError(safeRoute || "/api/mobile", res.status, safeMethod);
+      }
       throw new ApiError(data.error || "request-failed", res.status);
     }
     if (path === "/config" && !mobileConfigSupported(data))
@@ -143,10 +155,15 @@ export async function signIn() {
   const result = await WebBrowser.openAuthSessionAsync(url, redirectUri);
   if (result.type !== "success") throw new ApiError("sign-in-cancelled", 0);
   const callback = new URL(result.url);
-  if (callback.searchParams.get("state") !== state)
+  if (callback.searchParams.get("state") !== state) {
+    telemetry.loginFailed("authorize", 401);
     throw new ApiError("invalid-auth-state", 401);
+  }
   const code = callback.searchParams.get("code");
-  if (!code) throw new ApiError("authorization-code-missing", 401);
+  if (!code) {
+    telemetry.loginFailed("authorize", 401);
+    throw new ApiError("authorization-code-missing", 401);
+  }
   if (revision !== sessionRevision) throw new ApiError("account-session-changed", 401);
   const nextSession = await post("/auth/token", {
     code,

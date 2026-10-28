@@ -20,6 +20,7 @@ export type LocalClimbProfile = {
   ageYears: string;
   trainingFocus: "strength" | "climb" | "technique" | "hypertrophy";
   hapticsEnabled: boolean;
+  telemetryConsent?: boolean;
 };
 
 export const DEFAULT_CLIMB_PROFILE: LocalClimbProfile = {
@@ -29,6 +30,7 @@ export const DEFAULT_CLIMB_PROFILE: LocalClimbProfile = {
   ageYears: "",
   trainingFocus: "climb",
   hapticsEnabled: true,
+  telemetryConsent: false,
 };
 
 export type SelfReportedLift = {

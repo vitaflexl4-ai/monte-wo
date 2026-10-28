@@ -81,6 +81,7 @@ for file in paths:
  path='/' if file==P/'index.html' else '/404.html' if file==P/'404.html' else '/'+file.parent.relative_to(P).as_posix()+'/'
  doc=file.read_text();
  if path in ['/', '/app/']:doc=attach_assets(doc)
+ if path=='/privacy/' and 'id="operational-telemetry"' not in doc:doc=doc.replace('</main>','<section class="document-section" id="operational-telemetry"><h2>8. Operational Health &amp; Aggregate Analytics</h2><p>Public pages use a cookie-free, identifier-free operational pulse (<code>/api/intelligence/pulse</code>) that increments daily aggregate route and waitlist funnel counters only. No visitor identifiers, cookies, browser fingerprints, or raw IP addresses are stored. Global Privacy Control (<code>Sec-GPC: 1</code>) and Do Not Track (<code>DNT: 1</code>) automatically disable these aggregate counters, and setting <code>mw_analytics_optout=1</code> in local preferences opts your browser out. In the mobile app, anonymous crash and latency diagnostics (ARGON) are strictly off by default until explicitly enabled in Account settings.</p></section></main>',1)
  if path=='/waitlist/' and '<noscript>' not in doc:doc=doc.replace('<form id="waitlist-form"','<noscript><p class="foundation-notice">Online signup needs JavaScript and an available service. Nothing is being collected here. Email <a href="mailto:Montewo@vitaflexbusinessgroup.com">Montewo@vitaflexbusinessgroup.com</a> for help; an email does not automatically enroll you.</p></noscript><form id="waitlist-form"')
  group='/tools/' if path.startswith(('/tools/','/strength-lab/')) else '/strength/' if path.startswith(('/strength/','/strength-ranks/','/methodology/')) else '/exercises/' if path.startswith('/exercises/') else path
  nav='<nav aria-label="Main navigation" id="main-nav">'+''.join(f'<a href="{x["path"]}" data-i18n="{x["key"]}"'+(' aria-current="page"' if group==x['path'] else '')+'>'+x['label']+'</a>' for x in site['navigation'])+f'<a class="foundation-mobile-waitlist" href="{site["cta"]["path"]}" data-i18n="joinWaitlist">{site["cta"]["label"]}</a></nav>'
@@ -95,14 +96,15 @@ for file in paths:
  meta=f'<meta property="og:type" content="website"><meta property="og:site_name" content="MONTE WO"><meta property="og:title" content="{esc(title)}"><meta property="og:description" content="{esc(description)}"><meta property="og:image" content="{origin}/assets/monte-wo-social.jpg"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta property="og:image:alt" content="MONTE WO. Lift. Rank. Climb high. Free tools available; ranking standards draft, not official."><meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="{esc(title)}"><meta name="twitter:description" content="{esc(description)}"><meta name="twitter:image" content="{origin}/assets/monte-wo-social.jpg">'
  if private:meta+='<meta name="robots" content="noindex, nofollow">'
  elif origin:meta+=f'<link rel="canonical" href="{origin}{path}"><meta property="og:url" content="{origin}{path}">';canonical_routes.append(path)
+ if not private and '/ultron-pulse.js' not in doc:meta+='<script src="/ultron-pulse.js" defer></script>'
  doc=doc.replace('</head>',meta+'</head>');doc=doc.replace('<img class="rank-emblem"','<img loading="lazy" decoding="async" class="rank-emblem"');file.write_text(doc)
-robots='User-agent: *\nAllow: /\nDisallow: /api/\nDisallow: /strength/admin/\n'
+robots='User-agent: *\nAllow: /\nDisallow: /api/\nDisallow: /strength/admin/\nDisallow: /intelligence/\n'
 if origin:
  robots+='Sitemap: '+origin+'/sitemap.xml\n';(P/'sitemap.xml').write_text('<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'+''.join('<url><loc>'+esc(origin+p)+'</loc></url>' for p in canonical_routes)+'</urlset>\n')
 else:(P/'sitemap.xml').unlink(missing_ok=True)
 (P/'robots.txt').write_text(robots)
 (P/'website-routes.json').write_text(json.dumps(['/' if f==P/'index.html' else '/'+f.parent.relative_to(P).as_posix()+'/' for f in paths if f!=P/'404.html'],indent=2)+'\n')
-sw=P/'sw.js';text=sw.read_text();assets=['/website.js','/website.css','/website-copy.js','/exercises/standards/','/404.html','/workout-posters.js','/downloads/']+[p['src'] for p in posters.values()]
+sw=P/'sw.js';text=sw.read_text();assets=['/website.js','/website.css','/website-copy.js','/ultron-pulse.js','/exercises/standards/','/404.html','/workout-posters.js','/downloads/']+[p['src'] for p in posters.values()]
 text=re.sub(r"const CORE='[^']+';","const CORE='montewo-core-v13-mobile-foundation';",text)
 if 'const WEBSITE_ASSETS=' in text:text=re.sub(r'const WEBSITE_ASSETS=.*?;', 'const WEBSITE_ASSETS='+json.dumps(assets)+';',text)
 else:text=text.replace('const ASSETS=[','const WEBSITE_ASSETS='+json.dumps(assets)+';\nconst ASSETS=[...WEBSITE_ASSETS,')

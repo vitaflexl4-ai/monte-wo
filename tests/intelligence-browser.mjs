@@ -71,7 +71,7 @@ if (hasBriefing) {
 // Automation rules render with governance states
 await page.goto('http://localhost:8080/intelligence/#/automation');
 await page.waitForSelector('.rule-card');
-assert.equal(await page.locator('.rule-card').count(), 3);
+assert.ok((await page.locator('.rule-card').count()) >= 3);
 assert.ok((await page.locator('.rule-card .status-pill').allTextContents()).includes('DISABLED'));
 // Responsive layouts do not overflow
 for (const width of [1500, 1120, 900, 640, 390]) {
@@ -145,8 +145,10 @@ if (afterPhase === 'task-failed') {
   assert.ok(await page.locator('.room-card:not(.demo)').filter({ hasText: 'ULTRON verification' }).count() >= 1, 'real result card rendered at the central table');
   await page.waitForFunction(() => window.MWRoom.state().agents.ultron.phase === 'idle', null, { timeout: 20000 });
   const evidence = await page.evaluate(async () => {
-    const d = await (await fetch('/api/intelligence/timeline?limit=10')).json();
-    return d.items.some(i => i.agent === 'ULTRON' && i.kind === 'agent-run');
+    const tok = sessionStorage.getItem('mwPreviewToken') || '';
+    const headers = tok ? { Authorization: 'Bearer ' + tok } : {};
+    const d = await (await fetch('/api/intelligence/timeline?limit=10', { headers })).json();
+    return Array.isArray(d.items) && d.items.some(i => i.agent === 'ULTRON' && i.kind === 'agent-run');
   });
   assert.ok(evidence, 'persisted evidence (agent-run) visible in the real timeline');
 }

@@ -254,6 +254,47 @@
       ctx.fillRect(x, 6, bw, height - 12);
     });
   }
+  function drawCorrelationTopology(canvas, correlations, openIncidents) {
+    const { ctx, width, height } = setupCanvas(canvas, 168);
+    if (!ctx) return;
+    ctx.clearRect(0, 0, width, height);
+    const cy = height / 2;
+    const nodes = [
+      { key: 'ARGON', sub: 'Mobile & App Telemetry', x: Math.max(88, width * 0.18), y: cy, color: '#5aadff' },
+      { key: 'AU', sub: correlations.length ? correlations.length + ' correlation(s)' : 'Watching 30m window', x: width / 2, y: cy, color: '#e9ba63' },
+      { key: 'ULTRON', sub: 'Website & Funnel Checks', x: Math.min(width - 88, width * 0.82), y: cy, color: '#ff444f' }
+    ];
+    const hasActive = correlations.some(c => c.status === 'open' || c.status === 'investigating');
+    const drawLink = (a, b, active, tint) => {
+      const grad = ctx.createLinearGradient(a.x, a.y, b.x, b.y);
+      grad.addColorStop(0, a.color + (active ? 'cc' : '44'));
+      grad.addColorStop(0.5, tint + (active ? 'ee' : '55'));
+      grad.addColorStop(1, b.color + (active ? 'cc' : '44'));
+      ctx.save();
+      if (!active) ctx.setLineDash([5, 5]);
+      ctx.strokeStyle = grad;
+      ctx.lineWidth = active ? 2.4 : 1.3;
+      ctx.beginPath();
+      ctx.moveTo(a.x + 26, a.y);
+      ctx.quadraticCurveTo((a.x + b.x) / 2, cy - (active ? 28 : 14), b.x - 26, b.y);
+      ctx.stroke();
+      ctx.restore();
+    };
+    drawLink(nodes[0], nodes[1], hasActive, '#e9ba63');
+    drawLink(nodes[1], nodes[2], hasActive, '#e9ba63');
+    nodes.forEach(n => {
+      ctx.beginPath(); ctx.arc(n.x, n.y, 24, 0, Math.PI * 2);
+      ctx.fillStyle = '#0d1420'; ctx.fill();
+      ctx.lineWidth = 2; ctx.strokeStyle = n.color; ctx.stroke();
+      ctx.fillStyle = n.color; ctx.font = '800 10px Inter, Arial'; ctx.textAlign = 'center';
+      ctx.fillText(n.key, n.x, n.y + 3);
+      ctx.fillStyle = '#9aa8bc'; ctx.font = '600 10px Inter, Arial';
+      ctx.fillText(n.sub, n.x, n.y + 42);
+    });
+    ctx.fillStyle = hasActive ? '#f3c978' : '#6c7d94';
+    ctx.font = '700 10px Inter, Arial'; ctx.textAlign = 'center';
+    ctx.fillText(hasActive ? 'ACTIVE CROSS-AGENT CORRELATION DETECTED' : 'NO SIMULTANEOUS CROSS-DOMAIN OUTAGE IN CURRENT 30M WINDOW · ' + (openIncidents || 0) + ' TOTAL RECORD(S)', width / 2, 22);
+  }
 
   // ---------- overview ----------
   async function renderOverview() {
@@ -359,8 +400,27 @@
         el('p', { style: 'margin-top:8px;font-size:12.5px;color:#c3d1e2;line-height:1.7' }, 'Open the Briefings view for the full evidence-linked summary with recommendations and AU challenges.'))
         : el('div', { class: 'empty' }, el('span', { class: 'empty-ico' }, '▤'), el('strong', {}, 'No briefing has been generated'),
           el('p', {}, 'AU produces the daily executive summary automatically once the scheduled Worker runs its daily job.')));
+    const quarantineUntil = data.config && data.config.quarantineActiveUntil ? Number(data.config.quarantineActiveUntil) : 0;
+    const quarantineBanner = quarantineUntil > Date.now()
+      ? el('div', { class: 'quarantine-banner' },
+          el('span', {}, '🛡 Telemetry burst quarantine active until ' + new Date(quarantineUntil).toLocaleTimeString() + ' — per-client cap tightened to 10/min to protect D1 allowance.'),
+          el('button', { class: 'btn ghost', onclick: () => { location.hash = '#/automation'; } }, 'Manage rule →'))
+      : null;
+    const dq = Array.isArray(data.decisionQueue) ? data.decisionQueue : [];
+    const decisionPanel = dq.length ? el('section', { class: 'panel panel-pad decision-queue' },
+      el('div', { class: 'section-head' },
+        el('div', {}, el('div', { class: 'eyebrow' }, 'AU · EXECUTIVE TRIAGE'), el('h2', {}, 'Decisions waiting on operator'),
+          el('p', { class: 'subtle', style: 'margin-top:4px' }, 'High-impact, correlated, or contested findings where AU requires human verification before irreversible action.')),
+        el('span', { class: 'status-pill st-risk' }, dq.length + ' pending')),
+      el('div', { class: 'dq-list' }, ...dq.map(item => el('div', { class: 'dq-row' },
+        el('div', {},
+          el('strong', {}, item.title),
+          el('small', {}, item.agent + ' · confidence ' + confPct(item.confidence) + ' · ' + item.decisionNeeded)),
+        el('div', { style: 'display:flex;gap:8px;align-items:center' },
+          sevChip(item.severity),
+          el('button', { class: 'btn ghost', onclick: () => openIncident(item.incidentId) }, 'Inspect →')))))) : null;
     if (navTag !== navSeq) return;
-    view.replaceChildren(kpis, agentGrid, budgetPanel, el('div', { class: 'split' }, incidentsPanel, el('div', { style: 'display:grid;gap:13px' }, timelinePanel, briefingTeaser)));
+    view.replaceChildren(...[quarantineBanner, kpis, decisionPanel, agentGrid, budgetPanel, el('div', { class: 'split' }, incidentsPanel, el('div', { style: 'display:grid;gap:13px' }, timelinePanel, briefingTeaser))].filter(Boolean));
   }
   const incidentRows = list => el('div', {}, ...list.map(i => el('div', {
     class: 'tl-item', style: 'cursor:pointer', onclick: () => openIncident(i.id), role: 'button', tabindex: '0',
@@ -424,17 +484,42 @@
     drawer.replaceChildren(el('div', { class: 'loading-panel' }, el('span', { class: 'spin' }), el('p', {}, 'Loading investigation workspace…')));
     const res = await api('/api/intelligence/incidents/' + id);
     if (!res.ok) { drawer.replaceChildren(drawerHead(null), errorPanel(res.code, res.status)); return; }
-    const { incident: i, correlated, activity, relatedChecks } = res.data;
-    const note = el('textarea', { placeholder: 'Investigation note (required when dismissing; recorded in the audit trail)', 'aria-label': 'Investigation note' });
-    const act = async status => {
-      const btn = el('button', { class: 'btn ' + (status === 'resolved' ? 'primary' : status === 'dismissed' ? 'danger' : ''), onclick: async e => {
-        e.target.disabled = true;
-        const r = await api('/api/intelligence/incidents/' + id, { method: 'POST', body: { status, note: note.value } });
-        e.target.disabled = false;
-        if (r.ok) { await openIncident(id); renderIncidents(); } else { alert('Action failed: ' + (r.code || r.status) + '. The note may be required for dismissals.'); }
-      } }, status === 'investigating' ? 'Start investigating' : status === 'resolved' ? 'Resolve incident' : 'Dismiss (reason required)');
-      return btn;
-    };
+    const { incident: i, epistemics: ep, notes: ledgerNotes, correlated, activity, relatedChecks } = res.data;
+    const note = el('textarea', { placeholder: 'Investigation note, hypothesis, or dismissal reason (recorded in audit & ledger)', 'aria-label': 'Investigation note' });
+    const entryTypeSel = el('select', { 'aria-label': 'Ledger entry type' },
+      ...[['hypothesis', 'Hypothesis'], ['note', 'Investigation note'], ['evidence', 'Verified evidence'], ['challenge', 'Skeptical challenge'], ['decision', 'Executive decision'], ['verification', 'Recovery verification']].map(([v, l]) => el('option', { value: v }, l)));
+    const saveLedgerBtn = el('button', { class: 'btn ghost', onclick: async e => {
+      const bodyText = note.value.trim();
+      if (bodyText.length < 3) { alert('Write at least 3 characters in the note box first.'); return; }
+      e.target.disabled = true;
+      const r = await api('/api/intelligence/incidents/' + id + '/notes', { method: 'POST', body: { entryType: entryTypeSel.value, body: bodyText } });
+      e.target.disabled = false;
+      if (r.ok) { note.value = ''; await openIncident(id); } else { alert('Could not record ledger entry: ' + (r.code || r.status)); }
+    } }, '+ Record in ledger');
+    const act = status => el('button', { class: 'btn ' + (status === 'resolved' ? 'primary' : status === 'dismissed' ? 'danger' : ''), onclick: async e => {
+      e.target.disabled = true;
+      const r = await api('/api/intelligence/incidents/' + id, { method: 'POST', body: { status, note: note.value } });
+      e.target.disabled = false;
+      if (r.ok) { await openIncident(id); if ((location.hash || '').includes('incidents')) renderIncidents(); } else { alert('Action failed: ' + (r.code || r.status) + '. The note may be required for dismissals.'); }
+    } }, status === 'investigating' ? 'Start investigating' : status === 'resolved' ? 'Resolve incident' : 'Dismiss (reason required)');
+    const epList = items => el('ul', {}, ...(items && items.length ? items.map(t => el('li', {}, t)) : [el('li', { class: 'subtle' }, 'None recorded')]));
+    const epistemicsSection = ep ? el('section', {},
+      el('h4', {}, 'AU Epistemic Review · ' + confPct(ep.confidence) + ' confidence'),
+      el('div', { class: 'ep-grid' },
+        el('div', { class: 'ep-box ep-fact' }, el('h5', {}, '✓ Confirmed facts'), epList(ep.confirmedFacts)),
+        el('div', { class: 'ep-box ep-hyp' }, el('h5', {}, '◈ Active hypotheses'), epList(ep.hypotheses)),
+        el('div', { class: 'ep-box ep-chal' }, el('h5', {}, '▲ AU challenges'), epList(ep.challenges)),
+        el('div', { class: 'ep-box ep-miss' }, el('h5', {}, '◌ Missing data'), epList(ep.missingData))),
+      ep.falsificationStep ? el('p', { class: 'subtle', style: 'margin-top:8px;color:var(--gold)' }, 'Recommended verification: ' + ep.falsificationStep) : null) : null;
+    const ledgerSection = el('section', {},
+      el('h4', {}, 'Investigation ledger (' + ((ledgerNotes && ledgerNotes.length) || 0) + ')'),
+      (ledgerNotes && ledgerNotes.length)
+        ? el('div', { class: 'ledger-list' }, ...ledgerNotes.map(n => el('div', { class: 'ledger-item' },
+            el('div', { class: 'ledger-head' },
+              el('span', { class: 'ledger-tag t-' + n.entry_type }, n.entry_type),
+              el('span', {}, n.author + ' · ' + relTime(n.created_at))),
+            el('div', {}, n.body))))
+        : el('p', { class: 'subtle' }, 'No operator hypotheses or decisions logged on this incident yet.'));
     drawer.replaceChildren(
       drawerHead(i),
       el('div', { class: 'd-meta' }, sevChip(i.severity), agentChip(i.agent), statusChip(i.status),
@@ -444,6 +529,7 @@
       el('h3', {}, i.title),
       el('p', { class: 'subtle' }, 'Fingerprint ' + i.fingerprint),
       el('section', {}, el('h4', {}, 'Assessment'), el('p', { class: 'd-summary' }, i.summary || '')),
+      epistemicsSection,
       el('section', {}, el('h4', {}, 'Evidence'),
         el('div', { class: 'evidence-block' }, JSON.stringify(i.evidence, null, 2)),
         el('p', { class: 'subtle', style: 'margin-top:8px' }, 'Classification labels inside evidence: fact = directly measured · hypothesis = plausible, unverified · missing-data = cannot conclude.')),
@@ -453,12 +539,14 @@
           el('div', { class: 'tl-body' }, el('strong', {}, c.title), el('small', {}, c.agent + ' · ' + c.status)), el('span', { class: 'tl-time' }, sevChip(c.severity)))))) : null,
       relatedChecks && relatedChecks.length ? el('section', {}, el('h4', {}, 'Recent checks around first observation'),
         el('table', { class: 'mini-table' }, ...relatedChecks.slice(0, 8).map(c => el('tr', {}, el('td', {}, relTime(c.checked_at)), el('td', {}, c.target + ' · ' + c.status + (c.http_status ? ' · HTTP ' + c.http_status : '') + (c.latency_ms != null ? ' · ' + c.latency_ms + 'ms' : '')))))) : null,
+      ledgerSection,
       activity && activity.length ? el('section', {}, el('h4', {}, 'Audit trail'),
         el('table', { class: 'mini-table' }, ...activity.slice(0, 10).map(a => el('tr', {}, el('td', {}, relTime(a.created_at)), el('td', {}, a.actor + ' — ' + a.action + ' (' + a.outcome + ')'))))) : null,
-      el('section', {}, el('h4', {}, 'Actions'),
+      el('section', {}, el('h4', {}, 'Actions & ledger entry'),
         el('div', { class: 'd-actions' }, note,
+          el('div', { class: 'ledger-bar' }, entryTypeSel, saveLedgerBtn),
           el('div', { class: 'action-row' }, act('investigating'), act('resolved'), act('dismissed')),
-          el('p', { class: 'subtle' }, 'Status changes are audited with your operator identity. Reopened incidents preserve their history.'))));
+          el('p', { class: 'subtle' }, 'Status changes and ledger entries are permanently attributed to your operator identity. Reopened incidents preserve full history.'))));
   }
   const drawerHead = i => el('div', { class: 'drawer-head' },
     el('div', {}, el('div', { class: 'eyebrow' }, 'INVESTIGATION WORKSPACE'), i ? null : el('h3', {}, 'Incident')),
@@ -495,13 +583,28 @@
         el('div', {},
           el('p', { class: 'subtle', style: 'margin-bottom:6px' }, 'Check status strip (latest 48)'),
           (() => { const c = el('canvas', { class: 'chart', 'aria-label': 'Check status strip' }); setTimeout(() => statusStrip(c, data.checks ? data.checks.series : [])); return c; })(),
-          el('p', { class: 'subtle', style: 'margin-top:12px' }, 'Scope: availability, latency, broken routes, deployment-visible regressions. Visitor behaviour is aggregate-only and imported as daily rollups when configured — never per-visitor tracking.'))));
+          (() => {
+            const vf = data.visitorFunnel || { status: 'missing-data' };
+            if (vf.status !== 'ok') {
+              return el('p', { class: 'subtle', style: 'margin-top:12px' }, 'Aggregate funnel rollups: not recorded yet. Cookie-free pulse counters (/api/intelligence/pulse) populate pageviews, APK downloads, waitlist starts and enrollments without visitor identifiers.');
+            }
+            return el('div', { style: 'margin-top:12px' },
+              el('p', { class: 'subtle' }, 'Aggregate 7-day visitor & waitlist funnel (cookie-free, GPC/DNT-honoring)'),
+              el('div', { class: 'funnel-grid' },
+                el('div', { class: 'funnel-step' }, el('b', {}, String(vf.pageviews7d || 0)), el('span', {}, 'Pageviews'), el('small', {}, (vf.today && vf.today.pageviews ? vf.today.pageviews : 0) + ' today')),
+                el('div', { class: 'funnel-step' }, el('b', {}, String(vf.apkDownloads7d || 0)), el('span', {}, 'APK downloads'), el('small', {}, 'direct /download/')),
+                el('div', { class: 'funnel-step' }, el('b', {}, String(vf.waitlistSubmits7d || 0)), el('span', {}, 'Waitlist starts'), el('small', {}, vf.waitlistCompletions7d + ' enrolled' + (vf.waitlistCompletionRate != null ? ' (' + pct(vf.waitlistCompletionRate) + ')' : ''))),
+                el('div', { class: 'funnel-step' }, el('b', {}, String(vf.securityBlocked7d || 0)), el('span', {}, 'Security blocks'), el('small', {}, 'rate / key / origin'))));
+          })())),
+    );
+    const plat = g.byPlatform || {};
     const argonPanel = panel(
       el('div', { class: 'section-head' }, el('div', {}, el('div', { class: 'eyebrow' }, 'MOBILE APP INTELLIGENCE'), el('h2', {}, 'ARGON'), el('p', { class: 'subtle' }, g.detail || '')), el('span', { class: 'status-pill ' + agentStatusClass(g.status) }, g.status || '—')),
       el('div', { class: 'agent-stat-row', style: 'margin:10px 0' },
         el('div', { class: 'agent-stat' }, el('b', {}, String((g.telemetry24h && g.telemetry24h.sessions) || 0)), el('span', {}, 'sessions 24h')),
         el('div', { class: 'agent-stat' }, el('b', {}, String((g.telemetry24h && g.telemetry24h.errors) || 0)), el('span', {}, 'error events')),
-        el('div', { class: 'agent-stat' }, el('b', {}, relTime(g.lastRun ? g.lastRun.started_at : null)), el('span', {}, 'last analysis'))),
+        el('div', { class: 'agent-stat' }, el('b', {}, g.p95InteractionMs != null ? g.p95InteractionMs + 'ms' : '—'), el('span', {}, 'p95 interaction')),
+        el('div', { class: 'agent-stat' }, el('b', {}, (plat.android || 0) + ' / ' + (plat.ios || 0) + ' / ' + (plat.web || 0)), el('span', {}, 'android / ios / web'))),
       (g.topErrors && g.topErrors.length) ? el('table', { class: 'mini-table' }, ...g.topErrors.map(e => el('tr', {}, el('td', {}, e.event_type), el('td', { class: 'mono' }, e.fingerprint), el('td', {}, e.n + ' events')))) : el('p', { class: 'subtle' }, 'No error fingerprints observed in the last 24h.'),
       el('div', { class: 'notice', style: 'margin-top:12px' }, 'Telemetry is strictly bounded: event type, app version, platform, error fingerprint and whitelisted details. Identifiers, free-form text and message contents are rejected at intake. All ARGON conclusions are labelled hypotheses and confidence-capped.'));
     const auPanel = panel(
@@ -551,11 +654,14 @@
     }
     const au = correlated.data.incidents || [];
     if (navTag !== navSeq) return;
+    const topoCanvas = el('canvas', { class: 'topology-canvas', 'aria-label': 'Cross-agent correlation topology' });
+    setTimeout(() => drawCorrelationTopology(topoCanvas, au, au.length), 0);
     view.replaceChildren(
       panel(el('div', { class: 'section-head' },
         el('div', {}, el('div', { class: 'eyebrow' }, 'AU · SECURE ANALYSIS ROOM'), el('h2', {}, 'Cross-agent correlations'),
-          el('p', { class: 'subtle', style: 'margin-top:6px' }, 'Correlations are created only when ULTRON and ARGON report within a 30-minute window. They cite their members and resolve only when every member resolves.')),
+          el('p', { class: 'subtle', style: 'margin-top:6px' }, 'Correlations are created only when ULTRON and ARGON report within a 30-minute window (shared backend outage or synthetic traffic contamination). They cite their members and resolve only when every member resolves.')),
         el('span', { class: 'status-pill' }, au.length + ' records')),
+        topoCanvas,
         au.length ? el('div', {}, ...au.map(i => el('div', { class: 'tl-item', style: 'cursor:pointer', onclick: () => openIncident(i.id), tabindex: '0', onkeydown: e => { if (e.key === 'Enter') openIncident(i.id); } },
           el('span', { class: 'tl-dot', style: 'background:var(--gold)' }),
           el('div', { class: 'tl-body' }, el('strong', {}, i.title), el('small', {}, 'members: ' + (i.correlation_group || '—') + ' · seen ' + (i.occurrence_count ?? 1) + '× · confidence ' + confPct(i.confidence))),
@@ -619,9 +725,17 @@
         el('p', {}, 'Briefings are generated from recorded evidence only. Recommendations link to their evidence, state confidence and impact, and flag the decisions that require you.')));
     }
     if (navTag !== navSeq) return;
+    const genBtn = (k, label) => el('button', { class: 'btn ghost', onclick: async e => {
+      e.target.disabled = true;
+      const r = await api('/api/intelligence/briefing', { method: 'POST', body: { kind: k } });
+      e.target.disabled = false;
+      if (r.ok) { state.briefKind = k; state.briefSelected = r.data.briefing ? r.data.briefing.id : null; renderBriefings(); }
+      else alert('Briefing generation failed: ' + (r.code || r.status));
+    } }, label);
     view.replaceChildren(panel(el('div', { class: 'section-head' },
       el('div', {}, el('div', { class: 'eyebrow' }, 'EXECUTIVE INTELLIGENCE'), el('h2', {}, 'Briefings'),
-        el('p', { class: 'subtle', style: 'margin-top:6px' }, 'Three reporting levels: urgent alerts for critical incidents, daily executive summaries, and weekly strategic reports.')), tabs)),
+        el('p', { class: 'subtle', style: 'margin-top:6px' }, 'Three reporting levels: urgent alerts for critical incidents, daily executive summaries, and weekly strategic reports.')),
+      el('div', { style: 'display:flex;gap:8px;flex-wrap:wrap;align-items:center' }, tabs, genBtn('daily', '+ Daily now'), genBtn('weekly', '+ Weekly now')))),
       el('div', { class: 'brief-layout' }, listCol, detailCol));
   }
   const renderRecommendations = recs => !recs || !recs.length ? [] : [
@@ -629,6 +743,7 @@
       ...recs.map(r => el('div', { class: 'rec-card' },
         el('div', { class: 'rec-head' }, el('strong', {}, r.title), r.decisionRequired ? el('span', { class: 'rec-decision' }, 'DECISION REQUIRED') : null),
         el('p', { class: 'subtle', style: 'margin-top:7px' }, r.rationale),
+        r.executiveAction ? el('p', { style: 'margin-top:6px;font-size:12px;color:#f3c978' }, 'Action required: ' + r.executiveAction) : null,
         el('div', { class: 'rec-meta' },
           el('span', {}, 'confidence ', el('b', {}, confPct(r.confidence))), el('span', {}, 'impact ', el('b', {}, r.impact)),
           el('span', {}, 'required from you: ', el('b', {}, r.decisionRequired ? 'a decision or approval' : 'review only'))),
@@ -638,6 +753,7 @@
   const renderChallenges = challenges => !challenges || !challenges.length ? [] : [
     el('section', { style: 'margin-top:16px' }, el('h4', { class: 'eyebrow', style: 'margin-bottom:4px' }, 'AU CHALLENGES — VERIFY BEFORE ACTING'),
       ...challenges.map(c => el('div', { class: 'challenge-card' }, el('strong', {}, c.title), el('p', {}, c.challenge),
+        c.falsificationStep ? el('p', { class: 'subtle', style: 'margin-top:4px;color:var(--gold)' }, 'How to verify: ' + c.falsificationStep) : null,
         el('button', { class: 'btn ghost', style: 'margin-top:6px', onclick: () => openIncident(c.incidentId) }, 'Review evidence'))))];
 
   // ---------- automation ----------
@@ -883,7 +999,15 @@
   }
   $('refresh').addEventListener('click', refresh);
   $('drawer-overlay').addEventListener('click', closeDrawer);
-  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeDrawer(); });
+  const shortcutOrder = ['overview', 'room', 'incidents', 'agents', 'analysis', 'titan', 'briefings', 'automation', 'audit'];
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') { closeDrawer(); return; }
+    const tag = (e.target && e.target.tagName) ? e.target.tagName.toLowerCase() : '';
+    if (tag === 'input' || tag === 'textarea' || tag === 'select' || e.metaKey || e.ctrlKey || e.altKey) return;
+    if (e.key === 'r' || e.key === 'R') { refresh(); return; }
+    const idx = Number(e.key) - 1;
+    if (idx >= 0 && idx < shortcutOrder.length) location.hash = '#/' + shortcutOrder[idx];
+  });
   // Auto-refresh only when the tab is visible; honours reduced-motion preferences.
   const reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   if (!reduced) setInterval(() => { if (!document.hidden && !refreshing) refresh(); }, 60000);

@@ -11,7 +11,7 @@
 // production data stores other than the intelligence D1 database, and its only reversible
 // automated actions are the three rule-gated behaviors defined in intel_automation_rules.
 import {
-  runUltronChecks, analyzeArgonTelemetry, correlateAu, buildDailyBriefing, buildWeeklyBriefing,
+  runUltronChecks, analyzeUltronSignals, analyzeArgonTelemetry, correlateAu, buildDailyBriefing, buildWeeklyBriefing,
   retentionSweep, recordAgentRun, isRuleEnabled
 } from '../../server/intelligence/core.js';
 
@@ -43,6 +43,13 @@ async function argonAuCycle(env) {
   return recordAgentRun(env.INTEL_DB, 'ARGON', 'telemetry-analysis', async () => {
     const result = await analyzeArgonTelemetry(env.INTEL_DB, env);
     return { summary: result.analyzed + ' events analyzed across ' + result.versions + ' versions; ' + result.raised.length + ' finding(s); ' + result.note, evidence: result };
+  });
+}
+
+async function ultronSignalsCycle(env) {
+  return recordAgentRun(env.INTEL_DB, 'ULTRON', 'funnel-signal-analysis', async () => {
+    const result = await analyzeUltronSignals(env.INTEL_DB, env);
+    return { summary: 'ULTRON funnel & traffic signal analysis: ' + result.raised.length + ' finding(s).', evidence: result };
   });
 }
 
@@ -90,7 +97,10 @@ export default {
     ctx.waitUntil((async () => {
       try {
         await job(env);
-        if (job === argonAuCycle) await auCorrelationCycle(env);
+        if (job === argonAuCycle) {
+          await ultronSignalsCycle(env);
+          await auCorrelationCycle(env);
+        }
       } catch (error) {
         console.error('MONTE WO Intelligence job failed for cron "' + cron + '":', error);
       }

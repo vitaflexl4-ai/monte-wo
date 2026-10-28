@@ -26,7 +26,7 @@ function makeRepoCopy() {
   mkdirSync(join(dir, 'scripts'), { recursive: true });
   cpSync(join(ROOT, 'wrangler.toml'), join(dir, 'wrangler.toml'));
   cpSync(join(ROOT, 'intelligence-worker/wrangler.toml'), join(dir, 'intelligence-worker/wrangler.toml'));
-  for (const f of ['0003_intelligence.sql', '0004_intelligence_ops.sql', '0005_intelligence_titan.sql']) cpSync(join(ROOT, 'migrations', f), join(dir, 'migrations', f));
+  for (const f of ['0003_intelligence.sql', '0004_intelligence_ops.sql', '0005_intelligence_titan.sql', '0006_intelligence_v2.sql']) cpSync(join(ROOT, 'migrations', f), join(dir, 'migrations', f));
   cpSync(join(ROOT, 'scripts/deploy-intelligence.mjs'), join(dir, 'scripts/deploy-intelligence.mjs'));
   if (existsSync(join(ROOT, 'deploy.config.json'))) cpSync(join(ROOT, 'deploy.config.json'), join(dir, 'deploy.config.json'));
   // minimal but REAL files the preflight validates (paths + parseability)

@@ -343,7 +343,10 @@
             el('span', { text: 'up ' + Math.round((t.uptime24h || 0) * 100) + '%' }),
             el('span', { class: 'room-holo-dim', text: Math.round(t.avgLatencyMs || 0) + 'ms · ' + ctx.relTime(t.lastCheckedAt) })));
         } else bodyEl.append(el('p', { class: 'room-holo-line dim', text: 'No targets configured.' }));
-        bodyEl.append(el('p', { class: 'room-holo-line dim', text: 'traffic analytics: NOT CONNECTED' }));
+        const vf = d.visitorFunnel;
+        bodyEl.append(el('p', { class: 'room-holo-line dim', text: vf && vf.status === 'ok'
+          ? 'traffic analytics: ' + (vf.pageviews7d || 0) + ' views (7d aggregate)'
+          : 'traffic analytics: NOT CONNECTED' }));
       } else if (key === 'argon') {
         const t24 = d.telemetry24h || {};
         if (!t24.sessions && !t24.errors) {

@@ -1,18 +1,18 @@
 // MONTE WO Intelligence core — shared by the scheduled Worker (ULTRON/ARGON/AU jobs) and the
 // Pages Functions API. Deterministic, evidence-first logic only: no fabricated data, no LLM
-// claims. Facts, hypotheses and missing data are explicitly labelled in evidence JSON.
+// claims. Facts, hypotheses, challenges and missing data are explicitly structured in evidence JSON.
 //
 // Agent map:
-//   ARGON  — mobile app telemetry analysis (untrusted client input, confidence-capped)
-//   ULTRON — scheduled website availability/latency/route checks
-//   AU     — cross-agent correlation, briefings, challenges, bounded automation
+//   ARGON  — mobile & /mobile/ web app telemetry analysis (untrusted client input, confidence-capped)
+//   ULTRON — scheduled website availability/latency/route checks, aggregate funnel & traffic signals
+//   AU     — cross-agent correlation, epistemic challenges, investigation ledger, briefings, governance
 import { IntelError, requireThat } from './errors.js';
 
 export const SEVERITY_RANK = Object.freeze({ info: 1, low: 2, medium: 3, high: 4, critical: 5 });
 export const AGENTS = Object.freeze(['ARGON', 'ULTRON', 'AU', 'TITAN']);
 export const uid = () => crypto.randomUUID();
 export const nowIso = () => new Date().toISOString();
-export const maxSeverity = (a, b) => SEVERITY_RANK[a] >= SEVERITY_RANK[b] ? a : b;
+export const maxSeverity = (a, b) => (SEVERITY_RANK[a] || 1) >= (SEVERITY_RANK[b] || 1) ? a : b;
 const json = (data, status = 200) => new Response(JSON.stringify(data), {
   status, headers: {
     'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'private, no-store',
@@ -29,6 +29,10 @@ export async function getSettings(db) {
     return Object.fromEntries(rows.map(r => [r.key, r.value]));
   } catch { return {}; }
 }
+export async function setSetting(db, key, value) {
+  await db.prepare(`INSERT INTO intel_settings(key,value) VALUES (?,?)
+    ON CONFLICT(key) DO UPDATE SET value=excluded.value`).bind(String(key), String(value)).run();
+}
 export async function isRuleEnabled(db, ruleId) {
   const row = await db.prepare('SELECT id, enabled FROM intel_automation_rules WHERE id=?').bind(ruleId).first();
   return { exists: !!row, enabled: row?.enabled === 1 };
@@ -40,7 +44,25 @@ export async function logAudit(db, actor, action, target, outcome, detail = {}) 
     .bind(uid(), String(actor), String(action), String(target), String(outcome), JSON.stringify(detail)).run();
 }
 
-// ---------- rate limiting (hashed keys only) ----------
+// ---------- aggregate rollups (privacy-first, zero per-visitor rows) ----------
+export async function incrementRollup(db, metric, dimension = 'all', source = 'ultron-pulse', delta = 1, metricDate = nowIso().slice(0, 10)) {
+  try {
+    await db.prepare(`INSERT INTO intel_metric_rollups (metric_date, metric, dimension, source, value)
+      VALUES (?, ?, ?, ?, ?)
+      ON CONFLICT(metric_date, metric, dimension, source) DO UPDATE SET value = intel_metric_rollups.value + excluded.value`)
+      .bind(metricDate, String(metric), String(dimension || 'all'), String(source), Number(delta)).run();
+  } catch { /* non-fatal if optional table missing in partial test harness */ }
+}
+
+export async function ingestPulse(db, pulse) {
+  await incrementRollup(db, pulse.metric, pulse.dimension, pulse.source, 1, pulse.metric_date);
+  if (pulse.metric === 'pageviews' && pulse.dimension !== 'all') {
+    await incrementRollup(db, 'pageviews', 'all', pulse.source, 1, pulse.metric_date);
+  }
+  return { recorded: true, metric: pulse.metric, dimension: pulse.dimension, date: pulse.metric_date };
+}
+
+// ---------- rate limiting (hashed keys only; window_start stored in milliseconds) ----------
 export async function rateLimit(db, key, windowMs, max) {
   const now = Date.now(), windowStart = Math.floor(now / windowMs) * windowMs;
   const row = await db.prepare(`INSERT INTO intel_rate_limits (key,window_start,attempts) VALUES (?,?,1)
@@ -50,7 +72,87 @@ export async function rateLimit(db, key, windowMs, max) {
   return { allowed: row.attempts <= max, attempts: row.attempts };
 }
 export async function purgeExpiredRateLimits(db) {
-  await db.prepare('DELETE FROM intel_rate_limits WHERE window_start < ?').bind(Math.floor(Date.now() / 1000) - 86400).run();
+  // window_start is stored in ms (Date.now()); purge entries older than 24 hours (86,400,000 ms).
+  await db.prepare('DELETE FROM intel_rate_limits WHERE window_start < ?').bind(Date.now() - 86400000).run();
+}
+
+// ---------- persistent investigation ledger ----------
+export async function addIncidentNote(db, { incidentId, author, entryType = 'note', body, confidence = null }) {
+  const id = uid(), createdAt = nowIso();
+  await db.prepare(`INSERT INTO intel_incident_notes (id, incident_id, author, entry_type, body, confidence, created_at)
+    VALUES (?, ?, ?, ?, ?, ?, ?)`).bind(id, incidentId, String(author), String(entryType), String(body), confidence, createdAt).run();
+  return { id, incident_id: incidentId, author, entry_type: entryType, body, confidence, created_at: createdAt };
+}
+
+export async function listIncidentNotes(db, incidentId) {
+  try {
+    return (await db.prepare(`SELECT id, incident_id, author, entry_type, body, confidence, created_at
+      FROM intel_incident_notes WHERE incident_id=? ORDER BY created_at ASC LIMIT 100`).bind(incidentId).all()).results || [];
+  } catch {
+    return [];
+  }
+}
+
+// ---------- AU Epistemic Challenge Engine ----------
+// Separates what is strictly observed (confirmed facts) from inferred causes (hypotheses),
+// challenges weak statistical or single-vantage assumptions, and prescribes a falsification check.
+export function evaluateEpistemics(incident) {
+  let ev = {};
+  try { ev = typeof incident.evidence === 'object' && incident.evidence ? incident.evidence : JSON.parse(incident.evidence_json || '{}'); }
+  catch { ev = {}; }
+  const classification = ev.classification || (incident.agent === 'ULTRON' ? 'fact' : 'hypothesis');
+  const conf = Number(incident.confidence ?? 0.5);
+  const confirmedFacts = [];
+  const hypotheses = [];
+  const challengedAssumptions = [];
+  const missingData = [];
+
+  if (incident.agent === 'ULTRON') {
+    if (ev.url) confirmedFacts.push(`Probe to ${ev.url} returned ${ev.httpStatus ? 'HTTP ' + ev.httpStatus : (ev.error || 'network failure')} (${ev.latencyMs ?? '—'} ms).`);
+    if (Array.isArray(ev.latencies)) confirmedFacts.push(`Last 3 probe latencies: ${ev.latencies.join(' ms, ')} ms (threshold ${ev.slowMs} ms).`);
+    if (ev.metricWindow) confirmedFacts.push(`Aggregate rollup observed over ${ev.metricWindow}: ${ev.summaryFact || incident.title}.`);
+    if (incident.fingerprint?.startsWith('ultron-unavailable-')) {
+      hypotheses.push('Origin unavailability or DNS/TLS routing failure affecting visitors.');
+      challengedAssumptions.push('Single-colo Worker probe cannot rule out transient edge-specific routing issues until consecutive failures persist.');
+    }
+    if (!ev.visitorImpactConfirmed) {
+      missingData.push('Multi-region synthetic check or independent edge vantage confirmation.');
+    }
+  } else if (incident.agent === 'ARGON') {
+    if (typeof ev.errors === 'number' || typeof ev.count === 'number') {
+      confirmedFacts.push(`Ingested ${ev.errors ?? ev.count} validated telemetry event(s)${ev.appVersion ? ' on version ' + ev.appVersion : ''}.`);
+    }
+    if (typeof ev.p95Ms === 'number') {
+      confirmedFacts.push(`Client-reported interaction duration p95 = ${ev.p95Ms} ms across ${ev.samples} samples on ${ev.screen || 'app'}.`);
+    }
+    hypotheses.push(incident.summary || incident.title);
+    challengedAssumptions.push('Mobile telemetry originates from untrusted client devices; spoofed batches or offline retry bursts can inflate raw event counts.');
+    if ((ev.sessions ?? 0) < 20) {
+      challengedAssumptions.push(`Low session denominator (${ev.sessions ?? 0} sessions < 20): statistical power is insufficient to justify an automatic release rollback.`);
+    }
+    if (classification === 'missing-data' || ev.sessions === 0) {
+      missingData.push('Active session_start denominator for this app version (required to compute true crash/error rate).');
+    }
+  } else if (incident.agent === 'AU') {
+    const members = Array.isArray(ev.members) ? ev.members : [];
+    if (members.length) {
+      confirmedFacts.push(`Temporal co-occurrence within ${ev.correlationWindowMinutes || 30}m across: ${members.map(m => m.agent + ' (' + m.fingerprint + ')').join(' + ')}.`);
+    }
+    hypotheses.push(ev.hypothesis || 'Shared upstream cause linking simultaneous website/API and mobile symptoms.');
+    challengedAssumptions.push('Temporal correlation within 30 minutes does not by itself prove causal dependency; verify shared route or auth dependency.');
+  }
+
+  if (conf < 0.6 && !challengedAssumptions.some(c => c.includes('0.6'))) {
+    challengedAssumptions.push(`Confidence (${Math.round(conf * 100)}%) is below AU's 60% action threshold — gather corroborating evidence before production changes.`);
+  }
+
+  const falsificationStep = incident.agent === 'ULTRON'
+    ? 'Trigger an on-demand ULTRON verification probe and inspect Cloudflare Pages function logs for matching 5xx/4xx status codes.'
+    : incident.agent === 'ARGON'
+      ? 'Compare error fingerprints against the exact git commit / APK release timestamp and verify whether ULTRON saw simultaneous API errors.'
+      : 'Inspect both correlated member incidents in the Analysis Room; resolve or falsify each primary member directly.';
+
+  return { classification, confidence: conf, confirmedFacts, hypotheses, challenges: challengedAssumptions, challengedAssumptions, missingData, falsificationStep };
 }
 
 // ---------- checks ----------
@@ -61,32 +163,38 @@ export async function recordCheck(db, check) {
       String(check.detail || ''), JSON.stringify(check.evidence || {}), check.checkedAt || nowIso()).run();
 }
 
-// ---------- incidents: dedup, escalation, recovery ----------
-// Upsert-by-fingerprint deduplication. Repeated failures increment occurrence_count and the
-// failure streak; a resolved/dismissed incident that fails again reopens (history preserved).
+// ---------- incidents: dedup, monotonic escalation, recovery ----------
 export async function upsertIncidentFailure(db, envOrIncident, maybeIncident) {
-  // Accepts (db, incident) or (db, env, incident); the worker passes env for urgent alerting.
   const env = maybeIncident ? envOrIncident : null;
   const incident = maybeIncident || envOrIncident;
   const now = nowIso();
+  const prior = await db.prepare('SELECT id, status, severity, streak_fail FROM intel_incidents WHERE fingerprint=?').bind(incident.fingerprint).first();
+  const wasActive = prior && !['resolved', 'dismissed'].includes(prior.status);
+  const incomingSev = incident.severity || 'medium';
+  const effectiveBaseSev = wasActive ? maxSeverity(prior.severity, incomingSev) : incomingSev;
+
   const row = await db.prepare(`INSERT INTO intel_incidents
     (id,fingerprint,agent,severity,title,summary,evidence_json,confidence,status,first_seen,last_seen,auto_resolve,occurrence_count,streak_fail,streak_ok)
     VALUES (?,?,?,?,?,?,?,?,'open',?,?,?,?,?,0)
     ON CONFLICT(fingerprint) DO UPDATE SET
       last_seen=excluded.last_seen,
       occurrence_count=intel_incidents.occurrence_count+1,
-      streak_fail=intel_incidents.streak_fail+1,
+      streak_fail=CASE WHEN intel_incidents.status IN ('resolved','dismissed') THEN 1 ELSE intel_incidents.streak_fail+1 END,
       streak_ok=0,
-      severity=excluded.severity,
+      severity=?,
       title=excluded.title,
       summary=excluded.summary,
       evidence_json=excluded.evidence_json,
       confidence=excluded.confidence,
       status=CASE WHEN intel_incidents.status IN ('resolved','dismissed') THEN 'open' ELSE intel_incidents.status END
-    RETURNING id,status,severity,streak_fail,streak_ok`).bind(uid(), incident.fingerprint, incident.agent, incident.severity, incident.title,
+    RETURNING id,status,severity,streak_fail,streak_ok`).bind(
+      uid(), incident.fingerprint, incident.agent, incomingSev, incident.title,
       incident.summary, JSON.stringify(incident.evidence || {}), Number(incident.confidence ?? 0.5), now, now,
-      incident.auto_resolve ? 1 : 0, 1, 1).first();
-  // Escalation policy: deterministic streak thresholds. 3 failures -> high, 6 -> critical + urgent alert.
+      incident.auto_resolve ? 1 : 0, 1, 1, effectiveBaseSev
+    ).first();
+
+  // Deterministic streak escalation: 3 consecutive failures -> high, 6 -> critical + urgent alert.
+  // Only emits audit & urgent alert when crossing into a strictly higher severity than before.
   let escalated = null;
   if (row.streak_fail >= 6 && SEVERITY_RANK[row.severity] < SEVERITY_RANK.critical) {
     escalated = 'critical';
@@ -96,18 +204,14 @@ export async function upsertIncidentFailure(db, envOrIncident, maybeIncident) {
   if (escalated) {
     await db.prepare('UPDATE intel_incidents SET severity=?, escalated_at=? WHERE fingerprint=?').bind(escalated, now, incident.fingerprint).run();
     await logAudit(db, 'automation:escalation-policy', 'incident-escalated', incident.fingerprint, escalated,
-      { streakFail: row.streak_fail, note: 'Deterministic streak policy; no human approval required for severity labelling.' });
+      { streakFail: row.streak_fail, previousSeverity: row.severity, note: 'Deterministic streak policy; monotonic severity prevents alert storms.' });
     if (escalated === 'critical' && env) {
-      // Urgent alert record is always created (evidence); webhook delivery is rule-gated.
       await raiseUrgent(db, env, { ...incident, id: row.id, severity: escalated, last_seen: now });
     }
   }
   return { ...row, severity: escalated || row.severity, escalated };
 }
 
-// Recovery verification: a passing check increments the recovery streak. Auto-resolution only
-// happens when the administrator approved the 'auto-resolve-recovered-targets' rule; otherwise
-// the incident stays open with an explicit recovery candidate annotation for human confirmation.
 export async function noteRecovery(db, fingerprint, evidence = {}) {
   const now = nowIso();
   const row = await db.prepare(`UPDATE intel_incidents SET streak_ok=streak_ok+1, streak_fail=0,
@@ -128,18 +232,24 @@ export async function noteRecovery(db, fingerprint, evidence = {}) {
   return { affected: true, autoResolved: false, recoveryCandidate: true, streakOk: row.streak_ok };
 }
 
-// ---------- ULTRON: website checks ----------
-// Confirmed production origin must be HTTPS. The localhost exception exists ONLY for the
-// LOCAL_DEVELOPMENT preview (same convention as the waitlist) and can never run on a public hostname.
+// ---------- ULTRON: website availability, route integrity, funnel friction & traffic signals ----------
 export function siteUrlAllowed(env) {
   const url = env.SITE_URL || '';
   if (/^https:\/\//i.test(url)) return true;
   return env.LOCAL_DEVELOPMENT === 'true' && /^http:\/\/localhost(:[0-9]+)?\/?$/i.test(url);
 }
 
+export const EXTENDED_MONTE_TARGETS = Object.freeze([
+  { name: 'app-showcase', path: '/app/' },
+  { name: 'mobile-web-spa', path: '/mobile/' },
+  { name: 'downloads-hub', path: '/downloads/' },
+  { name: 'waitlist-page', path: '/waitlist/' },
+  { name: 'api-mobile-config', path: '/api/mobile/config' }
+]);
+
 export function parseTargets(env) {
-  const base = env.SITE_URL;
   const defaults = [{ name: 'website-home', path: '/' }, { name: 'api-status', path: '/api/status' }];
+  const extended = env.INTEL_EXTENDED_TARGETS === 'true' ? EXTENDED_MONTE_TARGETS : [];
   let extra = [];
   if (env.INTEL_TARGETS) {
     try {
@@ -152,7 +262,7 @@ export function parseTargets(env) {
     } catch (e) { if (e instanceof IntelError) throw e; throw new IntelError('invalid-targets', 500); }
   }
   const seen = new Set();
-  return [...defaults, ...extra].filter(t => !seen.has(t.name) && seen.add(t.name));
+  return [...defaults, ...extended, ...extra].filter(t => !seen.has(t.name) && seen.add(t.name));
 }
 
 export function classifyHttpResponse(httpStatus, latencyMs, slowMs) {
@@ -166,7 +276,7 @@ const TARGET_INCIDENTS = {
   down: t => ({
     fingerprint: 'ultron-unavailable-' + t, severity: 'high', auto_resolve: true,
     title: 'Website unavailable: ' + t,
-    summary: 'ULTRON could not reach this target (network failure or server error). Confirm it is not a monitor-side issue before declaring an outage.'
+    summary: 'ULTRON could not reach this target (network failure or server error). Confirm it is not a monitor-side network issue before declaring an outage.'
   }),
   degraded: t => ({
     fingerprint: 'ultron-route-error-' + t, severity: 'medium', auto_resolve: false,
@@ -175,9 +285,62 @@ const TARGET_INCIDENTS = {
   })
 };
 
-// One full ULTRON cycle across all configured targets. Records checks, dedups incidents,
-// escalates on failure streaks and verifies recovery on passes. Never reports healthy when
-// it could not check: unconfigured targets are recorded as not_configured (throttled to 1/hour).
+// Analyzes aggregate ULTRON rollups for conversion friction & suspicious traffic bursts.
+export async function analyzeUltronSignals(db, env = null, now = new Date()) {
+  const today = now.toISOString().slice(0, 10);
+  const weekAgo = new Date(now.getTime() - 7 * 86400000).toISOString().slice(0, 10);
+  const raised = [];
+  let rows = [];
+  try {
+    rows = (await db.prepare(`SELECT metric_date, metric, dimension, value FROM intel_metric_rollups WHERE metric_date>=?`).bind(weekAgo).all()).results || [];
+  } catch { return { raised }; }
+  if (!rows.length) return { raised };
+
+  const sumMetric = (m, sinceDate = weekAgo) => rows.filter(r => r.metric === m && r.metric_date >= sinceDate).reduce((s, r) => s + Number(r.value || 0), 0);
+  const focus7d = sumMetric('waitlist_focus');
+  const submitOk7d = sumMetric('waitlist_submit_ok');
+  const submitErr7d = sumMetric('waitlist_submit_err');
+
+  if ((focus7d >= 10 && submitOk7d / Math.max(focus7d, 1) < 0.15) || submitErr7d >= 5) {
+    const convRate = focus7d > 0 ? submitOk7d / focus7d : 0;
+    await upsertIncidentFailure(db, env, {
+      fingerprint: 'ultron-conversion-friction-waitlist',
+      agent: 'ULTRON',
+      severity: submitErr7d >= 5 ? 'medium' : 'low',
+      auto_resolve: false,
+      title: 'Waitlist conversion friction detected',
+      summary: `${submitOk7d}/${focus7d} waitlist starts completed (${(convRate * 100).toFixed(1)}%) with ${submitErr7d} submission errors over 7d. Inspect Turnstile configuration or form UX.`,
+      confidence: submitErr7d >= 5 ? 0.82 : 0.65,
+      evidence: {
+        metricWindow: '7d', waitlistFocus: focus7d, waitlistSubmitOk: submitOk7d, waitlistSubmitErr: submitErr7d,
+        conversionRate: convRate, classification: 'hypothesis',
+        summaryFact: `${focus7d} form starts, ${submitOk7d} completions, ${submitErr7d} errors`
+      }
+    });
+    raised.push('ultron-conversion-friction-waitlist');
+  }
+
+  const blockedToday = rows.filter(r => r.metric === 'security_blocked' && r.metric_date === today).reduce((s, r) => s + Number(r.value || 0), 0);
+  if (blockedToday >= 25) {
+    await upsertIncidentFailure(db, env, {
+      fingerprint: 'ultron-suspicious-traffic-spike',
+      agent: 'ULTRON',
+      severity: blockedToday >= 100 ? 'high' : 'medium',
+      auto_resolve: false,
+      title: 'Suspicious traffic / blocked request spike',
+      summary: `ULTRON recorded ${blockedToday} blocked requests today (rate-limit, bad origin, or invalid intake key). Aggregate counters only — no visitor IPs stored.`,
+      confidence: 0.88,
+      evidence: {
+        metricWindow: today, blockedRequests: blockedToday,
+        byReason: rows.filter(r => r.metric === 'security_blocked' && r.metric_date === today).map(r => ({ reason: r.dimension, count: r.value })),
+        classification: 'fact', summaryFact: `${blockedToday} blocked edge/API requests on ${today}`
+      }
+    });
+    raised.push('ultron-suspicious-traffic-spike');
+  }
+  return { raised };
+}
+
 export async function runUltronChecks(env, fetcher = fetch) {
   const db = env.INTEL_DB, now = nowIso(), slowMs = Number(env.INTEL_SLOW_MS || 2500);
   if (!db) return { configured: false, results: [] };
@@ -188,16 +351,26 @@ export async function runUltronChecks(env, fetcher = fetch) {
     }
     return { configured: false, results: [] };
   }
+  const targets = parseTargets(env);
   const results = [];
-  for (const target of parseTargets(env)) {
+  for (const target of targets) {
     const url = new URL(target.path, env.SITE_URL).href;
     const start = Date.now();
     let check;
     try {
-      const response = await fetcher(url, { method: 'GET', redirect: 'manual', cache: 'no-store', headers: { 'user-agent': 'MONTE-WO-ULTRON/1.0 (website intelligence)' }, signal: AbortSignal.timeout(Number(env.INTEL_TIMEOUT_MS || 12000)) });
+      const response = await fetcher(url, { method: 'GET', redirect: 'manual', cache: 'no-store', headers: { 'user-agent': 'MONTE-WO-ULTRON/2.0 (website intelligence)' }, signal: AbortSignal.timeout(Number(env.INTEL_TIMEOUT_MS || 12000)) });
       const latencyMs = Date.now() - start;
       const verdict = classifyHttpResponse(response.status, latencyMs, slowMs);
-      check = { agent: 'ULTRON', target: target.name, latencyMs, httpStatus: response.status, ...verdict, evidence: { url, redirect: response.headers.get('location') || null, classification: verdict.status === 'ok' ? 'fact' : 'fact' } };
+      const nosniff = response.headers?.get?.('x-content-type-options') === 'nosniff';
+      check = {
+        agent: 'ULTRON', target: target.name, latencyMs, httpStatus: response.status, ...verdict,
+        evidence: {
+          url, redirect: response.headers?.get?.('location') || null,
+          contentType: response.headers?.get?.('content-type') || null,
+          nosniffHeader: nosniff,
+          classification: 'fact'
+        }
+      };
     } catch (error) {
       const latencyMs = Date.now() - start;
       check = { agent: 'ULTRON', target: target.name, latencyMs, status: 'down', detail: (error?.name === 'TimeoutError' ? 'Request timed out' : 'Request failed (network error)') + '; confirm this is not a monitor-side issue.', evidence: { url, error: error?.name || 'unknown', classification: 'fact' } };
@@ -217,8 +390,7 @@ export async function runUltronChecks(env, fetcher = fetch) {
     }
     results.push(check);
   }
-  // Slow-response streak: three consecutive slow-but-successful checks become a low incident.
-  for (const target of parseTargets(env)) {
+  for (const target of targets) {
     const recent = (await db.prepare(`SELECT status,latency_ms FROM intel_checks WHERE agent='ULTRON' AND target=? AND status IN ('ok','degraded') ORDER BY checked_at DESC LIMIT 3`).bind(target.name).all()).results || [];
     if (recent.length === 3 && recent.every(c => c.status === 'degraded')) {
       await upsertIncidentFailure(db, env, {
@@ -231,27 +403,31 @@ export async function runUltronChecks(env, fetcher = fetch) {
       await noteRecovery(db, 'ultron-slow-' + target.name, { at: now });
     }
   }
-  return { configured: true, results };
+  const signalResult = await analyzeUltronSignals(db, env, new Date());
+  return { configured: true, results, signalFindings: signalResult.raised };
 }
 
-// ---------- ARGON: mobile telemetry analysis ----------
-// Telemetry is untrusted client input: every derived incident is labelled a hypothesis,
-// confidence is capped, and missing denominators are reported as missing data.
+// ---------- ARGON: mobile & web app telemetry intelligence ----------
 export async function analyzeArgonTelemetry(db, env = null, now = new Date()) {
   const since = new Date(now.getTime() - 86400000).toISOString();
+  const settings = await getSettings(db);
+  const slowThresholdMs = Math.max(300, Number(settings.slow_interaction_threshold_ms) || 1200);
   const byVersion = (await db.prepare(`SELECT app_version,
       SUM(CASE WHEN event_type='session_start' THEN 1 ELSE 0 END) AS sessions,
       SUM(CASE WHEN event_type IN ('app_crash','js_error','http_error') THEN 1 ELSE 0 END) AS errors,
       SUM(CASE WHEN event_type='app_crash' THEN 1 ELSE 0 END) AS crashes,
-      SUM(CASE WHEN event_type='login_failed' THEN 1 ELSE 0 END) AS login_failures
+      SUM(CASE WHEN event_type='login_failed' THEN 1 ELSE 0 END) AS login_failures,
+      SUM(CASE WHEN event_type='slow_interaction' THEN 1 ELSE 0 END) AS slow_events
     FROM intel_telemetry_events WHERE occurred_at>=? GROUP BY app_version`).bind(since).all()).results || [];
   const raised = [];
   if (byVersion.length === 0) {
     return { analyzed: 0, versions: 0, raised: [], note: 'No telemetry in the last 24h. This is absence of data, not evidence of health.' };
   }
-  // New error signatures: fingerprints first observed inside the window with >= 3 occurrences.
+
+  // 1. New error signatures (>= 3 occurrences in 24h with zero prior history).
   const fresh = (await db.prepare(`SELECT fingerprint, event_type, COUNT(*) AS n, MIN(occurred_at) AS first_seen
-    FROM intel_telemetry_events WHERE fingerprint<>'' AND occurred_at>=? GROUP BY fingerprint, event_type HAVING n>=3`).bind(since).all()).results || [];
+    FROM intel_telemetry_events WHERE fingerprint<>'' AND event_type IN ('app_crash','js_error','http_error','login_failed') AND occurred_at>=?
+    GROUP BY fingerprint, event_type HAVING n>=3`).bind(since).all()).results || [];
   for (const f of fresh) {
     const prior = await db.prepare('SELECT COUNT(*) AS n FROM intel_telemetry_events WHERE fingerprint=? AND occurred_at<?').bind(f.fingerprint, since).first();
     if (prior.n === 0) {
@@ -264,6 +440,8 @@ export async function analyzeArgonTelemetry(db, env = null, now = new Date()) {
       raised.push('argon-new-signature-' + f.fingerprint);
     }
   }
+
+  // 2. Per-version release regressions, missing denominators & login failure spikes.
   for (const v of byVersion) {
     const sessions = v.sessions || 0, errors = v.errors || 0;
     if (sessions >= 5 && errors >= 5) {
@@ -300,42 +478,137 @@ export async function analyzeArgonTelemetry(db, env = null, now = new Date()) {
       raised.push('argon-login-failures-' + v.app_version);
     }
   }
-  return { analyzed: byVersion.reduce((n, v) => n + (v.sessions || 0) + (v.errors || 0) + (v.login_failures || 0), 0), versions: byVersion.length, raised, note: 'Untrusted client telemetry; all findings labelled hypotheses.' };
+
+  // 3. Performance degradation detector (p95 slow_interaction latency >= slowThresholdMs).
+  const slowRows = (await db.prepare(`SELECT app_version, json_extract(detail_json,'$.screen') AS screen, duration_ms
+    FROM intel_telemetry_events WHERE event_type='slow_interaction' AND duration_ms IS NOT NULL AND occurred_at>=?`).bind(since).all()).results || [];
+  const slowGroups = new Map();
+  for (const r of slowRows) {
+    const screen = r.screen || '/unknown';
+    const k = `${r.app_version}::${screen}`;
+    if (!slowGroups.has(k)) slowGroups.set(k, { appVersion: r.app_version, screen, durations: [] });
+    slowGroups.get(k).durations.push(Number(r.duration_ms));
+  }
+  for (const g of slowGroups.values()) {
+    if (g.durations.length >= 3) {
+      g.durations.sort((a, b) => a - b);
+      const p95 = g.durations[Math.min(g.durations.length - 1, Math.floor(0.95 * g.durations.length))];
+      if (p95 >= slowThresholdMs) {
+        const cleanScreen = g.screen.replace(/[^a-z0-9\-]/gi, '-').replace(/^-+|-+$/g, '') || 'root';
+        const fp = `argon-perf-degradation-${g.appVersion}-${cleanScreen}`.slice(0, 96);
+        await upsertIncidentFailure(db, env, {
+          fingerprint: fp, agent: 'ARGON', severity: p95 >= slowThresholdMs * 2 ? 'medium' : 'low', auto_resolve: false,
+          title: `App performance degradation on ${g.screen} (${g.appVersion})`,
+          summary: `Interaction p95 reached ${p95} ms across ${g.durations.length} slow-interaction samples (threshold ${slowThresholdMs} ms). Hypothesis from client timing.`,
+          confidence: 0.58,
+          evidence: { appVersion: g.appVersion, screen: g.screen, samples: g.durations.length, p95Ms: p95, thresholdMs: slowThresholdMs, classification: 'hypothesis', reason: 'client-reported interaction timing' }
+        });
+        raised.push(fp);
+      }
+    }
+  }
+
+  // 4. Unusual usage / runaway loop detector (single sessionRef emitting >= 25 events in 24h).
+  const bursts = (await db.prepare(`SELECT app_version, session_ref, COUNT(*) AS n
+    FROM intel_telemetry_events WHERE session_ref IS NOT NULL AND session_ref<>'' AND occurred_at>=?
+    GROUP BY app_version, session_ref HAVING n>=25 ORDER BY n DESC LIMIT 5`).bind(since).all()).results || [];
+  for (const b of bursts) {
+    const fp = `argon-unusual-pattern-${b.app_version}`.slice(0, 96);
+    await upsertIncidentFailure(db, env, {
+      fingerprint: fp, agent: 'ARGON', severity: b.n >= 60 ? 'medium' : 'low', auto_resolve: false,
+      title: `Unusual usage / runaway loop suspected (${b.app_version})`,
+      summary: `A single session reference emitted ${b.n} telemetry events in 24h on app ${b.app_version}. Indicates either an infinite client retry loop or synthetic flood.`,
+      confidence: 0.62,
+      evidence: { appVersion: b.app_version, maxEventsPerSessionRef: b.n, anomalousSessionCount: bursts.length, classification: 'hypothesis', reason: 'abnormal per-session event density' }
+    });
+    raised.push(fp);
+    // Bounded, rule-gated reversible response: if 'quarantine-anomalous-ingest-burst' is explicitly enabled,
+    // activate a 15-minute per-client rate-limit tightening window (auditable & auto-expiring).
+    const qRule = await isRuleEnabled(db, 'quarantine-anomalous-ingest-burst');
+    if (qRule.enabled) {
+      const untilIso = new Date(now.getTime() + 15 * 60000).toISOString();
+      await setSetting(db, 'ingest_quarantine_until', untilIso);
+      await db.prepare('UPDATE intel_automation_rules SET last_run_at=? WHERE id=?').bind(nowIso(), 'quarantine-anomalous-ingest-burst').run();
+      await logAudit(db, 'automation:quarantine-anomalous-ingest-burst', 'ingest-burst-quarantine-activated', fp, 'throttled-15m',
+        { expiresAt: untilIso, maxEventsInSession: b.n, rollback: 'Revoke rule or clear ingest_quarantine_until in settings.' });
+    }
+  }
+
+  const totalAnalyzed = (await db.prepare('SELECT COUNT(*) AS n FROM intel_telemetry_events WHERE occurred_at>=?').bind(since).first())?.n || 0;
+  return { analyzed: totalAnalyzed, versions: byVersion.length, raised, note: 'Untrusted client telemetry; all findings labelled hypotheses with calibrated confidence.' };
 }
 
-// ---------- AU: cross-agent correlation ----------
-// Correlates ULTRON API-route failures with ARGON app-side errors inside a 30-minute window.
-// AU incidents cite both members and are resolved only when every member is resolved.
+// ---------- AU: multi-vector cross-agent correlation ----------
 export async function correlateAu(db, env = null, now = new Date()) {
   const windowStart = new Date(now.getTime() - 30 * 60000).toISOString();
-  const ultronApi = (await db.prepare(`SELECT id,fingerprint,severity,confidence,last_seen FROM intel_incidents
-    WHERE agent='ULTRON' AND status='open' AND (fingerprint LIKE 'ultron-unavailable-api%' OR fingerprint LIKE 'ultron-route-error-api%') AND last_seen>=?`).bind(windowStart).all()).results || [];
-  const argon = (await db.prepare(`SELECT id,fingerprint,severity,confidence,last_seen FROM intel_incidents
-    WHERE agent='ARGON' AND status='open' AND (fingerprint LIKE 'argon-regression-%' OR fingerprint LIKE 'argon-new-signature-%' OR fingerprint LIKE 'argon-login-failures-%' OR fingerprint LIKE 'argon-errors-no-sessions-%') AND last_seen>=?`).bind(windowStart).all()).results || [];
+  const ultronOpen = (await db.prepare(`SELECT id,fingerprint,severity,confidence,last_seen,title FROM intel_incidents
+    WHERE agent='ULTRON' AND status='open' AND last_seen>=?`).bind(windowStart).all()).results || [];
+  const argonOpen = (await db.prepare(`SELECT id,fingerprint,severity,confidence,last_seen,title FROM intel_incidents
+    WHERE agent='ARGON' AND status='open' AND last_seen>=?`).bind(windowStart).all()).results || [];
+
   const created = [];
-  // One correlation per co-occurrence: each ULTRON incident pairs with the strongest unused
-  // ARGON finding. This prevents duplicate AU incidents for a single shared outage.
-  const used = new Set();
   const rank = { critical: 5, high: 4, medium: 3, low: 2, info: 1 };
-  const candidates = [...argon].sort((a, b) => (rank[b.severity] - rank[a.severity]) || (Date.parse(b.last_seen) - Date.parse(a.last_seen)));
+  const sortedArgon = [...argonOpen].sort((a, b) => (rank[b.severity] - rank[a.severity]) || (Date.parse(b.last_seen) - Date.parse(a.last_seen)));
+  const usedArgon = new Set();
+
+  // Vector 1: ULTRON API/route failure <-> ARGON app-side errors/regressions
+  const ultronApi = ultronOpen.filter(u => u.fingerprint.startsWith('ultron-unavailable-api') || u.fingerprint.startsWith('ultron-route-error-api'));
   for (const u of ultronApi) {
-    const a = candidates.find(c => !used.has(c.fingerprint));
+    const a = sortedArgon.find(c => !usedArgon.has(c.fingerprint) && (
+      c.fingerprint.startsWith('argon-regression-') ||
+      c.fingerprint.startsWith('argon-new-signature-') ||
+      c.fingerprint.startsWith('argon-login-failures-') ||
+      c.fingerprint.startsWith('argon-errors-no-sessions-')
+    ));
     if (!a) break;
-    used.add(a.fingerprint);
+    usedArgon.add(a.fingerprint);
     const group = 'au-' + u.fingerprint + '+' + a.fingerprint;
     const severity = maxSeverity(u.severity, a.severity) === 'critical' ? 'critical' : 'high';
     const confidence = Math.min(0.85, Math.min(u.confidence, a.confidence) + 0.1);
     await upsertIncidentFailure(db, env, {
       fingerprint: group, agent: 'AU', severity, auto_resolve: false,
-      title: 'Correlated website and app failures',
+      title: 'Correlated website API and mobile app failures',
       summary: 'ULTRON reports an API-route problem (' + u.fingerprint + ') while ARGON reports app-side errors (' + a.fingerprint + ') within 30 minutes. A shared backend cause is plausible; both members remain the primary evidence.',
-      confidence, evidence: { members: [{ agent: 'ULTRON', fingerprint: u.fingerprint, id: u.id }, { agent: 'ARGON', fingerprint: a.fingerprint, id: a.id }], correlationWindowMinutes: 30, classification: 'hypothesis', reason: 'temporal co-occurrence; shared cause unverified' }
+      confidence, evidence: {
+        vector: 'shared-backend-outage',
+        members: [{ agent: 'ULTRON', fingerprint: u.fingerprint, id: u.id }, { agent: 'ARGON', fingerprint: a.fingerprint, id: a.id }],
+        correlationWindowMinutes: 30, classification: 'hypothesis',
+        hypothesis: 'Backend API degradation is causing mobile client request/auth failures.',
+        reason: 'temporal co-occurrence; shared cause unverified'
+      }
     });
     await db.prepare('UPDATE intel_incidents SET correlation_group=? WHERE fingerprint IN (?,?) AND (correlation_group IS NULL OR correlation_group=?)').bind(group, u.fingerprint, a.fingerprint, group).run();
     await db.prepare('UPDATE intel_incidents SET correlation_group=? WHERE fingerprint=?').bind(group, group).run();
     created.push(group);
   }
-  // Resolve correlation incidents whose members are all resolved or dismissed.
+
+  // Vector 2: ULTRON suspicious traffic spike <-> ARGON denominatorless errors / runaway loop (bot flood correlation)
+  const ultronTraffic = ultronOpen.find(u => u.fingerprint === 'ultron-suspicious-traffic-spike');
+  const argonBotCandidate = sortedArgon.find(c => !usedArgon.has(c.fingerprint) && (
+    c.fingerprint.startsWith('argon-errors-no-sessions-') || c.fingerprint.startsWith('argon-unusual-pattern-')
+  ));
+  if (ultronTraffic && argonBotCandidate) {
+    usedArgon.add(argonBotCandidate.fingerprint);
+    const group = `au-${ultronTraffic.fingerprint}+${argonBotCandidate.fingerprint}`.slice(0, 120);
+    await upsertIncidentFailure(db, env, {
+      fingerprint: group, agent: 'AU', severity: 'medium', auto_resolve: false,
+      title: 'Correlated traffic abuse and anomalous app telemetry',
+      summary: `ULTRON blocked suspicious edge traffic (${ultronTraffic.fingerprint}) within 30m of ARGON flagging anomalous telemetry (${argonBotCandidate.fingerprint}). AU challenges treating the mobile errors as real athlete crashes until bot probing is ruled out.`,
+      confidence: 0.76,
+      evidence: {
+        vector: 'synthetic-traffic-contamination',
+        members: [{ agent: 'ULTRON', fingerprint: ultronTraffic.fingerprint, id: ultronTraffic.id }, { agent: 'ARGON', fingerprint: argonBotCandidate.fingerprint, id: argonBotCandidate.id }],
+        correlationWindowMinutes: 30, classification: 'hypothesis',
+        hypothesis: 'Automated probing or replay traffic is contaminating mobile telemetry counts rather than a genuine app regression.',
+        reason: 'simultaneous edge blocks and denominatorless/burst telemetry'
+      }
+    });
+    await db.prepare('UPDATE intel_incidents SET correlation_group=? WHERE fingerprint IN (?,?) AND (correlation_group IS NULL OR correlation_group=?)').bind(group, ultronTraffic.fingerprint, argonBotCandidate.fingerprint, group).run();
+    await db.prepare('UPDATE intel_incidents SET correlation_group=? WHERE fingerprint=?').bind(group, group).run();
+    created.push(group);
+  }
+
+  // Follow member resolution: resolve AU correlation incidents whose members are all resolved or dismissed.
   const openAu = (await db.prepare(`SELECT fingerprint, evidence_json FROM intel_incidents WHERE agent='AU' AND status='open' AND evidence_json LIKE '%members%'`).all()).results || [];
   for (const au of openAu) {
     let members = [];
@@ -349,10 +622,10 @@ export async function correlateAu(db, env = null, now = new Date()) {
       }
     }
   }
-  return { correlated: created.length };
+  return { correlated: created.length, groups: created };
 }
 
-// ---------- AU: briefings ----------
+// ---------- AU: health & 3-tier executive briefings ----------
 export function computeHealth(checks, openIncidents = []) {
   const real = checks.filter(c => c.status !== 'not_configured');
   if (real.length === 0) return { score: null, label: 'NO DATA', basis: 'No health checks recorded in the window. Absence of data is not health.', uptime: null, avgLatencyMs: null, p95LatencyMs: null, total: 0 };
@@ -372,66 +645,129 @@ export function computeHealth(checks, openIncidents = []) {
   };
 }
 
-function recommendation(id, title, rationale, evidence, confidence, impact, decisionRequired) {
-  return { id, title, rationale, evidence, confidence, impact, decisionRequired };
+function recommendation(id, title, rationale, evidence, confidence, impact, decisionRequired, executiveAction = null) {
+  return {
+    id, title, rationale, evidence, confidence, impact, decisionRequired,
+    executiveAction: executiveAction || (decisionRequired ? 'Owner review & explicit authorization required before execution.' : 'Operational follow-up; no high-impact authorization needed.')
+  };
+}
+
+export async function summarizeVisitorFunnel(db, sinceDate) {
+  const since = sinceDate || new Date(Date.now() - 7 * 86400000).toISOString().slice(0, 10);
+  const today = new Date().toISOString().slice(0, 10);
+  let rows = [];
+  try {
+    rows = (await db.prepare(`SELECT metric_date, metric, dimension, value FROM intel_metric_rollups WHERE metric_date>=? ORDER BY metric_date ASC`).bind(since).all()).results || [];
+  } catch { return { status: 'not_configured', note: 'Aggregate visitor analytics are not configured. No visitor numbers are shown.' }; }
+  const blocked = rows.filter(r => r.metric === 'security_blocked').reduce((s, r) => s + Number(r.value || 0), 0);
+  const visitorRows = rows.filter(r => r.metric !== 'security_blocked');
+  if (!visitorRows.length) {
+    return { status: 'not_configured', securityBlocked: blocked, securityBlocked7d: blocked, note: 'No aggregate visitor rollups recorded yet. Pulse analytics are cookie-free and aggregate-only.' };
+  }
+  const sum = (m, dim = null) => visitorRows.filter(r => r.metric === m && (dim === null || r.dimension === dim)).reduce((s, r) => s + Number(r.value || 0), 0);
+  const pageviews = sum('pageviews', 'all') || visitorRows.filter(r => r.metric === 'pageviews').reduce((s, r) => s + Number(r.value || 0), 0);
+  const todayPageviews = visitorRows.filter(r => r.metric === 'pageviews' && r.dimension === 'all' && r.metric_date === today).reduce((s, r) => s + Number(r.value || 0), 0)
+    || visitorRows.filter(r => r.metric === 'pageviews' && r.metric_date === today).reduce((s, r) => s + Number(r.value || 0), 0);
+  const byRoute = {};
+  for (const r of visitorRows.filter(x => x.metric === 'pageviews' && x.dimension !== 'all')) {
+    byRoute[r.dimension] = (byRoute[r.dimension] || 0) + Number(r.value || 0);
+  }
+  const waitlistFocus = sum('waitlist_focus');
+  const waitlistOk = sum('waitlist_submit_ok');
+  const waitlistErr = sum('waitlist_submit_err');
+  const apkDownloads = sum('apk_download');
+  const conversionRate = waitlistFocus > 0 ? +(waitlistOk / waitlistFocus).toFixed(4) : null;
+  return {
+    status: 'ok',
+    today: { pageviews: todayPageviews },
+    pageviews7d: pageviews,
+    apkDownloads,
+    apkDownloads7d: apkDownloads,
+    waitlistSubmits7d: waitlistFocus,
+    waitlistCompletions7d: waitlistOk,
+    waitlistCompletionRate: conversionRate,
+    waitlist: { starts: waitlistFocus, completed: waitlistOk, errors: waitlistErr, conversionRate },
+    securityBlocked: blocked,
+    securityBlocked7d: blocked,
+    topRoutes: Object.entries(byRoute).sort((a, b) => b[1] - a[1]).slice(0, 6).map(([route, views]) => ({ route, views }))
+  };
 }
 
 export async function buildDailyBriefing(db, now = new Date()) {
   const until = now.toISOString(), since = new Date(now.getTime() - 86400000).toISOString();
   const checks = (await db.prepare(`SELECT target,status,latency_ms FROM intel_checks WHERE checked_at>=? AND status<>'not_configured'`).bind(since).all()).results || [];
-  const open = (await db.prepare(`SELECT id,fingerprint,agent,severity,title,confidence FROM intel_incidents WHERE status='open' ORDER BY CASE severity WHEN 'critical' THEN 5 WHEN 'high' THEN 4 WHEN 'medium' THEN 3 WHEN 'low' THEN 2 ELSE 1 END DESC LIMIT 50`).all()).results || [];
+  const open = (await db.prepare(`SELECT id,fingerprint,agent,severity,title,summary,confidence,evidence_json FROM intel_incidents WHERE status='open' ORDER BY CASE severity WHEN 'critical' THEN 5 WHEN 'high' THEN 4 WHEN 'medium' THEN 3 WHEN 'low' THEN 2 ELSE 1 END DESC LIMIT 50`).all()).results || [];
   const opened = (await db.prepare('SELECT COUNT(*) AS n FROM intel_incidents WHERE first_seen>=?').bind(since).first()).n;
   const resolved = (await db.prepare('SELECT COUNT(*) AS n FROM intel_incidents WHERE resolved_at>=?').bind(since).first()).n;
   const health = computeHealth(checks, open);
   const telemetry = (await db.prepare(`SELECT event_type, COUNT(*) AS n FROM intel_telemetry_events WHERE occurred_at>=? GROUP BY event_type`).bind(since).all()).results || [];
   const sessions = telemetry.find(t => t.event_type === 'session_start')?.n || 0;
   const errors = telemetry.filter(t => ['app_crash', 'js_error', 'http_error'].includes(t.event_type)).reduce((n, t) => n + t.n, 0);
-  const visitorRows = (await db.prepare(`SELECT metric_date, value FROM intel_metric_rollups WHERE metric='pageviews' AND metric_date>=? ORDER BY metric_date`).bind(since.slice(0, 10)).all()).results || [];
-  const visitorAnalytics = visitorRows.length ? { status: 'ok', pageviews7d: visitorRows.reduce((n, r) => n + r.value, 0) } : { status: 'not_configured', note: 'Aggregate visitor analytics are not configured. No visitor numbers are shown.' };
+  const crashes = telemetry.find(t => t.event_type === 'app_crash')?.n || 0;
+  const crashFreeRate = sessions > 0 ? Math.max(0, (sessions - crashes) / sessions) : null;
+  const visitorAnalytics = await summarizeVisitorFunnel(db, since.slice(0, 10));
+
   const recommendations = [];
   for (const i of open.filter(i => ['critical', 'high'].includes(i.severity)).slice(0, 5)) {
     recommendations.push(recommendation('ack-' + i.id, 'Decide: acknowledge, escalate or dismiss — ' + i.title,
-      'An open ' + i.severity + ' incident requires an executive decision or explicit acceptance.',
-      [{ type: 'incident', ref: i.id, summary: i.title + ' (source ' + i.agent + ')' }], i.confidence, 'high', true));
+      'An open ' + i.severity + ' incident requires an executive decision or explicit risk acceptance.',
+      [{ type: 'incident', ref: i.id, summary: i.title + ' (source ' + i.agent + ')' }], i.confidence, 'high', true,
+      `Open Incident ${i.id.slice(0, 8)} in Investigation Workspace and choose Investigate, Resolve, or Dismiss with rationale.`));
   }
   if (health.uptime !== null && health.uptime < 0.99) {
     recommendations.push(recommendation('uptime', 'Investigate availability below 99%',
-      '24h uptime is ' + (health.uptime * 100).toFixed(2) + '%. Identify the failing target in ULTRON and confirm whether a fix is needed.',
-      [{ type: 'checks', ref: since, summary: health.total + ' checks in 24h' }], 0.9, 'medium', false));
+      '24h uptime is ' + (health.uptime * 100).toFixed(2) + '%. Identify the failing target in ULTRON and confirm whether a route or edge fix is needed.',
+      [{ type: 'checks', ref: since, summary: health.total + ' checks in 24h' }], 0.9, 'medium', false,
+      'Run ULTRON verification on failing routes and inspect Cloudflare Pages deployment status.'));
   }
   for (const i of open.filter(i => i.fingerprint.startsWith('argon-regression-')).slice(0, 2)) {
-    recommendations.push(recommendation('rollback-' + i.id, 'Decide: hotfix or roll back the affected app release',
-      'ARGON suspects a release regression. Confirm with release timing before acting; rollback is a production change requiring your approval.',
-      [{ type: 'incident', ref: i.id, summary: i.title }], i.confidence, 'high', true));
+    recommendations.push(recommendation('rollback-' + i.id, 'Decide: hotfix or hold the affected mobile release',
+      'ARGON suspects a release regression. Confirm against sample size and ULTRON API health before acting; release rollback requires explicit owner approval.',
+      [{ type: 'incident', ref: i.id, summary: i.title }], i.confidence, 'high', true,
+      'Approve hotfix build or hold APK promotion on /downloads/ after reviewing session denominator.'));
   }
-  if (visitorAnalytics.status === 'not_configured') {
-    recommendations.push(recommendation('analytics', 'Configure aggregate visitor analytics (optional)',
-      'ULTRON can import daily aggregate page-view counts from Cloudflare Web Analytics once a read-only API token and site tag are configured. Aggregate only; no per-visitor data.',
-      [{ type: 'config', ref: 'docs/INTELLIGENCE-COMMAND-CENTER.md', summary: 'Deployment checklist item 7' }], 1, 'low', false));
+  if (visitorAnalytics.status === 'ok' && visitorAnalytics.waitlist?.starts >= 10 && (visitorAnalytics.waitlist.conversionRate ?? 1) < 0.15) {
+    recommendations.push(recommendation('funnel-waitlist', 'Reduce waitlist conversion drop-off',
+      `Only ${visitorAnalytics.waitlist.completed}/${visitorAnalytics.waitlist.starts} waitlist form starts completed in 24h (${((visitorAnalytics.waitlist.conversionRate || 0) * 100).toFixed(1)}%).`,
+      [{ type: 'rollup', ref: 'waitlist_focus', summary: `${visitorAnalytics.waitlist.errors} form submission errors` }], 0.78, 'medium', true,
+      'Verify Turnstile site key / D1 waitlist binding in production Cloudflare Pages settings.'));
+  } else if (visitorAnalytics.status === 'not_configured') {
+    recommendations.push(recommendation('analytics', 'Verify aggregate visitor analytics flow',
+      'No aggregate visitor rollups recorded in the window yet. Privacy-preserving ULTRON pulse counters activate automatically once public traffic hits the deployed site (GPC/DNT respected).',
+      [{ type: 'config', ref: 'docs/INTELLIGENCE-COMMAND-CENTER.md', summary: 'Aggregate-only pulse & Cloudflare Web Analytics' }], 1, 'low', false));
   }
-  const challenges = open.filter(i => i.confidence < 0.6).map(i => ({
-    incidentId: i.id, title: i.title, confidence: i.confidence,
-    challenge: 'Confidence below 0.6. AU does not endorse acting on this without verification; evidence may be thin or telemetry-based.'
-  }));
+
+  const challenges = open.filter(i => i.confidence < 0.65).map(i => {
+    const ep = evaluateEpistemics(i);
+    return {
+      incidentId: i.id, title: i.title, confidence: i.confidence,
+      challenge: ep.challengedAssumptions[0] || 'Confidence below threshold. AU does not endorse high-impact action without independent verification.',
+      falsificationStep: ep.falsificationStep
+    };
+  });
+
   const body = [
-    'AU DAILY EXECUTIVE SUMMARY — deterministic, evidence-backed; no generative model output.',
+    'AU DAILY EXECUTIVE SUMMARY — deterministic, evidence-backed; no generative model fabrication.',
     'Window: ' + since + ' to ' + until,
     'System health: ' + health.label + (health.score === null ? '' : ' (score ' + health.score + '/100)') + '. ' + health.basis,
     'Availability: ' + (health.uptime === null ? 'no data' : (health.uptime * 100).toFixed(2) + '% of ' + health.total + ' checks'),
     'Latency: avg ' + (health.avgLatencyMs ?? 'n/a') + 'ms / p95 ' + (health.p95LatencyMs ?? 'n/a') + 'ms',
     'Incidents: ' + opened + ' opened, ' + resolved + ' resolved, ' + open.length + ' currently open.',
-    'App telemetry (untrusted): ' + sessions + ' sessions, ' + errors + ' error events in 24h.',
-    'Visitor analytics: ' + (visitorAnalytics.status === 'ok' ? visitorRows.length + ' daily rollups available' : 'NOT CONFIGURED — no visitor numbers are shown.'),
-    challenges.length ? 'AU challenges: ' + challenges.length + ' open finding(s) below the confidence threshold; verify before acting.' : 'AU challenges: none.',
-    'Recommendations: ' + (recommendations.length || 'none requiring action.')
+    'App telemetry (untrusted): ' + sessions + ' sessions, ' + errors + ' error events' + (crashFreeRate !== null ? ` (${(crashFreeRate * 100).toFixed(1)}% crash-free sessions)` : ' (no session denominator)') + '.',
+    'Visitor analytics (aggregate, zero PII): ' + (visitorAnalytics.status === 'ok'
+      ? `${visitorAnalytics.pageviews7d} pageviews, ${visitorAnalytics.apkDownloads} APK downloads, ${visitorAnalytics.waitlist.completed}/${visitorAnalytics.waitlist.starts} waitlist completions`
+      : 'NOT CONFIGURED — no visitor numbers are fabricated.'),
+    challenges.length ? 'AU epistemic challenges: ' + challenges.length + ' finding(s) challenged due to untrusted client source or small sample size.' : 'AU epistemic challenges: none.',
+    'Executive decisions required: ' + recommendations.filter(r => r.decisionRequired).length + ' (total recommendations: ' + recommendations.length + ').'
   ].join('\n');
+
   const id = 'daily-' + until.slice(0, 10);
   await db.prepare(`INSERT INTO intel_briefings (id,kind,title,body,evidence_json,delivery_status,created_at)
     VALUES (?,'daily',?,?,?,?,?)
     ON CONFLICT(id) DO UPDATE SET body=excluded.body, evidence_json=excluded.evidence_json, title=excluded.title`)
     .bind(id, 'AU daily executive summary — ' + until.slice(0, 10), body, JSON.stringify({
-      since, until, health, incidents: { opened, resolved, open: open.length, openList: open.slice(0, 20) },
-      telemetry: { sessions, errors }, visitorAnalytics, recommendations, challenges, classification: 'fact-unless-labelled'
+      since, until, health, incidents: { opened, resolved, open: open.length, openList: open.slice(0, 20).map(({ evidence_json, ...rest }) => rest) },
+      telemetry: { sessions, errors, crashes, crashFreeRate }, visitorAnalytics, recommendations, challenges, classification: 'fact-unless-labelled'
     }), 'not_configured', until).run();
   return { id, health, recommendations: recommendations.length, challenges: challenges.length };
 }
@@ -450,34 +786,49 @@ export async function buildWeeklyBriefing(db, now = new Date()) {
   const priorUptime = priorChecks.length ? priorChecks.filter(c => c.status === 'ok').length / priorChecks.length : null;
   const features = (await db.prepare(`SELECT json_extract(detail_json,'$.feature') AS feature, COUNT(*) AS n FROM intel_telemetry_events
     WHERE event_type='feature_used' AND occurred_at>=? GROUP BY feature ORDER BY n DESC LIMIT 5`).bind(since).all()).results || [];
+  const visitorAnalytics = await summarizeVisitorFunnel(db, since.slice(0, 10));
+
   const recommendations = [];
   for (const r of recurring.slice(0, 3)) {
-    recommendations.push(recommendation('recurring-' + r.fingerprint, 'Prioritize a permanent fix: ' + r.title,
-      'This fingerprint has been observed ' + r.occurrence_count + ' times. Repeated manual recovery costs more than a fix.',
-      [{ type: 'incident', ref: r.fingerprint, summary: r.agent + ' · ' + r.severity }], 0.8, 'medium', true));
+    recommendations.push(recommendation('recurring-' + r.fingerprint, 'Prioritize permanent architectural fix: ' + r.title,
+      'This fingerprint has recurred ' + r.occurrence_count + ' times. Eliminating root cause beats repeated manual triage.',
+      [{ type: 'incident', ref: r.fingerprint, summary: r.agent + ' · ' + r.severity + ' · ' + r.occurrence_count + 'x' }], 0.82, 'medium', true,
+      `Authorize engineering fix for ${r.fingerprint} and verify via TITAN/ULTRON regression recheck.`));
   }
   if (mttrMinutes !== null && mttrMinutes > 240) {
-    recommendations.push(recommendation('mttr', 'Review incident response time',
-      'Mean time to resolve over 7 days is ' + mttrMinutes + ' minutes. Consider pre-approved recovery rules or clearer escalation paths.',
-      [{ type: 'briefings', ref: since.slice(0, 10), summary: resolvedRows.length + ' incidents resolved' }], 0.7, 'medium', false));
+    recommendations.push(recommendation('mttr', 'Reduce incident mean-time-to-resolve (' + mttrMinutes + 'm)',
+      'Mean time to resolve over 7 days exceeded 4 hours. Consider approving auto-resolve-recovered-targets for verified transient outages.',
+      [{ type: 'briefings', ref: since.slice(0, 10), summary: resolvedRows.length + ' incidents resolved' }], 0.72, 'medium', true,
+      'Decide whether to approve the reversible auto-resolve-recovered-targets rule in Automation Governance.'));
   }
+  if (features.length > 0) {
+    recommendations.push(recommendation('product-opportunity-' + features[0].feature, 'Product opportunity: double down on ' + features[0].feature,
+      `Aggregate opt-in usage shows "${features[0].feature}" leading mobile engagement (${features[0].n} interactions in 7d).`,
+      [{ type: 'telemetry', ref: String(features[0].feature), summary: `${features[0].n} aggregate uses in 7d` }], 0.65, 'medium', false,
+      'Prioritize UX polish and latency monitoring around top athlete workflows.'));
+  }
+
   const body = [
-    'AU WEEKLY STRATEGIC REPORT — deterministic, evidence-backed; no generative model output.',
+    'AU WEEKLY STRATEGIC REPORT — deterministic, evidence-backed; no generative model fabrication.',
     'Window: ' + since.slice(0, 10) + ' to ' + until.slice(0, 10),
     'Health: ' + health.label + ' (score ' + (health.score ?? 'n/a') + '), availability ' + (health.uptime === null ? 'no data' : (health.uptime * 100).toFixed(2) + '%'),
     'Week-over-week: incidents opened ' + openedThis + ' vs ' + openedPrior + ' prior week; availability ' + (priorUptime === null ? 'no prior data' : ((priorUptime * 100).toFixed(2) + '% -> ' + (health.uptime === null ? 'n/a' : (health.uptime * 100).toFixed(2) + '%'))),
-    'Mean time to resolve: ' + (mttrMinutes === null ? 'no resolutions recorded' : mttrMinutes + ' minutes (proxy from incident timestamps)'),
+    'Mean time to resolve: ' + (mttrMinutes === null ? 'no resolutions recorded' : mttrMinutes + ' minutes (measured from first_seen to resolved_at)'),
     'Recurring fingerprints: ' + (recurring.length || 'none'),
-    'Most-used app features (aggregate, untrusted telemetry): ' + (features.length ? features.map(f => f.feature + ' (' + f.n + ')').join(', ') : 'no feature telemetry recorded'),
+    'Visitor & conversion summary (7d aggregate): ' + (visitorAnalytics.status === 'ok'
+      ? `${visitorAnalytics.pageviews7d} pageviews, ${visitorAnalytics.apkDownloads} APK downloads, ${visitorAnalytics.waitlist.completed}/${visitorAnalytics.waitlist.starts} waitlist signups`
+      : 'no aggregate rollups recorded'),
+    'Most-used app features (aggregate, consent-gated): ' + (features.length ? features.map(f => f.feature + ' (' + f.n + ')').join(', ') : 'no feature telemetry recorded'),
     'Progress signals: ' + (openedThis < openedPrior ? 'fewer new incidents than last week' : 'new incidents flat or higher than last week') + '; ' + resolvedRows.length + ' incidents resolved.'
   ].join('\n');
+
   const id = 'weekly-' + until.slice(0, 10);
   await db.prepare(`INSERT INTO intel_briefings (id,kind,title,body,evidence_json,delivery_status,created_at)
     VALUES (?,'weekly',?,?,?,?,?)
     ON CONFLICT(id) DO UPDATE SET body=excluded.body, evidence_json=excluded.evidence_json, title=excluded.title`)
     .bind(id, 'AU weekly strategic report — week of ' + since.slice(0, 10), body, JSON.stringify({
       since, until, health, recurring, mttrMinutes, openedThis, openedPrior, priorUptime,
-      features, recommendations, classification: 'fact-unless-labelled'
+      features, visitorAnalytics, recommendations, classification: 'fact-unless-labelled'
     }), 'not_configured', until).run();
   return { id, recurring: recurring.length, recommendations: recommendations.length };
 }
@@ -488,20 +839,19 @@ async function hmacHex(secret, text) {
   return [...new Uint8Array(await crypto.subtle.sign('HMAC', key, new TextEncoder().encode(text)))].map(b => b.toString(16).padStart(2, '0')).join('');
 }
 
-// One urgent briefing per fingerprint per 6 hours (deterministic id bucket).
 export async function raiseUrgent(db, env, incident, fetcher = fetch) {
   const bucket = Math.floor(Date.now() / (6 * 3600000));
   const id = 'urgent-' + bucket + '-' + incident.fingerprint.replace(/[^a-z0-9\-]/gi, '').slice(0, 60);
   const existing = await db.prepare('SELECT id FROM intel_briefings WHERE id=?').bind(id).first();
   if (existing) return { id, deduped: true };
   const title = 'URGENT — ' + incident.title;
-  const body = 'AU URGENT ALERT\nSeverity: ' + incident.severity + '\nSource: ' + incident.agent + ' (fingerprint ' + incident.fingerprint + ')\nObserved: ' + (incident.last_seen || nowIso()) + '\n\n' + incident.summary + '\n\nOpen the Intelligence Command Center to review evidence and decide on action.';
+  const body = 'AU URGENT ALERT\nSeverity: ' + incident.severity + '\nSource: ' + incident.agent + ' (fingerprint ' + incident.fingerprint + ')\nObserved: ' + (incident.last_seen || nowIso()) + '\n\n' + incident.summary + '\n\nDecision required: Open the Intelligence Command Center to inspect primary evidence and authorize response.';
   await db.prepare(`INSERT INTO intel_briefings (id,kind,title,body,evidence_json,delivery_status,created_at) VALUES (?,'urgent',?,?,?,'not_configured',?)`)
-    .bind(id, title, body, JSON.stringify({ fingerprint: incident.fingerprint, agent: incident.agent, severity: incident.severity, classification: 'fact', sourceIncident: incident.id || null }), nowIso()).run();
+    .bind(id, title, body, JSON.stringify({ fingerprint: incident.fingerprint, agent: incident.agent, severity: incident.severity, classification: 'fact', sourceIncident: incident.id || null, decisionRequired: true }), nowIso()).run();
   const rule = await isRuleEnabled(db, 'urgent-notification');
   let delivery = 'not_configured', note = 'webhook destination not configured';
   if (!rule.enabled) { delivery = 'not_configured'; note = 'automation rule disabled at time of alert'; }
-  if (rule.enabled && env.INTEL_WEBHOOK_URL) {
+  if (rule.enabled && env?.INTEL_WEBHOOK_URL) {
     try {
       const payload = JSON.stringify({ source: 'MONTE WO Intelligence', kind: 'urgent', title, body, briefingId: id });
       const headers = { 'Content-Type': 'application/json' };
@@ -511,8 +861,6 @@ export async function raiseUrgent(db, env, incident, fetcher = fetch) {
       note = 'delivery attempt logged (HTTP ' + res.status + ')';
     } catch (error) { delivery = 'failed'; note = 'delivery attempt failed: ' + (error?.name || 'network-error'); }
   }
-  // intel_briefings.delivery_status is constrained to sent/failed/not_configured;
-  // the precise reason (rule disabled vs missing webhook) lives in intel_notifications.
   await db.prepare('UPDATE intel_briefings SET delivery_status=? WHERE id=?').bind(delivery === 'sent' ? 'sent' : delivery === 'failed' ? 'failed' : 'not_configured', id).run();
   await db.prepare('INSERT INTO intel_notifications (id,briefing_id,channel,status,detail) VALUES (?,?,?,?,?)')
     .bind(uid(), id, 'webhook', rule.enabled ? delivery : 'blocked-rule-disabled', note).run();
@@ -539,7 +887,6 @@ export async function retentionSweep(db) {
 export async function ingestTelemetry(db, rows) {
   let inserted = 0;
   for (const r of rows) {
-    // Idempotent on client eventId: retries never duplicate events.
     const res = await db.prepare(`INSERT OR IGNORE INTO intel_telemetry_events
       (id,event_type,app_version,platform,fingerprint,session_ref,duration_ms,detail_json,occurred_at) VALUES (?,?,?,?,?,?,?,?,?)`)
       .bind(r.id, r.event_type, r.app_version, r.platform, r.fingerprint, r.session_ref, r.duration_ms, r.detail_json, r.occurred_at).run();

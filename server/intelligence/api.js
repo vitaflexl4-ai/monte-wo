@@ -3,11 +3,13 @@
 // The only unauthenticated route is POST /events (telemetry intake), which is gated by a
 // rotating ingest key, strict validation, rate limits and a daily volume cap.
 import { IntelError, requireThat } from './errors.js';
-import { authenticateOperator, requireAdmin, intelligenceConfigured, localOperatorAllowed } from './auth.js';
-import { validateTelemetryBatch } from './telemetry.js';
+import { authenticateOperator, requireAdmin, intelligenceConfigured, localOperatorAllowed, hashClientBucket } from './auth.js';
+import { validateTelemetryBatch, validatePulseEvent } from './telemetry.js';
 import {
-  runUltronChecks, rateLimit, logAudit, computeHealth, parseTargets, recordAgentRun, ingestTelemetry,
-  siteUrlAllowed, analyzeArgonTelemetry, correlateAu, buildDailyBriefing, buildWeeklyBriefing
+  runUltronChecks, analyzeUltronSignals, rateLimit, logAudit, computeHealth, parseTargets, recordAgentRun, ingestTelemetry,
+  siteUrlAllowed, analyzeArgonTelemetry, correlateAu, buildDailyBriefing, buildWeeklyBriefing,
+  getSettings, setSetting, incrementRollup, ingestPulse, summarizeVisitorFunnel,
+  evaluateEpistemics, addIncidentNote, listIncidentNotes
 } from './core.js';
 import { runTitanAudit, titanOverview } from './titan.js';
 import { budgetStatus } from './budget.js';
@@ -125,7 +127,9 @@ async function publicStatus(env, fetcher = fetch) {
     const tables = ((await db.prepare("SELECT name FROM sqlite_master WHERE type='table' AND name LIKE 'intel_%'").all()).results || []).map(r => r.name).sort();
     const need = ['intel_checks', 'intel_incidents', 'intel_briefings', 'intel_agent_runs', 'intel_operators', 'intel_telemetry_events', 'intel_improvement_items'];
     out.components.d1_database.tables = tables;
-    out.components.d1_database.migrations = need.every(t => tables.includes(t)) ? '0003 + 0004 + 0005 applied' : 'partial — missing: ' + need.filter(t => !tables.includes(t)).join(', ');
+    out.components.d1_database.migrations = need.every(t => tables.includes(t))
+      ? (tables.includes('intel_incident_notes') ? '0003 + 0004 + 0005 + 0006 applied' : '0003 + 0004 + 0005 applied')
+      : 'partial — missing: ' + need.filter(t => !tables.includes(t)).join(', ');
   } catch {
     out.components.d1_database.detail = 'database unreachable';
   }
@@ -224,6 +228,35 @@ async function overview(db, env) {
   };
   agents.titan = await titanOverview(db, lastRuns.TITAN, lastRuns['TITAN:ok']);
   const budget = await budgetStatus(db);
+  const weekAgoDate = new Date(now - 7 * 86400000).toISOString().slice(0, 10);
+  const visitorFunnel = await summarizeVisitorFunnel(db, weekAgoDate);
+  const settings = await getSettings(db);
+  const quarantineActiveUntil = settings.ingest_quarantine_until && Date.parse(settings.ingest_quarantine_until) > now
+    ? settings.ingest_quarantine_until
+    : null;
+  const platformRows = (await db.prepare(`SELECT platform, COUNT(*) AS n FROM intel_telemetry_events WHERE occurred_at>=? GROUP BY platform`).bind(dayAgo).all()).results || [];
+  const slowDurs = ((await db.prepare(`SELECT duration_ms FROM intel_telemetry_events WHERE event_type='slow_interaction' AND duration_ms IS NOT NULL AND occurred_at>=? ORDER BY duration_ms ASC`).bind(dayAgo).all()).results || []).map(r => Number(r.duration_ms));
+  const argonLatencyP95 = slowDurs.length ? slowDurs[Math.min(slowDurs.length - 1, Math.floor(0.95 * slowDurs.length))] : null;
+  agents.argon.byPlatform = Object.fromEntries(platformRows.map(r => [r.platform, r.n]));
+  agents.argon.p95InteractionMs = argonLatencyP95;
+  agents.ultron.visitorFunnel = visitorFunnel;
+
+  const decisionQueue = openIncidents
+    .filter(i => ['critical', 'high'].includes(i.severity) || Number(i.confidence) < 0.6 || i.agent === 'AU')
+    .slice(0, 6)
+    .map(i => ({
+      id: i.id,
+      agent: i.agent,
+      severity: i.severity,
+      title: i.title,
+      confidence: i.confidence,
+      reason: ['critical', 'high'].includes(i.severity)
+        ? 'High-severity incident requires owner triage or explicit acceptance'
+        : i.agent === 'AU'
+          ? 'Cross-agent correlation requires coordinated verification'
+          : 'AU epistemic challenge: low-confidence finding (<60%)'
+    }));
+
   const countsBySeverity = { critical: 0, high: 0, medium: 0, low: 0, info: 0 };
   for (const i of openIncidents) countsBySeverity[i.severity] = (countsBySeverity[i.severity] || 0) + 1;
   const live = !!(checks24.length || telemetry24.length || lastRuns.ARGON || lastRuns.ULTRON || lastRuns.AU || lastRuns.TITAN);
@@ -233,9 +266,10 @@ async function overview(db, env) {
       dbConfigured: !!env.INTEL_DB, accessConfigured: intelligenceConfigured(env),
       localDevelopment: localOperatorAllowed(env, new URL('http://localhost')) ? true : undefined,
       ingestConfigured: !!env.INTELLIGENCE_INGEST_KEY, webhookConfigured: !!env.INTEL_WEBHOOK_URL,
-      siteUrlConfigured, targets: siteUrlConfigured ? parseTargets(env).map(t => t.name) : []
+      siteUrlConfigured, targets: siteUrlConfigured ? parseTargets(env).map(t => t.name) : [],
+      quarantineActiveUntil
     },
-    agents, health,
+    agents, health, visitorFunnel, decisionQueue,
     incidents: { countsBySeverity, open: openIncidents.slice(0, 8) },
     checks: { series: checks24.slice(0, 48).reverse(), total24h: checks24.length },
     latestUrgent: latestUrgent || null
@@ -275,7 +309,27 @@ async function incidentDetail(db, id) {
   }
   const activity = (await db.prepare(`SELECT actor,action,target,outcome,detail_json,created_at FROM intel_audit WHERE target IN (?,?) ORDER BY created_at DESC LIMIT 50`).bind(row.id, row.fingerprint).all()).results || [];
   const relatedChecks = (await db.prepare(`SELECT target,status,latency_ms,http_status,detail,checked_at FROM intel_checks WHERE checked_at>=? ORDER BY checked_at DESC LIMIT 10`).bind(new Date(Date.parse(row.first_seen) - 3600000).toISOString()).all()).results || [];
-  return json({ incident: { ...row, evidence }, correlated, activity, relatedChecks });
+  const notes = await listIncidentNotes(db, id);
+  const epistemics = evaluateEpistemics({ ...row, evidence });
+  return json({ incident: { ...row, evidence }, epistemics, notes, correlated, activity, relatedChecks });
+}
+
+async function createIncidentNote(db, request, url, operator, id) {
+  requireThat(/^[a-f0-9-]{36}$/i.test(id), 'invalid-id', 400);
+  requireThat(sameOrigin(request, url), 'origin-rejected', 403);
+  const row = await db.prepare('SELECT id, fingerprint, title FROM intel_incidents WHERE id=?').bind(id).first();
+  requireThat(row, 'not-found', 404);
+  const body = await readJson(request, 4096);
+  requireThat(body && typeof body === 'object', 'invalid-body', 400);
+  const entryType = body.entryType || 'note';
+  requireThat(['note', 'hypothesis', 'challenge', 'evidence', 'decision', 'verification'].includes(entryType), 'invalid-entry-type', 400);
+  const text = typeof body.body === 'string' ? body.body.trim() : '';
+  requireThat(text.length >= 3 && text.length <= 1500, 'invalid-note-body', 400);
+  const conf = body.confidence === undefined || body.confidence === null ? null : Number(body.confidence);
+  requireThat(conf === null || (Number.isFinite(conf) && conf >= 0 && conf <= 1), 'invalid-confidence', 400);
+  const created = await addIncidentNote(db, { incidentId: id, author: operator.id, entryType, body: text, confidence: conf });
+  await logAudit(db, operator.id, 'incident-note-added', id, entryType, { noteId: created.id, fingerprint: row.fingerprint });
+  return json({ ok: true, note: created }, 201);
 }
 
 async function updateIncidentStatus(db, request, url, operator, id) {
@@ -358,7 +412,10 @@ async function revokeAutomation(db, request, operator, id) {
   const row = await db.prepare('SELECT id FROM intel_automation_rules WHERE id=?').bind(id).first();
   requireThat(row, 'not-found', 404);
   await db.prepare('UPDATE intel_automation_rules SET enabled=0 WHERE id=?').bind(id).run();
-  await logAudit(db, operator.id, 'automation-revoked', id, 'disabled', {});
+  if (id === 'quarantine-anomalous-ingest-burst') {
+    await setSetting(db, 'ingest_quarantine_until', '');
+  }
+  await logAudit(db, operator.id, 'automation-revoked', id, 'disabled', { immediateRollbackApplied: id === 'quarantine-anomalous-ingest-burst' });
   return json({ ok: true, id, enabled: false });
 }
 
@@ -487,21 +544,71 @@ async function listAudit(db, url) {
   return json({ events: rows.map(r => { let d = {}; try { d = JSON.parse(r.detail_json); } catch { } return { ...r, detail: d }; }) });
 }
 
-// Telemetry intake: the only route without operator authentication.
+// Telemetry intake: key-gated, rate-limited globally and per salted client bucket, volume-capped.
 async function ingestEvents(db, env, request, url) {
   requireThat(!!env.INTELLIGENCE_INGEST_KEY, 'ingest-not-configured', 503);
   const key = request.headers.get('X-MW-Key') || '';
-  requireThat(safeEqual(key, env.INTELLIGENCE_INGEST_KEY), 'invalid-key', 401);
-  requireThat(sameOrigin(request, url), 'origin-rejected', 403);
+  if (!safeEqual(key, env.INTELLIGENCE_INGEST_KEY)) {
+    await incrementRollup(db, 'security_blocked', 'invalid-ingest-key', 'argon-intake', 1);
+    throw new IntelError('invalid-key', 401);
+  }
+  if (!sameOrigin(request, url)) {
+    await incrementRollup(db, 'security_blocked', 'origin-rejected', 'argon-intake', 1);
+    throw new IntelError('origin-rejected', 403);
+  }
+  const settings = await getSettings(db);
+  const quarantined = settings.ingest_quarantine_until && Date.parse(settings.ingest_quarantine_until) > Date.now();
+  const clientBucket = await hashClientBucket(request, env, 'ingest');
+  const perClientMax = quarantined ? 10 : 60;
+  const clientLimit = await rateLimit(db, clientBucket, 60000, perClientMax);
+  if (!clientLimit.allowed) {
+    await incrementRollup(db, 'security_blocked', 'client-rate-limit', 'argon-intake', 1);
+    throw new IntelError('rate-limit', 429);
+  }
   const minute = await rateLimit(db, 'ingest:key', 60000, 60);
-  requireThat(minute.allowed, 'rate-limit', 429);
-  // Volume anomaly guard: a hard daily ceiling, configurable via INTEL_DAILY_EVENT_CAP.
+  if (!minute.allowed) {
+    await incrementRollup(db, 'security_blocked', 'rate-limit', 'argon-intake', 1);
+    throw new IntelError('rate-limit', 429);
+  }
   const day = await rateLimit(db, 'ingest:day', 86400000, Math.max(1000, Number(env.INTEL_DAILY_EVENT_CAP) || 20000));
   requireThat(day.allowed, 'volume-cap', 429);
   const payload = await readJson(request, MAX_BODY);
   const rows = validateTelemetryBatch(payload);
   const { accepted, inserted, duplicates } = await ingestTelemetry(db, rows);
   return json({ accepted, inserted, duplicates }, 201);
+}
+
+// Privacy-first ULTRON aggregate pulse intake: same-origin browser beacons only, honors GPC/DNT,
+// stores zero cookies, zero user IDs and zero IP addresses (only daily aggregate rollups).
+async function ingestPulseRoute(db, env, request, url) {
+  const origin = request.headers.get('Origin');
+  if (!origin || origin !== url.origin) {
+    await incrementRollup(db, 'security_blocked', 'pulse-origin-rejected', 'ultron-pulse', 1);
+    throw new IntelError('origin-rejected', 403);
+  }
+  if (request.headers.get('Sec-GPC') === '1' || request.headers.get('DNT') === '1') {
+    return json({ accepted: false, skipped: 'privacy-signal-honored' }, 202);
+  }
+  const clientBucket = await hashClientBucket(request, env, 'pulse');
+  const clientLimit = await rateLimit(db, clientBucket, 60000, 45);
+  if (!clientLimit.allowed) {
+    await incrementRollup(db, 'security_blocked', 'pulse-rate-limit', 'ultron-pulse', 1);
+    throw new IntelError('rate-limit', 429);
+  }
+  const day = await rateLimit(db, 'pulse:day', 86400000, Math.max(2000, Number(env.INTEL_DAILY_PULSE_CAP) || 50000));
+  requireThat(day.allowed, 'volume-cap', 429);
+  const payload = await readJson(request, 1024);
+  const pulse = validatePulseEvent(payload);
+  const res = await ingestPulse(db, pulse);
+  return json(res, 202);
+}
+
+async function analyticsRoute(db, url) {
+  const days = Math.min(30, Math.max(1, Number(url.searchParams.get('days')) || 14));
+  const sinceDate = new Date(Date.now() - days * 86400000).toISOString().slice(0, 10);
+  const summary = await summarizeVisitorFunnel(db, sinceDate);
+  const series = (await db.prepare(`SELECT metric_date, metric, dimension, value FROM intel_metric_rollups WHERE metric_date>=? ORDER BY metric_date ASC LIMIT 400`).bind(sinceDate).all()).results || [];
+  return json({ days, sinceDate, summary, series });
 }
 
 // On-demand ARGON analysis + AU correlation (the hourly cron does the same thing).
@@ -512,6 +619,10 @@ async function analyzeNow(db, env, request, url, operator) {
   const argon = await recordAgentRun(db, 'ARGON', 'on-demand-analysis', async () => {
     const result = await analyzeArgonTelemetry(db, env);
     return { summary: result.analyzed + ' events analyzed across ' + result.versions + ' versions; ' + result.raised.length + ' finding(s).', evidence: result };
+  });
+  await recordAgentRun(db, 'ULTRON', 'on-demand-signal-analysis', async () => {
+    const result = await analyzeUltronSignals(db, env);
+    return { summary: result.raised.length + ' funnel/traffic signal finding(s).', evidence: result };
   });
   const au = await recordAgentRun(db, 'AU', 'on-demand-correlation', async () => {
     const result = await correlateAu(db, env);
@@ -530,7 +641,7 @@ async function briefingNow(db, request, url, operator) {
   requireThat(limit.allowed, 'rate-limit', 429);
   const result = body.kind === 'daily' ? await buildDailyBriefing(db) : await buildWeeklyBriefing(db);
   await logAudit(db, operator.id, 'briefing-regenerated', result.id, 'ok', { kind: body.kind });
-  return json({ ok: true, id: result.id, kind: body.kind });
+  return json({ ok: true, id: result.id, kind: body.kind, briefing: { id: result.id } });
 }
 
 // ---------- router ----------
@@ -545,9 +656,11 @@ export async function handleIntelligence({ request, env }, deps = {}) {
       return await publicStatus(env, deps.fetcher || fetch);
     }
     if (!db) return json({ error: 'intelligence-not-configured', detail: 'INTEL_DB binding is missing. Fail closed: no data is served or accepted. Component status: GET /api/intelligence/status' }, 503);
-    // Telemetry intake is key-gated, not operator-gated.
+    // Telemetry & privacy-first aggregate pulse intake are separately gated before operator auth.
     if (route === '/events' && request.method === 'POST') return await ingestEvents(db, env, request, url);
     if (route === '/events') return new Response(null, { status: 405, headers: { Allow: 'POST' } });
+    if (route === '/pulse' && request.method === 'POST') return await ingestPulseRoute(db, env, request, url);
+    if (route === '/pulse') return new Response(null, { status: 405, headers: { Allow: 'POST' } });
     const operator = await authenticateOperator(request, env, url, deps);
     requireThat(['GET', 'POST'].includes(request.method), 'method-not-allowed', 405);
     if (request.method === 'POST') {
@@ -557,7 +670,10 @@ export async function handleIntelligence({ request, env }, deps = {}) {
       requireThat(limit.allowed, 'rate-limit', 429);
     }
     if (route === '/overview' && request.method === 'GET') return await overview(db, env);
+    if (route === '/analytics' && request.method === 'GET') return await analyticsRoute(db, url);
     if (route === '/incidents' && request.method === 'GET') return await listIncidents(db, url);
+    const incidentNoteMatch = route.match(/^\/incidents\/([a-f0-9-]{36})\/notes$/i);
+    if (incidentNoteMatch && request.method === 'POST') return await createIncidentNote(db, request, url, operator, incidentNoteMatch[1]);
     const incidentMatch = route.match(/^\/incidents\/([a-f0-9-]{36})$/i);
     if (incidentMatch && request.method === 'GET') return await incidentDetail(db, incidentMatch[1]);
     if (incidentMatch && request.method === 'POST') return await updateIncidentStatus(db, request, url, operator, incidentMatch[1]);

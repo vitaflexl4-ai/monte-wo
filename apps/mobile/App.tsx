@@ -56,6 +56,7 @@ import {
 import * as DocumentPicker from "expo-document-picker";
 import { File } from "expo-file-system";
 import { VideoView, useVideoPlayer } from "expo-video";
+import { telemetry } from "./src/telemetry";
 import {
   API_BASE,
   request,
@@ -367,7 +368,11 @@ function Provider({ children }: PropsWithChildren) {
     refresh();
     refreshCatalog();
     refreshLocal();
-    loadClimbProfile().then(setLocalProfile);
+    loadClimbProfile().then((p) => {
+      setLocalProfile(p);
+      telemetry.setConsent(!!p.telemetryConsent);
+      if (p.telemetryConsent) telemetry.sessionStart();
+    });
     loadSelfReportedLifts().then(setSelfLifts);
     return stop;
   }, []);
@@ -2577,6 +2582,24 @@ function Account({ navigation }: any) {
           />
         </Card>
       )}
+      <Card>
+        <Label>ARGON APP DIAGNOSTICS (OPT-IN)</Label>
+        <Body>
+          {a.localProfile.telemetryConsent
+            ? "Enabled: anonymous crash, HTTP error, and interaction latency codes help ARGON protect app reliability. Never sends workouts, identity, or location."
+            : "Off by default. Enable only if you want anonymous crash and error codes sent to MONTE WO engineering."}
+        </Body>
+        <Button
+          title={a.localProfile.telemetryConsent ? "Disable anonymous diagnostics" : "Enable anonymous diagnostics"}
+          secondary
+          onPress={async () => {
+            const next = !a.localProfile.telemetryConsent;
+            await a.updateLocalProfile({ ...a.localProfile, telemetryConsent: next });
+            telemetry.setConsent(next);
+            if (next) telemetry.sessionStart();
+          }}
+        />
+      </Card>
       <Card>
         <Label>YOUR DATA, YOUR CHOICE</Label>
         <Body>

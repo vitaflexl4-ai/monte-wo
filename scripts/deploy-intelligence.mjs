@@ -50,7 +50,8 @@ const DB_NAME = 'monte-wo-intelligence';
 const MIGRATIONS = [
   { file: '0003_intelligence.sql', table: 'intel_runs' },
   { file: '0004_intelligence_ops.sql', table: 'intel_operators' },
-  { file: '0005_intelligence_titan.sql', table: 'intel_improvement_items' }
+  { file: '0005_intelligence_titan.sql', table: 'intel_improvement_items' },
+  { file: '0006_intelligence_v2.sql', table: 'intel_incident_notes' }
 ];
 const MARK_BEGIN = '# >>> intelligence-production (auto-written by scripts/deploy-intelligence.mjs — do not edit by hand)';
 const MARK_END = '# <<< intelligence-production';

@@ -322,6 +322,37 @@ Until steps 1–8 are done and verified, the command center is not operational �
   `_headers`.
 - No production deployment, database change or Cloudflare configuration was performed.
 
+## Intelligence Command Center v2 — Epistemic Ledger, Privacy-First Funnel Pulse & Hardening (2026-10-28)
+
+### Architectural & Engineering Upgrades (`migrations/0006_intelligence_v2.sql`)
+
+1. **Bug fixes discovered during deep repository audit**:
+   - **Rate-limit retention (`purgeExpiredRateLimits`)**: `window_start` is stored in milliseconds (`Date.now()`), whereas the v1 cutoff passed seconds (`Math.floor(Date.now()/1000) - 86400`), preventing expired buckets from ever being purged. Fixed to `Date.now() - 86400000`.
+   - **Monotonic incident escalation (`upsertIncidentFailure`)**: `ON CONFLICT` previously reset an already-escalated `critical` incident back to `excluded.severity` (`high`) on every subsequent failure and re-triggered `raiseUrgent()` every 5 minutes. Escalation is now strictly monotonic while open (`maxSeverity`) and emits an urgent briefing only on the actual transition to `critical`.
+   - **Bounded 5-minute Access JWK cache (`server/intelligence/auth.js`)**: Caches verified Cloudflare Access issuer JWKs in isolate memory for 5 minutes with automatic refresh if an unknown `kid` arrives (zero key-rotation downtime, lower edge subrequest latency).
+   - **Daily-salted SHA-256 client bucketing (`hashClientBucket`)**: Enforces per-client rate limits on `/api/intelligence/events` (`60/min`, tightened to `10/min` under active burst quarantine) and `/api/intelligence/pulse` (`45/min`) without ever storing or logging raw IP addresses.
+
+2. **Privacy-first aggregate ULTRON pulse (`POST /api/intelligence/pulse` & `public/ultron-pulse.js`)**:
+   - Cookie-free, identifier-free browser beacon recording daily aggregate counters only (`pageviews`, `apk_download`, `waitlist_focus`, `waitlist_submit_ok`, `waitlist_submit_err`).
+   - Strictly honors `Sec-GPC: 1`, `DNT: 1`, and `localStorage['mw_analytics_optout'] === '1'`, and enforces strict same-origin `Origin` checks. Disclosed in `/privacy/#operational-telemetry`.
+   - Powers `analyzeUltronSignals()` (`ultron-conversion-friction-waitlist` and `ultron-suspicious-traffic-spike`) and `GET /api/intelligence/analytics` (admin-authenticated).
+
+3. **Real ARGON mobile + `/mobile/` web instrumentation (`apps/mobile/src/{telemetry.ts,api.ts}`, `App.tsx`)**:
+   - Supports `'android' | 'ios' | 'web'` in both `telemetry.ts` and `0006_intelligence_v2.sql`.
+   - Strictly **OFF by default** until the athlete opts in via the **ARGON App Diagnostics (Opt-In)** card in `Account` (`device-prefs.ts`).
+   - Emits sanitized HTTP status/route error codes and auth-stage failure codes from `apps/mobile/src/api.ts` (zero `localStorage`, zero workout data, zero tokens).
+   - Adds `argon-perf-degradation-*` (client `p95` slow-interaction detector) and `argon-unusual-pattern-*` (single-session runaway loop / flood detector).
+
+4. **4th bounded reversible automation rule (`quarantine-anomalous-ingest-burst`)**:
+   - Seeded `DISABLED` in `0006_intelligence_v2.sql`. Requires typed confirmation (`"quarantine-anomalous-ingest-burst"`) by a provisioned `admin`.
+   - When enabled and ARGON detects `>= 25` events from one `session_ref`, tightens per-client ingest rate limit from `60/min` to `10/min` for 15 minutes (`ingest_quarantine_until`), logs an audit trail entry, and rolls back immediately if the operator clicks **Revoke approval**.
+
+5. **AU 2-vector correlation, epistemic truth engine & persistent investigation ledger**:
+   - `correlateAu()` correlates both **shared backend outages** (ULTRON route/5xx + ARGON HTTP/login errors) and **synthetic traffic contamination** (`ultron-suspicious-traffic-spike` + `argon-unusual-pattern-*` / denominatorless bursts) within a 30-minute window.
+   - `evaluateEpistemics()` decomposes every incident into **Confirmed Facts**, **Active Hypotheses**, **AU Skeptical Challenges**, **Missing Data**, and a concrete **Recommended Falsification Step**.
+   - `intel_incident_notes` (`POST /api/intelligence/incidents/:id/notes`) provides an append-only, RBAC-protected operator ledger (`hypothesis`, `note`, `evidence`, `challenge`, `decision`, `verification`).
+   - Dashboard upgraded with Executive Decision Queue, Neural Correlation Topology canvas, Aggregate Funnel & Security Shield panel, Epistemic Review cards, and keyboard navigation (`1–9`, `R`, `Esc`).
+
 ## Local preview (private)
 
 ```sh
