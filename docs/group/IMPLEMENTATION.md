@@ -50,3 +50,9 @@ No DNS, WAF, challenge, Access, SSL or zone-security configuration was changed. 
 ## Owner-supplied logo update
 
 The owner supplied two original PNG logos. They are retained unchanged in `brand-assets/group/`. The black-background logo replaces the abstract hero artwork; its actual VF monogram replaces the placeholder header mark and supplies the favicon. The textured/tagline variant is preserved as an alternate. Optimized web assets total about 83 KB. No recreated or generated logo is used. Browser checks explicitly decode image assets and assert the official hero/header paths.
+
+## Third venture: VitaFlex Intelligence Corp
+
+Owner confirmed VitaFlex Intelligence Corp is a third venture under VitaFlex Business Group, not a parent rename. It appears in the minimal portfolio and at `/ventures/vitaflex-intelligence-corp/`, with `In Development` status. No logo, external public product URL, capabilities, customers or legal-registration claims have been invented. Existing private `/intelligence/` and API routes are not linked or altered.
+
+Portfolio rows, count, detail routes and venture offline assets now derive from the same registry, so future ventures no longer require editing hard-coded homepage rows. Wordmark/category fallbacks are venture-specific rather than defaulting every unbranded venture to VitaFlex Training. Build and the 15-test focused regression suite pass; repeat builds verify cache-list deduplication.

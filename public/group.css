@@ -8,3 +8,7 @@
 @media(min-width:1700px){.hero-art{right:0}}
 @media(max-width:1000px) and (min-width:601px){.hero-art{width:51%;right:-12px;top:70px;bottom:130px}.hero h1{font-size:clamp(64px,8vw,80px)}}
 @media(max-width:600px){.brand-logo{width:43px;height:28px}.brand{gap:10px}.hero-heading{max-width:100%}.hero h1{font-size:clamp(60px,15.5vw,88px)}.hero{padding-top:55px;min-height:760px}.hero-art{width:100%;height:360px;top:300px;right:0;bottom:auto;opacity:1}}
+/* Venture identities remain distinct; no invented logo for ventures without supplied artwork. */
+.venture-wordmark{font:clamp(28px,4vw,48px)/1.3 Georgia,serif;color:#d6c7a9;text-align:center;max-width:100%;padding:20px;overflow-wrap:anywhere}
+.venture-wordmark em{display:inline;font-size:inherit}
+.venture-row h2{min-width:0;overflow-wrap:break-word}

@@ -19,4 +19,4 @@ for(const route of JSON.parse(readFileSync('public/group-routes.json'))){
 await page.goto(base+'/');await page.keyboard.press('Tab');assert.equal(await page.locator(':focus').textContent(),'Skip to content');await page.keyboard.press('Enter');assert.equal(await page.locator(':focus').getAttribute('id'),'main');
 await page.setViewportSize({width:1440,height:1000});await page.screenshot({path:'/tmp/vitaflex-desktop.png',fullPage:true});
 await page.setViewportSize({width:390,height:844});await page.screenshot({path:'/tmp/vitaflex-mobile.png',fullPage:true});
-assert.deepEqual(errors,[]);await browser.close();console.log('PASS: four group/product routes, 20 responsive layouts, all corporate links, keyboard skip, zero JS errors.');
+assert.deepEqual(errors,[]);await browser.close();console.log('PASS: all group/product routes, responsive layouts, all corporate links, keyboard skip, zero JS errors.');
