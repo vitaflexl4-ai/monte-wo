@@ -1,39 +1,48 @@
-# VitaFlex Business Group repositioning
+# VitaFlex Business Group — Noir
 
-## Architecture and maintenance
+## Current presentation
 
-- `/`: parent-company homepage; no MONTE WO application scripts or analytics dependencies.
-- `/ventures/monte-wo/`: venture description, supported development status, real product destination.
-- `/ventures/vitaflex-training/`: separate brand description; no invented launch status or external URL.
-- `/monte-wo/`: preserved generated product homepage and interactive concept.
-- Existing tools, exercise guides, app, waitlist, account, legal and protected API routes stay at their existing paths. Product-home links now point to `/monte-wo/`.
-- Existing `/about/` and `/contact/` remain MONTE WO pages. Corporate About and Contact are homepage sections.
+The later direction supersedes the explanatory corporate homepage: minimal, mysterious, charcoal/champagne, sculptural artwork, editorial typography, quiet motion. No corporate contact links, contact forms, explanatory paragraphs, mission blocks or agency-style calls to action.
 
-Edit `content/group/ventures.json` to add ventures. `logo`, `status`, and `destination` can be null when not confirmed. The generator produces cards and detail pages from the same source. Run `npm run build`; the corporate layer runs last from `scripts/build_group.py`. Keep product engines and data contracts separate.
+- `/`: “Beyond the obvious.”, group identity and two discreet portfolio entries.
+- `/ventures/monte-wo/`: minimal venture identity; real destination at `/monte-wo/`.
+- `/ventures/vitaflex-training/`: minimal distinct venture identity; no invented launch or external destination.
+- `/monte-wo/`: preserved product homepage. Existing product, tools, accounts, legal and protected API routes remain intact. Their product-support contact details are deliberately preserved; corporate pages do not link to them as contact channels.
 
-Group presentation uses local Inter fonts, charcoal/champagne styling, original CSS architectural artwork, a new typographic group mark and existing MONTE WO logo. VitaFlex Training uses a restrained typographic treatment, not a claimed supplied official logo. There are no external font, image or JavaScript dependencies on the corporate pages. Contact opens the existing mailbox with a group-inquiry subject; it does not pretend to submit a form.
+Edit `content/group/ventures.json` for venture information; `scripts/build_group.py` generates the corporate layer after the existing product build. Visual assets: `public/group.css`, `public/group-sculpture.svg`, `public/group-mark.svg`; existing local Inter fonts and MONTE WO artwork remain available. Corporate pages require no JavaScript and honor reduced motion.
 
-## Evidence (2026-10-27)
+## Production publication — resolved project mismatch
 
-- Inspected repository, route manifests, supplied assets, build chain, Pages configuration and existing deployment workflow before implementation.
-- Direct custom-domain access from the sandbox failed TLS connection. GitHub-hosted inspection later returned HTTP 403, title `Just a moment...` (Cloudflare challenge). No claim to having visually inspected the protected production content.
+The main domain was attached to Pages project `vitaflex`, not the repository's earlier deployment target `vitaflex-monte-wo-live`. Inspection of the individual project confirmed that the source field is omitted (direct upload), not a git-connected deployment.
+
+`scripts/publish-group-domain.mjs` now:
+
+1. Inspects the domain-owning project and checks that both apex and www remain assigned to it.
+2. Rejects a git-connected source and verifies the approved preview marker.
+3. Saves previous deployment metadata to the workflow evidence artifact.
+4. Publishes through the existing `scripts/deploy-intelligence.mjs --project-name vitaflex --skip-build` workflow, preserving its fail-closed security provisioning.
+5. Verifies that the production revision matches the checked-out revision.
+
+No DNS, WAF, challenge, Access, SSL or zone-security configuration was changed. An initial DNS-cutover approach failed during read-only preflight and made no domain changes; it was removed in favor of publishing directly to the existing domain owner.
+
+### Deployed revision
+
+`d3e38d25902370b66f52a75b941fcda9c729664a`
+
+- Domain-owning project: `vitaflex`
+- Domains: `vitaflexbusinessgroup.com`, `www.vitaflexbusinessgroup.com`
+- Production deployment: https://0241061e.vitaflex.pages.dev
+- Production alias: https://vitaflex.pages.dev
+- Separate preview alias: https://vitaflex-monte-wo-live.pages.dev
+- Evidence: https://github.com/vitaflexl4-ai/monte-wo/actions/runs/40707804697
+
+## Verification
+
 - `npm run build`: PASS.
-- `npm test`: 210/212 PASS before adding three group-specific tests. Two remaining failures are existing `wrangler.toml` checksum expectation mismatches in Lab/Website protected-source tests; reproduced on an untouched archive of the starting revision. No protected file was changed or checksum check weakened. An initial intelligence rate-limit test failed once but passed on repeat; no security code was changed.
-- New group browser suite: PASS on GitHub-hosted Chromium, four routes, twenty 320–1440px layouts, all corporate links, keyboard skip navigation, zero page errors. Screenshots are in workflow artifacts.
-- Local Chromium download was blocked by sandbox network policy. A registry-sourced Chromium alternative lacked system libraries; no browser security settings were changed in the committed tests. GitHub runner provided the working browser environment.
-- Cloudflare Pages deployment: SUCCESS through `scripts/deploy-intelligence.mjs`, preserving its existing security configuration workflow.
-- Revision `e4833d439472dcbd5ba8819fd52e070d31dab7cc` deployed to `https://b247f333.vitaflex-monte-wo-live.pages.dev`; project alias `https://vitaflex-monte-wo-live.pages.dev` returned HTTP 200 and the new corporate title and headline.
-- Evidence run: https://github.com/vitaflexl4-ai/monte-wo/actions/runs/40559922690 . Build, browser tests, deployment and diagnostic steps passed; final custom-domain verification FAILED, correctly making the overall run red.
-
-## Production-domain blocker — not a completed custom-domain launch
-
-Cloudflare's Pages project API confirms:
-
-- `vitaflex-monte-wo-live`: the existing supported deployment target, now serving the new group website.
-- `vitaflex`: owns `vitaflexbusinessgroup.com` and `www.vitaflexbusinessgroup.com`; production revision at inspection was `3d8ab92af257e6dfa659076085f5cd54442680bc`.
-
-Thus uploading successfully to the repository's configured project does **not** update the requested domain. The domain also challenges automated verification with HTTP 403. Do not disable Cloudflare security to make a test green.
-
-Before finishing the domain launch, inspect the separate `vitaflex` project's source/build/function configuration and decide whether to deploy this site there or transfer the domain to the verified Pages project. Preserve any existing domain functionality and review DNS requirements. This implementation deliberately does not silently overwrite the separate project's configuration or transfer its domains without inspecting it. After resolving routing, run `node scripts/verify-group.mjs` from an environment authorized to access the domain; check apex and www in a real browser as well.
-
-The workflow retains strict custom-domain verification, captures pre-deploy headers/errors, uploads screenshots/deployment evidence, and verifies the Pages fallback independently. This is not reported as a successful live-domain launch.
+- `npm test`: 213/215 PASS. Two existing protected-file checksum expectation mismatches in Lab/Website tests remain unchanged; reproduced on the starting revision previously. No protected files or checksum assertions were weakened.
+- Group/product regression subset: 13/13 PASS.
+- GitHub Chromium browser tests: PASS. Four routes, 20 responsive layouts (320–1440px), corporate links, keyboard skip navigation, no page errors. Desktop/mobile screenshots are workflow artifacts.
+- Both production and preview aliases: verified HTTP 200 on `/`, both venture detail pages, `/monte-wo/`, `/tools/`; expected design/status markers matched.
+- Private intelligence API: HTTP 401 without authentication on both aliases.
+- Cloudflare project API confirms that the project owning the apex and www domains now has the new deployed revision.
+- Public-domain automated request still returns Cloudflare's `Just a moment...` challenge (HTTP 403). The workflow intentionally remains red at that strict external check. The project mismatch is resolved and the domain-owning production project is updated, but a successful human-browser visit through the challenge was not independently verified. Do not claim an HTTP 200 custom-domain verification or disable security to make the check green.
