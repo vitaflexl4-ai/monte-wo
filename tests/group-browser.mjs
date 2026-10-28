@@ -31,7 +31,7 @@ for(const route of JSON.parse(readFileSync('public/group-routes.json'))){
 }
 await page.goto(base+'/');await page.keyboard.press('Tab');assert.equal(await page.locator(':focus').textContent(),'Skip to content');await page.keyboard.press('Enter');assert.equal(await page.locator(':focus').getAttribute('id'),'main');
 await page.setViewportSize({width:1440,height:1000});
-const row=page.locator('.venture-row').first();const before=await row.boundingBox();await row.hover();const after=await row.boundingBox();assert.deepEqual(after,before,'Hover must not shift portfolio layout');
+const row=page.locator('.venture-row').first();await row.scrollIntoViewIfNeeded();const before=await row.boundingBox();await row.hover();const after=await row.boundingBox();assert.deepEqual(after,before,'Hover must not shift portfolio layout');
 await row.focus();assert.equal(await row.evaluate(el=>getComputedStyle(el).outlineStyle),'solid');
 await page.emulateMedia({reducedMotion:'reduce'});assert.equal(await page.locator('.hero-art img').evaluate(el=>getComputedStyle(el).animationName),'none');await page.emulateMedia({reducedMotion:'no-preference'});
 await page.locator('body').click({position:{x:1,y:1}});
