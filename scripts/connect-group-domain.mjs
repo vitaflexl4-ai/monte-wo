@@ -3,6 +3,7 @@
  */
 import {readFile,writeFile,mkdir} from 'node:fs/promises';
 import assert from 'node:assert/strict';
+process.on('uncaughtException',error=>{console.log('::error title=Domain cutover blocked::'+error.message.replaceAll('\n',' '));process.exit(1);});
 const config=JSON.parse(await readFile('deploy.config.json','utf8'));
 const account=config.account_id,target=config.project_name,previous='vitaflex';
 const hosts=['vitaflexbusinessgroup.com','www.vitaflexbusinessgroup.com'];
