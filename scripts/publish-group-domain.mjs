@@ -10,7 +10,7 @@ const inspect=async()=>{
  const d=await r.json();assert.ok(r.ok&&d.success,'Could not inspect the domain-owning project');return d.result;
 };
 const before=await inspect();
-assert.equal(before.source,null,'Refuse direct publication to a git-connected project');
+assert.ok(before.source == null,'Refuse direct publication to a git-connected project');
 for(const host of ['vitaflexbusinessgroup.com','www.vitaflexbusinessgroup.com'])assert.ok(before.domains.includes(host),`Unexpected domain owner: ${host}`);
 const preview=await fetch(`https://${config.project_name}.pages.dev/`,{signal:AbortSignal.timeout(30000)});
 assert.equal(preview.status,200);assert.ok((await preview.text()).includes('data-design="noir"'),'Preview must serve the approved design');
