@@ -26,7 +26,7 @@ function makeRepoCopy() {
   mkdirSync(join(dir, 'scripts'), { recursive: true });
   cpSync(join(ROOT, 'wrangler.toml'), join(dir, 'wrangler.toml'));
   cpSync(join(ROOT, 'intelligence-worker/wrangler.toml'), join(dir, 'intelligence-worker/wrangler.toml'));
-  for (const f of ['0003_intelligence.sql', '0004_intelligence_ops.sql', '0005_intelligence_titan.sql']) cpSync(join(ROOT, 'migrations', f), join(dir, 'migrations', f));
+  for (const f of ['0003_intelligence.sql', '0004_intelligence_ops.sql', '0005_intelligence_titan.sql', '0006_operator_case_normalization.sql']) cpSync(join(ROOT, 'migrations', f), join(dir, 'migrations', f));
   cpSync(join(ROOT, 'scripts/deploy-intelligence.mjs'), join(dir, 'scripts/deploy-intelligence.mjs'));
   if (existsSync(join(ROOT, 'deploy.config.json'))) cpSync(join(ROOT, 'deploy.config.json'), join(dir, 'deploy.config.json'));
   // minimal but REAL files the preflight validates (paths + parseability)
@@ -104,6 +104,8 @@ await scenarioTest('happy path: existing DB, everything deployed, fail-closed ve
     assert.match(wtoml, new RegExp('SITE_URL = "' + origin.replace(/\//g, '\\/') + '"'));
     const log = readFileSync(join(dir, 'fake.log'), 'utf8');
     assert.match(log, /INSERT OR REPLACE INTO intel_operators/, 'operator grant executed');
+    assert.match(r.stdout, /0006_operator_case_normalization\.sql already applied/, 'settings marker gates 0006');
+    assert.ok(!/--file.{0,12}migrations\/0006/.test(log), '0006 never re-applied once its marker exists');
   });
 });
 
@@ -113,7 +115,7 @@ await scenarioTest('nodb: creates the database, then applies ALL migrations in o
     assert.equal(r.status, 0, 'exit 0:\n' + r.stdout + r.stderr);
     const log = readFileSync(join(dir, 'fake.log'), 'utf8');
     const files = [...log.matchAll(/"--file","migrations\/(000\d_[a-z_]+\.sql)"/g)].map(m => m[1]);
-    assert.deepEqual(files, ['0003_intelligence.sql', '0004_intelligence_ops.sql', '0005_intelligence_titan.sql'], 'migrations applied in order');
+    assert.deepEqual(files, ['0003_intelligence.sql', '0004_intelligence_ops.sql', '0005_intelligence_titan.sql', '0006_operator_case_normalization.sql'], 'migrations applied in order');
     assert.match(log, /"d1","create","monte-wo-intelligence"/, 'database created');
   });
 });
@@ -124,7 +126,7 @@ await scenarioTest('partial: applies only missing migrations', async dir => {
     assert.equal(r.status, 0, 'exit 0:\n' + r.stdout + r.stderr);
     const log = readFileSync(join(dir, 'fake.log'), 'utf8');
     const files = [...log.matchAll(/"--file","migrations\/(000\d_[a-z_]+\.sql)"/g)].map(m => m[1]);
-    assert.deepEqual(files, ['0004_intelligence_ops.sql', '0005_intelligence_titan.sql'], '0003 skipped, 0004+0005 applied');
+    assert.deepEqual(files, ['0004_intelligence_ops.sql', '0005_intelligence_titan.sql', '0006_operator_case_normalization.sql'], '0003 skipped, 0004+0005+0006 applied');
   });
 });
 
@@ -217,6 +219,14 @@ await scenarioTest('grant-operator only: single SQL grant, no deploy', async dir
   assert.match(log, /--grant-operator|intel_operators/, 'grant ran');
   assert.ok(!/"pages","deploy"/.test(log), 'no pages deploy in grant-only mode');
   assert.ok(!/"deploy"/.test(log.replace(/d1[^\\n]*/g, '')), 'no worker deploy in grant-only mode');
+});
+
+await scenarioTest('grant-operator normalizes the subject to lowercase (Access issues lowercase subs)', async dir => {
+  const r = await runDeploy(dir, ['--grant-operator', 'Owner@Example.COM'], 'happy');
+  assert.equal(r.status, 0, 'exit 0:\n' + r.stdout + r.stderr);
+  const log = readFileSync(join(dir, 'fake.log'), 'utf8');
+  assert.match(log, /owner@example\.com/, 'grant stored the normalized subject');
+  assert.ok(!log.includes('Owner@Example.COM'), 'typed case never reaches the database');
 });
 
 await scenarioTest('alt project name: wrangler.toml name is synced before deploy', async dir => {

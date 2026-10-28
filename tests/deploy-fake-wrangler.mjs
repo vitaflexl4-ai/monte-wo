@@ -45,6 +45,12 @@ if (args[0] === 'd1' && args[1] === 'execute' && args.includes('--command')) {
     out(JSON.stringify([{ results: tables.map(name => ({ name })) }]));
     process.exit(0);
   }
+  // Migration-marker probe (settings-gated migrations like 0006).
+  if (joined.includes('intel_settings') && joined.includes('migration_0006')) {
+    const applied = ['happy', 'missing', 'git', 'openapi', 'noauth'].includes(scenario);
+    out(JSON.stringify([{ results: applied ? [{ value: 'applied' }] : [] }]));
+    process.exit(0);
+  }
   // operator grant / arbitrary SQL
   out('[{"results":[],"success":true,"meta":{"changes":1}}]');
   process.exit(0);

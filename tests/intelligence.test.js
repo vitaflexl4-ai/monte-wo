@@ -52,7 +52,7 @@ const okFetch = async (url) => new Response('ok', { status: 200, headers: { 'Con
 
 before(async () => {
   dir = mkdtempSync(join(tmpdir(), 'monte-intel-test-'));
-  sqlite({ script: readFileSync('migrations/0003_intelligence.sql', 'utf8') + readFileSync('migrations/0004_intelligence_ops.sql', 'utf8') + readFileSync('migrations/0005_intelligence_titan.sql', 'utf8') });
+  sqlite({ script: readFileSync('migrations/0003_intelligence.sql', 'utf8') + readFileSync('migrations/0004_intelligence_ops.sql', 'utf8') + readFileSync('migrations/0005_intelligence_titan.sql', 'utf8') + readFileSync('migrations/0006_operator_case_normalization.sql', 'utf8') });
   db = { prepare: s => new Statement(s), batch: async statements => sqlite({ statements }) };
   keys = await crypto.subtle.generateKey({ name: 'RSASSA-PKCS1-v1_5', modulusLength: 2048, publicExponent: new Uint8Array([1, 0, 1]), hash: 'SHA-256' }, true, ['sign', 'verify']);
   jwk = { ...await crypto.subtle.exportKey('jwk', keys.publicKey), kid: 'test-key', alg: 'RS256' };
@@ -105,7 +105,7 @@ test('public status endpoint reports honest component state without authenticati
   const lb = await live.json();
   assert.equal(lb.components.d1_database.bound, true);
   assert.ok(lb.components.d1_database.tables.includes('intel_checks'));
-  assert.equal(lb.components.d1_database.migrations, '0003 + 0004 + 0005 applied');
+  assert.equal(lb.components.d1_database.migrations, '0003 + 0004 + 0005 applied + 0006 (operator case normalization)');
   assert.equal(lb.components.cloudflare_access.configured, false);
   assert.equal(lb.monitoring.ultron_last_check.status, 'ok');
   assert.ok(lb.monitoring.ultron_total_checks >= 1);
@@ -192,6 +192,17 @@ test('authenticated identity without operator provisioning is refused; provision
   assert.equal((await call('/incidents', 'GET', null, { __token: await token('viewer@monte.test') })).status, 200);
   const post = await call('/automation/retention-purge/approve', 'POST', { confirm: 'retention-purge' }, { __token: await token('viewer@monte.test'), Origin: 'https://monte.test' });
   assert.equal(post.status, 403);
+});
+test('operator authorization is case-insensitive — Access issues the JWT sub lowercased', async () => {
+  // Production defect (2026-10-26): the operator row was granted as 'Jmalexis@liberty.edu'
+  // while Cloudflare Access issues the email identity lowercase in the JWT sub, so a fully
+  // authenticated admin was refused with 403 operator-not-provisioned and the dashboard
+  // reported every agent NOT CONNECTED. Authorization now compares the same identity
+  // case-insensitively (migration 0006 normalizes stored subjects; grants normalize too).
+  await db.prepare("INSERT OR REPLACE INTO intel_operators(subject,role) VALUES('CaseTest@Monte.Test','admin')").run();
+  assert.equal((await call('/overview', 'GET', null, { __token: await token('casetest@monte.test') })).status, 200, 'lowercase JWT sub must match a mixed-case operator row');
+  assert.equal((await call('/overview', 'GET', null, { __token: await token('CASETEST@MONTE.TEST') })).status, 200, 'uppercase JWT sub must match the same operator row');
+  assert.equal((await call('/overview', 'GET', null, { __token: await token('stranger@monte.test') })).status, 403, 'a different identity is still refused — case folding never widens access');
 });
 test('CF_Authorization cookie (the Access login cookie) is accepted as the JWT source', async () => {
   const t = await token('chief@monte.test');

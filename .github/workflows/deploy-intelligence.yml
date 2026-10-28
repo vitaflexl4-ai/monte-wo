@@ -19,7 +19,7 @@ name: Deploy Intelligence Command Center
 on:
   workflow_dispatch: {}
   push:
-    branches: [arena/42a98d64-monte-wo]
+    branches: [arena/06051208-monte-wo]
 
 concurrency:
   group: production-deploy

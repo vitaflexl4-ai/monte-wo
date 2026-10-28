@@ -118,12 +118,17 @@ export async function authenticateOperator(request, env, url, deps = {}) {
     return { id: 'local-operator', subject: 'local-development', role: 'admin', via: 'local-development' };
   }
   const claim = await verifyAccessJwt(request, env, deps.fetcher || fetch);
-  const row = await env.INTEL_DB.prepare('SELECT subject, role FROM intel_operators WHERE subject=? AND active=1').bind(claim.sub).first();
+  // Cloudflare Access issues email identities in normalized lowercase form inside the JWT
+  // `sub`, while operator rows may have been granted with typed case (migration 0006
+  // lowercases stored rows; the deploy grant normalizes new ones). Authorization is
+  // case-insensitive equality of the SAME identity — it never admits a different one.
+  const sub = String(claim.sub || '').trim().toLowerCase();
+  const row = await env.INTEL_DB.prepare('SELECT subject, role FROM intel_operators WHERE (subject=? OR lower(subject)=?) AND active=1').bind(sub, sub).first();
   if (!row) {
     // Actionable refusal: reveal only the caller's own authenticated subject (never anyone
     // else's) with the exact command that grants it. Granting stays a deliberate owner action.
     const err = new IntelError('operator-not-provisioned', 403);
-    err.hint = 'Authenticated as ' + claim.sub + '. Ask the deployment owner to run: node scripts/deploy-intelligence.mjs --grant-operator "' + claim.sub + '"';
+    err.hint = 'Authenticated as ' + sub + '. Ask the deployment owner to run: node scripts/deploy-intelligence.mjs --grant-operator "' + sub + '"';
     throw err;
   }
   return { id: row.subject, subject: row.subject, role: row.role, via: 'cloudflare-access' };

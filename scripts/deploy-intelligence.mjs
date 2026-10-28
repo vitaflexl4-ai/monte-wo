@@ -50,7 +50,9 @@ const DB_NAME = 'monte-wo-intelligence';
 const MIGRATIONS = [
   { file: '0003_intelligence.sql', table: 'intel_runs' },
   { file: '0004_intelligence_ops.sql', table: 'intel_operators' },
-  { file: '0005_intelligence_titan.sql', table: 'intel_improvement_items' }
+  { file: '0005_intelligence_titan.sql', table: 'intel_improvement_items' },
+  // 0006 adds no table; it is gated on an intel_settings marker instead.
+  { file: '0006_operator_case_normalization.sql', table: 'intel_operators', marker: 'migration_0006' }
 ];
 const MARK_BEGIN = '# >>> intelligence-production (auto-written by scripts/deploy-intelligence.mjs — do not edit by hand)';
 const MARK_END = '# <<< intelligence-production';
@@ -228,7 +230,8 @@ function applyMigrations() {
   const tables = d1Tables(DB_NAME);
   let applied = 0;
   for (const m of MIGRATIONS) {
-    if (tables.has(m.table)) { console.log('    ' + m.file + ' already applied (' + m.table + ' present)'); continue; }
+    const done = m.marker ? d1Setting(DB_NAME, m.marker) : tables.has(m.table);
+    if (done) { console.log('    ' + m.file + ' already applied (' + (m.marker ? 'settings marker ' + m.marker : m.table + ' present') + ')'); continue; }
     log('[3/8]', 'Applying migrations/' + m.file + ' to the REMOTE ' + DB_NAME + '…');
     const r = wrangler(['d1', 'execute', DB_NAME, '--remote', '--file', 'migrations/' + m.file]);
     if (r.code !== 0) die('migration ' + m.file + ' failed:\n' + r.out.slice(-1500));
@@ -237,8 +240,24 @@ function applyMigrations() {
   if (!applied) console.log('    all intelligence migrations already applied');
 }
 
+// Reads a settings marker from the REMOTE D1. Returns null when absent or unreadable —
+// treated as "not applied yet", so marker-gated migrations re-run safely (they are
+// idempotent by design and record their marker on success).
+function d1Setting(dbName, key) {
+  const r = wrangler(['d1', 'execute', dbName, '--remote', '--json', '--command', "SELECT value FROM intel_settings WHERE key='" + key.replace(/'/g, "''") + "'"]);
+  if (r.code !== 0) return null;
+  try {
+    const parsed = JSON.parse(r.out);
+    const rows = (Array.isArray(parsed) ? parsed[0]?.results : parsed.result?.[0]?.results) || [];
+    return rows.length ? rows[0].value : null;
+  } catch { return null; }
+}
+
 function grantOperator(subject) {
   if (!/^[A-Za-z0-9@._:+\-|]{3,200}$/.test(subject)) die('operator subject looks invalid: ' + JSON.stringify(subject));
+  // Cloudflare Access issues the JWT subject for email logins in lowercase; store the
+  // normalized form so authorization can never miss on case alone.
+  subject = String(subject).toLowerCase();
   log('[5/8]', 'Granting admin operator access to subject: ' + subject);
   const sql = `INSERT OR REPLACE INTO intel_operators(subject,role,active) VALUES ('${subject.replace(/'/g, "''")}','admin',1);`;
   const r = wrangler(['d1', 'execute', DB_NAME, '--remote', '--json', '--command', sql]);
