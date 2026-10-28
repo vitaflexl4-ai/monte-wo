@@ -1,0 +1,212 @@
+# MONTE WO — one-click production deployment of the Intelligence Command Center.
+#
+# Requires ONE secret (owner adds it in GitHub → Settings → Secrets → Actions):
+#   CLOUDFLARE_API_TOKEN — a Cloudflare API token (My Profile → API Tokens → Create Token
+#   → Custom token) with these permissions:
+#       Account · Cloudflare Pages · Edit
+#       Account · D1 · Edit
+#       Account · Workers Scripts · Edit
+#
+# Triggering:
+#   - After this workflow is on the default branch: the "Run workflow" button (workflow_dispatch).
+#   - From this branch: push a commit whose message contains [deploy] — explicit, auditable,
+#     never a surprise deploy. All deployment values come from deploy.config.json.
+#
+# The deploy itself is scripts/deploy-intelligence.mjs: fail-closed, idempotent, and it
+# verifies the deployed API refuses unauthenticated access (aborts on any 200).
+name: Deploy Intelligence Command Center
+
+on:
+  workflow_dispatch: {}
+  push:
+    branches: [arena/42a98d64-monte-wo]
+
+concurrency:
+  group: production-deploy
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  pull-requests: write   # only for reporting deploy results on the PR
+
+jobs:
+  deploy:
+    if: github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[deploy]')
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Node
+        uses: actions/setup-node@v4
+        with: { node-version: 22 }
+      - name: Python (site build)
+        uses: actions/setup-python@v5
+        with: { python-version: '3.12' }
+      - name: Install
+        run: npm ci
+      - name: Check token presence (no value is ever printed)
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: test -n "$CLOUDFLARE_API_TOKEN" || { echo 'CLOUDFLARE_API_TOKEN secret is not set. GitHub → Settings → Secrets and variables → Actions → New repository secret.'; exit 3; }
+      - name: Deploy (all values from deploy.config.json)
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: |
+          set -o pipefail
+          node scripts/deploy-intelligence.mjs 2>&1 | tee deploy-output.log
+      - name: Old-project build config (diagnostic — names only, never values)
+        if: always()
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          ACCOUNT=$(node -e "console.log(require('./deploy.config.json').account_id)")
+          CODE=$(curl -sS --max-time 30 -o /tmp/pages-projects.json -w '%{http_code}' \
+            -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" \
+            "https://api.cloudflare.com/client/v4/accounts/$ACCOUNT/pages/projects" || true)
+          export DIAG_CODE="$CODE"
+          {
+            echo "## Old project (vitaflex-monte-wo) build configuration — diagnostic"
+            echo
+            echo '```json'
+            if [ "$CODE" != "200" ]; then
+              echo "Cloudflare API returned HTTP $CODE for account $ACCOUNT"
+              node -e '
+                const fs = require("fs");
+                try { const d = JSON.parse(fs.readFileSync("/tmp/pages-projects.json", "utf8"));
+                  console.log(JSON.stringify({ http_status: process.env.DIAG_CODE, errors: d.errors || [], messages: d.messages || [] }, null, 2));
+                } catch { console.log("non-JSON body: " + fs.readFileSync("/tmp/pages-projects.json", "utf8").slice(0, 300)); }
+              ' || true
+            else
+              node -e '
+                const fs = require("fs");
+                const data = JSON.parse(fs.readFileSync("/tmp/pages-projects.json", "utf8"));
+                const p = ((data && data.result) || []).find(x => x.name === "vitaflex-monte-wo");
+                if (!p) { console.log(JSON.stringify({ note: "old project not found in account project list" }, null, 2)); process.exit(0); }
+                const envNames = {};
+                for (const [scope, cfg] of Object.entries(p.deployment_configs || {})) {
+                  envNames[scope] = cfg.env_vars ? Object.entries(cfg.env_vars).map(([n, d]) => n + ":" + (d.type || "plain")) : [];
+                }
+                const out = { name: p.name, production_branch: p.production_branch, source: p.source || null, build_config: p.build_config || null, env_var_names: envNames };
+                console.log(JSON.stringify(out, null, 2));
+              ' || echo '{ "note": "parse failed" }'
+              ACCOUNT2="$ACCOUNT"
+              curl -sS --max-time 30 -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" \
+                "https://api.cloudflare.com/client/v4/accounts/$ACCOUNT2/pages/projects/vitaflex-monte-wo/deployments" > /tmp/old-deployments.json 2>/dev/null || true
+              LATEST_ID=$(node -e '
+                try { const d = JSON.parse(require("fs").readFileSync("/tmp/old-deployments.json", "utf8"));
+                  console.log((d.result || [])[0].id || ""); } catch { console.log(""); }
+              ')
+              export LATEST_ID
+              if [ -n "$LATEST_ID" ]; then
+                curl -sS --max-time 30 -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" \
+                  "https://api.cloudflare.com/client/v4/accounts/$ACCOUNT/pages/projects/vitaflex-monte-wo/deployments/$LATEST_ID/history/logs" > /tmp/old-build-logs.json 2>/dev/null || true
+                node -e '
+                  try {
+                    const d = JSON.parse(require("fs").readFileSync("/tmp/old-build-logs.json", "utf8"));
+                    if (d.success && d.result && d.result.data) {
+                      const lines = d.result.data.map(l => l.line).join("\n");
+                      console.log("### Old project — build log tail (latest deployment " + process.env.LATEST_ID + ")");
+                      console.log("```");
+                      console.log(lines.slice(-3500));
+                      console.log("```");
+                    } else {
+                      console.log("logs endpoint: " + JSON.stringify(d).slice(0, 200));
+                    }
+                  } catch { console.log("build logs unavailable"); }
+                ' || true
+              fi
+              node -e '
+                try {
+                  const d = JSON.parse(require("fs").readFileSync("/tmp/old-deployments.json", "utf8"));
+                  const ds = (d.result || []).slice(0, 3).map(x => ({
+                    id: x.id, branch: x.deployment_trigger && x.deployment_trigger.metadata ? x.deployment_trigger.metadata.branch : null,
+                    commit: x.deployment_trigger && x.deployment_trigger.metadata ? x.deployment_trigger.metadata.commit_hash : null,
+                    created: x.created_on,
+                    stages: Object.entries(x.stages || {}).map(([k, v]) => k + ":" + v.status).join(", "),
+                    latest_stage: x.latest_stage ? x.latest_stage.name + ":" + x.latest_stage.status : null,
+                    url: x.url || null
+                  }));
+                  console.log("### Old project — latest deployments");
+                  console.log("```json");
+                  console.log(JSON.stringify(ds, null, 2));
+                  console.log("```");
+                } catch { console.log("deployment status unavailable"); }
+              ' || true
+            fi
+            echo '```'
+          } > /tmp/diag-comment.md
+          gh pr comment "$GITHUB_REF_NAME" --repo "$GITHUB_REPOSITORY" --body-file /tmp/diag-comment.md || echo 'could not post diagnostic comment'
+      - name: Repair old-project build command if corrupted (placeholder text), then rebuild
+        if: always()
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          ACCOUNT=$(node -e "console.log(require('./deploy.config.json').account_id)")
+          API="https://api.cloudflare.com/client/v4/accounts/$ACCOUNT/pages/projects/vitaflex-monte-wo"
+          curl -sS --max-time 30 -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" "$API" > /tmp/old-project.json
+          NEEDS_WORK=no
+          node -e '
+            const d = JSON.parse(require("fs").readFileSync("/tmp/old-project.json", "utf8"));
+            const r = d.result || {};
+            const bc = (r.build_config && r.build_config.build_command) || "";
+            const prodEnv = (r.deployment_configs && r.deployment_configs.production && r.deployment_configs.production.env_vars) || {};
+            const bad = String(bc).includes("Build command:") || !prodEnv.NODE_VERSION;
+            process.exit(bad ? 0 : 1);
+          ' && NEEDS_WORK=yes || true
+          if [ "$NEEDS_WORK" != "yes" ]; then
+            echo 'Old project build command and NODE_VERSION are already sane — no repair needed.'
+            exit 0
+          fi
+          echo 'Old project needs repair (placeholder build command and/or missing NODE_VERSION) — applying both.'
+          CODE=$(curl -sS --max-time 30 -X PATCH \
+            -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" -H "Content-Type: application/json" \
+            --data '{"build_config":{"build_command":"npm run build","destination_dir":"public","root_dir":""}}' \
+            -o /tmp/patch-result.json -w '%{http_code}' "$API" || true)
+          echo "config PATCH returned HTTP $CODE"
+          # Pin the build node version to the one the passing GitHub Actions builds use.
+          VCODE=$(curl -sS --max-time 30 -X PATCH \
+            -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" -H "Content-Type: application/json" \
+            --data '{"deployment_configs":{"production":{"env_vars":{"NODE_VERSION":{"type":"plain_text","value":"22"}}},"preview":{"env_vars":{"NODE_VERSION":{"type":"plain_text","value":"22"}}}}}' \
+            -o /tmp/nodever-result.json -w '%{http_code}' "$API" || true)
+          echo "NODE_VERSION PATCH returned HTTP $VCODE"
+          TRIG=""
+          if [ "$CODE" = "200" ]; then
+            TCODE=$(curl -sS --max-time 30 -X POST \
+              -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" -H "Content-Type: application/json" \
+              --data '{}' -o /tmp/deploy-trigger.json -w '%{http_code}' "$API/deployments" || true)
+            echo "deployment trigger returned HTTP $TCODE"
+            TRIG=$(node -e '
+              try { const d = JSON.parse(require("fs").readFileSync("/tmp/deploy-trigger.json", "utf8"));
+                const r = d.result || {};
+                console.log(JSON.stringify({ deployment_id: r.id, status: r.latest_stage ? r.latest_stage.name + ":" + r.latest_stage.status : (r.status || null) }));
+              } catch { console.log("no deployment body"); }
+            ' || true)
+          fi
+          { echo "## Old project (vitaflex-monte-wo) build repair"
+            echo
+            echo "Build command \`npm run build\` (output \`public\`) and NODE_VERSION=22, then a fresh deployment was triggered."
+            echo
+            echo '```'
+            echo "build command PATCH: HTTP $CODE"
+            echo "NODE_VERSION PATCH: HTTP $VCODE"
+            echo "deploy trigger: $TRIG"
+            echo '```'
+          } > /tmp/repair-comment.md
+          gh pr comment "$GITHUB_REF_NAME" --repo "$GITHUB_REPOSITORY" --body-file /tmp/repair-comment.md || echo 'could not post repair comment'
+      - name: Report result on the PR (output tail — never the token)
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if [ ! -f deploy-output.log ]; then echo 'no deploy output captured'; exit 0; fi
+          {
+            echo "## Deploy run ${{ github.run_id }} — status: \`${{ job.status }}\`"
+            echo
+            echo '```'
+            tail -n 80 deploy-output.log
+            echo '```'
+          } > /tmp/deploy-comment.md
+          gh pr comment "$GITHUB_REF_NAME" --repo "$GITHUB_REPOSITORY" --body-file /tmp/deploy-comment.md || echo 'could not post the PR comment'

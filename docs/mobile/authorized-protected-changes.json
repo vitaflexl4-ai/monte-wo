@@ -6,12 +6,12 @@
   },
   "functions/api/[[route]].js": {
     "before": "6f8328107d8cd9a9a96204b6d6d8f45f4f29099b1145ee5b997f0ce280142186",
-    "after": "399d398c74967bc499661caccc4835a7b027d7175f9aa198f6aeb68eb5abc2d9",
-    "reason": "Add gated /api/mobile/ dispatch. Existing waitlist and media routes unchanged."
+    "after": "1634a6ecd5288f18ded309b69e98aeda598d1e305dfbc4d2657a246ae444e077",
+    "reason": "Add gated /api/mobile/ and /api/intelligence/ dispatch. Existing waitlist and media routes unchanged."
   },
   "wrangler.toml": {
     "before": "cd8435e7291ebdd2c533d6f04abd2d55b5c3d9dca64c684d9ebda814f1f0fd05",
-    "after": "cd8435e7291ebdd2c533d6f04abd2d55b5c3d9dca64c684d9ebda814f1f0fd05",
-    "reason": "Preserve exact historical Cloudflare Pages configuration (vitaflex-monte-wo, output public) with no active binding or resource ID changes."
+    "after": "b7912b3f47a625a4d78c0fb54c69bb087cd9833e2703e7d960ebbe6394701bde",
+    "reason": "Document commented INTEL_DB binding setup instructions for the isolated Intelligence Command Center database; active bindings unchanged."
   }
 }

@@ -26,6 +26,19 @@ pages_build_output_dir = "public"
 # [vars]
 # TURNSTILE_SITE_KEY = "PASTE_YOUR_PUBLIC_SITE_KEY_HERE"
 
+# PRIVATE INTELLIGENCE COMMAND CENTER — separate D1 database, never the waitlist or app DB.
+# 1. npx wrangler d1 create monte-wo-intelligence
+# 2. Apply migrations/0003_intelligence.sql then migrations/0004_intelligence_ops.sql to it.
+# 3. Uncomment and paste the database_id. Pages Functions read it through the INTEL_DB binding.
+# 4. Set INTELLIGENCE_ACCESS_ISSUER and INTELLIGENCE_ACCESS_AUD vars (Cloudflare Access app).
+# 5. Set INTELLIGENCE_INGEST_KEY as an encrypted secret if mobile telemetry intake is enabled.
+# Protect BOTH /intelligence/ and /api/intelligence/* with the same Cloudflare Access application;
+# the API additionally verifies the Access JWT server-side and checks intel_operators.
+# [[d1_databases]]
+# binding = "INTEL_DB"
+# database_name = "monte-wo-intelligence"
+# database_id = "PASTE_THE_ID_FROM_CLOUDFLARE_HERE"
+
 # OPTIONAL RESTRICTED STRENGTH INDEX PILOT — disabled until configured and reviewed.
 # Reuse DB above; apply migration 0002_strength_index.sql after 0001.
 # Configure RANKING_ENABLED, RANKING_ACCESS_ISSUER and RANKING_ACCESS_AUD in Pages.
