@@ -56,3 +56,9 @@ The owner supplied two original PNG logos. They are retained unchanged in `brand
 Owner confirmed VitaFlex Intelligence Corp is a third venture under VitaFlex Business Group, not a parent rename. It appears in the minimal portfolio and at `/ventures/vitaflex-intelligence-corp/`, with `In Development` status. No logo, external public product URL, capabilities, customers or legal-registration claims have been invented. Existing private `/intelligence/` and API routes are not linked or altered.
 
 Portfolio rows, count, detail routes and venture offline assets now derive from the same registry, so future ventures no longer require editing hard-coded homepage rows. Wordmark/category fallbacks are venture-specific rather than defaulting every unbranded venture to VitaFlex Training. Build and the 15-test focused regression suite pass; repeat builds verify cache-list deduplication.
+
+## Design assessment and refinement
+
+The logo-led direction was retained. Source/layout review identified tiny 6–8px labels, mobile hero positioning tied to absolute pixel offsets, multiple contradictory CSS overrides, and portfolio hover padding that moved content. The refinement replaces those with one readable stylesheet, an intrinsic grid hero that stacks at 820px, larger secondary text, consistent spacing, visible focus states and 44px primary controls. Venture rows use stable hover surfaces and directional arrows rather than shifting padding. The long Intelligence Corp title has a deliberate second line and mobile category placement. Venture detail pages share the same improved rhythm. No contact section or explanatory marketing copy was added.
+
+Browser regressions now check seven viewport widths per route, headline/logo separation, portfolio text clipping, stable hover geometry, keyboard focus and reduced-motion preferences in addition to decoded images, links and screenshots. Security/domain-verification behavior is unchanged.

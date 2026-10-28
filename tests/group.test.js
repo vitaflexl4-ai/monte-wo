@@ -18,7 +18,7 @@ test('Group: venture registry provides honest, resolvable destinations',()=>{
 test('Group: preserved product and offline upgrade remain available',()=>{
  assert.match(read('public/monte-wo/index.html'),/APP CONCEPT/);
  assert.match(read('public/monte-wo/index.html'),/NO ATHLETE DATA/);
- const sw=read('public/sw.js');assert.match(sw,/montewo-core-v22-intelligence-venture/);assert.ok(sw.includes("'/group.css'"));
+ const sw=read('public/sw.js');assert.match(sw,/montewo-core-v23-design-refinement/);assert.ok(sw.includes("'/group.css'"));
  assert.equal(sw.split("'/group.css'").length-1,1,'Repeated builds must not duplicate cache assets');
 });
 

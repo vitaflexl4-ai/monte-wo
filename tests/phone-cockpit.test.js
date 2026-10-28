@@ -35,7 +35,7 @@ test('phone: instant handlers, page guards, keyboard navigation and reduced-moti
  assert.match(source,/if \(document.querySelector\("#boot-message"\)\)/);
  assert.match(source,/await import\("\.\/cockpit-tools.js"\)/);
  assert.match(read('public/phone-cockpit.css'),/position:absolute;inset:0/);
- assert.match(read('public/sw.js'),/montewo-core-v22-intelligence-venture/);
+ assert.match(read('public/sw.js'),/montewo-core-v23-design-refinement/);
 });
 test('phone: lightweight publisher and normal site builder both preserve the shared component',()=>{
  assert.match(read('scripts/build_website.py'),/from phone_cockpit import phone_markup, attach_assets/);
