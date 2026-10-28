@@ -42,10 +42,10 @@ jobs:
           test -n "$CLOUDFLARE_API_TOKEN" || { echo 'Missing configured Cloudflare secret'; exit 3; }
           set -o pipefail
           node scripts/deploy-intelligence.mjs 2>&1 | tee evidence/deploy.log
-      - name: Connect apex and www to the verified website
+      - name: Publish to the existing main-domain project
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-        run: node scripts/connect-group-domain.mjs
+        run: node scripts/publish-group-domain.mjs
       - name: Diagnose deployed origin and domain routing
         if: always()
         env:
@@ -57,6 +57,12 @@ jobs:
         run: |
           set -o pipefail
           node scripts/verify-group.mjs | tee evidence/pages-verification.txt
+      - name: Verify domain-owning production project
+        env:
+          VERIFY_ORIGIN: https://vitaflex.pages.dev
+        run: |
+          set -o pipefail
+          node scripts/verify-group.mjs | tee evidence/production-project-verification.txt
       - name: Verify public domain and protected API
         run: |
           set -o pipefail
