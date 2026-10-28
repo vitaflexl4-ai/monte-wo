@@ -89,6 +89,10 @@ Approved direction: proceed flag-gated and tested, with no Cloudflare changes pe
 
 **Later:** evidence upload from the device (camera/file plugins ⇒ privacy-label changes), Universal/App Links once the domain is fixed, and sign-out UX.
 
+## 6b. Agent API: automation access for AI agents (flag `AGENT_API_ENABLED`, default OFF)
+
+`server/agent.js` + `migrations/0004_agent_api.sql`, routed by `functions/api/[[route]].js` under `/api/agent/*`. Operator-issued bearer keys (`mwa_<id>_<secret>`, stored as SHA-256) with per-key scopes, optional IP allow-list, expiry, revocation, per-key rate limit and an append-only audit of every call. Operations: readiness/metrics for 24/7 monitoring, catalog, audit tails, waitlist operations (list/stats/deletion requests), a shared JSON memory with optimistic concurrency for multi-agent coordination, and the **complete Strength Index API proxied to `handleStrength` as the key's linked principal** (`deps.authenticate` injection — the only change to the Strength handler), so athlete/reviewer/admin operations are available to agents under exactly the same governance checks, ownership rules and audit as for humans. OpenAPI 3.1 and a function-calling tool manifest are generated from the same operation table. Principal provisioning, Cloudflare settings and code changes stay outside the API by design (`AGENTS.md`, `docs/release/AGENT_API.md`).
+
 ## 7. Change inventory of this step (all reversible)
 
 * Added: `capacitor.config.json`, `android/`, `ios/` (+ shared scheme), `scripts/build_native.py`, `scripts/native_preview.mjs`, `tests/native.test.js`, `tests/native-browser.mjs`, `.github/workflows/{android-release,ios-build}.yml`, `.env.example`, `docs/release/*`.

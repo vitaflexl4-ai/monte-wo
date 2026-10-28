@@ -20,8 +20,9 @@
 3. **Variables/secrets** as in `.env.example`. Secrets only via Pages encrypted secrets — never in `wrangler.toml`, Git or client code.
 4. **Cloudflare Access** application on `/api/strength/*` (self-hosted app; public exceptions for `/api/strength/config` and `/api/strength/catalog`) before `RANKING_ENABLED=true`. Leave `RANKING_PUBLISH_ENABLED` false.
 5. **Native clients (optional, later):** `NATIVE_CLIENTS_ENABLED=true`, migration `0003_native_auth_codes.sql`, Access public exception for `/api/strength/native-token`, Access CORS allowing `https://localhost` and `capacitor://localhost` with headers `cf-access-token, content-type` — see `ARCHITECTURE.md` §6. Until then the apps work offline and say so.
-6. Review `public/_headers` (security headers / caching) and `public/_redirects` as currently committed.
-7. Do **not** touch `flex-ai-db`, other VitaFlex projects, or DNS as part of this deployment.
+6. **Agent API (optional, later):** `AGENT_API_ENABLED=true`, migration `0004_agent_api.sql`, keys via `node scripts/agent-key.mjs create … --remote --database <db>`; `/api/agent/*` sits outside the Access application, so no Access change is needed — `docs/release/AGENT_API.md`.
+7. Review `public/_headers` (security headers / caching) and `public/_redirects` as currently committed.
+8. Do **not** touch `flex-ai-db`, other VitaFlex projects, or DNS as part of this deployment.
 
 ## 3. Commands
 

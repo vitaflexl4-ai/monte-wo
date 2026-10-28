@@ -19,6 +19,8 @@
     "test:library": "node tests/library.mjs",
     "test:strength": "node --test tests/strength*.test.js",
     "test:native-api": "node --test tests/native-api.test.js",
+    "test:agent-api": "node --test tests/agent-api.test.js",
+    "agent:key": "node scripts/agent-key.mjs",
     "test:strength-browser": "node tests/strength-browser.mjs",
     "build:lab": "python3 scripts/build_lab.py",
     "test:lab": "node --test tests/lab.test.js",

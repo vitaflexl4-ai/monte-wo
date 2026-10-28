@@ -33,7 +33,7 @@ export async function handleStrength({request,env},deps={}){
   }catch(e){return json({error:e instanceof StrengthError?e.code:'invalid-code'},e instanceof StrengthError?e.status:400)}
  }
  try{
-  const principal=await authenticate(request,env,deps.fetcher||fetch);actor={id:principal.id,role:principal.role};  // subject/token never echoed in responses
+  const principal=await (deps.authenticate||authenticate)(request,env,deps.fetcher||fetch);actor={id:principal.id,role:principal.role};  // subject/token never echoed in responses; deps.authenticate = Agent API acting as a linked principal (server/agent.js)
   if(route==='/native-login'&&request.method==='GET'){
    // Reached through the system browser behind Cloudflare Access: hand a single-use code (never the token) back to the app.
    if(!nativeEnabled(env))return json({error:'native-clients-disabled'},404);

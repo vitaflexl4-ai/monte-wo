@@ -1,6 +1,6 @@
 # MONTE WO — release status
 
-_Last updated: 2026-10-13 (second pass: native↔API plumbing, CI fix-forward) · branch `arena/7a19420f-monte-wo` · base `main@b6c66da` (+ Step 1 `f47e994`, native packaging `1bf6431`)._
+_Last updated: 2026-10-14 (third pass: Agent API for 24/7 automation, general CI) · branch `arena/7a19420f-monte-wo` · base `main@b6c66da` (+ Step 1 `f47e994`, native packaging `1bf6431`)._
 **Overall: NOT store-ready — but both native projects now build in CI from a clean checkout: Android `bundleRelease` produced an (unsigned) `.aab` artifact and the iOS project compiles for the simulator. Web deployable (pending owner authorization and domain; branch previews already auto-publish). Native ↔ API connectivity is implemented behind `NATIVE_CLIENTS_ENABLED` (off) and unverified against the real Cloudflare edge. Signing, store accounts, store assets, privacy forms and device testing remain owner-gated.**
 
 ## 1. Completed in this step (evidence in repo)
@@ -22,6 +22,9 @@ _Last updated: 2026-10-13 (second pass: native↔API plumbing, CI fix-forward) �
 | 13 | Deep-link registration: Android VIEW/BROWSABLE intent filter, iOS `CFBundleURLTypes`; plugins synced into both projects | `android/app/src/main/AndroidManifest.xml`, `ios/App/App/Info.plist`, `android/capacitor.settings.gradle`, `ios/App/CapApp-SPM/Package.swift` |
 | 14 | Tests: `tests/native-api.test.js` (6) and 2 more native tests; packaged-app browser suite extended (in-app ranking + waitlist states) | `tests/native-api.test.js`, `tests/native.test.js`, `tests/native-browser.mjs` |
 | 15 | CI fix-forward: Android workflow uses the runner's preinstalled SDK (license acceptance + packages) instead of `android-actions/setup-android`; `actions/*` bumped to current majors | `.github/workflows/android-release.yml`, `ios-build.yml` |
+| 17 | **Agent API** (`/api/agent/*`, flag `AGENT_API_ENABLED`, default off): operator-issued scoped keys, rate limit, append-only audit, readiness/metrics/catalog/audit, waitlist operations, shared agent memory, and the complete governed Strength Index proxied as the key's linked principal; OpenAPI 3.1 + tool manifest; key management CLI | `server/agent.js`, `migrations/0004_agent_api.sql`, `scripts/agent-key.mjs`, `functions/api/[[route]].js`, `server/strength/api.js` (one-line `deps.authenticate` hook) |
+| 18 | General CI for every branch/PR (humans and agents): lockfile install, build, **generated-output sync check**, all unit suites, native bundle + suites; shared tolerant test script also used by the Android workflow | `.github/workflows/ci.yml`, `scripts/ci-unit-tests.sh` |
+| 19 | Agent operating contract + API reference | `AGENTS.md`, `docs/release/AGENT_API.md` (+ `.env.example`, `BUILD_AND_SETUP.md` §3/§6/§7, `ARCHITECTURE.md` §6b, `WEB_DEPLOYMENT.md`, `PRIVACY_AND_STORE_CHECKLIST.md`) |
 | 16 | Guard baselines updated **only** for the intentionally changed backend files (`server/strength/{api,auth}.js`, `server/waitlist.js`, `functions/api/[[route]].js`, `package-lock.json`) | `docs/strength-lab-baseline.json`, `docs/website/baseline.json` |
 
 Preserved untouched: brand assets, rank artwork and names, exercise assets, the Strength Index engine and its 27 tests, migrations 0001/0002, Cloudflare configuration, generated HTML (rebuilt byte-identical). The API security model is extended only behind the flag; with the flag off every request is handled exactly as before.
@@ -32,9 +35,10 @@ Preserved untouched: brand assets, rank artwork and names, exercise assets, the 
 |---|---|---|
 | Web build reproducibility | `npm run build` twice, hash of `public/` | **PASS** — byte-identical |
 | Native bundle reproducibility | `python3 scripts/build_native.py` twice, tree hash | **PASS** — identical (also asserted in `tests/native.test.js`) |
-| Unit suites | `npm test` | **110 tests: 109 pass, 1 fail** — the failure is `tests/website.test.js` "original assets … unchanged": `public/assets/INTER-LICENSE.txt` hash ≠ `docs/website/baseline.json`. **Pre-existing on `main` (verified by re-running against HEAD without my changes)** — not caused by this work; owner should decide whether the license file or the baseline is authoritative. |
+| Unit suites | `npm test` | **121 tests: 120 pass, 1 fail** — the failure is `tests/website.test.js` "original assets … unchanged": `public/assets/INTER-LICENSE.txt` hash ≠ `docs/website/baseline.json`. **Pre-existing on `main` (verified by re-running against HEAD without my changes)** — not caused by this work; owner should decide whether the license file or the baseline is authoritative. |
 | of which Strength Index engine/API/DB | `npm run test:strength` (27 tests inside `npm test`) | **PASS** — rank boundaries below/at/above for every rank × discipline, drafts cannot award, forged JWT/issuer/audience denied, RBAC/CSRF, owner-only evidence, no self-approval, admin award rejected + audited, DB triggers block cross-owner evidence and stale decisions, fail-closed when unconfigured |
 | Native suite | `npm run test:native` | **11/11 PASS** (adds: `NATIVE_API_ORIGIN` injection/validation, deep-link registration + plugin sync + sign-in wiring) |
+| Agent API suite | `npm run test:agent-api` (also inside `npm test`) | **11/11 PASS** — flag-off inertness; discovery/OpenAPI/tools consistency; indistinguishable unknown-id/wrong-secret, revoked/expired/IP-pinned keys, secrets never stored/echoed; default-deny scopes, 404/405, audit of every call; status/metrics/catalog with the product rules (4 × 9, no combined rank, no manual awards, DRAFT standards); waitlist pagination/stats/deletion (hash-only audit); shared memory versions/If-Match/limits; Strength passthrough: ownership, roles, `manual-rank-awards-forbidden`, publication guards, native routes blocked, inactive principal refused; per-key rate limit; `scripts/agent-key.mjs` end-to-end (hash-only SQL, printed key works, revoke works); migration shape |
 | Native ↔ API suite | `npm run test:native-api` (also inside `npm test`) | **6/6 PASS** — flag-off inertness (no CORS, header token ignored, handoff routes 404/400 as before); exact CORS for the two native origins only, no credentials, strangers get nothing; same JWT accepted via `cf-access-token`/Bearer while forged/expired/wrong-audience tokens fail and the token is never echoed; handoff: code bound to PKCE challenge, single use, 120 s expiry, audited, token never in a URL; waitlist keeps configuration/Turnstile guards for native origins; migration 0003 additive only |
 | Browser: website 49 routes × 320–1440 px, tools, library, ranks, strength, lab, dashboard shell | `npm run test:website`, `test:browser`, `test:phase2`, `test:library`, `test:ranks`, `test:strength-browser`, `test:lab-browser`, `test:dashboard-browser` against `wrangler pages dev` on :8080 | **all PASS** (after the JS guard change) |
 | Browser: packaged app, phone viewport, Capacitor routing emulation (launch → tab bar → More drawer → demo food logger → Settings → Privacy page → brand link back to Dashboard → extension-less path → waitlist/strength degrade honestly; zero network writes; no service worker; no camera) | `npm run test:native-browser` against `npm run preview:native` on :3000 | **PASS** |
@@ -49,6 +53,8 @@ Preserved untouched: brand assets, rank artwork and names, exercise assets, the 
 | ~~Android compiles / `.aab` builds~~ **now verified in CI** (unsigned); local build still not possible in the sandbox | — | owner: `cd android && ./gradlew bundleRelease`, or run the manual workflow (`Actions → Android release bundle`) |
 | ~~iOS compiles~~ **verified in CI (simulator, unsigned)**; archive/signing not verified | no macOS/Xcode here; no signing identity | owner Mac: Xcode → Archive (`IOS_RELEASE.md` §4) |
 | Behaviour inside real WebViews (Android System WebView / WKWebView), safe areas, keyboard, back button | emulation only | device test checklist in `ANDROID_RELEASE.md` §6 / `IOS_RELEASE.md` §7 |
+| Agent API against a deployed environment | needs owner enablement (flag, migration 0004, keys) | `curl -H 'Authorization: Bearer mwa_…' https://<origin>/api/agent/whoami` — `AGENT_API.md` §1 |
+| New general CI workflow green | pushed with this pass; first run outcome recorded below when known | Actions tab → "CI" |
 | Contents/installability of the CI `.aab` | artifact not downloadable from the sandbox | owner: download `monte-wo-android-0.1.0-1` from run `38499331981`, `bundletool build-apks --mode=universal` (needs signing) and install on a device |
 | Cloudflare Access accepts `cf-access-token` + CORS preflight for the native origins | needs the real edge + owner's Access application; cannot be emulated offline | after the owner applies `ARCHITECTURE.md` §6 prerequisites: one sign-in from a debug build against the Pages preview |
 | Native sign-in flow on a device (system browser → deep link → token exchange) | no device/emulator here; unit + browser tests cover the server and the JS logic only | checklists in `ANDROID_RELEASE.md` §6 / `IOS_RELEASE.md` §7 |
@@ -68,7 +74,8 @@ Preserved untouched: brand assets, rank artwork and names, exercise assets, the 
 8. **Pre-existing test baseline** — decide on `public/assets/INTER-LICENSE.txt` vs `docs/website/baseline.json`.
 9. **Web entry point** — keep the app at `/dashboard/` or make it `/` (unchanged; website stays at `/`).
 10. **Web deploy / pull request to `main`** — the Pages project is already connected to this repository: every push to this branch publishes a *preview* (`https://arena-7a19420f-monte-wo.vitaflex-monte-wo.pages.dev`), and **merging to `main` deploys production**. No PR has been opened; say when (the new API behaviour is inert without the flag, so the site is unaffected by a merge).
-11. **Production API origin for the apps** (`NATIVE_API_ORIGIN`) — same as decision 4; until then store builds are offline shells by design.
+11. **Agent API enablement** — apply migration 0004, set `AGENT_API_ENABLED=true`, issue one key per agent (`node scripts/agent-key.mjs create --name … --scopes "*" --role admin --remote --database <db>`), store keys in the agents' secret manager; decide whether agents get `waitlist:read` (personal data) and which Strength role (reviewer = can approve evidence; admin = can also draft standards; nobody can award ranks manually).
+12. **Production API origin for the apps** (`NATIVE_API_ORIGIN`) — same as decision 4; until then store builds are offline shells by design.
 
 Note: `origin/main` moved after the base commit (3 poster SVGs under `assets/posters/`, +18 lines, no overlap with this branch) — a merge/PR will be conflict-free.
 
@@ -81,7 +88,8 @@ npm run dev                              # http://localhost:8080  (website; app 
 
 # Packaged app preview + tests (any OS)
 npm run build:native && npm run preview:native      # http://localhost:3000 (root = app shell)
-npm run test:native && npm run test:native-api      # unit (also part of npm test)
+npm run test:native && npm run test:native-api && npm run test:agent-api   # unit (also part of npm test)
+node scripts/agent-key.mjs create --name "Ops agent A" --scopes "*" --role admin --sql-only   # Agent API key (prints key once + hash-only SQL)
 npm run test:native-browser                         # needs the preview running + Playwright Chromium
 NATIVE_API_ORIGIN=https://<production-origin> npm run build:native   # connected build (apps talk to the API; server flag required)
 
