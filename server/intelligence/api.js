@@ -125,7 +125,12 @@ async function publicStatus(env, fetcher = fetch) {
     const tables = ((await db.prepare("SELECT name FROM sqlite_master WHERE type='table' AND name LIKE 'intel_%'").all()).results || []).map(r => r.name).sort();
     const need = ['intel_checks', 'intel_incidents', 'intel_briefings', 'intel_agent_runs', 'intel_operators', 'intel_telemetry_events', 'intel_improvement_items'];
     out.components.d1_database.tables = tables;
-    out.components.d1_database.migrations = need.every(t => tables.includes(t)) ? '0003 + 0004 + 0005 applied' : 'partial — missing: ' + need.filter(t => !tables.includes(t)).join(', ');
+    let migrationState = need.every(t => tables.includes(t)) ? '0003 + 0004 + 0005 applied' : 'partial — missing: ' + need.filter(t => !tables.includes(t)).join(', ');
+    try {
+      const marker = (await db.prepare("SELECT value FROM intel_settings WHERE key='migration_0006'").first())?.value;
+      if (marker) migrationState += ' + 0006 (operator case normalization)';
+    } catch { /* intel_settings absent — 0006 not applicable to this schema yet */ }
+    out.components.d1_database.migrations = migrationState;
   } catch {
     out.components.d1_database.detail = 'database unreachable';
   }
