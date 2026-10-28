@@ -4,5 +4,5 @@ const api=async path=>{const r=await fetch(`https://api.cloudflare.com/client/v4
 const projects=await api('projects');
 for(const p of projects){console.log('::notice title=Pages public configuration::'+JSON.stringify({name:p.name,domains:p.domains,production:p.canonical_deployment?.url,revision:p.canonical_deployment?.deployment_trigger?.metadata?.commit_hash}));}
 for(const origin of ['https://vitaflexbusinessgroup.com',`https://${project_name}.pages.dev`]){
- try{const response=await fetch(origin,{signal:AbortSignal.timeout(30000)});const text=await response.text();console.log('::notice title=Origin diagnostic::'+JSON.stringify({origin,status:response.status,url:response.url,title:text.match(/<title>(.*?)<\/title>/s)?.[1],group:text.includes('We Build Ventures.')}));}catch(e){console.log('::notice title=Origin diagnostic::'+JSON.stringify({origin,error:e.message}));}
+ try{const response=await fetch(origin,{signal:AbortSignal.timeout(30000)});const text=await response.text();console.log('::notice title=Origin diagnostic::'+JSON.stringify({origin,status:response.status,url:response.url,title:text.match(/<title>(.*?)<\/title>/s)?.[1],group:text.includes('data-design="noir"')}));}catch(e){console.log('::notice title=Origin diagnostic::'+JSON.stringify({origin,error:e.message}));}
 }
