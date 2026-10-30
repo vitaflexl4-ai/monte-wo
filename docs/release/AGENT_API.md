@@ -207,7 +207,7 @@ CI run for the merge commit `e62c1e8`: GitHub Actions `41116441537` — **SUCCES
 
 1. ~~Database placement~~ — **decided: `monte-wo-intelligence` is `AGENT_DB`** (written by the deploy script; `monte-wo-waitlist` does not exist on the account and must not be used anyway).
 2. ~~Deploy path~~ — **done: opt-in `--with-agent-api` / `with_agent_api` in `scripts/deploy-intelligence.mjs`**, default off, 20/20 harness scenarios; `deploy.config.json` deliberately left without the key (that flip is the enablement itself).
-3. **Merge**: PR opened from this branch into `main` (see `RELEASE_STATUS.md` §4 item 10); merging deploys only the git-connected project, where the API stays 404 (no flag) — `vitaflex-monte-wo-live` changes only when the deploy workflow runs.
+3. **Merge**: **PR #22** opened from this branch into `main` (checks green; see `RELEASE_STATUS.md` §4 item 10); merging deploys only the git-connected project, where the API stays 404 (no flag) — `vitaflex-monte-wo-live` changes only when the deploy workflow runs.
 4. **Policy** — decided: keep `AGENT_PII_ENABLED` and `AGENT_STRENGTH_PRIVILEGED_ENABLED` unset (none of ARGON/ULTRON/AU/TITAN needs them).
 5. **Keys** — decided: none issued until an actual consumer exists; then the §7 matrix, one key per agent.
 
