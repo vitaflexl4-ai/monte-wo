@@ -1,6 +1,6 @@
 # MONTE WO — Agent API (automation access for AI agents and operators)
 
-_Status (2026-10-30): implemented, hardened and unit-tested on `arena/7a19420f-monte-wo` (now merged with `main` as of `d9a94ec`); **inert until the owner enables it** (`AGENT_API_ENABLED=true`, `AGENT_DB` binding, migration 0008, keys issued). Not exercised against a deployed environment. Production-readiness review: §8 — current verdict **NO-GO until the listed owner decisions are made**; nothing in production was changed by this review._
+_Status (2026-10-30): implemented, hardened and unit-tested on `arena/7a19420f-monte-wo` (merged with `main` as of `d9a94ec`); **inert until the owner enables it**. Owner decisions taken 2026-10-30: `AGENT_DB` = the intelligence database `monte-wo-intelligence`; enablement goes through the opt-in `--with-agent-api` / `with_agent_api` option of `scripts/deploy-intelligence.mjs` (implemented, default off, 20/20 harness scenarios); policy flags stay off; no keys until a real consumer exists. Not yet exercised against a deployed environment. Production-readiness review: §8 — verdict **GO to merge, NO-GO to enable until the owner runs the opt-in deploy**; nothing in production was changed._
 
 The Agent API gives operator-issued keys programmatic access to the MONTE WO backend — monitoring, waitlist operations, a shared memory for coordinating several agents, and the governed Strength Index API acting as a linked principal. Scopes are **default deny**, and two server-side policy flags stay off unless the owner approves them explicitly (waitlist e-mail access; reviewer/admin automation).
 
@@ -16,21 +16,24 @@ The API needs three things, all reversible: a database binding named **`AGENT_DB
 
 | Binding | Used for | Production (verified, §8.1) |
 |---|---|---|
-| `AGENT_DB` | `mw_agent_keys`, `mw_agent_rate`, `mw_agent_audit`, `mw_agent_kv` (0008) | **not bound yet** — owner decision: the intelligence database `monte-wo-intelligence` (id `e4cd840a-a2a0-4fbc-bb35-7bb21f0e2403`, recommended: it already hosts ARGON/ULTRON/AU/TITAN) or a new dedicated database. **Never `monte-wo-waitlist`.** |
+| `AGENT_DB` | `mw_agent_keys`, `mw_agent_rate`, `mw_agent_audit`, `mw_agent_kv` (0008) | **not bound yet** — decided 2026-10-30: the intelligence database `monte-wo-intelligence` (id `e4cd840a-a2a0-4fbc-bb35-7bb21f0e2403`; it already hosts ARGON/ULTRON/AU/TITAN). Written by the deploy script when `--with-agent-api` is on. **Never `monte-wo-waitlist`.** |
 | `APP_DB` | Strength Index data (0002) + native sign-in codes (0007); the key→principal link is resolved here at request time | **does not exist in production yet** (Strength Index pilot not deployed) ⇒ `strength:*` scopes are unusable until it does; `/status` reports `strengthDatabase: "not-bound"`. |
 | `DB` | Waitlist (0001) — only the `waitlist:*` operations read it | **not bound on `vitaflex-monte-wo-live`** (the deploy output says no `monte-wo-waitlist` database exists on this account) ⇒ waitlist operations answer `503 waitlist-unavailable`. |
 
 Steps (owner, in this order; each one alone is harmless):
 
-1. **Pick the `AGENT_DB` database** and back it up: `npx wrangler d1 export monte-wo-intelligence --remote --output backup-intel-$(date +%F).sql` (plus `npx wrangler d1 time-travel info monte-wo-intelligence` to note the restore bookmark).
-2. **Apply the migration** the same way the Intelligence deploy script applies its own (gated, `d1 execute --file`, no `d1 migrations apply` — that command would try to apply 0001/0002/0007 to the wrong database):
+1. **Back up** the intelligence database first: `npx wrangler d1 export monte-wo-intelligence --remote --output backup-intel-$(date +%F).sql` (plus `npx wrangler d1 time-travel info monte-wo-intelligence` to note the restore bookmark).
+2. **Enable through the deploy script (the only supported path).** `vitaflex-monte-wo-live` gets its bindings from `scripts/deploy-intelligence.mjs`, which writes the marked block into `wrangler.toml` at deploy time — bindings added only in the dashboard would be dropped by the next scripted deploy. The script has an **opt-in** option (implemented 2026-10-30, default off):
+   * GitHub Actions path (zero local machine): set `"with_agent_api": true` in `deploy.config.json`, merge, then run the **Deploy intelligence** workflow (`workflow_dispatch`, or a push to the deploy branch with `[deploy]` in the commit message).
+   * Local path: `npx wrangler login && node scripts/deploy-intelligence.mjs --with-agent-api` (all other values from `deploy.config.json`).
+   What it does, in order: preflight (`migrations/0008_agent_api.sql` + `server/agent.js` present) → **applies 0008 to `monte-wo-intelligence` exactly once** (gated on the `mw_agent_keys` table, `wrangler d1 execute --remote --file` like the intelligence migrations — never `d1 migrations apply`, which would push 0001/0002/0007 to the wrong database) → writes `[[d1_databases]] binding = "AGENT_DB"` with the **same `database_id` as `INTEL_DB`** plus `AGENT_API_ENABLED = "true"` into the marked block → deploys Pages → verifies `/api/agent/whoami` answers **401** (a 2xx aborts the run as a SECURITY failure, like the intelligence check). Verified: 20/20 hermetic harness scenarios (`npm run test:deploy`), generated TOML parses, and `wrangler pages dev` accepts two bindings on one database id. Manual equivalent for an emergency only:
    ```sh
    npx wrangler d1 execute monte-wo-intelligence --remote --command "SELECT name FROM sqlite_master WHERE name='mw_agent_keys'"   # must be empty
    npx wrangler d1 execute monte-wo-intelligence --remote --file migrations/0008_agent_api.sql
    npx wrangler d1 execute monte-wo-intelligence --remote --command "SELECT name FROM sqlite_master WHERE name LIKE 'mw_agent%' ORDER BY name"   # 4 tables + 1 index
    ```
    Verified locally: 0008 applies cleanly on top of 0003–0006 (no table/index name overlaps; the 13 `intel_*` tables are untouched) and is additive only (no `ALTER`/`DROP`; unit test "migration 0008 is additive and operational only").
-3. **Bind + flag.** `vitaflex-monte-wo-live` is configured by `scripts/deploy-intelligence.mjs`, which writes the bindings block into `wrangler.toml` at deploy time — bindings added only in the dashboard would be dropped by the next scripted deploy. The script therefore needs an **opt-in** `--with-agent-api` option that adds `[[d1_databases]] binding = "AGENT_DB" database_name = "monte-wo-intelligence" database_id = <same id as INTEL_DB>` and `AGENT_API_ENABLED = "true"` to its marked block (default: nothing changes). This is a small change to a shared script with its own harness (`npm run test:deploy`, 15 scenarios) — proposed, **not applied here** because it alters the production deploy path. Until then the API stays inert in production even after merge.
+3. **Disable** at any time by deploying again without the option (`with_agent_api` removed/false): the binding and flag leave the block, `/api/agent/*` is 404 again, keys and tables stay (harness scenario "then a deploy WITHOUT it").
 4. **Issue keys** per agent (§7), from a machine with `npx wrangler login`; the plaintext is printed once:
    ```sh
    node scripts/agent-key.mjs create --name "ULTRON" --scopes status:read,catalog:read,kv:read,kv:write --ips <worker egress IP(s)> --expires 2027-01-31T00:00:00Z --remote --database monte-wo-intelligence
@@ -41,7 +44,7 @@ Steps (owner, in this order; each one alone is harmless):
 5. **Cloudflare Access**: `/api/agent/*` must stay **outside** the Access application that protects `/intelligence/` and `/api/intelligence/*` (the API authenticates itself). Recommended, not required: a WAF rate-limiting rule on `/api/agent/*` (e.g. 300 requests / 10 s per IP) because unauthenticated requests cost one D1 read + one SHA-256 each.
 6. **Smoke test**: `curl -H "Authorization: Bearer mwa_…" https://<origin>/api/agent/whoami` → 200 with the key's name; `curl https://<origin>/api/agent/whoami` → 401.
 
-**Rollback** (any time, in this order): remove `AGENT_API_ENABLED` (instant 404, keys kept) → revoke keys if desired → `docs/release/sql/0008_agent_api.rollback.sql` against `AGENT_DB` (drops the four tables; verified idempotent) → restore from the export or Time Travel if anything else looks wrong. Rows written by `--role` into the Strength database are append-only audit history: deactivate those principals (`UPDATE mw_principals SET active=0 WHERE subject LIKE 'agent:%'`) instead of deleting.
+**Rollback** (any time, in this order): redeploy without `with_agent_api` (instant 404, keys kept) → revoke keys if desired → `docs/release/sql/0008_agent_api.rollback.sql` against `AGENT_DB` (drops the four tables; verified idempotent) → restore from the export or Time Travel if anything else looks wrong. Rows written by `--role` into the Strength database are append-only audit history: deactivate those principals (`UPDATE mw_principals SET active=0 WHERE subject LIKE 'agent:%'`) instead of deleting.
 
 ## 2. Authentication and limits
 
@@ -180,7 +183,7 @@ Consequence for the Agent API: as merged, it is **correct but has nothing to tal
 
 * The Command Center (`server/intelligence/*`, `public/intelligence/`, `intelligence-worker/`) authenticates **humans** with a Cloudflare Access JWT verified server-side plus an `intel_operators` row (roles `admin`/`viewer`; mutations admin-only). Its agents ARGON/ULTRON/AU/TITAN are **in-process jobs** writing to `INTEL_DB`; the only inbound machine credentials are `INTELLIGENCE_INGEST_KEY` (mobile telemetry) and `INTEL_WORKER_KEY` (manual `/run`).
 * The Agent API was built from this session's brief ("24/7 automation agents") **before** the Command Center landed on `main`; the two are **not connected**: no shared key store, the console does not issue or list agent keys, `/api/intelligence/*` does not accept `mwa_` keys, and `/api/agent/*` exposes no intelligence data. `GET /api/agent/status` now reports whether `INTEL_DB` and the Access variables are configured (read-only), nothing more.
-* What would make the Agent API useful *for* the Command Center (not built — needs the owner's product decision): (a) read-only `intel:read` scope exposing overview/incidents/briefings to external automation (e.g. an LLM operator or a status page) with scoped keys instead of Access cookies; (b) an operator-facing "Agent keys" panel in the console (admin-only) calling the same SQL as `scripts/agent-key.mjs`; (c) a `--with-agent-api` option in `scripts/deploy-intelligence.mjs` (§1 step 3). Until one of these is approved, the Agent API serves external agents and operator tooling only.
+* What would make the Agent API useful *for* the Command Center (not built — needs the owner's product decision): (a) read-only `intel:read` scope exposing overview/incidents/briefings to external automation (e.g. an LLM operator or a status page) with scoped keys instead of Access cookies; (b) an operator-facing "Agent keys" panel in the console (admin-only) calling the same SQL as `scripts/agent-key.mjs`. The deploy-path integration — the `--with-agent-api` option in `scripts/deploy-intelligence.mjs` — is done (§1 step 2). Until (a) or (b) is approved, the Agent API serves external agents and operator tooling only.
 
 ### 8.4 Tests run (this review, merged tree)
 
@@ -190,7 +193,7 @@ Consequence for the Agent API: as merged, it is **correct but has nothing to tal
 | Agent API | `npm run test:agent-api` | **12/12 PASS** |
 | Strength Index (humans unchanged) | `npm run test:strength` | PASS (inside the suite) |
 | Intelligence Command Center (main's suite, on the merged tree) | `npm run test:intelligence` | PASS (inside the suite) |
-| Deploy-script harness (main's) | `npm run test:deploy` | **15/15 scenarios PASS** |
+| Deploy-script harness (main's + 5 Agent API scenarios: opt-in binding/flag/migration, gated re-run, config-driven enablement, disable on the next deploy, SECURITY abort on an open `/api/agent/whoami`) | `npm run test:deploy` | **20/20 scenarios PASS** |
 | Real Workers runtime, bindings `DB`/`APP_DB`/`AGENT_DB` (wrangler 4.86 `pages dev`, local D1 with 0001–0008, keys from `scripts/agent-key.mjs`) | `npm run db:local && npm run dev:agent` (same flags as used here; port 8082) + `curl` matrix | PASS — 401 no key / invalid key; ULTRON-shaped key: whoami, status (three databases `ok`, flags off), catalog (nine rank names from the database), `waitlist/stats` 200, `waitlist` 403 `insufficient-scope`; `waitlist:read` key with flag off → 403 `pii-access-disabled`; admin principal with flag off → 403 `privileged-principal-disabled`; athlete principal: `/strength/me` 200, `POST /strength/rank` 403 `manual-rank-awards-forbidden`, profile 201; malformed JSON 400, wrong content type 415, bad key name 400, 405 with `Allow`, 404; 8 concurrent `If-Match: 0` ⇒ `201` ×1 + `409` ×7; rate headers; audit tail shows one row per call with error codes only |
 | Real Workers runtime, misconfiguration | enabled, `AGENT_DB` absent | 503 `agent-db-not-bound`, discovery still 200, **0 rows written** to the only bound database |
 | Rollback SQL | `docs/release/sql/0008_agent_api.rollback.sql` on SQLite with and without `d1_migrations` | drops exactly the four tables; idempotent on a second run |
@@ -200,12 +203,12 @@ CI run for the merge commit `e62c1e8`: GitHub Actions `41116441537` — **SUCCES
 
 ### 8.5 Verdict
 
-**NO-GO for enabling in production today** — not because of a defect found in the API (none open after the hardening) but because the prerequisites are owner decisions that have not been made:
+**NO-GO for enabling in production today** — not because of a defect found in the API (none open after the hardening) but because enablement is an owner-run deploy that has not happened. State of the five items (owner said "go with recommended" on 2026-10-30):
 
-1. **Database placement**: approve `monte-wo-intelligence` as `AGENT_DB` (recommended) or create a dedicated database. (`monte-wo-waitlist` does not exist on the account and must not be used anyway.)
-2. **Deploy path**: approve the opt-in `--with-agent-api` change to `scripts/deploy-intelligence.mjs` (or configure the binding by hand and accept that the next scripted deploy drops it).
-3. **Merge**: open/merge the PR for this branch into `main` (production for the git-connected project; the API stays 404 there until the flag is set).
-4. **Policy**: keep `AGENT_PII_ENABLED` and `AGENT_STRENGTH_PRIVILEGED_ENABLED` unset unless a concrete agent needs them (none of ARGON/ULTRON/AU/TITAN does).
-5. **Keys**: issue the four least-privilege keys of §7 only when an actual consumer exists; otherwise issue none.
+1. ~~Database placement~~ — **decided: `monte-wo-intelligence` is `AGENT_DB`** (written by the deploy script; `monte-wo-waitlist` does not exist on the account and must not be used anyway).
+2. ~~Deploy path~~ — **done: opt-in `--with-agent-api` / `with_agent_api` in `scripts/deploy-intelligence.mjs`**, default off, 20/20 harness scenarios; `deploy.config.json` deliberately left without the key (that flip is the enablement itself).
+3. **Merge**: PR opened from this branch into `main` (see `RELEASE_STATUS.md` §4 item 10); merging deploys only the git-connected project, where the API stays 404 (no flag) — `vitaflex-monte-wo-live` changes only when the deploy workflow runs.
+4. **Policy** — decided: keep `AGENT_PII_ENABLED` and `AGENT_STRENGTH_PRIVILEGED_ENABLED` unset (none of ARGON/ULTRON/AU/TITAN needs them).
+5. **Keys** — decided: none issued until an actual consumer exists; then the §7 matrix, one key per agent.
 
-**GO** for: merging the branch (fail-closed everywhere, 251/251 tests, deploy harness green) and for the migration plan in §1 once decision 1 is taken.
+**GO** for: merging the branch (fail-closed everywhere, 251/251 tests, deploy harness 20/20). **Enable** when wanted: `"with_agent_api": true` in `deploy.config.json` + run the deploy workflow (§1 step 2) — the deploy itself verifies the fail-closed state.

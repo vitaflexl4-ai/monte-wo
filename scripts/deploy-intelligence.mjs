@@ -5,9 +5,12 @@
 //   1. Verifies wrangler authentication (run `npx wrangler login` first — the OAuth flow
 //      opens your browser; this script never sees or stores credentials).
 //   2. Ensures the dedicated D1 database `monte-wo-intelligence` exists (creates it if not).
-//   3. Applies migrations/0003 → 0004 → 0005 to the REMOTE database, gated on table presence
+//   3. Applies migrations/0003 → 0004 → 0005 → 0006 to the REMOTE database, gated on table presence
 //      (never the waitlist/app databases; never touches athlete or customer data).
-//   4. Writes the real database_id + Access vars into wrangler.toml (marked, idempotent block).
+//      With --with-agent-api it also applies migrations/0008_agent_api.sql to the SAME database
+//      (gated on the mw_agent_keys table) — the Agent API's own tables, nothing else.
+//   4. Writes the real database_id + Access vars into wrangler.toml (marked, idempotent block);
+//      with --with-agent-api the block also carries the AGENT_DB binding + AGENT_API_ENABLED.
 //   5. Optionally grants an operator row (authorization for the Cloudflare Access identity).
 //   6. Builds the site (npm run build) and deploys Cloudflare Pages (direct upload).
 //   7. Optionally deploys the scheduled intelligence Worker (cron monitoring runtime).
@@ -37,6 +40,11 @@
 //   --site-url URL      monitored origin (default: the deployed *.pages.dev URL)
 //   --project-name N    Pages project (default: vitaflex-monte-wo)
 //   --with-waitlist     also bind the monte-wo-waitlist D1 (found via d1 list) for signup continuity
+//   --with-agent-api    OPT-IN: enable the Agent API (docs/release/AGENT_API.md) on this deployment —
+//                       binds AGENT_DB to the intelligence database, applies 0008, sets
+//                       AGENT_API_ENABLED="true". Default off; omit it (or remove with_agent_api
+//                       from deploy.config.json) and the next deploy disables the API again
+//                       (tables and keys stay; see the rollback SQL in docs/release/sql/).
 //   --skip-pages        skip the Pages deploy (worker/D1 config only)
 //   --skip-build        skip npm run build (use the current public/ as-is)
 
@@ -54,10 +62,12 @@ const MIGRATIONS = [
   // 0006 adds no table; it is gated on an intel_settings marker instead.
   { file: '0006_operator_case_normalization.sql', table: 'intel_operators', marker: 'migration_0006' }
 ];
+// Agent API (opt-in): lives in the SAME intelligence database, gated like the others.
+const AGENT_MIGRATION = { file: '0008_agent_api.sql', table: 'mw_agent_keys' };
 const MARK_BEGIN = '# >>> intelligence-production (auto-written by scripts/deploy-intelligence.mjs — do not edit by hand)';
 const MARK_END = '# <<< intelligence-production';
 
-export { writeRootToml, writeWorkerToml, intelBlockToml, MARK_BEGIN, MARK_END, MIGRATIONS, DB_NAME }; // test surface (no side effects on import)
+export { writeRootToml, writeWorkerToml, intelBlockToml, MARK_BEGIN, MARK_END, MIGRATIONS, AGENT_MIGRATION, DB_NAME }; // test surface (no side effects on import)
 
 const argv = process.argv.slice(2);
 // Optional defaults file (committed, no secrets): lets `npm run deploy:intelligence` run
@@ -75,7 +85,8 @@ function loadConfigDefaults() {
       operator: ok(cfg.operator) ? cfg.operator : null,
       siteUrl: ok(cfg.site_url) ? cfg.site_url : null,
       enableWorker: cfg.enable_worker === true,
-      withWaitlist: cfg.with_waitlist === true
+      withWaitlist: cfg.with_waitlist === true,
+      withAgentApi: cfg.with_agent_api === true
     };
   } catch { return null; }
 }
@@ -100,7 +111,7 @@ const wrangler = (args, opts) => {
 };
 
 // ---------- toml editing (idempotent, marker-based) ----------
-function intelBlockToml(dbId, accessIssuer, accessAud, waitlistId) {
+function intelBlockToml(dbId, accessIssuer, accessAud, waitlistId, agentApi = false) {
   const lines = [MARK_BEGIN];
   if (waitlistId) lines.push(
     '# Waitlist continuity: bound so signups keep working on this deployment.',
@@ -116,21 +127,33 @@ function intelBlockToml(dbId, accessIssuer, accessAud, waitlistId) {
     'binding = "INTEL_DB"',
     `database_name = "${DB_NAME}"`,
     `database_id = "${dbId}"`,
-    '',
+    ''
+  );
+  if (agentApi) lines.push(
+    '# Agent API (opt-in, docs/release/AGENT_API.md): keys, audit and shared memory in the intelligence',
+    '# database — never the waitlist or app DB. Policy flags AGENT_PII_ENABLED / AGENT_STRENGTH_PRIVILEGED_ENABLED stay unset.',
+    '[[d1_databases]]',
+    'binding = "AGENT_DB"',
+    `database_name = "${DB_NAME}"`,
+    `database_id = "${dbId}"`,
+    ''
+  );
+  lines.push(
     '[vars]',
     ...(accessIssuer ? [`INTELLIGENCE_ACCESS_ISSUER = "${accessIssuer}"`] : []),
     ...(accessAud ? [`INTELLIGENCE_ACCESS_AUD = "${accessAud}"`] : []),
     ...(accessIssuer || accessAud ? [] : ['# INTELLIGENCE_ACCESS_ISSUER / INTELLIGENCE_ACCESS_AUD — set with --access-issuer/--access-aud (Cloudflare Access app).']),
+    ...(agentApi ? ['AGENT_API_ENABLED = "true"'] : []),
     MARK_END
   );
   return lines.join('\n') + '\n';
 }
 
-function writeRootToml(dbId, accessIssuer, accessAud, waitlistId) {
+function writeRootToml(dbId, accessIssuer, accessAud, waitlistId, agentApi = false) {
   const p = resolve(ROOT, 'wrangler.toml');
   let s = readFileSync(p, 'utf8');
   const b = s.indexOf(MARK_BEGIN), e = s.indexOf(MARK_END);
-  const block = intelBlockToml(dbId, accessIssuer, accessAud, waitlistId);
+  const block = intelBlockToml(dbId, accessIssuer, accessAud, waitlistId, agentApi);
   if (b !== -1 && e !== -1) s = s.slice(0, b) + block + s.slice(e + MARK_END.length + 1);
   else s = s.trimEnd() + '\n\n' + block;
   writeFileSync(p, s);
@@ -165,9 +188,13 @@ function writeWorkerToml(dbId, siteUrl, enable) {
 }
 
 // ---------- preflight (--check works without any Cloudflare authentication) ----------
-function preflight() {
+function preflight(agentApi = false) {
   log('[0/8]', 'Preflight — repo state, migrations, build');
   for (const m of MIGRATIONS) if (!existsSync(resolve(ROOT, 'migrations', m.file))) die('missing migrations/' + m.file);
+  if (agentApi) {
+    if (!existsSync(resolve(ROOT, 'migrations', AGENT_MIGRATION.file))) die('missing migrations/' + AGENT_MIGRATION.file + ' (required by --with-agent-api)');
+    if (!existsSync(resolve(ROOT, 'server/agent.js'))) die('missing server/agent.js (required by --with-agent-api)');
+  }
   for (const f of ['public/intelligence/index.html', 'public/intelligence/room.js', 'functions/api/[[route]].js', 'server/intelligence/api.js', 'intelligence-worker/src/index.js'])
     if (!existsSync(resolve(ROOT, f))) die('missing ' + f);
   const t = readFileSync(resolve(ROOT, 'wrangler.toml'), 'utf8');
@@ -226,7 +253,7 @@ function d1Tables(dbName) {
   } catch { die('could not parse d1 execute output:\n' + r.out.slice(500)); }
 }
 
-function applyMigrations() {
+function applyMigrations(agentApi = false) {
   const tables = d1Tables(DB_NAME);
   let applied = 0;
   for (const m of MIGRATIONS) {
@@ -238,6 +265,14 @@ function applyMigrations() {
     applied++;
   }
   if (!applied) console.log('    all intelligence migrations already applied');
+  if (agentApi) {
+    if (tables.has(AGENT_MIGRATION.table)) console.log('    ' + AGENT_MIGRATION.file + ' already applied (' + AGENT_MIGRATION.table + ' present)');
+    else {
+      log('[3/8]', 'Applying migrations/' + AGENT_MIGRATION.file + ' (Agent API tables only) to the REMOTE ' + DB_NAME + '…');
+      const r = wrangler(['d1', 'execute', DB_NAME, '--remote', '--file', 'migrations/' + AGENT_MIGRATION.file]);
+      if (r.code !== 0) die('migration ' + AGENT_MIGRATION.file + ' failed:\n' + r.out.slice(-1500));
+    }
+  }
 }
 
 // Reads a settings marker from the REMOTE D1. Returns null when absent or unreadable —
@@ -308,16 +343,17 @@ function deployWorker(dbId, siteUrl, enable) {
   if (enable && siteUrl) console.log('    SITE_URL=' + siteUrl + ' — ULTRON will monitor this origin every 5 minutes.');
 }
 
-async function verifyDeployed(url) {
+async function verifyDeployed(url, agentApi = false) {
   log('[8/8]', 'Verifying the deployed API fails closed (expected: 401/503, never open data)…');
   const results = [];
-  for (const path of ['/api/intelligence/overview', '/']) {
+  for (const path of ['/api/intelligence/overview', ...(agentApi ? ['/api/agent/whoami'] : []), '/']) {
     try {
       const res = await fetch(url + path, { redirect: 'manual', signal: AbortSignal.timeout(15000) });
       // 3xx here is a redirect to the Cloudflare Access login: the edge is guarding the
       // route — that is fail-closed, exactly like 401/503. Only a 2xx means open data.
       results.push(path + ' -> ' + res.status + (res.status >= 300 && res.status < 400 ? ' (redirect ' + String(res.headers.get('location') || '').slice(0, 60) + '…)' : ''));
       if (path === '/api/intelligence/overview' && res.status >= 200 && res.status < 300) die('SECURITY: the intelligence API answered ' + res.status + ' WITHOUT authentication. Investigate immediately.');
+      if (path === '/api/agent/whoami' && res.status >= 200 && res.status < 300) die('SECURITY: the Agent API answered ' + res.status + ' WITHOUT authentication. Investigate immediately.');
     } catch (e) { results.push(path + ' -> unreachable (' + e.message + ')'); }
   }
   console.log('    ' + results.join(' · '));
@@ -335,8 +371,9 @@ const accessIssuer = (typeof flag('access-issuer') === 'string' ? flag('access-i
 const accessAud = (typeof flag('access-aud') === 'string' ? flag('access-aud') : null) || configDefaults.accessAud || null;
 const operator = (typeof flag('operator') === 'string' ? flag('operator') : null) || configDefaults.operator || null;
 const grantOnly = typeof flag('grant-operator') === 'string' ? flag('grant-operator') : null;
+const withAgentApi = has('with-agent-api') || configDefaults.withAgentApi === true;
 
-if (has('check')) { preflight(); process.exit(0); }
+if (has('check')) { preflight(withAgentApi); process.exit(0); }
 
 console.log('MONTE WO Intelligence — production deployment (free tier, fail-closed)');
 const gitInfo = (() => { const c = run('git', ['rev-parse', '--short', 'HEAD']); if (c.code !== 0) return 'no-git'; return c.out.trim() + ' · ' + run('git', ['rev-parse', '--abbrev-ref', 'HEAD']).out.trim(); })();
@@ -350,7 +387,7 @@ if (grantOnly) {
   process.exit(0);
 }
 
-preflight();
+preflight(withAgentApi);
 if (!(accessIssuer && accessAud)) {
   const msg = '\n⚠ Deploying WITHOUT Cloudflare Access values: the site, D1 and worker deploy,\n' +
     '  but /api/intelligence/* stays 503 intelligence-not-configured (fail-closed, verified\n' +
@@ -367,7 +404,7 @@ log('[2/8]', 'Ensuring the dedicated intelligence D1 database…');
 const dbId = ensureDatabase();
 if (!/^[0-9a-f-]{30,}$/i.test(String(dbId))) die('unexpected database id: ' + dbId);
 
-applyMigrations();
+applyMigrations(withAgentApi);
 
 let waitlistId = null;
 if (has('with-waitlist') || configDefaults.withWaitlist === true) {
@@ -377,9 +414,9 @@ if (has('with-waitlist') || configDefaults.withWaitlist === true) {
 }
 
 log('[4/8]', 'Writing production bindings into wrangler.toml (marked, idempotent)…');
-writeRootToml(dbId, accessIssuer, accessAud, waitlistId);
+writeRootToml(dbId, accessIssuer, accessAud, waitlistId, withAgentApi);
 writeWorkerToml(dbId, null, false);
-console.log('    INTEL_DB=' + dbId + (accessIssuer ? ' · Access issuer/aud written' : ''));
+console.log('    INTEL_DB=' + dbId + (accessIssuer ? ' · Access issuer/aud written' : '') + (withAgentApi ? ' · AGENT_DB=' + dbId + ' · AGENT_API_ENABLED=true' : ''));
 
 if (operator) grantOperator(operator);
 
@@ -387,7 +424,7 @@ let deployedUrl = 'https://' + projectName + '.pages.dev';
 if (!has('skip-pages')) {
   deployedUrl = deployPages(projectName, dbId, accessIssuer, accessAud, waitlistId);
   console.log('    deployed: ' + deployedUrl);
-  await verifyDeployed(deployedUrl);
+  await verifyDeployed(deployedUrl, withAgentApi);
 }
 
 const workerEnabled = has('enable-worker') || configDefaults.enableWorker === true;
@@ -423,5 +460,13 @@ Still owner-only (this script cannot and should not do these):
 
 Automation rules remain DISABLED (fail-closed defaults in D1). Enable each one only
 from the Automation view with explicit approval, as designed.
-$`);
+${withAgentApi ? `
+Agent API ENABLED on this deployment (/api/agent/*, AGENT_DB = ${DB_NAME}). This script issues no
+keys — one least-privilege key per agent, plaintext shown once:
+  node scripts/agent-key.mjs create --name <AGENT> --scopes status:read,catalog:read,kv:read,kv:write --expires <ISO date> --remote --database ${DB_NAME}
+Keep /api/agent/* OUTSIDE the Cloudflare Access application; leave AGENT_PII_ENABLED and
+AGENT_STRENGTH_PRIVILEGED_ENABLED unset (docs/release/AGENT_API.md §1/§7).` : `
+Agent API NOT enabled (default). Opt in with --with-agent-api or "with_agent_api": true
+in deploy.config.json — docs/release/AGENT_API.md §1.`}
+`);
 }

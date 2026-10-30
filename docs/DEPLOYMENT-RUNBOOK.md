@@ -125,6 +125,14 @@ is your pipeline).
 - **Waitlist continuity** on a new project: `--with-waitlist` (binds `monte-wo-waitlist` if it
   exists on the account); Turnstile secrets must be re-set with `wrangler pages secret put`
   (`TURNSTILE_SECRET`, `RATE_LIMIT_SALT`) since secrets never copy between projects.
+- **Agent API** (`/api/agent/*`, `docs/release/AGENT_API.md`) — strictly opt-in: `--with-agent-api`
+  (or `"with_agent_api": true` in `deploy.config.json` for the GitHub workflow). The deploy then binds
+  `AGENT_DB` to the **same** `monte-wo-intelligence` database (never the waitlist DB), applies
+  `migrations/0008_agent_api.sql` once (gated on `mw_agent_keys`, via `d1 execute --file` like the
+  others), sets `AGENT_API_ENABLED="true"` and verifies `/api/agent/whoami` answers 401. Keys are never
+  issued by the deploy: `node scripts/agent-key.mjs create --name <AGENT> --scopes … --expires … --remote --database monte-wo-intelligence`
+  (least privilege, no `*`). Leave `AGENT_PII_ENABLED` / `AGENT_STRENGTH_PRIVILEGED_ENABLED` unset.
+  Keep `/api/agent/*` outside the Access application (the API authenticates itself).
 
 ## 6. Rollback
 
@@ -132,6 +140,9 @@ is your pipeline).
 - Worker: `cd intelligence-worker && npx wrangler deployments list` / `rollback`, or set
   `INTELLIGENCE_ENABLED = "false"` in `intelligence-worker/wrangler.toml` and redeploy (fail-closed).
 - Automation rules: revoke from the Automation view (DB-backed, default disabled).
+- Agent API: deploy again without `--with-agent-api` / `with_agent_api` → the binding and flag leave
+  the auto-written block and `/api/agent/*` is 404 again (keys and tables stay; drop them only with
+  `docs/release/sql/0008_agent_api.rollback.sql` after a `wrangler d1 export`).
 
 ## 7. Standing constraints (unchanged)
 
