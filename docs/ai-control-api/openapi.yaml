@@ -1,0 +1,85 @@
+openapi: 3.1.0
+info:
+  title: MONTE WO AI Control API
+  version: 0.1.0
+  description: >
+    Platform-neutral control surface for the MONTE WO website and mobile app.
+    Phase 1 is intentionally read-only. Production releases and destructive
+    operations require a separate human approval workflow.
+servers:
+  - url: https://YOUR-CONFIRMED-API-ORIGIN
+    description: Replace with the confirmed HTTPS origin before connecting an assistant.
+security:
+  - bearerAuth: []
+paths:
+  /api/assistant/v1/status:
+    get:
+      operationId: getControlApiStatus
+      summary: Check whether the control API is configured and enabled
+      responses:
+        '200':
+          description: API enabled; response contains no secrets or personal data.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [ok, apiVersion, mode]
+                properties:
+                  ok: { type: boolean, const: true }
+                  apiVersion: { type: string, example: "v1" }
+                  mode: { type: string, enum: [read-only] }
+                  project: { type: string, const: "monte-wo" }
+                  website: { type: string, example: "Cloudflare Pages" }
+                  mobile: { type: string, example: "Expo/EAS" }
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '503':
+          description: API disabled or missing required configuration.
+  /api/assistant/v1/capabilities:
+    get:
+      operationId: getControlApiCapabilities
+      summary: List the currently enabled and disabled operations
+      responses:
+        '200':
+          description: Capability list; must reflect implemented features only.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [mode, allowed, approvalRequired, unavailable]
+                properties:
+                  mode: { type: string, enum: [read-only] }
+                  allowed:
+                    type: array
+                    items: { type: string }
+                    example: [status.read, capabilities.read]
+                  approvalRequired:
+                    type: array
+                    items: { type: string }
+                    example: [production.deploy, database.mutate, permissions.change, credentials.change]
+                  unavailable:
+                    type: array
+                    items: { type: string }
+                    example: [repository.write, tests.run, website.deploy, mobile.release, database.admin]
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '503':
+          description: API disabled or missing required configuration.
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: opaque-token
+  responses:
+    Unauthorized:
+      description: Missing or invalid bearer token.
+      content:
+        application/json:
+          schema:
+            type: object
+            required: [error]
+            properties:
+              error:
+                type: string
+                enum: [unauthorized]
