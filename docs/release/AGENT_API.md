@@ -196,7 +196,7 @@ Consequence for the Agent API: as merged, it is **correct but has nothing to tal
 | Rollback SQL | `docs/release/sql/0008_agent_api.rollback.sql` on SQLite with and without `d1_migrations` | drops exactly the four tables; idempotent on a second run |
 | Deployed environment | — | **not run** (sandbox cannot reach Cloudflare; API not enabled anywhere) |
 
-CI run for the final commit: see `RELEASE_STATUS.md` (added after push).
+CI run for the merge commit `e62c1e8`: GitHub Actions `41116441537` — **SUCCESS** (2026-10-30; build, generated-output sync check, 251 unit tests, native bundle + suites).
 
 ### 8.5 Verdict
 
