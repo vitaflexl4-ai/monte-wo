@@ -4,7 +4,32 @@
 **LEVE. KLASE. MONTE WO. / LIFT. RANK. CLIMB HIGH.**
 Managed by **VitaFlex Business Group** · Montewo@vitaflexbusinessgroup.com
 
-## Latest change — Website Step 2 only
+## Latest change — multi-platform packaging (web + Android + iOS), not store-ready
+
+The same web build is now wrapped by **Capacitor 8** native shells: `capacitor.config.json` (`com.vitaflex.montewo`, placeholder ID pending owner confirmation), `android/`, `ios/`. `npm run build:native` derives the packaged bundle (`build/native/`, root = the `/dashboard/` app shell, links rewritten for Capacitor's local server) and `npx cap sync` copies it into both projects. Native binaries have **not** been compiled yet (needs JDK/Android SDK or macOS/Xcode — manual GitHub Actions workflows are provided); the API is deliberately not reachable from the shells until the owner approves the connectivity/auth design. Read `docs/release/RELEASE_STATUS.md` first, then `ARCHITECTURE.md`, `BUILD_AND_SETUP.md`, `WEB_DEPLOYMENT.md`, `ANDROID_RELEASE.md`, `IOS_RELEASE.md`, `PRIVACY_AND_STORE_CHECKLIST.md` (all in `docs/release/`). Env reference: `.env.example` (placeholders only).
+
+```sh
+npm run build:native && npm run preview:native   # packaged-app preview on :3000, Capacitor routing emulated
+npm run test:native                              # config, bundle, secrets hygiene, workflows (part of npm test)
+npm run test:native-browser                      # packaged-app workflows in a browser (preview must be running)
+```
+
+## Preserved — App Foundation Step 1
+
+`/dashboard/` is the MONTE WO **app shell** (not a website page): sidebar navigation on desktop, a native-style bottom tab bar + "More" drawer on phones and tablets (Dashboard, My Profile, Performance, Standards, Rankings, Exercise Library, Nutrition, Verification, Settings), an installable standalone manifest, four independent **Discipline Rank** cards, a **Muscle Character View** (interactive Chest / Core / Arms / Legs silhouette) and a **Food Scan & Macro Logger** demo with a camera-viewfinder mockup. It runs on local UI state only — **no accounts, athlete data, official ranks, nutrition data, camera access, backend, storage or external API**. Every unconnected element is labelled NOT CONNECTED / DEMO / PLACEHOLDER · NOT IMPLEMENTED IN STEP 1, and the shell is excluded from the public route list, navigation, sitemap and search indexing.
+
+Source of truth: `content/dashboard/en.json` + `scripts/build_dashboard.py` (runs last in `npm run build`; never edit `public/dashboard/index.html` by hand), `public/dashboard.css`, `public/dashboard.js`.
+
+```sh
+npm run build                     # ends with build_dashboard.py
+npm run test:dashboard            # static checks (also part of npm test)
+npm run dev                       # then open /dashboard/
+npm run test:dashboard-browser    # Playwright behaviour + responsive suite against :8080
+```
+
+See [`docs/dashboard/STEP-1-REPORT.md`](docs/dashboard/STEP-1-REPORT.md) for the executed tests, screenshots (`docs/dashboard/screenshots/`), limitations and open decisions. Step 2 (real data, accounts, verification, nutrition sources) is not started and needs explicit approval.
+
+## Preserved — Website Step 2
 
 The public site now has consistent navigation, one Free Tools entry point, a non-awarding app concept without pretend athlete data, a four-discipline draft-variation guide, accessible mobile navigation, page-specific sharing metadata and a real 404 page. **No app, account system, dashboard or ranking backend was added or expanded in this phase.**
 

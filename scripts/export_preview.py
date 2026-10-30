@@ -9,7 +9,7 @@ pub=root/'public'
 fonts=(pub/'fonts.css').read_text()
 for f in (pub/'assets').glob('*.ttf'):
  fonts=fonts.replace('/assets/'+f.name,'data:font/ttf;base64,'+base64.b64encode(f.read_bytes()).decode())
-css=fonts+'\n'+(pub/'style.css').read_text()+'\n'+(pub/'launch.css').read_text()+'\n'+(pub/'tools.css').read_text()+'\n'+(pub/'library.css').read_text()+'\n'+(pub/'strength.css').read_text()+'\n'+(pub/'lab.css').read_text()+'\n'+(pub/'website.css').read_text()
+css=fonts+'\n'+(pub/'style.css').read_text()+'\n'+(pub/'launch.css').read_text()+'\n'+(pub/'tools.css').read_text()+'\n'+(pub/'library.css').read_text()+'\n'+(pub/'strength.css').read_text()+'\n'+(pub/'lab.css').read_text()+'\n'+(pub/'website.css').read_text()+'\n'+(pub/'dashboard.css').read_text()
 asset_tokens={}; embedded_assets={}
 def embed(match):
  attr,path=match.groups();f=pub/path.lstrip('/')
@@ -62,6 +62,8 @@ for path,file in routes.items():
   extra+='<script type="module">'+(pub/'library.js').read_text().replace('</script','<\\/script')+'</script>'
  if 'class="strength-page"' in doc:
   extra+='<script type="module">'+strengthjs.replace('</script','<\\/script')+'</script>'
+ if 'class="dashboard-page"' in doc:
+  extra+='<script type="module">'+(pub/'dashboard.js').read_text().replace('</script','<\\/script')+'</script>'
  if 'data-lab-tool="' in doc and 'id="lab-form"' in doc:
   extra+='<script type="module">'+labjs.replace('</script','<\\/script')+'</script>'
  extra+='<script type="module">'+websitejs.replace('</script','<\\/script')+'</script>'

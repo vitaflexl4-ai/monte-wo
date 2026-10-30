@@ -3,6 +3,7 @@
 //   nodb     — DB missing → create path
 //   fresh    — DB exists but empty → all migrations run
 //   partial  — 0003 applied only → 0004 + 0005 run
+//   agentdone — like happy, plus the Agent API tables (0008) already present
 //   git      — pages deploy rejected (git-connected project)
 //   missing  — pages project not found → create → retry OK
 //   openapi  — deploy OK but the API answers 200 unauthenticated (SECURITY abort)
@@ -41,13 +42,13 @@ if (args[0] === 'd1' && args[1] === 'create') {
 if (args[0] === 'd1' && args[1] === 'execute' && args.includes('--command')) {
   if (joined.includes('sqlite_master')) {
     const ALL = ['intel_runs', 'intel_operators', 'intel_improvement_items'];
-    const tables = { happy: ALL, missing: ALL, git: ALL, openapi: ALL, noauth: ALL, nodb: [], fresh: [], partial: ['intel_runs'] }[scenario] || ALL;
+    const tables = { happy: ALL, missing: ALL, git: ALL, openapi: ALL, noauth: ALL, nodb: [], fresh: [], partial: ['intel_runs'], agentdone: [...ALL, 'mw_agent_keys', 'mw_agent_rate', 'mw_agent_audit', 'mw_agent_kv'] }[scenario] || ALL;
     out(JSON.stringify([{ results: tables.map(name => ({ name })) }]));
     process.exit(0);
   }
   // Migration-marker probe (settings-gated migrations like 0006).
   if (joined.includes('intel_settings') && joined.includes('migration_0006')) {
-    const applied = ['happy', 'missing', 'git', 'openapi', 'noauth'].includes(scenario);
+    const applied = ['happy', 'missing', 'git', 'openapi', 'noauth', 'agentdone'].includes(scenario);
     out(JSON.stringify([{ results: applied ? [{ value: 'applied' }] : [] }]));
     process.exit(0);
   }
