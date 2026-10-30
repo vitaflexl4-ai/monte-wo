@@ -1,7 +1,7 @@
 {
   "server/strength/auth.js": "fb44ef9174a1d924cd5f8c7119caeff10f6dd69e520619d51905f7357c2f0069",
   "server/strength/engine.js": "53389d09d5d1cd467989c487b2ce6897b7102e63669ef98079a88fd0da6f11f4",
-  "server/strength/api.js": "0c72655311343a8f2cfff9449b0344985b7b98b74b056829b0b0543355abd39d",
+  "server/strength/api.js": "fc47a283f8f64b86397bca5e70f70f75cb4c1457eafccb979bbe81909db5e26f",
   "content/strength/curl-model-draft-1.json": "64df94b2f6f026e023fa0006c23f806d81ab1660999d4dfcfb7573004ce3763f",
   "content/strength/squat-standard-draft-1.json": "ca718bfc2a2fb662e92347ef481f375edcb517e2359f4b3cc13f8a409201337c",
   "content/strength/deadlift-model-draft-1.json": "7c0c92f5b305366f594100234c74b3eda108c4492fda5edc12d6066acb81fb57",

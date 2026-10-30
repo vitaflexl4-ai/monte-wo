@@ -1,0 +1,3653 @@
+{
+  "version": 1,
+  "source": {
+    "repository": "vitaflexl4-ai/monte-wo",
+    "branch": "main",
+    "commit": "c9f7151e47d58afce20bc9251bc301ac405ed2ab"
+  },
+  "records": [
+    {
+      "manifest": {
+        "id": "dumbbell-bench-press",
+        "name_en": "Dumbbell bench press",
+        "name_ht": null,
+        "category": "Chest",
+        "equipment": "Dumbbells",
+        "primary_muscles": [
+          "Chest"
+        ],
+        "secondary_muscles": [
+          "Triceps",
+          "Front shoulders"
+        ],
+        "demo_key": "exercises/dumbbell-bench-press/demo.mp4",
+        "loop_key": "exercises/dumbbell-bench-press/loop.mp4",
+        "poster_key": "exercises/dumbbell-bench-press/poster.jpg",
+        "demo_duration_s": 21.5,
+        "loop_duration_s": 4.3,
+        "width": 720,
+        "height": 936,
+        "fps": 30,
+        "reps_in_demo": 5,
+        "demo_bytes": 342919,
+        "loop_bytes": 72832
+      },
+      "packages": [
+        "monte-wo-pack-2-dup"
+      ],
+      "files": {
+        "demo": {
+          "oid": "f2c6aa929d1a6dd23ff69662696c67c52c8e09a6",
+          "bytes": 342919,
+          "path": "assets/workout-library/monte-wo-pack-2-dup/r2/exercises/dumbbell-bench-press/demo.mp4",
+          "sha256": "747c256b2f9f5b0bd2d8fa435fac4c1558222881d9f3a1f00dcfa50455e1bbe5",
+          "width": 720,
+          "height": 936,
+          "codec": "h264",
+          "duration": 21.5,
+          "fps": 30.0
+        },
+        "loop": {
+          "oid": "a209429bc9d9de6fe3f0b28871ec20d02d5d0055",
+          "bytes": 72832,
+          "path": "assets/workout-library/monte-wo-pack-2-dup/r2/exercises/dumbbell-bench-press/loop.mp4",
+          "sha256": "801c7d2c36d40c0f58425b8a20cb426dc3a1d1a71426d325641313acfed19234",
+          "width": 720,
+          "height": 936,
+          "codec": "h264",
+          "duration": 4.3,
+          "fps": 30.0
+        },
+        "poster": {
+          "oid": "0b1d1b9d250e352925e627470b422995d45d2ea4",
+          "bytes": 29910,
+          "path": "assets/workout-library/monte-wo-pack-2-dup/r2/exercises/dumbbell-bench-press/poster.jpg",
+          "sha256": "a34a4f673fb3c45eaab674919f520a9185ec33e5fda0b5d5334d7c9604082b79",
+          "width": 720,
+          "height": 936,
+          "format": "JPEG"
+        }
+      },
+      "reviewStatus": "form-and-rights-review-pending"
+    },
+    {
+      "manifest": {
+        "id": "upright-row",
+        "name_en": "Upright row",
+        "name_ht": null,
+        "category": "Shoulders",
+        "equipment": "Barbell",
+        "primary_muscles": [
+          "Shoulders",
+          "Traps"
+        ],
+        "secondary_muscles": [
+          "Biceps"
+        ],
+        "demo_key": "exercises/upright-row/demo.mp4",
+        "loop_key": "exercises/upright-row/loop.mp4",
+        "poster_key": "exercises/upright-row/poster.jpg",
+        "demo_duration_s": 21.5,
+        "loop_duration_s": 4.3,
+        "width": 720,
+        "height": 936,
+        "fps": 30,
+        "reps_in_demo": 5,
+        "demo_bytes": 399024,
+        "loop_bytes": 83910
+      },
+      "packages": [
+        "monte-wo-pack-2-dup"
+      ],
+      "files": {
+        "demo": {
+          "oid": "4b23638183aa06f7aa80ebd429cc4b7d3ef020c9",
+          "bytes": 399024,
+          "path": "assets/workout-library/monte-wo-pack-2-dup/r2/exercises/upright-row/demo.mp4",
+          "sha256": "3cd5bbbf5a0ad0df3b8e77ad828f6e0cc3ef89a8de4d0ec062bb62d67bd1682d",
+          "width": 720,
+          "height": 936,
+          "codec": "h264",
+          "duration": 21.5,
+          "fps": 30.0
+        },
+        "loop": {
+          "oid": "f1496db2444ca38231682320eaf90743388d4ef0",
+          "bytes": 83910,
+          "path": "assets/workout-library/monte-wo-pack-2-dup/r2/exercises/upright-row/loop.mp4",
+          "sha256": "b3def5c8813c0bb5535467b742167abde8db7e5d6d462589b69540c2cb1e04c4",
+          "width": 720,
+          "height": 936,
+          "codec": "h264",
+          "duration": 4.3,
+          "fps": 30.0
+        },
+        "poster": {
+          "oid": "d505767bd5f933c3f115ce7a5a83298d896fb40c",
+          "bytes": 28878,
+          "path": "assets/workout-library/monte-wo-pack-2-dup/r2/exercises/upright-row/poster.jpg",
+          "sha256": "a04255ca4f95ba6d38e81ee1165848c81466fe509acdb93f51d02ab280ba7a87",
+          "width": 720,
+          "height": 936,
+          "format": "JPEG"
+        }
+      },
+      "reviewStatus": "form-and-rights-review-pending"
+    },
+    {
+      "manifest": {
+        "id": "hip-thrust",
+        "name_en": "Hip thrust",
+        "name_ht": null,
+        "category": "Legs",
+        "equipment": "Barbell",
+        "primary_muscles": [
+          "Glutes"
+        ],
+        "secondary_muscles": [
+          "Hamstrings",
+          "Quadriceps"
+        ],
+        "demo_key": "exercises/hip-thrust/demo.mp4",
+        "loop_key": "exercises/hip-thrust/loop.mp4",
+        "poster_key": "exercises/hip-thrust/poster.jpg",
+        "demo_duration_s": 21.5,
+        "loop_duration_s": 4.3,
+        "width": 720,
+        "height": 936,
+        "fps": 30,
+        "reps_in_demo": 5,
+        "demo_bytes": 566707,
+        "loop_bytes": 114981
+      },
+      "packages": [
+        "monte-wo-pack-2-dup"
+      ],
+      "files": {
+        "demo": {
+          "oid": "10dbfa33bf01b9506aff0e07191bb954eac80385",
+          "bytes": 566707,
+          "path": "assets/workout-library/monte-wo-pack-2-dup/r2/exercises/hip-thrust/demo.mp4",
+          "sha256": "0ec8c4624184615681abdc324b9073294342d8d359fbb4717f623fab7838c088",
+          "width": 720,
+          "height": 936,
+          "codec": "h264",
+          "duration": 21.5,
+          "fps": 30.0
+        },
+        "loop": {
+          "oid": "e4a21baf967c4b929f881e549afcecc74df06cda",
+          "bytes": 114981,
+          "path": "assets/workout-library/monte-wo-pack-2-dup/r2/exercises/hip-thrust/loop.mp4",
+          "sha256": "9182c7196b9d10961234a9aaebc24684686c5f4d08e19e178f7e4bc96fb6833f",
+          "width": 720,
+          "height": 936,
+          "codec": "h264",
+          "duration": 4.3,
+          "fps": 30.0
+        },
+        "poster": {
+          "oid": "919247c09f1735ab5d7774834d7dc4f75c217467",
+          "bytes": 29685,
+          "path": "assets/workout-library/monte-wo-pack-2-dup/r2/exercises/hip-thrust/poster.jpg",
+          "sha256": "bec76449b3b5cce00c653b898c99f4031c99e8a9b26e78589350ee52ee307936",
+          "width": 720,
+          "height": 936,
+          "format": "JPEG"
+        }
+      },
+      "reviewStatus": "form-and-rights-review-pending"
+    },
+    {
+      "manifest": {
+        "id": "bulgarian-split-squat",
+        "name_en": "Bulgarian split squat",
+        "name_ht": null,
+        "category": "Legs",
+        "equipment": "Dumbbells",
+        "primary_muscles": [
+          "Quadriceps",
+          "Glutes"
+        ],
+        "secondary_muscles": [
+          "Hamstrings"
+        ],
+        "demo_key": "exercises/bulgarian-split-squat/demo.mp4",
+        "loop_key": "exercises/bulgarian-split-squat/loop.mp4",
+        "poster_key": "exercises/bulgarian-split-squat/poster.jpg",
+        "demo_duration_s": 21.5,
+        "loop_duration_s": 4.3,
+        "width": 720,
+        "height": 936,
+        "fps": 30,
+        "reps_in_demo": 5,
+        "demo_bytes": 511522,
+        "loop_bytes": 105481
+      },
+      "packages": [
+        "monte-wo-pack-2-dup"
+      ],
+      "files": {
+        "demo": {
+          "oid": "5cc1bf9e55ace15c416f55c9980b0b32ebd9a461",
+          "bytes": 511522,
+          "path": "assets/workout-library/monte-wo-pack-2-dup/r2/exercises/bulgarian-split-squat/demo.mp4",
+          "sha256": "4a628729019517961d56f44a732c024e3118cb7d45bdbea8248007f6de771d50",
+          "width": 720,
+          "height": 936,
+          "codec": "h264",
+          "duration": 21.5,
+          "fps": 30.0
+        },
+        "loop": {
+          "oid": "a76e9ab1252de740d05d84d55bff61c37416266c",
+          "bytes": 105481,
+          "path": "assets/workout-library/monte-wo-pack-2-dup/r2/exercises/bulgarian-split-squat/loop.mp4",
+          "sha256": "8fe4b8f4035a435a5fa7366bd45601f1ab1d106e9bc1447c41711a2d35453bcc",
+          "width": 720,
+          "height": 936,
+          "codec": "h264",
+          "duration": 4.3,
+          "fps": 30.0
+        },
+        "poster": {
+          "oid": "0218e74758e334bf17d9940056ac22ebb7b006ff",
+          "bytes": 30908,
+          "path": "assets/workout-library/monte-wo-pack-2-dup/r2/exercises/bulgarian-split-squat/poster.jpg",
+          "sha256": "88d28ecfba342b93d219361863ca1941b3bcb804c848ed06efa6dc24d6c55620",
+          "width": 720,
+          "height": 936,
+          "format": "JPEG"
+        }
+      },
+      "reviewStatus": "form-and-rights-review-pending"
+    },
+    {
+      "manifest": {
+        "id": "step-up",
+        "name_en": "Dumbbell step-up",
+        "name_ht": null,
+        "category": "Legs",
+        "equipment": "Dumbbells",
+        "primary_muscles": [
+          "Quadriceps",
+          "Glutes"
+        ],
+        "secondary_muscles": [
+          "Hamstrings",
+          "Calves"
+        ],
+        "demo_key": "exercises/step-up/demo.mp4",
+        "loop_key": "exercises/step-up/loop.mp4",
+        "poster_key": "exercises/step-up/poster.jpg",
+        "demo_duration_s": 21.5,
+        "loop_duration_s": 4.3,
+        "width": 720,
+        "height": 936,
+        "fps": 30,
+        "reps_in_demo": 5,
+        "demo_bytes": 578647,
+        "loop_bytes": 117750
+      },
+      "packages": [
+        "monte-wo-pack-2-dup"
+      ],
+      "files": {
+        "demo": {
+          "oid": "e8dab1ec444725121b1365e6e57c157e38ced58b",
+          "bytes": 578647,
+          "path": "assets/workout-library/monte-wo-pack-2-dup/r2/exercises/step-up/demo.mp4",
+          "sha256": "626e1a4fe33d402d82551793ce8bd18946c3d8d1fe054508b295abfb04f2e5d2",
+          "width": 720,
+          "height": 936,
+          "codec": "h264",
+          "duration": 21.5,
+          "fps": 30.0
+        },
+        "loop": {
+          "oid": "ad460b591cc3988e161366c44c7b017f2412bce7",
+          "bytes": 117750,
+          "path": "assets/workout-library/monte-wo-pack-2-dup/r2/exercises/step-up/loop.mp4",
+          "sha256": "267cf6eadc789f0a1d85c65e5ffe1ec514ff8aae96cfccbe7b927b6bdb45c6bf",
+          "width": 720,
+          "height": 936,
+          "codec": "h264",
+          "duration": 4.3,
+          "fps": 30.0
+        },
+        "poster": {
+          "oid": "6a5eb9609c2f5ee6b0a29cd5a643d77276104f61",
+          "bytes": 29897,
+          "path": "assets/workout-library/monte-wo-pack-2-dup/r2/exercises/step-up/poster.jpg",
+          "sha256": "d227918ea996f0cb78f8e6fc867aebd246d0f4152155973206f4d9f9afdacc0d",
+          "width": 720,
+          "height": 936,
+          "format": "JPEG"
+        }
+      },
+      "reviewStatus": "form-and-rights-review-pending"
+    },
+    {
+      "manifest": {
+        "id": "leg-extension",
+        "name_en": "Leg extension",
+        "name_ht": null,
+        "category": "Legs",
+        "equipment": "Machine",
+        "primary_muscles": [
+          "Quadriceps"
+        ],
+        "secondary_muscles": [],
+        "demo_key": "exercises/leg-extension/demo.mp4",
+        "loop_key": "exercises/leg-extension/loop.mp4",
+        "poster_key": "exercises/leg-extension/poster.jpg",
+        "demo_duration_s": 21.5,
+        "loop_duration_s": 4.3,
+        "width": 720,
+        "height": 936,
+        "fps": 30,
+        "reps_in_demo": 5,
+        "demo_bytes": 292481,
+        "loop_bytes": 62910
+      },
+      "packages": [
+        "monte-wo-pack-2-dup"
+      ],
+      "files": {
+        "demo": {
+          "oid": "b224335c288236766f5fe26f4a5683ccfe80e87f",
+          "bytes": 292481,
+          "path": "assets/workout-library/monte-wo-pack-2-dup/r2/exercises/leg-extension/demo.mp4",
+          "sha256": "1a79880d7ffb9091c106865cab969f066d67cb3c766cea689d4b99bb1d994055",
+          "width": 720,
+          "height": 936,
+          "codec": "h264",
+          "duration": 21.5,
+          "fps": 30.0
+        },
+        "loop": {
+          "oid": "c8803801874f2e8eb6ea92c6323bcf0f40e19bb9",
+          "bytes": 62910,
+          "path": "assets/workout-library/monte-wo-pack-2-dup/r2/exercises/leg-extension/loop.mp4",
+          "sha256": "ac1fecc7fadccbb21be52284258ba1418de77f80d2985b76f0758a53d8e3826a",
+          "width": 720,
+          "height": 936,
+          "codec": "h264",
+          "duration": 4.3,
+          "fps": 30.0
+        },
+        "poster": {
+          "oid": "12da3c0cf093571dae5871ec403d43cdae6180d7",
+          "bytes": 30554,
+          "path": "assets/workout-library/monte-wo-pack-2-dup/r2/exercises/leg-extension/poster.jpg",
+          "sha256": "335a53864494db0149cf9f14e9d4cd799ccf87122189332e1883b1dfd0028614",
+          "width": 720,
+          "height": 936,
+          "format": "JPEG"
+        }
+      },
+      "reviewStatus": "form-and-rights-review-pending"
+    },
+    {
+      "manifest": {
+        "id": "standing-leg-curl",
+        "name_en": "Standing leg curl",
+        "name_ht": null,
+        "category": "Legs",
+        "equipment": "Bodyweight",
+        "primary_muscles": [
+          "Hamstrings"
+        ],
+        "secondary_muscles": [
+          "Calves"
+        ],
+        "demo_key": "exercises/standing-leg-curl/demo.mp4",
+        "loop_key": "exercises/standing-leg-curl/loop.mp4",
+        "poster_key": "exercises/standing-leg-curl/poster.jpg",
+        "demo_duration_s": 21.5,
+        "loop_duration_s": 4.3,
+        "width": 720,
+        "height": 936,
+        "fps": 30,
+        "reps_in_demo": 5,
+        "demo_bytes": 336584,
+        "loop_bytes": 71352
+      },
+      "packages": [
+        "monte-wo-pack-2-dup"
+      ],
+      "files": {
+        "demo": {
+          "oid": "2756d1c266e9f53d3539999a236780bdf4dea33e",
+          "bytes": 336584,
+          "path": "assets/workout-library/monte-wo-pack-2-dup/r2/exercises/standing-leg-curl/demo.mp4",
+          "sha256": "603880d1a58c82282d283882955f71ee072541af41b8cac7dac8cd91b808baa0",
+          "width": 720,
+          "height": 936,
+          "codec": "h264",
+          "duration": 21.5,
+          "fps": 30.0
+        },
+        "loop": {
+          "oid": "cf0f45e189531f0d1dd72189a6dc3616d7d716e5",
+          "bytes": 71352,
+          "path": "assets/workout-library/monte-wo-pack-2-dup/r2/exercises/standing-leg-curl/loop.mp4",
+          "sha256": "53a604cebe86a12a28a1120a6cc91e741c2a85de09d12de5c9d1932345de1269",
+          "width": 720,
+          "height": 936,
+          "codec": "h264",
+          "duration": 4.3,
+          "fps": 30.0
+        },
+        "poster": {
+          "oid": "3651b58b0c6b225f681184654531e00be39d73cf",
+          "bytes": 31229,
+          "path": "assets/workout-library/monte-wo-pack-2-dup/r2/exercises/standing-leg-curl/poster.jpg",
+          "sha256": "7e691d3c4eb2cea402a18fef7e96a90b5a8c1b83863d4dfa8583a200043fb04a",
+          "width": 720,
+          "height": 936,
+          "format": "JPEG"
+        }
+      },
+      "reviewStatus": "form-and-rights-review-pending"
+    },
+    {
+      "manifest": {
+        "id": "bodyweight-squat",
+        "name_en": "Bodyweight squat",
+        "name_ht": null,
+        "category": "Legs",
+        "equipment": "Bodyweight",
+        "primary_muscles": [
+          "Quadriceps",
+          "Glutes"
+        ],
+        "secondary_muscles": [
+          "Hamstrings",
+          "Calves"
+        ],
+        "demo_key": "exercises/bodyweight-squat/demo.mp4",
+        "loop_key": "exercises/bodyweight-squat/loop.mp4",
+        "poster_key": "exercises/bodyweight-squat/poster.jpg",
+        "demo_duration_s": 21.5,
+        "loop_duration_s": 4.3,
+        "width": 720,
+        "height": 936,
+        "fps": 30,
+        "reps_in_demo": 5,
+        "demo_bytes": 706993,
+        "loop_bytes": 144009
+      },
+      "packages": [
+        "monte-wo-pack-2-dup"
+      ],
+      "files": {
+        "demo": {
+          "oid": "5ae80f1f396449ccc9534f4e9853664da2e30bc7",
+          "bytes": 706993,
+          "path": "assets/workout-library/monte-wo-pack-2-dup/r2/exercises/bodyweight-squat/demo.mp4",
+          "sha256": "a27a8e910e335746e2134e4c8856f4896a3b37521e872f71b9017e39d2c6916d",
+          "width": 720,
+          "height": 936,
+          "codec": "h264",
+          "duration": 21.5,
+          "fps": 30.0
+        },
+        "loop": {
+          "oid": "11d91ba680bad710d685982b294490d173137b81",
+          "bytes": 144009,
+          "path": "assets/workout-library/monte-wo-pack-2-dup/r2/exercises/bodyweight-squat/loop.mp4",
+          "sha256": "e185ea3a3de41b7930686c2ea4f792398ab5b75e5c79aec311bb3c75aadc45f5",
+          "width": 720,
+          "height": 936,
+          "codec": "h264",
+          "duration": 4.3,
+          "fps": 30.0
+        },
+        "poster": {
+          "oid": "160e8b1d5830052423d6e7f3156826686c394367",
+          "bytes": 29264,
+          "path": "assets/workout-library/monte-wo-pack-2-dup/r2/exercises/bodyweight-squat/poster.jpg",
+          "sha256": "2d056b1e4157ee5148748085ea5f39a5014d63c4cf1ead869d8156836246862b",
+          "width": 720,
+          "height": 936,
+          "format": "JPEG"
+        }
+      },
+      "reviewStatus": "form-and-rights-review-pending"
+    },
+    {
+      "manifest": {
+        "id": "mountain-climber",
+        "name_en": "Mountain climber",
+        "name_ht": null,
+        "category": "Cardio",
+        "equipment": "Bodyweight",
+        "primary_muscles": [
+          "Abs"
+        ],
+        "secondary_muscles": [
+          "Shoulders",
+          "Quadriceps"
+        ],
+        "demo_key": "exercises/mountain-climber/demo.mp4",
+        "loop_key": "exercises/mountain-climber/loop.mp4",
+        "poster_key": "exercises/mountain-climber/poster.jpg",
+        "demo_duration_s": 21.5,
+        "loop_duration_s": 4.3,
+        "width": 720,
+        "height": 936,
+        "fps": 30,
+        "reps_in_demo": 5,
+        "demo_bytes": 355070,
+        "loop_bytes": 76612
+      },
+      "packages": [
+        "monte-wo-pack-2-dup"
+      ],
+      "files": {
+        "demo": {
+          "oid": "adea31f42ff3217f97622a7a9189705ee89ec252",
+          "bytes": 355070,
+          "path": "assets/workout-library/monte-wo-pack-2-dup/r2/exercises/mountain-climber/demo.mp4",
+          "sha256": "071a2556815870f82e79580388b2983cf69a7b19cd1dac83cfe7c79c546c6906",
+          "width": 720,
+          "height": 936,
+          "codec": "h264",
+          "duration": 21.5,
+          "fps": 30.0
+        },
+        "loop": {
+          "oid": "ea4ebbd574aabf498e7343ed41deb90d227a746e",
+          "bytes": 76612,
+          "path": "assets/workout-library/monte-wo-pack-2-dup/r2/exercises/mountain-climber/loop.mp4",
+          "sha256": "6dc7649c3a39372a433afbb6fd7248c8b55edd528d9f50331ceed8f90db7b073",
+          "width": 720,
+          "height": 936,
+          "codec": "h264",
+          "duration": 4.3,
+          "fps": 30.0
+        },
+        "poster": {
+          "oid": "eaa2ef075bee48cc82da9533907cd96cdb9e3d3b",
+          "bytes": 28737,
+          "path": "assets/workout-library/monte-wo-pack-2-dup/r2/exercises/mountain-climber/poster.jpg",
+          "sha256": "43282ea53345c9a1d99d6cb7d9d277b8626fd000c9403927b4c99312fab4d891",
+          "width": 720,
+          "height": 936,
+          "format": "JPEG"
+        }
+      },
+      "reviewStatus": "form-and-rights-review-pending"
+    },
+    {
+      "manifest": {
+        "id": "sit-up",
+        "name_en": "Sit-up",
+        "name_ht": null,
+        "category": "Core",
+        "equipment": "Bodyweight",
+        "primary_muscles": [
+          "Abs"
+        ],
+        "secondary_muscles": [],
+        "demo_key": "exercises/sit-up/demo.mp4",
+        "loop_key": "exercises/sit-up/loop.mp4",
+        "poster_key": "exercises/sit-up/poster.jpg",
+        "demo_duration_s": 21.5,
+        "loop_duration_s": 4.3,
+        "width": 720,
+        "height": 936,
+        "fps": 30,
+        "reps_in_demo": 5,
+        "demo_bytes": 645471,
+        "loop_bytes": 131363
+      },
+      "packages": [
+        "monte-wo-pack-2-dup"
+      ],
+      "files": {
+        "demo": {
+          "oid": "6e2397c7ff29b6d7460bbb716d9d1b6ad88555b0",
+          "bytes": 645471,
+          "path": "assets/workout-library/monte-wo-pack-2-dup/r2/exercises/sit-up/demo.mp4",
+          "sha256": "46fbffec5dd713293356580d7a459843ec22b8c13fe459ebc28bf9094abe0f98",
+          "width": 720,
+          "height": 936,
+          "codec": "h264",
+          "duration": 21.5,
+          "fps": 30.0
+        },
+        "loop": {
+          "oid": "1568e249a6c4af94a69f6606a826c6f20c56db12",
+          "bytes": 131363,
+          "path": "assets/workout-library/monte-wo-pack-2-dup/r2/exercises/sit-up/loop.mp4",
+          "sha256": "3cedb47667d80f35be876a386aa4be2a83ed5f9e91e6e9f28d07de0d16c9ab5a",
+          "width": 720,
+          "height": 936,
+          "codec": "h264",
+          "duration": 4.3,
+          "fps": 30.0
+        },
+        "poster": {
+          "oid": "ff46979f532c46ff81eb406e45de58e2c8dca59a",
+          "bytes": 27749,
+          "path": "assets/workout-library/monte-wo-pack-2-dup/r2/exercises/sit-up/poster.jpg",
+          "sha256": "5bfaf42e71459e3d98f91b4e4c3ff88635b8b79706b515145099fa6035953c49",
+          "width": 720,
+          "height": 936,
+          "format": "JPEG"
+        }
+      },
+      "reviewStatus": "form-and-rights-review-pending"
+    },
+    {
+      "manifest": {
+        "id": "lying-leg-raise",
+        "name_en": "Lying leg raise",
+        "name_ht": null,
+        "category": "Core",
+        "equipment": "Bodyweight",
+        "primary_muscles": [
+          "Abs"
+        ],
+        "secondary_muscles": [],
+        "demo_key": "exercises/lying-leg-raise/demo.mp4",
+        "loop_key": "exercises/lying-leg-raise/loop.mp4",
+        "poster_key": "exercises/lying-leg-raise/poster.jpg",
+        "demo_duration_s": 21.5,
+        "loop_duration_s": 4.3,
+        "width": 720,
+        "height": 936,
+        "fps": 30,
+        "reps_in_demo": 5,
+        "demo_bytes": 286149,
+        "loop_bytes": 60910
+      },
+      "packages": [
+        "monte-wo-pack-2-dup"
+      ],
+      "files": {
+        "demo": {
+          "oid": "d77f74a75903fcb93bd7ea64c7fd30398b64267c",
+          "bytes": 286149,
+          "path": "assets/workout-library/monte-wo-pack-2-dup/r2/exercises/lying-leg-raise/demo.mp4",
+          "sha256": "b9f24aca08e75ebe287cb469ef6b0b576aa613115d2269adc68183d11a851429",
+          "width": 720,
+          "height": 936,
+          "codec": "h264",
+          "duration": 21.5,
+          "fps": 30.0
+        },
+        "loop": {
+          "oid": "3af3402eaf5c536e6a13b200ac976d99c6a7b36d",
+          "bytes": 60910,
+          "path": "assets/workout-library/monte-wo-pack-2-dup/r2/exercises/lying-leg-raise/loop.mp4",
+          "sha256": "6f0a2f3d9fd43b11847b75890e565a151f8c314969c730c3fc9b89f5ec15ec44",
+          "width": 720,
+          "height": 936,
+          "codec": "h264",
+          "duration": 4.3,
+          "fps": 30.0
+        },
+        "poster": {
+          "oid": "a255019ddd85ab9897e1897f333fa520cfb32a0a",
+          "bytes": 25042,
+          "path": "assets/workout-library/monte-wo-pack-2-dup/r2/exercises/lying-leg-raise/poster.jpg",
+          "sha256": "5a6d4e319a423ab1a5546c57bd4a7203d13de662fe92831779b398e41a6c4447",
+          "width": 720,
+          "height": 936,
+          "format": "JPEG"
+        }
+      },
+      "reviewStatus": "form-and-rights-review-pending"
+    },
+    {
+      "manifest": {
+        "id": "bicycle-crunch",
+        "name_en": "Bicycle crunch",
+        "name_ht": null,
+        "category": "Core",
+        "equipment": "Bodyweight",
+        "primary_muscles": [
+          "Abs"
+        ],
+        "secondary_muscles": [],
+        "demo_key": "exercises/bicycle-crunch/demo.mp4",
+        "loop_key": "exercises/bicycle-crunch/loop.mp4",
+        "poster_key": "exercises/bicycle-crunch/poster.jpg",
+        "demo_duration_s": 21.5,
+        "loop_duration_s": 4.3,
+        "width": 720,
+        "height": 936,
+        "fps": 30,
+        "reps_in_demo": 5,
+        "demo_bytes": 355217,
+        "loop_bytes": 75144
+      },
+      "packages": [
+        "monte-wo-pack-2-dup"
+      ],
+      "files": {
+        "demo": {
+          "oid": "5ededd7bbcfb9fe923d018b637eb6bd5f54f6648",
+          "bytes": 355217,
+          "path": "assets/workout-library/monte-wo-pack-2-dup/r2/exercises/bicycle-crunch/demo.mp4",
+          "sha256": "7616b0063f6b4b7f39ad33c8c3bfe55f1137d6001850b8c12030685e9f2f27dc",
+          "width": 720,
+          "height": 936,
+          "codec": "h264",
+          "duration": 21.5,
+          "fps": 30.0
+        },
+        "loop": {
+          "oid": "ea121fd0ac3ab4f392efb37fc5e84913207a7e2e",
+          "bytes": 75144,
+          "path": "assets/workout-library/monte-wo-pack-2-dup/r2/exercises/bicycle-crunch/loop.mp4",
+          "sha256": "627fb8f564fb4b39ab942b0664835d94edba31a8d4e814e404f1629b9b9e1377",
+          "width": 720,
+          "height": 936,
+          "codec": "h264",
+          "duration": 4.3,
+          "fps": 30.0
+        },
+        "poster": {
+          "oid": "145057ea7643681dff5e1f27030532a119176011",
+          "bytes": 28551,
+          "path": "assets/workout-library/monte-wo-pack-2-dup/r2/exercises/bicycle-crunch/poster.jpg",
+          "sha256": "1239e128e55cd16af1a9ab4e3c4d6d02665372011d54262e63673197a7f482e4",
+          "width": 720,
+          "height": 936,
+          "format": "JPEG"
+        }
+      },
+      "reviewStatus": "form-and-rights-review-pending"
+    },
+    {
+      "manifest": {
+        "id": "high-knees",
+        "name_en": "High knees",
+        "name_ht": null,
+        "category": "Cardio",
+        "equipment": "Bodyweight",
+        "primary_muscles": [
+          "Quadriceps"
+        ],
+        "secondary_muscles": [
+          "Calves",
+          "Abs"
+        ],
+        "demo_key": "exercises/high-knees/demo.mp4",
+        "loop_key": "exercises/high-knees/loop.mp4",
+        "poster_key": "exercises/high-knees/poster.jpg",
+        "demo_duration_s": 21.5,
+        "loop_duration_s": 4.3,
+        "width": 720,
+        "height": 936,
+        "fps": 30,
+        "reps_in_demo": 5,
+        "demo_bytes": 623473,
+        "loop_bytes": 128203
+      },
+      "packages": [
+        "monte-wo-pack-2-dup"
+      ],
+      "files": {
+        "demo": {
+          "oid": "b62c5d6b68a781f8e9ba3d46b388013ae2ddb4f5",
+          "bytes": 623473,
+          "path": "assets/workout-library/monte-wo-pack-2-dup/r2/exercises/high-knees/demo.mp4",
+          "sha256": "427bd716b9648f67b1543fe3748863845086c60e90cbd3d2e0325c0d785edec4",
+          "width": 720,
+          "height": 936,
+          "codec": "h264",
+          "duration": 21.5,
+          "fps": 30.0
+        },
+        "loop": {
+          "oid": "f4382f5292ce7d0badf7889f30633d833fe0d19a",
+          "bytes": 128203,
+          "path": "assets/workout-library/monte-wo-pack-2-dup/r2/exercises/high-knees/loop.mp4",
+          "sha256": "e25cfaa5ecc465f92eca4fc3790291f62ee9ce74d5b25c59ed8fee2ced754399",
+          "width": 720,
+          "height": 936,
+          "codec": "h264",
+          "duration": 4.3,
+          "fps": 30.0
+        },
+        "poster": {
+          "oid": "12d668b8debdf5049649ed7f6eb6e42c2f3897aa",
+          "bytes": 29581,
+          "path": "assets/workout-library/monte-wo-pack-2-dup/r2/exercises/high-knees/poster.jpg",
+          "sha256": "9c088f5fc1526dc21c4e1d5afe689ef2d3eb16daca38e3b11e0861ee8917928b",
+          "width": 720,
+          "height": 936,
+          "format": "JPEG"
+        }
+      },
+      "reviewStatus": "form-and-rights-review-pending"
+    },
+    {
+      "manifest": {
+        "id": "butt-kicks",
+        "name_en": "Butt kicks",
+        "name_ht": null,
+        "category": "Cardio",
+        "equipment": "Bodyweight",
+        "primary_muscles": [
+          "Hamstrings"
+        ],
+        "secondary_muscles": [
+          "Calves"
+        ],
+        "demo_key": "exercises/butt-kicks/demo.mp4",
+        "loop_key": "exercises/butt-kicks/loop.mp4",
+        "poster_key": "exercises/butt-kicks/poster.jpg",
+        "demo_duration_s": 21.5,
+        "loop_duration_s": 4.3,
+        "width": 720,
+        "height": 936,
+        "fps": 30,
+        "reps_in_demo": 5,
+        "demo_bytes": 635586,
+        "loop_bytes": 129236
+      },
+      "packages": [
+        "monte-wo-pack-2-dup"
+      ],
+      "files": {
+        "demo": {
+          "oid": "ea726453a6b0d9c91225aedd6ecdc143c3acea1b",
+          "bytes": 635586,
+          "path": "assets/workout-library/monte-wo-pack-2-dup/r2/exercises/butt-kicks/demo.mp4",
+          "sha256": "a11a9d26169f8aac265d03556718d8dc0fca9c7c70535022caf10fd441a19502",
+          "width": 720,
+          "height": 936,
+          "codec": "h264",
+          "duration": 21.5,
+          "fps": 30.0
+        },
+        "loop": {
+          "oid": "b3fd3e92900583204336bd67af962cf549508d8f",
+          "bytes": 129236,
+          "path": "assets/workout-library/monte-wo-pack-2-dup/r2/exercises/butt-kicks/loop.mp4",
+          "sha256": "a47c99768fb40f1b6734d6ea34768a8abcd42e12b3653ba73ea28614671519d0",
+          "width": 720,
+          "height": 936,
+          "codec": "h264",
+          "duration": 4.3,
+          "fps": 30.0
+        },
+        "poster": {
+          "oid": "205680285f5845f56327038bffdee41b8840ef81",
+          "bytes": 29276,
+          "path": "assets/workout-library/monte-wo-pack-2-dup/r2/exercises/butt-kicks/poster.jpg",
+          "sha256": "ce858d8bde12d872f049ff81eb84d55fcd856aff268d0a482fe2794a69ac3aad",
+          "width": 720,
+          "height": 936,
+          "format": "JPEG"
+        }
+      },
+      "reviewStatus": "form-and-rights-review-pending"
+    },
+    {
+      "manifest": {
+        "id": "jog-in-place",
+        "name_en": "Jog in place",
+        "name_ht": null,
+        "category": "Cardio",
+        "equipment": "Bodyweight",
+        "primary_muscles": [
+          "Quadriceps"
+        ],
+        "secondary_muscles": [
+          "Hamstrings",
+          "Calves"
+        ],
+        "demo_key": "exercises/jog-in-place/demo.mp4",
+        "loop_key": "exercises/jog-in-place/loop.mp4",
+        "poster_key": "exercises/jog-in-place/poster.jpg",
+        "demo_duration_s": 21.5,
+        "loop_duration_s": 4.3,
+        "width": 720,
+        "height": 936,
+        "fps": 30,
+        "reps_in_demo": 5,
+        "demo_bytes": 599141,
+        "loop_bytes": 121926
+      },
+      "packages": [
+        "monte-wo-pack-2-dup"
+      ],
+      "files": {
+        "demo": {
+          "oid": "179b937c46fafa1ad61233c1c8fba2b6a160fce4",
+          "bytes": 599141,
+          "path": "assets/workout-library/monte-wo-pack-2-dup/r2/exercises/jog-in-place/demo.mp4",
+          "sha256": "d15fa2a98bbd67632bffa252d682bd34a2ce91866e117bbf37f337bab1115ce9",
+          "width": 720,
+          "height": 936,
+          "codec": "h264",
+          "duration": 21.5,
+          "fps": 30.0
+        },
+        "loop": {
+          "oid": "86e15fe539fb7655ba4beff03c23d26180d79ce7",
+          "bytes": 121926,
+          "path": "assets/workout-library/monte-wo-pack-2-dup/r2/exercises/jog-in-place/loop.mp4",
+          "sha256": "41821da976d4394d5debe4cd55c099d6307076eb99facd724224bc62c1b7b90d",
+          "width": 720,
+          "height": 936,
+          "codec": "h264",
+          "duration": 4.3,
+          "fps": 30.0
+        },
+        "poster": {
+          "oid": "d2007d46ecc71fa04c39f975cfe9f3022ab370b7",
+          "bytes": 30306,
+          "path": "assets/workout-library/monte-wo-pack-2-dup/r2/exercises/jog-in-place/poster.jpg",
+          "sha256": "e182296e9830b51e9457a481c28397537c6047749daa564fa46eacf51c5e3ba8",
+          "width": 720,
+          "height": 936,
+          "format": "JPEG"
+        }
+      },
+      "reviewStatus": "form-and-rights-review-pending"
+    },
+    {
+      "manifest": {
+        "id": "arm-circles",
+        "name_en": "Arm circles",
+        "name_ht": null,
+        "category": "Mobility",
+        "equipment": "Bodyweight",
+        "primary_muscles": [
+          "Shoulders"
+        ],
+        "secondary_muscles": [
+          "Traps"
+        ],
+        "demo_key": "exercises/arm-circles/demo.mp4",
+        "loop_key": "exercises/arm-circles/loop.mp4",
+        "poster_key": "exercises/arm-circles/poster.jpg",
+        "demo_duration_s": 21.5,
+        "loop_duration_s": 4.3,
+        "width": 720,
+        "height": 936,
+        "fps": 30,
+        "reps_in_demo": 5,
+        "demo_bytes": 374216,
+        "loop_bytes": 79123
+      },
+      "packages": [
+        "monte-wo-pack-2-dup"
+      ],
+      "files": {
+        "demo": {
+          "oid": "40cb0c9504933969d6e45619066862dabadb6ae8",
+          "bytes": 374216,
+          "path": "assets/workout-library/monte-wo-pack-2-dup/r2/exercises/arm-circles/demo.mp4",
+          "sha256": "a598f6deed24f876c1e440e0a7a55313bdb7d34730a8bc78ea71aa86afd64663",
+          "width": 720,
+          "height": 936,
+          "codec": "h264",
+          "duration": 21.5,
+          "fps": 30.0
+        },
+        "loop": {
+          "oid": "c4cd44ea4e8f283c9d630b7784a3b1fd6a69593a",
+          "bytes": 79123,
+          "path": "assets/workout-library/monte-wo-pack-2-dup/r2/exercises/arm-circles/loop.mp4",
+          "sha256": "5307b95aa135b956c54da996ecd533656b288a4cf4d6e2e1a03625c9e69b2db6",
+          "width": 720,
+          "height": 936,
+          "codec": "h264",
+          "duration": 4.3,
+          "fps": 30.0
+        },
+        "poster": {
+          "oid": "72397f9d86b25acf7a30b6e45c256d9f5927f394",
+          "bytes": 27169,
+          "path": "assets/workout-library/monte-wo-pack-2-dup/r2/exercises/arm-circles/poster.jpg",
+          "sha256": "1b87d422b2d430332874a20c166a38e7a736ebc872d4803d5ccf76205ed56ee4",
+          "width": 720,
+          "height": 936,
+          "format": "JPEG"
+        }
+      },
+      "reviewStatus": "form-and-rights-review-pending"
+    },
+    {
+      "manifest": {
+        "id": "leg-swings",
+        "name_en": "Leg swings",
+        "name_ht": null,
+        "category": "Mobility",
+        "equipment": "Bodyweight",
+        "primary_muscles": [
+          "Quadriceps",
+          "Hamstrings"
+        ],
+        "secondary_muscles": [],
+        "demo_key": "exercises/leg-swings/demo.mp4",
+        "loop_key": "exercises/leg-swings/loop.mp4",
+        "poster_key": "exercises/leg-swings/poster.jpg",
+        "demo_duration_s": 21.5,
+        "loop_duration_s": 4.3,
+        "width": 720,
+        "height": 936,
+        "fps": 30,
+        "reps_in_demo": 5,
+        "demo_bytes": 416517,
+        "loop_bytes": 87401
+      },
+      "packages": [
+        "monte-wo-pack-2-dup"
+      ],
+      "files": {
+        "demo": {
+          "oid": "c41095139a2f61da25b6bcfe74351f55eaf52679",
+          "bytes": 416517,
+          "path": "assets/workout-library/monte-wo-pack-2-dup/r2/exercises/leg-swings/demo.mp4",
+          "sha256": "d04859572053a1dedced5044c4d80f0ed8909d1c6a8458ba935b8efcca865137",
+          "width": 720,
+          "height": 936,
+          "codec": "h264",
+          "duration": 21.5,
+          "fps": 30.0
+        },
+        "loop": {
+          "oid": "d589c7c5e8545091fd0cab7f6e05599b354b1f45",
+          "bytes": 87401,
+          "path": "assets/workout-library/monte-wo-pack-2-dup/r2/exercises/leg-swings/loop.mp4",
+          "sha256": "96dc58c8fe2e6c8e306d394859746b61d1eaa80f99f70176e203f4ea9d116ba1",
+          "width": 720,
+          "height": 936,
+          "codec": "h264",
+          "duration": 4.3,
+          "fps": 30.0
+        },
+        "poster": {
+          "oid": "4ceb2d56fc947f88c365bf3403cce75ceb368bd2",
+          "bytes": 32478,
+          "path": "assets/workout-library/monte-wo-pack-2-dup/r2/exercises/leg-swings/poster.jpg",
+          "sha256": "4962395674f4ac360b0bc4829fd5b75411376f279412f447f132be89ae5f6371",
+          "width": 720,
+          "height": 936,
+          "format": "JPEG"
+        }
+      },
+      "reviewStatus": "form-and-rights-review-pending"
+    },
+    {
+      "manifest": {
+        "id": "dumbbell-curl",
+        "name_en": "Dumbbell curl",
+        "name_ht": null,
+        "category": "Arms",
+        "equipment": "Dumbbells",
+        "primary_muscles": [
+          "Biceps"
+        ],
+        "secondary_muscles": [
+          "Brachialis",
+          "Forearms"
+        ],
+        "demo_key": "exercises/dumbbell-curl/demo.mp4",
+        "loop_key": "exercises/dumbbell-curl/loop.mp4",
+        "poster_key": "exercises/dumbbell-curl/poster.jpg",
+        "demo_duration_s": 21.5,
+        "loop_duration_s": 4.3,
+        "width": 720,
+        "height": 936,
+        "fps": 30,
+        "reps_in_demo": 5,
+        "demo_bytes": 305653,
+        "loop_bytes": 64262
+      },
+      "packages": [
+        "monte-wo-pack-2",
+        "monte-wo-pack"
+      ],
+      "files": {
+        "demo": {
+          "oid": "5fb8d715d0249c2cfd4f5e67bae5905b2a3d7c85",
+          "bytes": 305653,
+          "path": "assets/workout-library/monte-wo-pack-2/r2/exercises/dumbbell-curl/demo.mp4",
+          "sha256": "def0f580ab21cf945204d1f9abbb9dc86cb1ce19737b41150b8b07b53e011d83",
+          "width": 720,
+          "height": 936,
+          "codec": "h264",
+          "duration": 21.5,
+          "fps": 30.0
+        },
+        "loop": {
+          "oid": "791d34e3b235e1cecf903c7e66c9170111e8af24",
+          "bytes": 64262,
+          "path": "assets/workout-library/monte-wo-pack-2/r2/exercises/dumbbell-curl/loop.mp4",
+          "sha256": "9283c28d5d7f2b6825b990a6889528d206688d00f809de27674224461788f367",
+          "width": 720,
+          "height": 936,
+          "codec": "h264",
+          "duration": 4.3,
+          "fps": 30.0
+        },
+        "poster": {
+          "oid": "b32e6f5e760ccee69232b194e244ee34c89c6e80",
+          "bytes": 29034,
+          "path": "assets/workout-library/monte-wo-pack-2/r2/exercises/dumbbell-curl/poster.jpg",
+          "sha256": "42197f10413553d346d0caae82c40678ddb22feea72cf5356a5b353bf10852f8",
+          "width": 720,
+          "height": 936,
+          "format": "JPEG"
+        }
+      },
+      "reviewStatus": "form-and-rights-review-pending"
+    },
+    {
+      "manifest": {
+        "id": "back-squat",
+        "name_en": "Back squat",
+        "name_ht": null,
+        "category": "Legs",
+        "equipment": "Barbell",
+        "primary_muscles": [
+          "Quadriceps",
+          "Glutes"
+        ],
+        "secondary_muscles": [
+          "Hamstrings",
+          "Calves",
+          "Lower back"
+        ],
+        "demo_key": "exercises/back-squat/demo.mp4",
+        "loop_key": "exercises/back-squat/loop.mp4",
+        "poster_key": "exercises/back-squat/poster.jpg",
+        "demo_duration_s": 21.5,
+        "loop_duration_s": 4.3,
+        "width": 720,
+        "height": 936,
+        "fps": 30,
+        "reps_in_demo": 5,
+        "demo_bytes": 703025,
+        "loop_bytes": 143520
+      },
+      "packages": [
+        "monte-wo-pack-2",
+        "monte-wo-pack"
+      ],
+      "files": {
+        "demo": {
+          "oid": "aba5120125306477b0dfa36c73e74e7899e907de",
+          "bytes": 703025,
+          "path": "assets/workout-library/monte-wo-pack-2/r2/exercises/back-squat/demo.mp4",
+          "sha256": "59d91dc26142628d4e20d6f4498243209492d03a6df5b380031d086b8e4aeaab",
+          "width": 720,
+          "height": 936,
+          "codec": "h264",
+          "duration": 21.5,
+          "fps": 30.0
+        },
+        "loop": {
+          "oid": "4cb56807b3f691bef6affa84b3db122c1092e160",
+          "bytes": 143520,
+          "path": "assets/workout-library/monte-wo-pack-2/r2/exercises/back-squat/loop.mp4",
+          "sha256": "e77294f3134606af93ca8ecf2c907a6cc03963f667e80580f2f91605c1af0f04",
+          "width": 720,
+          "height": 936,
+          "codec": "h264",
+          "duration": 4.3,
+          "fps": 30.0
+        },
+        "poster": {
+          "oid": "c103f0fc2024e7d842f74f2c97cebf8952f203b2",
+          "bytes": 29858,
+          "path": "assets/workout-library/monte-wo-pack-2/r2/exercises/back-squat/poster.jpg",
+          "sha256": "1a8fc8f5f61239182bf13e4949852663d00532d5f386928cf3e9a06ca0047897",
+          "width": 720,
+          "height": 936,
+          "format": "JPEG"
+        }
+      },
+      "reviewStatus": "form-and-rights-review-pending"
+    },
+    {
+      "manifest": {
+        "id": "bench-press",
+        "name_en": "Bench press",
+        "name_ht": null,
+        "category": "Chest",
+        "equipment": "Barbell",
+        "primary_muscles": [
+          "Chest",
+          "Triceps"
+        ],
+        "secondary_muscles": [
+          "Front shoulders"
+        ],
+        "demo_key": "exercises/bench-press/demo.mp4",
+        "loop_key": "exercises/bench-press/loop.mp4",
+        "poster_key": "exercises/bench-press/poster.jpg",
+        "demo_duration_s": 21.5,
+        "loop_duration_s": 4.3,
+        "width": 720,
+        "height": 936,
+        "fps": 30,
+        "reps_in_demo": 5,
+        "demo_bytes": 372454,
+        "loop_bytes": 79221
+      },
+      "packages": [
+        "monte-wo-pack-2",
+        "monte-wo-pack"
+      ],
+      "files": {
+        "demo": {
+          "oid": "8528933f206c4ef1a3f8082d3437c8ce20d96a0a",
+          "bytes": 372454,
+          "path": "assets/workout-library/monte-wo-pack-2/r2/exercises/bench-press/demo.mp4",
+          "sha256": "9a60ef24c8a61678cb26f140907d1923cc574aee6e6a58af65a18b7ac1f48117",
+          "width": 720,
+          "height": 936,
+          "codec": "h264",
+          "duration": 21.5,
+          "fps": 30.0
+        },
+        "loop": {
+          "oid": "cf49cae3e4e4ca1c1fcab6167e2b0632f4ad1085",
+          "bytes": 79221,
+          "path": "assets/workout-library/monte-wo-pack-2/r2/exercises/bench-press/loop.mp4",
+          "sha256": "fc08cc2426612ca55953eeba044b7e25a0607bde8b7685e6eb9b4b9ecb5b620c",
+          "width": 720,
+          "height": 936,
+          "codec": "h264",
+          "duration": 4.3,
+          "fps": 30.0
+        },
+        "poster": {
+          "oid": "3334861bd172d1738bd9028d989c6cca9d864a63",
+          "bytes": 30490,
+          "path": "assets/workout-library/monte-wo-pack-2/r2/exercises/bench-press/poster.jpg",
+          "sha256": "9a315bee1faa2d5b065a364d6f7adb4f35100cca6717b2294051aee55a727a27",
+          "width": 720,
+          "height": 936,
+          "format": "JPEG"
+        }
+      },
+      "reviewStatus": "form-and-rights-review-pending"
+    },
+    {
+      "manifest": {
+        "id": "deadlift",
+        "name_en": "Deadlift",
+        "name_ht": null,
+        "category": "Back",
+        "equipment": "Barbell",
+        "primary_muscles": [
+          "Glutes",
+          "Hamstrings"
+        ],
+        "secondary_muscles": [
+          "Back",
+          "Quadriceps",
+          "Forearms"
+        ],
+        "demo_key": "exercises/deadlift/demo.mp4",
+        "loop_key": "exercises/deadlift/loop.mp4",
+        "poster_key": "exercises/deadlift/poster.jpg",
+        "demo_duration_s": 21.5,
+        "loop_duration_s": 4.3,
+        "width": 720,
+        "height": 936,
+        "fps": 30,
+        "reps_in_demo": 5,
+        "demo_bytes": 766472,
+        "loop_bytes": 156426
+      },
+      "packages": [
+        "monte-wo-pack-2",
+        "monte-wo-pack"
+      ],
+      "files": {
+        "demo": {
+          "oid": "a42eb1b2cb56e23b0f3a59b41421b7ba1a467f86",
+          "bytes": 766472,
+          "path": "assets/workout-library/monte-wo-pack-2/r2/exercises/deadlift/demo.mp4",
+          "sha256": "8d92f5b2bbe5648fb50973c03a734268dd35b45ecf84460b32ad1b84d1a0fa28",
+          "width": 720,
+          "height": 936,
+          "codec": "h264",
+          "duration": 21.5,
+          "fps": 30.0
+        },
+        "loop": {
+          "oid": "1b3cd9ebd0b8fe82892b48dc7427e11e2205f59e",
+          "bytes": 156426,
+          "path": "assets/workout-library/monte-wo-pack-2/r2/exercises/deadlift/loop.mp4",
+          "sha256": "ecff90b22c9df53649d2a8a3f6a849de22f0c702e080959da5511158e594c87e",
+          "width": 720,
+          "height": 936,
+          "codec": "h264",
+          "duration": 4.3,
+          "fps": 30.0
+        },
+        "poster": {
+          "oid": "03934cff511bc0c7795d58910cd09d722385feee",
+          "bytes": 29888,
+          "path": "assets/workout-library/monte-wo-pack-2/r2/exercises/deadlift/poster.jpg",
+          "sha256": "b3e0c88a53207521ef18248719cd239cac68b8533679929d1a0824694532a2f4",
+          "width": 720,
+          "height": 936,
+          "format": "JPEG"
+        }
+      },
+      "reviewStatus": "form-and-rights-review-pending"
+    },
+    {
+      "manifest": {
+        "id": "overhead-press",
+        "name_en": "Overhead press",
+        "name_ht": null,
+        "category": "Shoulders",
+        "equipment": "Barbell",
+        "primary_muscles": [
+          "Shoulders",
+          "Triceps"
+        ],
+        "secondary_muscles": [
+          "Chest"
+        ],
+        "demo_key": "exercises/overhead-press/demo.mp4",
+        "loop_key": "exercises/overhead-press/loop.mp4",
+        "poster_key": "exercises/overhead-press/poster.jpg",
+        "demo_duration_s": 21.5,
+        "loop_duration_s": 4.3,
+        "width": 720,
+        "height": 936,
+        "fps": 30,
+        "reps_in_demo": 5,
+        "demo_bytes": 466557,
+        "loop_bytes": 96839
+      },
+      "packages": [
+        "monte-wo-pack-2",
+        "monte-wo-pack"
+      ],
+      "files": {
+        "demo": {
+          "oid": "c36eac033fcf717134ac7bbb3156b0e26b7b5261",
+          "bytes": 466557,
+          "path": "assets/workout-library/monte-wo-pack-2/r2/exercises/overhead-press/demo.mp4",
+          "sha256": "5007c0ab864d522d093e444a8903a44d92361593653e0025884342a6c373ebdc",
+          "width": 720,
+          "height": 936,
+          "codec": "h264",
+          "duration": 21.5,
+          "fps": 30.0
+        },
+        "loop": {
+          "oid": "183cf76bf329a38416cea1acc35fc06175ed8834",
+          "bytes": 96839,
+          "path": "assets/workout-library/monte-wo-pack-2/r2/exercises/overhead-press/loop.mp4",
+          "sha256": "a18b1cdfecc018b8cf1dcd4b34ac3a2821072cdb886a0f81dfb9dca113a0c8bf",
+          "width": 720,
+          "height": 936,
+          "codec": "h264",
+          "duration": 4.3,
+          "fps": 30.0
+        },
+        "poster": {
+          "oid": "08f69b4750acedefbe515f30930aac59a69b3d28",
+          "bytes": 28060,
+          "path": "assets/workout-library/monte-wo-pack-2/r2/exercises/overhead-press/poster.jpg",
+          "sha256": "a700e5b675b6c8808901a8e749b8f292e86693ea075256e53b6cadadca3d2426",
+          "width": 720,
+          "height": 936,
+          "format": "JPEG"
+        }
+      },
+      "reviewStatus": "form-and-rights-review-pending"
+    },
+    {
+      "manifest": {
+        "id": "barbell-row",
+        "name_en": "Barbell row",
+        "name_ht": null,
+        "category": "Back",
+        "equipment": "Barbell",
+        "primary_muscles": [
+          "Back"
+        ],
+        "secondary_muscles": [
+          "Biceps",
+          "Rear shoulders",
+          "Hamstrings",
+          "Glutes"
+        ],
+        "demo_key": "exercises/barbell-row/demo.mp4",
+        "loop_key": "exercises/barbell-row/loop.mp4",
+        "poster_key": "exercises/barbell-row/poster.jpg",
+        "demo_duration_s": 21.5,
+        "loop_duration_s": 4.3,
+        "width": 720,
+        "height": 936,
+        "fps": 30,
+        "reps_in_demo": 5,
+        "demo_bytes": 385863,
+        "loop_bytes": 81925
+      },
+      "packages": [
+        "monte-wo-pack-2",
+        "monte-wo-pack"
+      ],
+      "files": {
+        "demo": {
+          "oid": "729a63bebec994cd33d0749cc0088926ad28b96e",
+          "bytes": 385863,
+          "path": "assets/workout-library/monte-wo-pack-2/r2/exercises/barbell-row/demo.mp4",
+          "sha256": "e544c2a3f2519beb6e9f7fb71aca17aa2c7ca28a1232a4533f1b2402f6ff968a",
+          "width": 720,
+          "height": 936,
+          "codec": "h264",
+          "duration": 21.5,
+          "fps": 30.0
+        },
+        "loop": {
+          "oid": "66edd45b07383d50f15b1512c6129aaa9b0c0111",
+          "bytes": 81925,
+          "path": "assets/workout-library/monte-wo-pack-2/r2/exercises/barbell-row/loop.mp4",
+          "sha256": "f8b0d5a1b3a9ba16418988c555272a645a070ddf6a19c15d4da4a531c5dad5c2",
+          "width": 720,
+          "height": 936,
+          "codec": "h264",
+          "duration": 4.3,
+          "fps": 30.0
+        },
+        "poster": {
+          "oid": "94e048a0f9cb172ffafefa3d0dc912fbe28abbe3",
+          "bytes": 30790,
+          "path": "assets/workout-library/monte-wo-pack-2/r2/exercises/barbell-row/poster.jpg",
+          "sha256": "6aba4b2ab33b621f189c152f525a49a7d36e71152c688e0d2ab0977f7f5d3964",
+          "width": 720,
+          "height": 936,
+          "format": "JPEG"
+        }
+      },
+      "reviewStatus": "form-and-rights-review-pending"
+    },
+    {
+      "manifest": {
+        "id": "front-raise",
+        "name_en": "Dumbbell front raise",
+        "name_ht": null,
+        "category": "Shoulders",
+        "equipment": "Dumbbells",
+        "primary_muscles": [
+          "Front shoulders"
+        ],
+        "secondary_muscles": [
+          "Chest",
+          "Forearms"
+        ],
+        "demo_key": "exercises/front-raise/demo.mp4",
+        "loop_key": "exercises/front-raise/loop.mp4",
+        "poster_key": "exercises/front-raise/poster.jpg",
+        "demo_duration_s": 21.5,
+        "loop_duration_s": 4.3,
+        "width": 720,
+        "height": 936,
+        "fps": 30,
+        "reps_in_demo": 5,
+        "demo_bytes": 370275,
+        "loop_bytes": 77137
+      },
+      "packages": [
+        "monte-wo-pack-2",
+        "monte-wo-pack"
+      ],
+      "files": {
+        "demo": {
+          "oid": "4b7b460c4b9a9856c7717482c24fb2bc6532c65a",
+          "bytes": 370275,
+          "path": "assets/workout-library/monte-wo-pack-2/r2/exercises/front-raise/demo.mp4",
+          "sha256": "476e8889ba2ce9967346d616da3521a959ccc666c1e55936dda9b66d832a04ca",
+          "width": 720,
+          "height": 936,
+          "codec": "h264",
+          "duration": 21.5,
+          "fps": 30.0
+        },
+        "loop": {
+          "oid": "641c99586f1d7a664c7e1c35186a16bcf360fd8e",
+          "bytes": 77137,
+          "path": "assets/workout-library/monte-wo-pack-2/r2/exercises/front-raise/loop.mp4",
+          "sha256": "7f970442c2986fb6ff9df4e4e9034cb59eb1f4a6c7a5698fda25e63770f5f033",
+          "width": 720,
+          "height": 936,
+          "codec": "h264",
+          "duration": 4.3,
+          "fps": 30.0
+        },
+        "poster": {
+          "oid": "e95b0e29bc5731dc6b345d9cd863e56a201cc86e",
+          "bytes": 29801,
+          "path": "assets/workout-library/monte-wo-pack-2/r2/exercises/front-raise/poster.jpg",
+          "sha256": "41e533398a8b02418b3bce252f27fef515cf661828d3b15003121008091e9c22",
+          "width": 720,
+          "height": 936,
+          "format": "JPEG"
+        }
+      },
+      "reviewStatus": "form-and-rights-review-pending"
+    },
+    {
+      "manifest": {
+        "id": "triceps-pushdown",
+        "name_en": "Triceps pushdown",
+        "name_ht": null,
+        "category": "Arms",
+        "equipment": "Cable",
+        "primary_muscles": [
+          "Triceps"
+        ],
+        "secondary_muscles": [
+          "Forearms"
+        ],
+        "demo_key": "exercises/triceps-pushdown/demo.mp4",
+        "loop_key": "exercises/triceps-pushdown/loop.mp4",
+        "poster_key": "exercises/triceps-pushdown/poster.jpg",
+        "demo_duration_s": 21.5,
+        "loop_duration_s": 4.3,
+        "width": 720,
+        "height": 936,
+        "fps": 30,
+        "reps_in_demo": 5,
+        "demo_bytes": 334542,
+        "loop_bytes": 71207
+      },
+      "packages": [
+        "monte-wo-pack-2",
+        "monte-wo-pack"
+      ],
+      "files": {
+        "demo": {
+          "oid": "407dc98d63c91e084b498797503240e652009075",
+          "bytes": 334542,
+          "path": "assets/workout-library/monte-wo-pack-2/r2/exercises/triceps-pushdown/demo.mp4",
+          "sha256": "e674d40cf99ac9b2d6548b9fab5257cfb485e78c758b0dc0a162b4d3dfcd5d30",
+          "width": 720,
+          "height": 936,
+          "codec": "h264",
+          "duration": 21.5,
+          "fps": 30.0
+        },
+        "loop": {
+          "oid": "065cc95c34561f1fd347b3b8b90a7895f603413a",
+          "bytes": 71207,
+          "path": "assets/workout-library/monte-wo-pack-2/r2/exercises/triceps-pushdown/loop.mp4",
+          "sha256": "7356f2f166784976e2fd0aa94d38eb990dc4c408af02ead3654341af0d81c268",
+          "width": 720,
+          "height": 936,
+          "codec": "h264",
+          "duration": 4.3,
+          "fps": 30.0
+        },
+        "poster": {
+          "oid": "61480d8a51d97ea911096c06b18205368d134a48",
+          "bytes": 28875,
+          "path": "assets/workout-library/monte-wo-pack-2/r2/exercises/triceps-pushdown/poster.jpg",
+          "sha256": "819f19ee523e20bbe579125f3070ccb4789bb6455142f1f3961bf5c0b32646ba",
+          "width": 720,
+          "height": 936,
+          "format": "JPEG"
+        }
+      },
+      "reviewStatus": "form-and-rights-review-pending"
+    },
+    {
+      "manifest": {
+        "id": "push-up",
+        "name_en": "Push-up",
+        "name_ht": null,
+        "category": "Chest",
+        "equipment": "Bodyweight",
+        "primary_muscles": [
+          "Chest",
+          "Triceps"
+        ],
+        "secondary_muscles": [
+          "Front shoulders",
+          "Abs"
+        ],
+        "demo_key": "exercises/push-up/demo.mp4",
+        "loop_key": "exercises/push-up/loop.mp4",
+        "poster_key": "exercises/push-up/poster.jpg",
+        "demo_duration_s": 21.5,
+        "loop_duration_s": 4.3,
+        "width": 720,
+        "height": 936,
+        "fps": 30,
+        "reps_in_demo": 5,
+        "demo_bytes": 479570,
+        "loop_bytes": 98107
+      },
+      "packages": [
+        "monte-wo-pack-2",
+        "monte-wo-pack"
+      ],
+      "files": {
+        "demo": {
+          "oid": "19e45b0a6fe4e0a8144d81f73a8786cd054f967f",
+          "bytes": 479570,
+          "path": "assets/workout-library/monte-wo-pack-2/r2/exercises/push-up/demo.mp4",
+          "sha256": "34b3403dfce41c72d11aca9431fe5034abe39d13487a4573231ed7f3fe6c6e58",
+          "width": 720,
+          "height": 936,
+          "codec": "h264",
+          "duration": 21.5,
+          "fps": 30.0
+        },
+        "loop": {
+          "oid": "79c0e7f8faf1a789f9f2023c47ff7a9992f6a322",
+          "bytes": 98107,
+          "path": "assets/workout-library/monte-wo-pack-2/r2/exercises/push-up/loop.mp4",
+          "sha256": "38707a7fdcc0f31c843d8fa99967ecebfad2157e94b6a7cd2631effa0fc8d8ec",
+          "width": 720,
+          "height": 936,
+          "codec": "h264",
+          "duration": 4.3,
+          "fps": 30.0
+        },
+        "poster": {
+          "oid": "c8d654c14dea1d54e4ebe1eecb3b60929aabe422",
+          "bytes": 26735,
+          "path": "assets/workout-library/monte-wo-pack-2/r2/exercises/push-up/poster.jpg",
+          "sha256": "ed95c69bd88e41e5d2acf2e3b414a08bd2392b86749178e838313add61f6cbd5",
+          "width": 720,
+          "height": 936,
+          "format": "JPEG"
+        }
+      },
+      "reviewStatus": "form-and-rights-review-pending"
+    },
+    {
+      "manifest": {
+        "id": "pull-up",
+        "name_en": "Pull-up",
+        "name_ht": null,
+        "category": "Back",
+        "equipment": "Bodyweight",
+        "primary_muscles": [
+          "Back",
+          "Biceps"
+        ],
+        "secondary_muscles": [
+          "Shoulders",
+          "Forearms",
+          "Abs"
+        ],
+        "demo_key": "exercises/pull-up/demo.mp4",
+        "loop_key": "exercises/pull-up/loop.mp4",
+        "poster_key": "exercises/pull-up/poster.jpg",
+        "demo_duration_s": 21.5,
+        "loop_duration_s": 4.3,
+        "width": 720,
+        "height": 936,
+        "fps": 30,
+        "reps_in_demo": 5,
+        "demo_bytes": 423425,
+        "loop_bytes": 87832
+      },
+      "packages": [
+        "monte-wo-pack-2",
+        "monte-wo-pack"
+      ],
+      "files": {
+        "demo": {
+          "oid": "76c00c3b453c4a0dc71acdefad8888eb2d84bc41",
+          "bytes": 423425,
+          "path": "assets/workout-library/monte-wo-pack-2/r2/exercises/pull-up/demo.mp4",
+          "sha256": "0bf87bb266dfdb68b2a88b7211d5239e8f05fa58ffe48bb3e89e6214c86b3282",
+          "width": 720,
+          "height": 936,
+          "codec": "h264",
+          "duration": 21.5,
+          "fps": 30.0
+        },
+        "loop": {
+          "oid": "0f78f4b03388f21b95e0a920cd2602fba649a89a",
+          "bytes": 87832,
+          "path": "assets/workout-library/monte-wo-pack-2/r2/exercises/pull-up/loop.mp4",
+          "sha256": "2e8edbdfa71cc73c0d2bfa5fd575fe790b553a90cdb827d811f92b1392d32fe3",
+          "width": 720,
+          "height": 936,
+          "codec": "h264",
+          "duration": 4.3,
+          "fps": 30.0
+        },
+        "poster": {
+          "oid": "e50f9c20c0f4230f060775a7aed30076320cd71e",
+          "bytes": 29514,
+          "path": "assets/workout-library/monte-wo-pack-2/r2/exercises/pull-up/poster.jpg",
+          "sha256": "ec8352ab4a9f99b09f9cc5ee37bc34d19062816fc99c826cd3004877c4985f17",
+          "width": 720,
+          "height": 936,
+          "format": "JPEG"
+        }
+      },
+      "reviewStatus": "form-and-rights-review-pending"
+    },
+    {
+      "manifest": {
+        "id": "romanian-deadlift",
+        "name_en": "Romanian deadlift",
+        "name_ht": null,
+        "category": "Legs",
+        "equipment": "Barbell",
+        "primary_muscles": [
+          "Hamstrings",
+          "Glutes"
+        ],
+        "secondary_muscles": [
+          "Lower back"
+        ],
+        "demo_key": "exercises/romanian-deadlift/demo.mp4",
+        "loop_key": "exercises/romanian-deadlift/loop.mp4",
+        "poster_key": "exercises/romanian-deadlift/poster.jpg",
+        "demo_duration_s": 21.5,
+        "loop_duration_s": 4.3,
+        "width": 720,
+        "height": 936,
+        "fps": 30,
+        "reps_in_demo": 5,
+        "demo_bytes": 768584,
+        "loop_bytes": 157374
+      },
+      "packages": [
+        "monte-wo-pack-2"
+      ],
+      "files": {
+        "demo": {
+          "oid": "b0b62fbb3c8eaf1490900c7205c0acfb386e462b",
+          "bytes": 768584,
+          "path": "assets/workout-library/monte-wo-pack-2/r2/exercises/romanian-deadlift/demo.mp4",
+          "sha256": "4a15fd4adb4d0069023ffaba72bc5c77cc61bdb9184ee97805e150e926fcf82e",
+          "width": 720,
+          "height": 936,
+          "codec": "h264",
+          "duration": 21.5,
+          "fps": 30.0
+        },
+        "loop": {
+          "oid": "a907648e98a16a22cb8f099b1e3cdde6ce760406",
+          "bytes": 157374,
+          "path": "assets/workout-library/monte-wo-pack-2/r2/exercises/romanian-deadlift/loop.mp4",
+          "sha256": "d44377f2b14ad3a1876088568f4de372fb4c250e8d57ea052b8a6b6ca213c7c5",
+          "width": 720,
+          "height": 936,
+          "codec": "h264",
+          "duration": 4.3,
+          "fps": 30.0
+        },
+        "poster": {
+          "oid": "1fe89bb1066a510220413556347631e2294f92f6",
+          "bytes": 31586,
+          "path": "assets/workout-library/monte-wo-pack-2/r2/exercises/romanian-deadlift/poster.jpg",
+          "sha256": "e6090c62678b6dd1779f8d4afeaba15a7c682e78fe461258fdddd325766ca784",
+          "width": 720,
+          "height": 936,
+          "format": "JPEG"
+        }
+      },
+      "reviewStatus": "form-and-rights-review-pending"
+    },
+    {
+      "manifest": {
+        "id": "goblet-squat",
+        "name_en": "Goblet squat",
+        "name_ht": null,
+        "category": "Legs",
+        "equipment": "Dumbbell",
+        "primary_muscles": [
+          "Quadriceps",
+          "Glutes"
+        ],
+        "secondary_muscles": [
+          "Abs",
+          "Calves"
+        ],
+        "demo_key": "exercises/goblet-squat/demo.mp4",
+        "loop_key": "exercises/goblet-squat/loop.mp4",
+        "poster_key": "exercises/goblet-squat/poster.jpg",
+        "demo_duration_s": 21.5,
+        "loop_duration_s": 4.3,
+        "width": 720,
+        "height": 936,
+        "fps": 30,
+        "reps_in_demo": 5,
+        "demo_bytes": 668902,
+        "loop_bytes": 136332
+      },
+      "packages": [
+        "monte-wo-pack-2"
+      ],
+      "files": {
+        "demo": {
+          "oid": "94bf3ae1c9ac1a8b4c8c478f991a992eb9bd2315",
+          "bytes": 668902,
+          "path": "assets/workout-library/monte-wo-pack-2/r2/exercises/goblet-squat/demo.mp4",
+          "sha256": "6c1575aae4fe78affc0069475197aa74d582e89a4d371d47a6fef37979960029",
+          "width": 720,
+          "height": 936,
+          "codec": "h264",
+          "duration": 21.5,
+          "fps": 30.0
+        },
+        "loop": {
+          "oid": "0bf59fe97c0d28ab71324e3ea454a49f89af3686",
+          "bytes": 136332,
+          "path": "assets/workout-library/monte-wo-pack-2/r2/exercises/goblet-squat/loop.mp4",
+          "sha256": "82670c9a034aa4698afdb951074aa51109d26d199244b9222d4c94a7c6c7fe1d",
+          "width": 720,
+          "height": 936,
+          "codec": "h264",
+          "duration": 4.3,
+          "fps": 30.0
+        },
+        "poster": {
+          "oid": "ed305e0ed81cee4cba50ee16d12a4d847b9a7655",
+          "bytes": 29793,
+          "path": "assets/workout-library/monte-wo-pack-2/r2/exercises/goblet-squat/poster.jpg",
+          "sha256": "06c482b37fab6abef3f0e78f5cf2a060eb5f7cd7c6f09410bf5c22972650c1b5",
+          "width": 720,
+          "height": 936,
+          "format": "JPEG"
+        }
+      },
+      "reviewStatus": "form-and-rights-review-pending"
+    },
+    {
+      "manifest": {
+        "id": "reverse-lunge",
+        "name_en": "Reverse lunge",
+        "name_ht": null,
+        "category": "Legs",
+        "equipment": "Dumbbells",
+        "primary_muscles": [
+          "Quadriceps",
+          "Glutes"
+        ],
+        "secondary_muscles": [
+          "Hamstrings",
+          "Calves"
+        ],
+        "demo_key": "exercises/reverse-lunge/demo.mp4",
+        "loop_key": "exercises/reverse-lunge/loop.mp4",
+        "poster_key": "exercises/reverse-lunge/poster.jpg",
+        "demo_duration_s": 21.5,
+        "loop_duration_s": 4.3,
+        "width": 720,
+        "height": 936,
+        "fps": 30,
+        "reps_in_demo": 5,
+        "demo_bytes": 569510,
+        "loop_bytes": 116877
+      },
+      "packages": [
+        "monte-wo-pack-2"
+      ],
+      "files": {
+        "demo": {
+          "oid": "388477f28d007c0ed12bc1b15a973505dfe11d86",
+          "bytes": 569510,
+          "path": "assets/workout-library/monte-wo-pack-2/r2/exercises/reverse-lunge/demo.mp4",
+          "sha256": "c9b965df7c9a2c51ac4a101954464dc805fdf10e979e87687fd8ba95e5078309",
+          "width": 720,
+          "height": 936,
+          "codec": "h264",
+          "duration": 21.5,
+          "fps": 30.0
+        },
+        "loop": {
+          "oid": "2feac5e1ef485b206bc513f90905f1f9f16c7b3c",
+          "bytes": 116877,
+          "path": "assets/workout-library/monte-wo-pack-2/r2/exercises/reverse-lunge/loop.mp4",
+          "sha256": "9c40122d51f91aee10abfa4f3767c7fe3f3c5cab0f50641b6a83703b568e657f",
+          "width": 720,
+          "height": 936,
+          "codec": "h264",
+          "duration": 4.3,
+          "fps": 30.0
+        },
+        "poster": {
+          "oid": "9e7771481f0f3e3f858ef6f8b10aabf587f6d59c",
+          "bytes": 30055,
+          "path": "assets/workout-library/monte-wo-pack-2/r2/exercises/reverse-lunge/poster.jpg",
+          "sha256": "7b051877ad3b086cf034ae417289d6cd296568638995b867ad49589a2a9ca8bb",
+          "width": 720,
+          "height": 936,
+          "format": "JPEG"
+        }
+      },
+      "reviewStatus": "form-and-rights-review-pending"
+    },
+    {
+      "manifest": {
+        "id": "calf-raise",
+        "name_en": "Standing calf raise",
+        "name_ht": null,
+        "category": "Legs",
+        "equipment": "Dumbbells",
+        "primary_muscles": [
+          "Calves"
+        ],
+        "secondary_muscles": [
+          "Hamstrings"
+        ],
+        "demo_key": "exercises/calf-raise/demo.mp4",
+        "loop_key": "exercises/calf-raise/loop.mp4",
+        "poster_key": "exercises/calf-raise/poster.jpg",
+        "demo_duration_s": 21.5,
+        "loop_duration_s": 4.3,
+        "width": 720,
+        "height": 936,
+        "fps": 30,
+        "reps_in_demo": 5,
+        "demo_bytes": 470622,
+        "loop_bytes": 97355
+      },
+      "packages": [
+        "monte-wo-pack-2"
+      ],
+      "files": {
+        "demo": {
+          "oid": "358a9d59d188a673bf2e88b3a1f250a588d8c04a",
+          "bytes": 470622,
+          "path": "assets/workout-library/monte-wo-pack-2/r2/exercises/calf-raise/demo.mp4",
+          "sha256": "819fd618fcca7d3d0e0ee5c32d61b6281427d4ebfa2153edf43b4fee4f7c48d7",
+          "width": 720,
+          "height": 936,
+          "codec": "h264",
+          "duration": 21.5,
+          "fps": 30.0
+        },
+        "loop": {
+          "oid": "af4de840d070152abca16e0f66d619dfaa65238c",
+          "bytes": 97355,
+          "path": "assets/workout-library/monte-wo-pack-2/r2/exercises/calf-raise/loop.mp4",
+          "sha256": "119946b9cc98e72e38364016cc01c4460e5f70ed4613f2ba1f04c8588c865f1b",
+          "width": 720,
+          "height": 936,
+          "codec": "h264",
+          "duration": 4.3,
+          "fps": 30.0
+        },
+        "poster": {
+          "oid": "bad0cd604aed07e55046749fec2d88f73689529f",
+          "bytes": 29144,
+          "path": "assets/workout-library/monte-wo-pack-2/r2/exercises/calf-raise/poster.jpg",
+          "sha256": "5890815ffd0a3fd2442840291b90a710b5292e21c3836337e54f5dca67a093a9",
+          "width": 720,
+          "height": 936,
+          "format": "JPEG"
+        }
+      },
+      "reviewStatus": "form-and-rights-review-pending"
+    },
+    {
+      "manifest": {
+        "id": "glute-bridge",
+        "name_en": "Glute bridge",
+        "name_ht": null,
+        "category": "Legs",
+        "equipment": "Bodyweight",
+        "primary_muscles": [
+          "Glutes"
+        ],
+        "secondary_muscles": [
+          "Hamstrings",
+          "Abs"
+        ],
+        "demo_key": "exercises/glute-bridge/demo.mp4",
+        "loop_key": "exercises/glute-bridge/loop.mp4",
+        "poster_key": "exercises/glute-bridge/poster.jpg",
+        "demo_duration_s": 21.5,
+        "loop_duration_s": 4.3,
+        "width": 720,
+        "height": 936,
+        "fps": 30,
+        "reps_in_demo": 5,
+        "demo_bytes": 432380,
+        "loop_bytes": 91452
+      },
+      "packages": [
+        "monte-wo-pack-2"
+      ],
+      "files": {
+        "demo": {
+          "oid": "349f1c86109ef911952bb5330229f100608f6e93",
+          "bytes": 432380,
+          "path": "assets/workout-library/monte-wo-pack-2/r2/exercises/glute-bridge/demo.mp4",
+          "sha256": "5f79148ea1745f505399726fddbef49765b42f9552affd7c67272d1be5775bfe",
+          "width": 720,
+          "height": 936,
+          "codec": "h264",
+          "duration": 21.5,
+          "fps": 30.0
+        },
+        "loop": {
+          "oid": "41dc045a824139b53510c9a4b6d81dac8f385520",
+          "bytes": 91452,
+          "path": "assets/workout-library/monte-wo-pack-2/r2/exercises/glute-bridge/loop.mp4",
+          "sha256": "f8890e5b98f7f5f22aab11e27023e1600af0c8184ec35606aa255cd6ac7bd92b",
+          "width": 720,
+          "height": 936,
+          "codec": "h264",
+          "duration": 4.3,
+          "fps": 30.0
+        },
+        "poster": {
+          "oid": "e659ae2298fe094fdb2378c5d749f7cfcf1203b7",
+          "bytes": 29053,
+          "path": "assets/workout-library/monte-wo-pack-2/r2/exercises/glute-bridge/poster.jpg",
+          "sha256": "c2740e5f8d43f54c894fc2a731aca7c4e399e47914f06a75e415a3787df5512a",
+          "width": 720,
+          "height": 936,
+          "format": "JPEG"
+        }
+      },
+      "reviewStatus": "form-and-rights-review-pending"
+    },
+    {
+      "manifest": {
+        "id": "incline-dumbbell-press",
+        "name_en": "Incline dumbbell press",
+        "name_ht": null,
+        "category": "Chest",
+        "equipment": "Dumbbells",
+        "primary_muscles": [
+          "Upper chest"
+        ],
+        "secondary_muscles": [
+          "Front shoulders",
+          "Triceps"
+        ],
+        "demo_key": "exercises/incline-dumbbell-press/demo.mp4",
+        "loop_key": "exercises/incline-dumbbell-press/loop.mp4",
+        "poster_key": "exercises/incline-dumbbell-press/poster.jpg",
+        "demo_duration_s": 21.5,
+        "loop_duration_s": 4.3,
+        "width": 720,
+        "height": 936,
+        "fps": 30,
+        "reps_in_demo": 5,
+        "demo_bytes": 358052,
+        "loop_bytes": 75798
+      },
+      "packages": [
+        "monte-wo-pack-2"
+      ],
+      "files": {
+        "demo": {
+          "oid": "037ad9fe4f52db70ffebc8df6e20678e054fdb92",
+          "bytes": 358052,
+          "path": "assets/workout-library/monte-wo-pack-2/r2/exercises/incline-dumbbell-press/demo.mp4",
+          "sha256": "10c6cc36beff03bfff76d9deb5033f8c1ab7a1fabc4706041ac0871a8ff7b16b",
+          "width": 720,
+          "height": 936,
+          "codec": "h264",
+          "duration": 21.5,
+          "fps": 30.0
+        },
+        "loop": {
+          "oid": "43c27641f1ba762e984ec45a04efa65f1ecb7a7a",
+          "bytes": 75798,
+          "path": "assets/workout-library/monte-wo-pack-2/r2/exercises/incline-dumbbell-press/loop.mp4",
+          "sha256": "7f11711dc507601e7ef2745ea55ed021bee2f7bd31acbf3b485ea5d6177c847f",
+          "width": 720,
+          "height": 936,
+          "codec": "h264",
+          "duration": 4.3,
+          "fps": 30.0
+        },
+        "poster": {
+          "oid": "943b4e104b7db190a5b373c71913ff6c9964127b",
+          "bytes": 33268,
+          "path": "assets/workout-library/monte-wo-pack-2/r2/exercises/incline-dumbbell-press/poster.jpg",
+          "sha256": "7eb1c94fee198aa30c1718d99b50639c5cbad1721376c8939e7f9ac4d03e6c7c",
+          "width": 720,
+          "height": 936,
+          "format": "JPEG"
+        }
+      },
+      "reviewStatus": "form-and-rights-review-pending"
+    },
+    {
+      "manifest": {
+        "id": "seated-dumbbell-press",
+        "name_en": "Seated dumbbell shoulder press",
+        "name_ht": null,
+        "category": "Shoulders",
+        "equipment": "Dumbbells",
+        "primary_muscles": [
+          "Shoulders",
+          "Triceps"
+        ],
+        "secondary_muscles": [
+          "Upper back"
+        ],
+        "demo_key": "exercises/seated-dumbbell-press/demo.mp4",
+        "loop_key": "exercises/seated-dumbbell-press/loop.mp4",
+        "poster_key": "exercises/seated-dumbbell-press/poster.jpg",
+        "demo_duration_s": 21.5,
+        "loop_duration_s": 4.3,
+        "width": 720,
+        "height": 936,
+        "fps": 30,
+        "reps_in_demo": 5,
+        "demo_bytes": 391656,
+        "loop_bytes": 81575
+      },
+      "packages": [
+        "monte-wo-pack-2"
+      ],
+      "files": {
+        "demo": {
+          "oid": "63859e033811418aa59748839f01edae09340991",
+          "bytes": 391656,
+          "path": "assets/workout-library/monte-wo-pack-2/r2/exercises/seated-dumbbell-press/demo.mp4",
+          "sha256": "29beaad5bd17a31a72200e8671e8a9af777dd583d47101944ab29c72cd7dfa76",
+          "width": 720,
+          "height": 936,
+          "codec": "h264",
+          "duration": 21.5,
+          "fps": 30.0
+        },
+        "loop": {
+          "oid": "42832a52ff4c60ef7983e91bb4a277f735fc37d4",
+          "bytes": 81575,
+          "path": "assets/workout-library/monte-wo-pack-2/r2/exercises/seated-dumbbell-press/loop.mp4",
+          "sha256": "c4cfdad81c78fdc14137eb6c5963b2bace4eff8f82c2d79af7e3902d62ffd122",
+          "width": 720,
+          "height": 936,
+          "codec": "h264",
+          "duration": 4.3,
+          "fps": 30.0
+        },
+        "poster": {
+          "oid": "8159ee737ed462f47a430b2df90d86ea55d7782b",
+          "bytes": 31372,
+          "path": "assets/workout-library/monte-wo-pack-2/r2/exercises/seated-dumbbell-press/poster.jpg",
+          "sha256": "765e7042f0cb92f628aac757226104508b59359987c80e3c8e9ad7bcef4a0879",
+          "width": 720,
+          "height": 936,
+          "format": "JPEG"
+        }
+      },
+      "reviewStatus": "form-and-rights-review-pending"
+    },
+    {
+      "manifest": {
+        "id": "dips",
+        "name_en": "Parallel bar dips",
+        "name_ht": null,
+        "category": "Chest",
+        "equipment": "Bodyweight",
+        "primary_muscles": [
+          "Chest",
+          "Triceps"
+        ],
+        "secondary_muscles": [
+          "Front shoulders"
+        ],
+        "demo_key": "exercises/dips/demo.mp4",
+        "loop_key": "exercises/dips/loop.mp4",
+        "poster_key": "exercises/dips/poster.jpg",
+        "demo_duration_s": 21.5,
+        "loop_duration_s": 4.3,
+        "width": 720,
+        "height": 936,
+        "fps": 30,
+        "reps_in_demo": 5,
+        "demo_bytes": 538217,
+        "loop_bytes": 111046
+      },
+      "packages": [
+        "monte-wo-pack-2"
+      ],
+      "files": {
+        "demo": {
+          "oid": "135dae87bf39d3a5d9e63a3f681c7461f80027d8",
+          "bytes": 538217,
+          "path": "assets/workout-library/monte-wo-pack-2/r2/exercises/dips/demo.mp4",
+          "sha256": "ec115b6c8363f15dbd5e21000990b9b1c1ae83675fa9ec28fa1c31d90705b903",
+          "width": 720,
+          "height": 936,
+          "codec": "h264",
+          "duration": 21.5,
+          "fps": 30.0
+        },
+        "loop": {
+          "oid": "fed3887988940964d81edea6b6eb189107e94d64",
+          "bytes": 111046,
+          "path": "assets/workout-library/monte-wo-pack-2/r2/exercises/dips/loop.mp4",
+          "sha256": "231eb08d7e422b1b83e640e32beef64c6c089c4e014af360049719a647c3594d",
+          "width": 720,
+          "height": 936,
+          "codec": "h264",
+          "duration": 4.3,
+          "fps": 30.0
+        },
+        "poster": {
+          "oid": "d77f3028b30f2a91bab6eaeb9ef879884a057874",
+          "bytes": 29435,
+          "path": "assets/workout-library/monte-wo-pack-2/r2/exercises/dips/poster.jpg",
+          "sha256": "f1b62cf0a1942ad706cca94d14a2234c8c5ee934cf56c3cea193e9e090a60f7e",
+          "width": 720,
+          "height": 936,
+          "format": "JPEG"
+        }
+      },
+      "reviewStatus": "form-and-rights-review-pending"
+    },
+    {
+      "manifest": {
+        "id": "lat-pulldown",
+        "name_en": "Lat pulldown",
+        "name_ht": null,
+        "category": "Back",
+        "equipment": "Cable machine",
+        "primary_muscles": [
+          "Back"
+        ],
+        "secondary_muscles": [
+          "Biceps",
+          "Rear shoulders",
+          "Forearms"
+        ],
+        "demo_key": "exercises/lat-pulldown/demo.mp4",
+        "loop_key": "exercises/lat-pulldown/loop.mp4",
+        "poster_key": "exercises/lat-pulldown/poster.jpg",
+        "demo_duration_s": 21.5,
+        "loop_duration_s": 4.3,
+        "width": 720,
+        "height": 936,
+        "fps": 30,
+        "reps_in_demo": 5,
+        "demo_bytes": 418990,
+        "loop_bytes": 87992
+      },
+      "packages": [
+        "monte-wo-pack-2"
+      ],
+      "files": {
+        "demo": {
+          "oid": "49e8e928fe7005e3636d0ddf60f05a0524a87c3b",
+          "bytes": 418990,
+          "path": "assets/workout-library/monte-wo-pack-2/r2/exercises/lat-pulldown/demo.mp4",
+          "sha256": "8bac835e803311cbfb6d00918eeb6efb4e1418bc9169f403265ac1d0aa8773d4",
+          "width": 720,
+          "height": 936,
+          "codec": "h264",
+          "duration": 21.5,
+          "fps": 30.0
+        },
+        "loop": {
+          "oid": "04fa3b728fe1d72cdd5a9a54c0f353cae198cf83",
+          "bytes": 87992,
+          "path": "assets/workout-library/monte-wo-pack-2/r2/exercises/lat-pulldown/loop.mp4",
+          "sha256": "050f1c42acde604a22af09d7dde39d29b490ed3f5c82cbf2b83c1fd3b9087454",
+          "width": 720,
+          "height": 936,
+          "codec": "h264",
+          "duration": 4.3,
+          "fps": 30.0
+        },
+        "poster": {
+          "oid": "58114167bf41c0d6e3f295f65eac79fd8cf300cd",
+          "bytes": 34757,
+          "path": "assets/workout-library/monte-wo-pack-2/r2/exercises/lat-pulldown/poster.jpg",
+          "sha256": "054943fe44788c89fa42825abc115298c09f923281cf432c3fdf9bef4d26e8be",
+          "width": 720,
+          "height": 936,
+          "format": "JPEG"
+        }
+      },
+      "reviewStatus": "form-and-rights-review-pending"
+    },
+    {
+      "manifest": {
+        "id": "seated-cable-row",
+        "name_en": "Seated cable row",
+        "name_ht": null,
+        "category": "Back",
+        "equipment": "Cable machine",
+        "primary_muscles": [
+          "Back"
+        ],
+        "secondary_muscles": [
+          "Biceps",
+          "Rear shoulders",
+          "Abs"
+        ],
+        "demo_key": "exercises/seated-cable-row/demo.mp4",
+        "loop_key": "exercises/seated-cable-row/loop.mp4",
+        "poster_key": "exercises/seated-cable-row/poster.jpg",
+        "demo_duration_s": 21.5,
+        "loop_duration_s": 4.3,
+        "width": 720,
+        "height": 936,
+        "fps": 30,
+        "reps_in_demo": 5,
+        "demo_bytes": 685793,
+        "loop_bytes": 139371
+      },
+      "packages": [
+        "monte-wo-pack-2"
+      ],
+      "files": {
+        "demo": {
+          "oid": "b089cc78d438a2881b8a7fc37e99ac09064b9463",
+          "bytes": 685793,
+          "path": "assets/workout-library/monte-wo-pack-2/r2/exercises/seated-cable-row/demo.mp4",
+          "sha256": "e9dc2a7fce2660b9d7ddf25c41bc067d24145f717ec6bac83dcb7fbccda7e552",
+          "width": 720,
+          "height": 936,
+          "codec": "h264",
+          "duration": 21.5,
+          "fps": 30.0
+        },
+        "loop": {
+          "oid": "bfa01295be2cd58d338a352892c74264a375f965",
+          "bytes": 139371,
+          "path": "assets/workout-library/monte-wo-pack-2/r2/exercises/seated-cable-row/loop.mp4",
+          "sha256": "f1fba0aae4aae1e3b109d236d983043645e290aa13d86bf3a560626c93e4efd9",
+          "width": 720,
+          "height": 936,
+          "codec": "h264",
+          "duration": 4.3,
+          "fps": 30.0
+        },
+        "poster": {
+          "oid": "ef12a8887639e2df9396ef939da01cfc74d73741",
+          "bytes": 34343,
+          "path": "assets/workout-library/monte-wo-pack-2/r2/exercises/seated-cable-row/poster.jpg",
+          "sha256": "4bb5d66c5a597879665539e8859129240fae79610f11012e9da6dac8d336d5db",
+          "width": 720,
+          "height": 936,
+          "format": "JPEG"
+        }
+      },
+      "reviewStatus": "form-and-rights-review-pending"
+    },
+    {
+      "manifest": {
+        "id": "barbell-curl",
+        "name_en": "Barbell curl",
+        "name_ht": null,
+        "category": "Arms",
+        "equipment": "Barbell",
+        "primary_muscles": [
+          "Biceps"
+        ],
+        "secondary_muscles": [
+          "Forearms"
+        ],
+        "demo_key": "exercises/barbell-curl/demo.mp4",
+        "loop_key": "exercises/barbell-curl/loop.mp4",
+        "poster_key": "exercises/barbell-curl/poster.jpg",
+        "demo_duration_s": 21.5,
+        "loop_duration_s": 4.3,
+        "width": 720,
+        "height": 936,
+        "fps": 30,
+        "reps_in_demo": 5,
+        "demo_bytes": 323043,
+        "loop_bytes": 68752
+      },
+      "packages": [
+        "monte-wo-pack-2"
+      ],
+      "files": {
+        "demo": {
+          "oid": "7429b9b3c19dad04e69e3a8f92dbfad52406e69c",
+          "bytes": 323043,
+          "path": "assets/workout-library/monte-wo-pack-2/r2/exercises/barbell-curl/demo.mp4",
+          "sha256": "e3f01607f534f78c89b2dacecee7505dd3f29147310ab420914b1e620dcdae86",
+          "width": 720,
+          "height": 936,
+          "codec": "h264",
+          "duration": 21.5,
+          "fps": 30.0
+        },
+        "loop": {
+          "oid": "5b5d90f39d925eedb72b8363eab970aa0e4ad71d",
+          "bytes": 68752,
+          "path": "assets/workout-library/monte-wo-pack-2/r2/exercises/barbell-curl/loop.mp4",
+          "sha256": "fab75d2794f39713e08bcd408b7167c5b1ace92743853f019a10e6566a193275",
+          "width": 720,
+          "height": 936,
+          "codec": "h264",
+          "duration": 4.3,
+          "fps": 30.0
+        },
+        "poster": {
+          "oid": "f2faefe54d55bea7496dc49685c630c2ee5d2604",
+          "bytes": 29256,
+          "path": "assets/workout-library/monte-wo-pack-2/r2/exercises/barbell-curl/poster.jpg",
+          "sha256": "55633dc6ef267531a289b4aec93add33aed4e4d412659bbd4cbf1ffe55b94c39",
+          "width": 720,
+          "height": 936,
+          "format": "JPEG"
+        }
+      },
+      "reviewStatus": "form-and-rights-review-pending"
+    },
+    {
+      "manifest": {
+        "id": "skull-crusher",
+        "name_en": "Skull crusher",
+        "name_ht": null,
+        "category": "Arms",
+        "equipment": "Barbell",
+        "primary_muscles": [
+          "Triceps"
+        ],
+        "secondary_muscles": [
+          "Shoulders",
+          "Forearms"
+        ],
+        "demo_key": "exercises/skull-crusher/demo.mp4",
+        "loop_key": "exercises/skull-crusher/loop.mp4",
+        "poster_key": "exercises/skull-crusher/poster.jpg",
+        "demo_duration_s": 21.5,
+        "loop_duration_s": 4.3,
+        "width": 720,
+        "height": 936,
+        "fps": 30,
+        "reps_in_demo": 5,
+        "demo_bytes": 292822,
+        "loop_bytes": 63833
+      },
+      "packages": [
+        "monte-wo-pack-2"
+      ],
+      "files": {
+        "demo": {
+          "oid": "dcbcaf53fdfc1f0c7eda875d906bde71d1677849",
+          "bytes": 292822,
+          "path": "assets/workout-library/monte-wo-pack-2/r2/exercises/skull-crusher/demo.mp4",
+          "sha256": "6605e0e90de57c67b8a3962e5371d577e399da9c71639acfe9af85c9591317b1",
+          "width": 720,
+          "height": 936,
+          "codec": "h264",
+          "duration": 21.5,
+          "fps": 30.0
+        },
+        "loop": {
+          "oid": "fe2a0f10c7c26cbe2f39131ac0c9dd7caaaa10d5",
+          "bytes": 63833,
+          "path": "assets/workout-library/monte-wo-pack-2/r2/exercises/skull-crusher/loop.mp4",
+          "sha256": "ff7595c39959bdc887fea4657f4988de9c49def44721b811681028d885c7a682",
+          "width": 720,
+          "height": 936,
+          "codec": "h264",
+          "duration": 4.3,
+          "fps": 30.0
+        },
+        "poster": {
+          "oid": "f5e2caaa5ae2229524bcbd5a363704c43483d0ab",
+          "bytes": 29960,
+          "path": "assets/workout-library/monte-wo-pack-2/r2/exercises/skull-crusher/poster.jpg",
+          "sha256": "53829651792fa8a8056a4d2834c6e6f11b907f4253bdf78d69b36855f4b3cbb8",
+          "width": 720,
+          "height": 936,
+          "format": "JPEG"
+        }
+      },
+      "reviewStatus": "form-and-rights-review-pending"
+    },
+    {
+      "manifest": {
+        "id": "overhead-triceps-extension",
+        "name_en": "Overhead triceps extension",
+        "name_ht": null,
+        "category": "Arms",
+        "equipment": "Dumbbell",
+        "primary_muscles": [
+          "Triceps"
+        ],
+        "secondary_muscles": [
+          "Shoulders"
+        ],
+        "demo_key": "exercises/overhead-triceps-extension/demo.mp4",
+        "loop_key": "exercises/overhead-triceps-extension/loop.mp4",
+        "poster_key": "exercises/overhead-triceps-extension/poster.jpg",
+        "demo_duration_s": 21.5,
+        "loop_duration_s": 4.3,
+        "width": 720,
+        "height": 936,
+        "fps": 30,
+        "reps_in_demo": 5,
+        "demo_bytes": 271348,
+        "loop_bytes": 57941
+      },
+      "packages": [
+        "monte-wo-pack-2"
+      ],
+      "files": {
+        "demo": {
+          "oid": "4efc834a6ff0120bbba7d4690c614a5edf52f0b1",
+          "bytes": 271348,
+          "path": "assets/workout-library/monte-wo-pack-2/r2/exercises/overhead-triceps-extension/demo.mp4",
+          "sha256": "e187f1493f43ad602c2a6362ecaa5981b0e6037c92aad7378319d3f4e099c5e2",
+          "width": 720,
+          "height": 936,
+          "codec": "h264",
+          "duration": 21.5,
+          "fps": 30.0
+        },
+        "loop": {
+          "oid": "8d35191e419a68824eacf8618dc6bd0efa382fa7",
+          "bytes": 57941,
+          "path": "assets/workout-library/monte-wo-pack-2/r2/exercises/overhead-triceps-extension/loop.mp4",
+          "sha256": "c7c13a9277f1c975dcefaa108f58857bb1b8d8f3bd166fd5b06523449d69d591",
+          "width": 720,
+          "height": 936,
+          "codec": "h264",
+          "duration": 4.3,
+          "fps": 30.0
+        },
+        "poster": {
+          "oid": "1b79f0c56a77cdb787c77c4955417381d45f97bb",
+          "bytes": 26401,
+          "path": "assets/workout-library/monte-wo-pack-2/r2/exercises/overhead-triceps-extension/poster.jpg",
+          "sha256": "a20cc9c11c1e37ff9c07f434d3b3288705e7a2539e2cfada641c9924e976238c",
+          "width": 720,
+          "height": 936,
+          "format": "JPEG"
+        }
+      },
+      "reviewStatus": "form-and-rights-review-pending"
+    },
+    {
+      "manifest": {
+        "id": "dumbbell-shrug",
+        "name_en": "Dumbbell shrug",
+        "name_ht": null,
+        "category": "Shoulders",
+        "equipment": "Dumbbells",
+        "primary_muscles": [
+          "Traps"
+        ],
+        "secondary_muscles": [
+          "Forearms"
+        ],
+        "demo_key": "exercises/dumbbell-shrug/demo.mp4",
+        "loop_key": "exercises/dumbbell-shrug/loop.mp4",
+        "poster_key": "exercises/dumbbell-shrug/poster.jpg",
+        "demo_duration_s": 21.5,
+        "loop_duration_s": 4.3,
+        "width": 720,
+        "height": 936,
+        "fps": 30,
+        "reps_in_demo": 5,
+        "demo_bytes": 230683,
+        "loop_bytes": 50019
+      },
+      "packages": [
+        "monte-wo-pack-2"
+      ],
+      "files": {
+        "demo": {
+          "oid": "4cbde9c6fff8970248f67e1dd2d7aa6859272b80",
+          "bytes": 230683,
+          "path": "assets/workout-library/monte-wo-pack-2/r2/exercises/dumbbell-shrug/demo.mp4",
+          "sha256": "2f5f70c4602a7e1dffcee9e8153362cd7a6427dbc2e8dc05de615793daf1fb8a",
+          "width": 720,
+          "height": 936,
+          "codec": "h264",
+          "duration": 21.5,
+          "fps": 30.0
+        },
+        "loop": {
+          "oid": "5f9db4b7b5ce1d3704ba6e8b43b370d5c06dcda8",
+          "bytes": 50019,
+          "path": "assets/workout-library/monte-wo-pack-2/r2/exercises/dumbbell-shrug/loop.mp4",
+          "sha256": "596afd135e79f1ca753814612bd31ba2bd55f72d26b12b54690009b08b3e882c",
+          "width": 720,
+          "height": 936,
+          "codec": "h264",
+          "duration": 4.3,
+          "fps": 30.0
+        },
+        "poster": {
+          "oid": "44b8e14ab6ad2a16aaa72a5160c8620a82a53a2a",
+          "bytes": 28138,
+          "path": "assets/workout-library/monte-wo-pack-2/r2/exercises/dumbbell-shrug/poster.jpg",
+          "sha256": "6fc11f03c5f54b6a02cb34bd42b28ff7a59119a583869f163abf5e776caa8b8e",
+          "width": 720,
+          "height": 936,
+          "format": "JPEG"
+        }
+      },
+      "reviewStatus": "form-and-rights-review-pending"
+    },
+    {
+      "manifest": {
+        "id": "crunch",
+        "name_en": "Crunch",
+        "name_ht": null,
+        "category": "Core",
+        "equipment": "Bodyweight",
+        "primary_muscles": [
+          "Abs"
+        ],
+        "secondary_muscles": [],
+        "demo_key": "exercises/crunch/demo.mp4",
+        "loop_key": "exercises/crunch/loop.mp4",
+        "poster_key": "exercises/crunch/poster.jpg",
+        "demo_duration_s": 21.5,
+        "loop_duration_s": 4.3,
+        "width": 720,
+        "height": 936,
+        "fps": 30,
+        "reps_in_demo": 5,
+        "demo_bytes": 530919,
+        "loop_bytes": 108905
+      },
+      "packages": [
+        "monte-wo-pack-2"
+      ],
+      "files": {
+        "demo": {
+          "oid": "a66b4c0389eb3382583e7a9a87ef766d57256513",
+          "bytes": 530919,
+          "path": "assets/workout-library/monte-wo-pack-2/r2/exercises/crunch/demo.mp4",
+          "sha256": "20e20ac612bb54b3043bd723df5cbd088eecf0514af148370fafc280f267064e",
+          "width": 720,
+          "height": 936,
+          "codec": "h264",
+          "duration": 21.5,
+          "fps": 30.0
+        },
+        "loop": {
+          "oid": "8fa0ddece5e93b03faac86df0ec32d8aab2c5d7d",
+          "bytes": 108905,
+          "path": "assets/workout-library/monte-wo-pack-2/r2/exercises/crunch/loop.mp4",
+          "sha256": "5779b7d1c9f0f0dfd95dfe54db6d1b6a949c8a8041cf56aa82ac0e5139441a22",
+          "width": 720,
+          "height": 936,
+          "codec": "h264",
+          "duration": 4.3,
+          "fps": 30.0
+        },
+        "poster": {
+          "oid": "a3bac64f689b2787e9aba0ce97c214f3419e4e1a",
+          "bytes": 29279,
+          "path": "assets/workout-library/monte-wo-pack-2/r2/exercises/crunch/poster.jpg",
+          "sha256": "a1da292dc7b7d6c21ea548a32fadcb73dbc0df4570ec8e3f2824f43e852de4f6",
+          "width": 720,
+          "height": 936,
+          "format": "JPEG"
+        }
+      },
+      "reviewStatus": "form-and-rights-review-pending"
+    },
+    {
+      "manifest": {
+        "id": "hanging-leg-raise",
+        "name_en": "Hanging leg raise",
+        "name_ht": null,
+        "category": "Core",
+        "equipment": "Bodyweight",
+        "primary_muscles": [
+          "Abs"
+        ],
+        "secondary_muscles": [
+          "Forearms",
+          "Back"
+        ],
+        "demo_key": "exercises/hanging-leg-raise/demo.mp4",
+        "loop_key": "exercises/hanging-leg-raise/loop.mp4",
+        "poster_key": "exercises/hanging-leg-raise/poster.jpg",
+        "demo_duration_s": 21.5,
+        "loop_duration_s": 4.3,
+        "width": 720,
+        "height": 936,
+        "fps": 30,
+        "reps_in_demo": 5,
+        "demo_bytes": 374339,
+        "loop_bytes": 78300
+      },
+      "packages": [
+        "monte-wo-pack-2"
+      ],
+      "files": {
+        "demo": {
+          "oid": "e5aa8a915d005ed7a6702c419cf0b7b9be4f131f",
+          "bytes": 374339,
+          "path": "assets/workout-library/monte-wo-pack-2/r2/exercises/hanging-leg-raise/demo.mp4",
+          "sha256": "8952cd32d278ec287645e6f3e83670583e1ee99c2824cb88574d476d19122026",
+          "width": 720,
+          "height": 936,
+          "codec": "h264",
+          "duration": 21.5,
+          "fps": 30.0
+        },
+        "loop": {
+          "oid": "7b68f97b0608f0588182564659fa6e73342d9e2b",
+          "bytes": 78300,
+          "path": "assets/workout-library/monte-wo-pack-2/r2/exercises/hanging-leg-raise/loop.mp4",
+          "sha256": "2acfe2dcb24bc9af9fdd1db5acd5bd5ac5e9821de27ec2de61b60d51291c5d85",
+          "width": 720,
+          "height": 936,
+          "codec": "h264",
+          "duration": 4.3,
+          "fps": 30.0
+        },
+        "poster": {
+          "oid": "1f51c5bf9dccd6fd13a70d73925e8fe028aedf71",
+          "bytes": 29406,
+          "path": "assets/workout-library/monte-wo-pack-2/r2/exercises/hanging-leg-raise/poster.jpg",
+          "sha256": "9d7d00fd7fcc0fb44ac9348803cedc6a184436b3619797da79e17a7c9080e2bc",
+          "width": 720,
+          "height": 936,
+          "format": "JPEG"
+        }
+      },
+      "reviewStatus": "form-and-rights-review-pending"
+    },
+    {
+      "manifest": {
+        "id": "face-pull",
+        "name_en": "Face pull",
+        "name_ht": null,
+        "category": "Shoulders",
+        "equipment": "Cable machine",
+        "primary_muscles": [
+          "Upper back",
+          "Rear shoulders"
+        ],
+        "secondary_muscles": [
+          "Traps"
+        ],
+        "demo_key": "exercises/face-pull/demo.mp4",
+        "loop_key": "exercises/face-pull/loop.mp4",
+        "poster_key": "exercises/face-pull/poster.jpg",
+        "demo_duration_s": 21.5,
+        "loop_duration_s": 4.3,
+        "width": 720,
+        "height": 936,
+        "fps": 30,
+        "reps_in_demo": 5,
+        "demo_bytes": 387660,
+        "loop_bytes": 80607
+      },
+      "packages": [
+        "monte-wo-pack-2"
+      ],
+      "files": {
+        "demo": {
+          "oid": "db7930f9a52d4fd93724283d006678062f973375",
+          "bytes": 387660,
+          "path": "assets/workout-library/monte-wo-pack-2/r2/exercises/face-pull/demo.mp4",
+          "sha256": "b2ab3012b01b1b33c5f56ea0a4062462cdf8bda86fd47816615ef3c3f453d0d2",
+          "width": 720,
+          "height": 936,
+          "codec": "h264",
+          "duration": 21.5,
+          "fps": 30.0
+        },
+        "loop": {
+          "oid": "3b81c326348845a78528e637bdd1b7ed6b791335",
+          "bytes": 80607,
+          "path": "assets/workout-library/monte-wo-pack-2/r2/exercises/face-pull/loop.mp4",
+          "sha256": "52b614cac3be5fd60c7dbb9c0677078f955cd2cf6eb563184005f736942ca352",
+          "width": 720,
+          "height": 936,
+          "codec": "h264",
+          "duration": 4.3,
+          "fps": 30.0
+        },
+        "poster": {
+          "oid": "62ca937e6ba2e476839bcb267f7cc7c2bee73726",
+          "bytes": 31274,
+          "path": "assets/workout-library/monte-wo-pack-2/r2/exercises/face-pull/poster.jpg",
+          "sha256": "e9d10b701a2ccb86604613176caecec1725eda89617f8d0e22f92c1434443557",
+          "width": 720,
+          "height": 936,
+          "format": "JPEG"
+        }
+      },
+      "reviewStatus": "form-and-rights-review-pending"
+    },
+    {
+      "manifest": {
+        "id": "good-morning",
+        "name_en": "Good morning",
+        "name_ht": null,
+        "category": "Legs",
+        "equipment": "Barbell",
+        "primary_muscles": [
+          "Hamstrings",
+          "Glutes"
+        ],
+        "secondary_muscles": [
+          "Lower back"
+        ],
+        "demo_key": "exercises/good-morning/demo.mp4",
+        "loop_key": "exercises/good-morning/loop.mp4",
+        "poster_key": "exercises/good-morning/poster.jpg",
+        "demo_duration_s": 21.5,
+        "loop_duration_s": 4.3,
+        "width": 720,
+        "height": 936,
+        "fps": 30,
+        "reps_in_demo": 5,
+        "demo_bytes": 701695,
+        "loop_bytes": 142928
+      },
+      "packages": [
+        "monte-wo-pack-2"
+      ],
+      "files": {
+        "demo": {
+          "oid": "bd5e7940b71d23b74a070d4d3c964006c5efb712",
+          "bytes": 701695,
+          "path": "assets/workout-library/monte-wo-pack-2/r2/exercises/good-morning/demo.mp4",
+          "sha256": "059187182211bc4b3c9ba90ee3fd926d61cca9f5704eb39efea91046a786ded6",
+          "width": 720,
+          "height": 936,
+          "codec": "h264",
+          "duration": 21.5,
+          "fps": 30.0
+        },
+        "loop": {
+          "oid": "99d59f9a91ccbd45e45e4451a32d4b71fa57dbad",
+          "bytes": 142928,
+          "path": "assets/workout-library/monte-wo-pack-2/r2/exercises/good-morning/loop.mp4",
+          "sha256": "43796fcbaabcfb0e64e56b98edd77a868e15a9b1aef6a2de08d533c5c070c3c8",
+          "width": 720,
+          "height": 936,
+          "codec": "h264",
+          "duration": 4.3,
+          "fps": 30.0
+        },
+        "poster": {
+          "oid": "9098f38a586cc1f2671b98df2444c4a895926eac",
+          "bytes": 30373,
+          "path": "assets/workout-library/monte-wo-pack-2/r2/exercises/good-morning/poster.jpg",
+          "sha256": "e9d7ede576862423db30cf4cf750fcfe8f141358e9e09e10c1061d8c73029523",
+          "width": 720,
+          "height": 936,
+          "format": "JPEG"
+        }
+      },
+      "reviewStatus": "form-and-rights-review-pending"
+    },
+    {
+      "manifest": {
+        "id": "lateral-raise",
+        "name_en": "Dumbbell lateral raise",
+        "name_ht": null,
+        "category": "Shoulders",
+        "equipment": "Dumbbells",
+        "primary_muscles": [
+          "Side shoulders"
+        ],
+        "secondary_muscles": [
+          "Traps"
+        ],
+        "demo_key": "exercises/lateral-raise/demo.mp4",
+        "loop_key": "exercises/lateral-raise/loop.mp4",
+        "poster_key": "exercises/lateral-raise/poster.jpg",
+        "demo_duration_s": 21.5,
+        "loop_duration_s": 4.3,
+        "width": 720,
+        "height": 936,
+        "fps": 30,
+        "reps_in_demo": 5,
+        "demo_bytes": 437384,
+        "loop_bytes": 90561
+      },
+      "packages": [
+        "monte-wo-pack-3"
+      ],
+      "files": {
+        "demo": {
+          "oid": "ac12debc54fb9c6115b8cae42e794a9374a74728",
+          "bytes": 437384,
+          "path": "assets/workout-library/monte-wo-pack-3/r2/exercises/lateral-raise/demo.mp4",
+          "sha256": "8bbb1879648327cc855792c65646e6cf586b365fdcc187bc4c9517d9cfafd2c7",
+          "width": 720,
+          "height": 936,
+          "codec": "h264",
+          "duration": 21.5,
+          "fps": 30.0
+        },
+        "loop": {
+          "oid": "e4a8db726dee4426bd8bf73997de6079cf6ca4ad",
+          "bytes": 90561,
+          "path": "assets/workout-library/monte-wo-pack-3/r2/exercises/lateral-raise/loop.mp4",
+          "sha256": "87d5db21c6594669a8f6839fe5bc7fdab4a1af38f7af41dfa2be26f251c1f9ec",
+          "width": 720,
+          "height": 936,
+          "codec": "h264",
+          "duration": 4.3,
+          "fps": 30.0
+        },
+        "poster": {
+          "oid": "1d11b00fe769c296eee29bc968ff4869dd856f87",
+          "bytes": 30406,
+          "path": "assets/workout-library/monte-wo-pack-3/r2/exercises/lateral-raise/poster.jpg",
+          "sha256": "2c5de8bc83fe5fddfd13ec084785705c3c2c126e6790e690a7e141acfc90c7b8",
+          "width": 720,
+          "height": 936,
+          "format": "JPEG"
+        }
+      },
+      "reviewStatus": "form-and-rights-review-pending"
+    },
+    {
+      "manifest": {
+        "id": "jumping-jacks",
+        "name_en": "Jumping jacks",
+        "name_ht": null,
+        "category": "Cardio",
+        "equipment": "Bodyweight",
+        "primary_muscles": [
+          "Full body"
+        ],
+        "secondary_muscles": [
+          "Shoulders",
+          "Calves"
+        ],
+        "demo_key": "exercises/jumping-jacks/demo.mp4",
+        "loop_key": "exercises/jumping-jacks/loop.mp4",
+        "poster_key": "exercises/jumping-jacks/poster.jpg",
+        "demo_duration_s": 21.5,
+        "loop_duration_s": 4.3,
+        "width": 720,
+        "height": 936,
+        "fps": 30,
+        "reps_in_demo": 5,
+        "demo_bytes": 695376,
+        "loop_bytes": 142167
+      },
+      "packages": [
+        "monte-wo-pack-3"
+      ],
+      "files": {
+        "demo": {
+          "oid": "42929c898f9c3414c1d8844731b3bdf3ab55bd87",
+          "bytes": 695376,
+          "path": "assets/workout-library/monte-wo-pack-3/r2/exercises/jumping-jacks/demo.mp4",
+          "sha256": "c167df3c7119b8925f5243445593db3edc4698eb3d56e0a24f14d75ad0f2aa64",
+          "width": 720,
+          "height": 936,
+          "codec": "h264",
+          "duration": 21.5,
+          "fps": 30.0
+        },
+        "loop": {
+          "oid": "13d252896794781625bbfd3529873c6c7275b892",
+          "bytes": 142167,
+          "path": "assets/workout-library/monte-wo-pack-3/r2/exercises/jumping-jacks/loop.mp4",
+          "sha256": "703bdbafe5c4d7063d9c8441d96f58b72089e4e889b65871dbd9fa2ac6548555",
+          "width": 720,
+          "height": 936,
+          "codec": "h264",
+          "duration": 4.3,
+          "fps": 30.0
+        },
+        "poster": {
+          "oid": "737d94cff79220e30990be7986022cfb6879ad5b",
+          "bytes": 31005,
+          "path": "assets/workout-library/monte-wo-pack-3/r2/exercises/jumping-jacks/poster.jpg",
+          "sha256": "dad38d5fe8251c96048571a5d37886a6059eb3eceefb90f0e613d265446f6a28",
+          "width": 720,
+          "height": 936,
+          "format": "JPEG"
+        }
+      },
+      "reviewStatus": "form-and-rights-review-pending"
+    },
+    {
+      "manifest": {
+        "id": "chest-fly",
+        "name_en": "Standing chest fly",
+        "name_ht": null,
+        "category": "Chest",
+        "equipment": "Dumbbells",
+        "primary_muscles": [
+          "Chest"
+        ],
+        "secondary_muscles": [
+          "Front shoulders"
+        ],
+        "demo_key": "exercises/chest-fly/demo.mp4",
+        "loop_key": "exercises/chest-fly/loop.mp4",
+        "poster_key": "exercises/chest-fly/poster.jpg",
+        "demo_duration_s": 21.5,
+        "loop_duration_s": 4.3,
+        "width": 720,
+        "height": 936,
+        "fps": 30,
+        "reps_in_demo": 5,
+        "demo_bytes": 361907,
+        "loop_bytes": 76582
+      },
+      "packages": [
+        "monte-wo-pack-3"
+      ],
+      "files": {
+        "demo": {
+          "oid": "2a3c4f9d52214987fc85cc2de0b44ae2b81a68e7",
+          "bytes": 361907,
+          "path": "assets/workout-library/monte-wo-pack-3/r2/exercises/chest-fly/demo.mp4",
+          "sha256": "96cbbf365645a808ac6667d8440991fe8552d1d8973a51acd9e5e6c887a7b284",
+          "width": 720,
+          "height": 936,
+          "codec": "h264",
+          "duration": 21.5,
+          "fps": 30.0
+        },
+        "loop": {
+          "oid": "c4eec200655e7339e142128d1f785fd92c23f04b",
+          "bytes": 76582,
+          "path": "assets/workout-library/monte-wo-pack-3/r2/exercises/chest-fly/loop.mp4",
+          "sha256": "92f047084afda34bc70f734a44c9e3e1f4761fb8bb47b7470ac376dbae22d3d0",
+          "width": 720,
+          "height": 936,
+          "codec": "h264",
+          "duration": 4.3,
+          "fps": 30.0
+        },
+        "poster": {
+          "oid": "5ae20c16e6ee426ebbb96819c8b7f302b985c8ca",
+          "bytes": 28424,
+          "path": "assets/workout-library/monte-wo-pack-3/r2/exercises/chest-fly/poster.jpg",
+          "sha256": "fe3987dcf5caceca429bf73a1aa560834745488ee8f0ba185c334880f38ddee4",
+          "width": 720,
+          "height": 936,
+          "format": "JPEG"
+        }
+      },
+      "reviewStatus": "form-and-rights-review-pending"
+    },
+    {
+      "manifest": {
+        "id": "dumbbell-press-front",
+        "name_en": "Dumbbell shoulder press (front view)",
+        "name_ht": null,
+        "category": "Shoulders",
+        "equipment": "Dumbbells",
+        "primary_muscles": [
+          "Shoulders",
+          "Triceps"
+        ],
+        "secondary_muscles": [
+          "Traps"
+        ],
+        "demo_key": "exercises/dumbbell-press-front/demo.mp4",
+        "loop_key": "exercises/dumbbell-press-front/loop.mp4",
+        "poster_key": "exercises/dumbbell-press-front/poster.jpg",
+        "demo_duration_s": 21.5,
+        "loop_duration_s": 4.3,
+        "width": 720,
+        "height": 936,
+        "fps": 30,
+        "reps_in_demo": 5,
+        "demo_bytes": 453877,
+        "loop_bytes": 93201
+      },
+      "packages": [
+        "monte-wo-pack-3"
+      ],
+      "files": {
+        "demo": {
+          "oid": "566a1ca6ef0dd30ad4baacb63c134390d903c7bc",
+          "bytes": 453877,
+          "path": "assets/workout-library/monte-wo-pack-3/r2/exercises/dumbbell-press-front/demo.mp4",
+          "sha256": "32da934f4b9db902a6a08fb226abd1c79edc14577baa7c82b2ca5f31d0216e2d",
+          "width": 720,
+          "height": 936,
+          "codec": "h264",
+          "duration": 21.5,
+          "fps": 30.0
+        },
+        "loop": {
+          "oid": "74cf5567ca6e5b18ce9fb04991ed1f1345a3c849",
+          "bytes": 93201,
+          "path": "assets/workout-library/monte-wo-pack-3/r2/exercises/dumbbell-press-front/loop.mp4",
+          "sha256": "026399d95d02e56632e5a12a24845244d88ef0a72b257053bbb90f562a67ffa1",
+          "width": 720,
+          "height": 936,
+          "codec": "h264",
+          "duration": 4.3,
+          "fps": 30.0
+        },
+        "poster": {
+          "oid": "328c98abe77ba7edc67af773abc5eb5eea74396b",
+          "bytes": 31392,
+          "path": "assets/workout-library/monte-wo-pack-3/r2/exercises/dumbbell-press-front/poster.jpg",
+          "sha256": "a068a890aa52c1cb789436ed2071e5138fb81634d36827193bdafef1ef165ffe",
+          "width": 720,
+          "height": 936,
+          "format": "JPEG"
+        }
+      },
+      "reviewStatus": "form-and-rights-review-pending"
+    },
+    {
+      "manifest": {
+        "id": "alternating-curl",
+        "name_en": "Alternating dumbbell curl",
+        "name_ht": null,
+        "category": "Arms",
+        "equipment": "Dumbbells",
+        "primary_muscles": [
+          "Biceps"
+        ],
+        "secondary_muscles": [
+          "Forearms"
+        ],
+        "demo_key": "exercises/alternating-curl/demo.mp4",
+        "loop_key": "exercises/alternating-curl/loop.mp4",
+        "poster_key": "exercises/alternating-curl/poster.jpg",
+        "demo_duration_s": 21.5,
+        "loop_duration_s": 4.3,
+        "width": 720,
+        "height": 936,
+        "fps": 30,
+        "reps_in_demo": 5,
+        "demo_bytes": 369227,
+        "loop_bytes": 76691
+      },
+      "packages": [
+        "monte-wo-pack-3"
+      ],
+      "files": {
+        "demo": {
+          "oid": "d62959fb6a2120501fd008d14a084dbc6200195e",
+          "bytes": 369227,
+          "path": "assets/workout-library/monte-wo-pack-3/r2/exercises/alternating-curl/demo.mp4",
+          "sha256": "742cdc6167c467b4218bd2a928ebec3e065133b73f2a10fc3713ad33e4684b94",
+          "width": 720,
+          "height": 936,
+          "codec": "h264",
+          "duration": 21.5,
+          "fps": 30.0
+        },
+        "loop": {
+          "oid": "3280569cb2768efdbb54f7e8f82544007ca703da",
+          "bytes": 76691,
+          "path": "assets/workout-library/monte-wo-pack-3/r2/exercises/alternating-curl/loop.mp4",
+          "sha256": "b2941754f4a2e7f1c8c2a5d6d0e7c3f596293e3cd6567f0237351888beb5b647",
+          "width": 720,
+          "height": 936,
+          "codec": "h264",
+          "duration": 4.3,
+          "fps": 30.0
+        },
+        "poster": {
+          "oid": "1759b340c40bcc7d40d8ed45465583dc9a9666c3",
+          "bytes": 30433,
+          "path": "assets/workout-library/monte-wo-pack-3/r2/exercises/alternating-curl/poster.jpg",
+          "sha256": "4e36acfd01fa74e0db1eeca08e71382173e000a57589b8a99a73e5e8d9d9de42",
+          "width": 720,
+          "height": 936,
+          "format": "JPEG"
+        }
+      },
+      "reviewStatus": "form-and-rights-review-pending"
+    },
+    {
+      "manifest": {
+        "id": "hammer-curl",
+        "name_en": "Hammer curl",
+        "name_ht": null,
+        "category": "Arms",
+        "equipment": "Dumbbells",
+        "primary_muscles": [
+          "Biceps",
+          "Forearms"
+        ],
+        "secondary_muscles": [],
+        "demo_key": "exercises/hammer-curl/demo.mp4",
+        "loop_key": "exercises/hammer-curl/loop.mp4",
+        "poster_key": "exercises/hammer-curl/poster.jpg",
+        "demo_duration_s": 21.5,
+        "loop_duration_s": 4.3,
+        "width": 720,
+        "height": 936,
+        "fps": 30,
+        "reps_in_demo": 5,
+        "demo_bytes": 385668,
+        "loop_bytes": 81346
+      },
+      "packages": [
+        "monte-wo-pack-3"
+      ],
+      "files": {
+        "demo": {
+          "oid": "c2aa17604a75a78326bd98daccad9931ae193265",
+          "bytes": 385668,
+          "path": "assets/workout-library/monte-wo-pack-3/r2/exercises/hammer-curl/demo.mp4",
+          "sha256": "a6ad5a0cef1f06b6b3d2dd0f681e4d25500788cd81a6600bab66c1b96c288a4f",
+          "width": 720,
+          "height": 936,
+          "codec": "h264",
+          "duration": 21.5,
+          "fps": 30.0
+        },
+        "loop": {
+          "oid": "c19de9d423b744c507c4629c035306a497c0748e",
+          "bytes": 81346,
+          "path": "assets/workout-library/monte-wo-pack-3/r2/exercises/hammer-curl/loop.mp4",
+          "sha256": "309520895e7d156681bea6b9601e852b40b840a3969255e2be3bf8ebf49ae18a",
+          "width": 720,
+          "height": 936,
+          "codec": "h264",
+          "duration": 4.3,
+          "fps": 30.0
+        },
+        "poster": {
+          "oid": "973357c5f6f17c9aba82e971c7ef413a733f54ad",
+          "bytes": 30902,
+          "path": "assets/workout-library/monte-wo-pack-3/r2/exercises/hammer-curl/poster.jpg",
+          "sha256": "601521b9963dce42f2c01a2c607f0aadb8616c92b8331539f92f7dba18b7025f",
+          "width": 720,
+          "height": 936,
+          "format": "JPEG"
+        }
+      },
+      "reviewStatus": "form-and-rights-review-pending"
+    },
+    {
+      "manifest": {
+        "id": "sumo-squat",
+        "name_en": "Sumo squat",
+        "name_ht": null,
+        "category": "Legs",
+        "equipment": "Bodyweight",
+        "primary_muscles": [
+          "Quadriceps",
+          "Inner thighs"
+        ],
+        "secondary_muscles": [
+          "Glutes",
+          "Calves"
+        ],
+        "demo_key": "exercises/sumo-squat/demo.mp4",
+        "loop_key": "exercises/sumo-squat/loop.mp4",
+        "poster_key": "exercises/sumo-squat/poster.jpg",
+        "demo_duration_s": 21.5,
+        "loop_duration_s": 4.3,
+        "width": 720,
+        "height": 936,
+        "fps": 30,
+        "reps_in_demo": 5,
+        "demo_bytes": 667694,
+        "loop_bytes": 137191
+      },
+      "packages": [
+        "monte-wo-pack-3"
+      ],
+      "files": {
+        "demo": {
+          "oid": "c5f6f13eee11c744f99a9da1c6c6ff65088b812f",
+          "bytes": 667694,
+          "path": "assets/workout-library/monte-wo-pack-3/r2/exercises/sumo-squat/demo.mp4",
+          "sha256": "3ba48d9508e335af93a89ee2f0c77098ad12539e27fa063c5735d8234790c15d",
+          "width": 720,
+          "height": 936,
+          "codec": "h264",
+          "duration": 21.5,
+          "fps": 30.0
+        },
+        "loop": {
+          "oid": "5b14d64dc758ccfd2ccf8299689e602e51b2266e",
+          "bytes": 137191,
+          "path": "assets/workout-library/monte-wo-pack-3/r2/exercises/sumo-squat/loop.mp4",
+          "sha256": "5fbb68af6d1bc5c7d3143dfbc7839b941bbb61c22756fec51da8177b73d5e2a5",
+          "width": 720,
+          "height": 936,
+          "codec": "h264",
+          "duration": 4.3,
+          "fps": 30.0
+        },
+        "poster": {
+          "oid": "e2ade623acaecc9d66d8303a4d509cb2854a621c",
+          "bytes": 34297,
+          "path": "assets/workout-library/monte-wo-pack-3/r2/exercises/sumo-squat/poster.jpg",
+          "sha256": "a0ab88adbad62527c17a1bd98c0c1ade3ba2427fcede4fb2f35a69c4570e4a69",
+          "width": 720,
+          "height": 936,
+          "format": "JPEG"
+        }
+      },
+      "reviewStatus": "form-and-rights-review-pending"
+    },
+    {
+      "manifest": {
+        "id": "lateral-lunge",
+        "name_en": "Lateral lunge",
+        "name_ht": null,
+        "category": "Legs",
+        "equipment": "Bodyweight",
+        "primary_muscles": [
+          "Quadriceps",
+          "Glutes"
+        ],
+        "secondary_muscles": [
+          "Inner thighs",
+          "Calves"
+        ],
+        "demo_key": "exercises/lateral-lunge/demo.mp4",
+        "loop_key": "exercises/lateral-lunge/loop.mp4",
+        "poster_key": "exercises/lateral-lunge/poster.jpg",
+        "demo_duration_s": 21.5,
+        "loop_duration_s": 4.3,
+        "width": 720,
+        "height": 936,
+        "fps": 30,
+        "reps_in_demo": 5,
+        "demo_bytes": 809026,
+        "loop_bytes": 164755
+      },
+      "packages": [
+        "monte-wo-pack-3"
+      ],
+      "files": {
+        "demo": {
+          "oid": "a0b07fa70692a572361370741dccfbd2b6cf63fb",
+          "bytes": 809026,
+          "path": "assets/workout-library/monte-wo-pack-3/r2/exercises/lateral-lunge/demo.mp4",
+          "sha256": "8d858e81736b88c77d6cfbe469e3245ba2113e4955a5ab19011f0ce2e3f9d492",
+          "width": 720,
+          "height": 936,
+          "codec": "h264",
+          "duration": 21.5,
+          "fps": 30.0
+        },
+        "loop": {
+          "oid": "8f60222ac3dc91f10bfdc8f93e166c85e1b7bb4a",
+          "bytes": 164755,
+          "path": "assets/workout-library/monte-wo-pack-3/r2/exercises/lateral-lunge/loop.mp4",
+          "sha256": "27b3c009364cddbea24bc6ef9f65fcbea07a1e2df07f20bd398d88cb3b47cc01",
+          "width": 720,
+          "height": 936,
+          "codec": "h264",
+          "duration": 4.3,
+          "fps": 30.0
+        },
+        "poster": {
+          "oid": "bd9a89bfb54729a794c5596992343561c4017a33",
+          "bytes": 34042,
+          "path": "assets/workout-library/monte-wo-pack-3/r2/exercises/lateral-lunge/poster.jpg",
+          "sha256": "f6323d9304dcb2a9c0e0da8eb61c02b3cf23119fe66e85f880d9c07571c6769f",
+          "width": 720,
+          "height": 936,
+          "format": "JPEG"
+        }
+      },
+      "reviewStatus": "form-and-rights-review-pending"
+    },
+    {
+      "manifest": {
+        "id": "side-bend",
+        "name_en": "Standing side bend",
+        "name_ht": null,
+        "category": "Core",
+        "equipment": "Bodyweight",
+        "primary_muscles": [
+          "Obliques"
+        ],
+        "secondary_muscles": [
+          "Abs"
+        ],
+        "demo_key": "exercises/side-bend/demo.mp4",
+        "loop_key": "exercises/side-bend/loop.mp4",
+        "poster_key": "exercises/side-bend/poster.jpg",
+        "demo_duration_s": 21.5,
+        "loop_duration_s": 4.3,
+        "width": 720,
+        "height": 936,
+        "fps": 30,
+        "reps_in_demo": 5,
+        "demo_bytes": 708746,
+        "loop_bytes": 144431
+      },
+      "packages": [
+        "monte-wo-pack-3"
+      ],
+      "files": {
+        "demo": {
+          "oid": "524734abf2e26db6c19ac246b0c9cc093e4d6761",
+          "bytes": 708746,
+          "path": "assets/workout-library/monte-wo-pack-3/r2/exercises/side-bend/demo.mp4",
+          "sha256": "072b1d54f2330578396b83c2c9dfce13fd194cb8a62b2c37eb09bbf59fe0fa55",
+          "width": 720,
+          "height": 936,
+          "codec": "h264",
+          "duration": 21.5,
+          "fps": 30.0
+        },
+        "loop": {
+          "oid": "f1735a657ae5639fd63d9556dac6f7fe832e2e9b",
+          "bytes": 144431,
+          "path": "assets/workout-library/monte-wo-pack-3/r2/exercises/side-bend/loop.mp4",
+          "sha256": "1b5788193cbc4a0409934743dc69e59a9707b8c25da9ca41339aa4339163792f",
+          "width": 720,
+          "height": 936,
+          "codec": "h264",
+          "duration": 4.3,
+          "fps": 30.0
+        },
+        "poster": {
+          "oid": "eb3cd0b5126a0af03cfb420d610cfacf2ae032bc",
+          "bytes": 32974,
+          "path": "assets/workout-library/monte-wo-pack-3/r2/exercises/side-bend/poster.jpg",
+          "sha256": "96b021f68487516878fb3c51e2dccb69846ea4d78506fae974a9722893c1d3b1",
+          "width": 720,
+          "height": 936,
+          "format": "JPEG"
+        }
+      },
+      "reviewStatus": "form-and-rights-review-pending"
+    },
+    {
+      "manifest": {
+        "id": "wide-grip-pull-up",
+        "name_en": "Wide-grip pull-up",
+        "name_ht": null,
+        "category": "Back",
+        "equipment": "Bodyweight",
+        "primary_muscles": [
+          "Lats"
+        ],
+        "secondary_muscles": [
+          "Biceps",
+          "Shoulders",
+          "Traps"
+        ],
+        "demo_key": "exercises/wide-grip-pull-up/demo.mp4",
+        "loop_key": "exercises/wide-grip-pull-up/loop.mp4",
+        "poster_key": "exercises/wide-grip-pull-up/poster.jpg",
+        "demo_duration_s": 21.5,
+        "loop_duration_s": 4.3,
+        "width": 720,
+        "height": 936,
+        "fps": 30,
+        "reps_in_demo": 5,
+        "demo_bytes": 494565,
+        "loop_bytes": 101694
+      },
+      "packages": [
+        "monte-wo-pack-3"
+      ],
+      "files": {
+        "demo": {
+          "oid": "b7e5aea7a08e1dec08dbaceefff4572ee9b4dafc",
+          "bytes": 494565,
+          "path": "assets/workout-library/monte-wo-pack-3/r2/exercises/wide-grip-pull-up/demo.mp4",
+          "sha256": "90df42ee296f7a5cef47247bab1aeecdd7a602a4c1850ed56a7fc38960b31121",
+          "width": 720,
+          "height": 936,
+          "codec": "h264",
+          "duration": 21.5,
+          "fps": 30.0
+        },
+        "loop": {
+          "oid": "70d812ed5b84a35fafeaab474f2298b0d463d2e0",
+          "bytes": 101694,
+          "path": "assets/workout-library/monte-wo-pack-3/r2/exercises/wide-grip-pull-up/loop.mp4",
+          "sha256": "798b3eaf8cd4f423de25a110fb37123810b326b2de41ae732aabd93741f5486c",
+          "width": 720,
+          "height": 936,
+          "codec": "h264",
+          "duration": 4.3,
+          "fps": 30.0
+        },
+        "poster": {
+          "oid": "87f6094857775292f08227398406f07b1151e6b3",
+          "bytes": 33820,
+          "path": "assets/workout-library/monte-wo-pack-3/r2/exercises/wide-grip-pull-up/poster.jpg",
+          "sha256": "0ec9f45d1f2cdab186ead9f6001b56fcfa75f802f5d4331ea9b197403532052e",
+          "width": 720,
+          "height": 936,
+          "format": "JPEG"
+        }
+      },
+      "reviewStatus": "form-and-rights-review-pending"
+    },
+    {
+      "manifest": {
+        "id": "wide-lat-pulldown",
+        "name_en": "Wide-grip lat pulldown",
+        "name_ht": null,
+        "category": "Back",
+        "equipment": "Cable machine",
+        "primary_muscles": [
+          "Lats"
+        ],
+        "secondary_muscles": [
+          "Biceps",
+          "Traps"
+        ],
+        "demo_key": "exercises/wide-lat-pulldown/demo.mp4",
+        "loop_key": "exercises/wide-lat-pulldown/loop.mp4",
+        "poster_key": "exercises/wide-lat-pulldown/poster.jpg",
+        "demo_duration_s": 21.5,
+        "loop_duration_s": 4.3,
+        "width": 720,
+        "height": 936,
+        "fps": 30,
+        "reps_in_demo": 5,
+        "demo_bytes": 626103,
+        "loop_bytes": 128807
+      },
+      "packages": [
+        "monte-wo-pack-3"
+      ],
+      "files": {
+        "demo": {
+          "oid": "1d7d3b8dd8c253bfe1bd1ce00edd74298d17c34d",
+          "bytes": 626103,
+          "path": "assets/workout-library/monte-wo-pack-3/r2/exercises/wide-lat-pulldown/demo.mp4",
+          "sha256": "7b8e722372d46d19968d406f227b9109d36edb9601836fdae50700486173d007",
+          "width": 720,
+          "height": 936,
+          "codec": "h264",
+          "duration": 21.5,
+          "fps": 30.0
+        },
+        "loop": {
+          "oid": "325887015bbc1366fb9496aeea5f4fffedb664a1",
+          "bytes": 128807,
+          "path": "assets/workout-library/monte-wo-pack-3/r2/exercises/wide-lat-pulldown/loop.mp4",
+          "sha256": "88828590055b6a2cc20e74d48476b7ca6f8237aab608d241d8a5dcfe0b3f24c7",
+          "width": 720,
+          "height": 936,
+          "codec": "h264",
+          "duration": 4.3,
+          "fps": 30.0
+        },
+        "poster": {
+          "oid": "b45b9c8ff8c184d9b8148c4620d1b3c312ffac45",
+          "bytes": 37473,
+          "path": "assets/workout-library/monte-wo-pack-3/r2/exercises/wide-lat-pulldown/poster.jpg",
+          "sha256": "7759c47fbce20535bc70180bf7e92c426b64d9cc8d3f8c851edcd44d20c74769",
+          "width": 720,
+          "height": 936,
+          "format": "JPEG"
+        }
+      },
+      "reviewStatus": "form-and-rights-review-pending"
+    },
+    {
+      "manifest": {
+        "id": "standing-side-leg-raise",
+        "name_en": "Standing side leg raise",
+        "name_ht": null,
+        "category": "Legs",
+        "equipment": "Bodyweight",
+        "primary_muscles": [
+          "Glutes",
+          "Outer thighs"
+        ],
+        "secondary_muscles": [],
+        "demo_key": "exercises/standing-side-leg-raise/demo.mp4",
+        "loop_key": "exercises/standing-side-leg-raise/loop.mp4",
+        "poster_key": "exercises/standing-side-leg-raise/poster.jpg",
+        "demo_duration_s": 21.5,
+        "loop_duration_s": 4.3,
+        "width": 720,
+        "height": 936,
+        "fps": 30,
+        "reps_in_demo": 5,
+        "demo_bytes": 536966,
+        "loop_bytes": 110461
+      },
+      "packages": [
+        "monte-wo-pack-3"
+      ],
+      "files": {
+        "demo": {
+          "oid": "33529487baab1e482e8271c4e8eac09a95d3d166",
+          "bytes": 536966,
+          "path": "assets/workout-library/monte-wo-pack-3/r2/exercises/standing-side-leg-raise/demo.mp4",
+          "sha256": "9bc8b54d01354c742caa7c11f3334529c2ff5485ad1773a1e703ec5ba6ba74ae",
+          "width": 720,
+          "height": 936,
+          "codec": "h264",
+          "duration": 21.5,
+          "fps": 30.0
+        },
+        "loop": {
+          "oid": "5c6e739b1fc0b865a11d115a9740659b88ee5045",
+          "bytes": 110461,
+          "path": "assets/workout-library/monte-wo-pack-3/r2/exercises/standing-side-leg-raise/loop.mp4",
+          "sha256": "61a7356654dcf6a7b1c4b2d0169e9e986188b5bde51edfad7133d419ef962fc5",
+          "width": 720,
+          "height": 936,
+          "codec": "h264",
+          "duration": 4.3,
+          "fps": 30.0
+        },
+        "poster": {
+          "oid": "a60db0a7ce03de64a05b8cad25e46920e0948e20",
+          "bytes": 32086,
+          "path": "assets/workout-library/monte-wo-pack-3/r2/exercises/standing-side-leg-raise/poster.jpg",
+          "sha256": "8a2ed3cff55cd4232e3984cfd0be43d3ae5b90dda7c2fd691864144c76503dcd",
+          "width": 720,
+          "height": 936,
+          "format": "JPEG"
+        }
+      },
+      "reviewStatus": "form-and-rights-review-pending"
+    }
+  ]
+}

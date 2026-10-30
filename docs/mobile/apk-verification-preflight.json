@@ -1,0 +1,21 @@
+{
+  "checkedAtUtc": "2026-10-16T00:46:43.486714+00:00",
+  "buildId": "347b15cb-e1c5-4568-8b67-7a302eb54f00",
+  "tools": [
+    "aapt 1:14~beta1-3",
+    "adb 1:34.0.5-12",
+    "apksigner 35.0.2-1",
+    "zipalign 1:10.0.0+r36-1.1"
+  ],
+  "java": [
+    "openjdk version \"21.0.12.1\" 2026-08-18",
+    "OpenJDK Runtime Environment (build 21.0.12.1+1-1-deb13u1-Debian)",
+    "OpenJDK 64-Bit Server VM (build 21.0.12.1+1-1-deb13u1-Debian, mixed mode, sharing)"
+  ],
+  "expectedCertificateSha256": "0cd473cbb52adfd0caa67e793b7fc70ab0075c404067a24c2993dd2867d75610",
+  "artifactAvailable": false,
+  "signatureVerificationPerformed": false,
+  "installationTestPerformed": false,
+  "attachedAndroidDevices": 0,
+  "note": "Verification tooling is installed. This is not a successful build, artifact verification or installation report. No full local Android build SDK/NDK setup is implied."
+}

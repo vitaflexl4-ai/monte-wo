@@ -39,6 +39,7 @@ coverage/
 /build/
 android/app/src/main/assets/public/
 # Signing material must never be committed (see docs/release/ANDROID_RELEASE.md, IOS_RELEASE.md)
+# Mobile signing and generated dependencies
 *.jks
 *.keystore
 *.p12
@@ -48,3 +49,18 @@ android/app/src/main/assets/public/
 .env.*
 !.env.example
 __pycache__/
+credentials.json
+.expo/
+apps/mobile/android/
+apps/mobile/ios/
+apps/mobile/web-build/
+
+apps/mobile/native-export/
+
+# Reproducible local media/probe cache; never a source handoff.
+.cache/
+
+# Disposable regression screenshots; keep compact result JSON instead.
+docs/mobile/**/qa/*.png
+docs/mobile/**/*-qa/*.png
+docs/website/**/qa/*.png

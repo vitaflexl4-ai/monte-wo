@@ -1,0 +1,707 @@
+[
+  {
+    "id": "dumbbell-curl",
+    "name_en": "Dumbbell curl",
+    "name_ht": null,
+    "category": "Arms",
+    "equipment": "Dumbbells",
+    "primary_muscles": [
+      "Biceps"
+    ],
+    "secondary_muscles": [
+      "Brachialis",
+      "Forearms"
+    ],
+    "demo_key": "exercises/dumbbell-curl/demo.mp4",
+    "loop_key": "exercises/dumbbell-curl/loop.mp4",
+    "poster_key": "exercises/dumbbell-curl/poster.jpg",
+    "demo_duration_s": 21.5,
+    "loop_duration_s": 4.3,
+    "width": 720,
+    "height": 936,
+    "fps": 30,
+    "reps_in_demo": 5,
+    "demo_bytes": 305653,
+    "loop_bytes": 64262
+  },
+  {
+    "id": "back-squat",
+    "name_en": "Back squat",
+    "name_ht": null,
+    "category": "Legs",
+    "equipment": "Barbell",
+    "primary_muscles": [
+      "Quadriceps",
+      "Glutes"
+    ],
+    "secondary_muscles": [
+      "Hamstrings",
+      "Calves",
+      "Lower back"
+    ],
+    "demo_key": "exercises/back-squat/demo.mp4",
+    "loop_key": "exercises/back-squat/loop.mp4",
+    "poster_key": "exercises/back-squat/poster.jpg",
+    "demo_duration_s": 21.5,
+    "loop_duration_s": 4.3,
+    "width": 720,
+    "height": 936,
+    "fps": 30,
+    "reps_in_demo": 5,
+    "demo_bytes": 703025,
+    "loop_bytes": 143520
+  },
+  {
+    "id": "bench-press",
+    "name_en": "Bench press",
+    "name_ht": null,
+    "category": "Chest",
+    "equipment": "Barbell",
+    "primary_muscles": [
+      "Chest",
+      "Triceps"
+    ],
+    "secondary_muscles": [
+      "Front shoulders"
+    ],
+    "demo_key": "exercises/bench-press/demo.mp4",
+    "loop_key": "exercises/bench-press/loop.mp4",
+    "poster_key": "exercises/bench-press/poster.jpg",
+    "demo_duration_s": 21.5,
+    "loop_duration_s": 4.3,
+    "width": 720,
+    "height": 936,
+    "fps": 30,
+    "reps_in_demo": 5,
+    "demo_bytes": 372454,
+    "loop_bytes": 79221
+  },
+  {
+    "id": "deadlift",
+    "name_en": "Deadlift",
+    "name_ht": null,
+    "category": "Back",
+    "equipment": "Barbell",
+    "primary_muscles": [
+      "Glutes",
+      "Hamstrings"
+    ],
+    "secondary_muscles": [
+      "Back",
+      "Quadriceps",
+      "Forearms"
+    ],
+    "demo_key": "exercises/deadlift/demo.mp4",
+    "loop_key": "exercises/deadlift/loop.mp4",
+    "poster_key": "exercises/deadlift/poster.jpg",
+    "demo_duration_s": 21.5,
+    "loop_duration_s": 4.3,
+    "width": 720,
+    "height": 936,
+    "fps": 30,
+    "reps_in_demo": 5,
+    "demo_bytes": 766472,
+    "loop_bytes": 156426
+  },
+  {
+    "id": "overhead-press",
+    "name_en": "Overhead press",
+    "name_ht": null,
+    "category": "Shoulders",
+    "equipment": "Barbell",
+    "primary_muscles": [
+      "Shoulders",
+      "Triceps"
+    ],
+    "secondary_muscles": [
+      "Chest"
+    ],
+    "demo_key": "exercises/overhead-press/demo.mp4",
+    "loop_key": "exercises/overhead-press/loop.mp4",
+    "poster_key": "exercises/overhead-press/poster.jpg",
+    "demo_duration_s": 21.5,
+    "loop_duration_s": 4.3,
+    "width": 720,
+    "height": 936,
+    "fps": 30,
+    "reps_in_demo": 5,
+    "demo_bytes": 466557,
+    "loop_bytes": 96839
+  },
+  {
+    "id": "barbell-row",
+    "name_en": "Barbell row",
+    "name_ht": null,
+    "category": "Back",
+    "equipment": "Barbell",
+    "primary_muscles": [
+      "Back"
+    ],
+    "secondary_muscles": [
+      "Biceps",
+      "Rear shoulders",
+      "Hamstrings",
+      "Glutes"
+    ],
+    "demo_key": "exercises/barbell-row/demo.mp4",
+    "loop_key": "exercises/barbell-row/loop.mp4",
+    "poster_key": "exercises/barbell-row/poster.jpg",
+    "demo_duration_s": 21.5,
+    "loop_duration_s": 4.3,
+    "width": 720,
+    "height": 936,
+    "fps": 30,
+    "reps_in_demo": 5,
+    "demo_bytes": 385863,
+    "loop_bytes": 81925
+  },
+  {
+    "id": "front-raise",
+    "name_en": "Dumbbell front raise",
+    "name_ht": null,
+    "category": "Shoulders",
+    "equipment": "Dumbbells",
+    "primary_muscles": [
+      "Front shoulders"
+    ],
+    "secondary_muscles": [
+      "Chest",
+      "Forearms"
+    ],
+    "demo_key": "exercises/front-raise/demo.mp4",
+    "loop_key": "exercises/front-raise/loop.mp4",
+    "poster_key": "exercises/front-raise/poster.jpg",
+    "demo_duration_s": 21.5,
+    "loop_duration_s": 4.3,
+    "width": 720,
+    "height": 936,
+    "fps": 30,
+    "reps_in_demo": 5,
+    "demo_bytes": 370275,
+    "loop_bytes": 77137
+  },
+  {
+    "id": "triceps-pushdown",
+    "name_en": "Triceps pushdown",
+    "name_ht": null,
+    "category": "Arms",
+    "equipment": "Cable",
+    "primary_muscles": [
+      "Triceps"
+    ],
+    "secondary_muscles": [
+      "Forearms"
+    ],
+    "demo_key": "exercises/triceps-pushdown/demo.mp4",
+    "loop_key": "exercises/triceps-pushdown/loop.mp4",
+    "poster_key": "exercises/triceps-pushdown/poster.jpg",
+    "demo_duration_s": 21.5,
+    "loop_duration_s": 4.3,
+    "width": 720,
+    "height": 936,
+    "fps": 30,
+    "reps_in_demo": 5,
+    "demo_bytes": 334542,
+    "loop_bytes": 71207
+  },
+  {
+    "id": "push-up",
+    "name_en": "Push-up",
+    "name_ht": null,
+    "category": "Chest",
+    "equipment": "Bodyweight",
+    "primary_muscles": [
+      "Chest",
+      "Triceps"
+    ],
+    "secondary_muscles": [
+      "Front shoulders",
+      "Abs"
+    ],
+    "demo_key": "exercises/push-up/demo.mp4",
+    "loop_key": "exercises/push-up/loop.mp4",
+    "poster_key": "exercises/push-up/poster.jpg",
+    "demo_duration_s": 21.5,
+    "loop_duration_s": 4.3,
+    "width": 720,
+    "height": 936,
+    "fps": 30,
+    "reps_in_demo": 5,
+    "demo_bytes": 479570,
+    "loop_bytes": 98107
+  },
+  {
+    "id": "pull-up",
+    "name_en": "Pull-up",
+    "name_ht": null,
+    "category": "Back",
+    "equipment": "Bodyweight",
+    "primary_muscles": [
+      "Back",
+      "Biceps"
+    ],
+    "secondary_muscles": [
+      "Shoulders",
+      "Forearms",
+      "Abs"
+    ],
+    "demo_key": "exercises/pull-up/demo.mp4",
+    "loop_key": "exercises/pull-up/loop.mp4",
+    "poster_key": "exercises/pull-up/poster.jpg",
+    "demo_duration_s": 21.5,
+    "loop_duration_s": 4.3,
+    "width": 720,
+    "height": 936,
+    "fps": 30,
+    "reps_in_demo": 5,
+    "demo_bytes": 423425,
+    "loop_bytes": 87832
+  },
+  {
+    "id": "romanian-deadlift",
+    "name_en": "Romanian deadlift",
+    "name_ht": null,
+    "category": "Legs",
+    "equipment": "Barbell",
+    "primary_muscles": [
+      "Hamstrings",
+      "Glutes"
+    ],
+    "secondary_muscles": [
+      "Lower back"
+    ],
+    "demo_key": "exercises/romanian-deadlift/demo.mp4",
+    "loop_key": "exercises/romanian-deadlift/loop.mp4",
+    "poster_key": "exercises/romanian-deadlift/poster.jpg",
+    "demo_duration_s": 21.5,
+    "loop_duration_s": 4.3,
+    "width": 720,
+    "height": 936,
+    "fps": 30,
+    "reps_in_demo": 5,
+    "demo_bytes": 768584,
+    "loop_bytes": 157374
+  },
+  {
+    "id": "goblet-squat",
+    "name_en": "Goblet squat",
+    "name_ht": null,
+    "category": "Legs",
+    "equipment": "Dumbbell",
+    "primary_muscles": [
+      "Quadriceps",
+      "Glutes"
+    ],
+    "secondary_muscles": [
+      "Abs",
+      "Calves"
+    ],
+    "demo_key": "exercises/goblet-squat/demo.mp4",
+    "loop_key": "exercises/goblet-squat/loop.mp4",
+    "poster_key": "exercises/goblet-squat/poster.jpg",
+    "demo_duration_s": 21.5,
+    "loop_duration_s": 4.3,
+    "width": 720,
+    "height": 936,
+    "fps": 30,
+    "reps_in_demo": 5,
+    "demo_bytes": 668902,
+    "loop_bytes": 136332
+  },
+  {
+    "id": "reverse-lunge",
+    "name_en": "Reverse lunge",
+    "name_ht": null,
+    "category": "Legs",
+    "equipment": "Dumbbells",
+    "primary_muscles": [
+      "Quadriceps",
+      "Glutes"
+    ],
+    "secondary_muscles": [
+      "Hamstrings",
+      "Calves"
+    ],
+    "demo_key": "exercises/reverse-lunge/demo.mp4",
+    "loop_key": "exercises/reverse-lunge/loop.mp4",
+    "poster_key": "exercises/reverse-lunge/poster.jpg",
+    "demo_duration_s": 21.5,
+    "loop_duration_s": 4.3,
+    "width": 720,
+    "height": 936,
+    "fps": 30,
+    "reps_in_demo": 5,
+    "demo_bytes": 569510,
+    "loop_bytes": 116877
+  },
+  {
+    "id": "calf-raise",
+    "name_en": "Standing calf raise",
+    "name_ht": null,
+    "category": "Legs",
+    "equipment": "Dumbbells",
+    "primary_muscles": [
+      "Calves"
+    ],
+    "secondary_muscles": [
+      "Hamstrings"
+    ],
+    "demo_key": "exercises/calf-raise/demo.mp4",
+    "loop_key": "exercises/calf-raise/loop.mp4",
+    "poster_key": "exercises/calf-raise/poster.jpg",
+    "demo_duration_s": 21.5,
+    "loop_duration_s": 4.3,
+    "width": 720,
+    "height": 936,
+    "fps": 30,
+    "reps_in_demo": 5,
+    "demo_bytes": 470622,
+    "loop_bytes": 97355
+  },
+  {
+    "id": "glute-bridge",
+    "name_en": "Glute bridge",
+    "name_ht": null,
+    "category": "Legs",
+    "equipment": "Bodyweight",
+    "primary_muscles": [
+      "Glutes"
+    ],
+    "secondary_muscles": [
+      "Hamstrings",
+      "Abs"
+    ],
+    "demo_key": "exercises/glute-bridge/demo.mp4",
+    "loop_key": "exercises/glute-bridge/loop.mp4",
+    "poster_key": "exercises/glute-bridge/poster.jpg",
+    "demo_duration_s": 21.5,
+    "loop_duration_s": 4.3,
+    "width": 720,
+    "height": 936,
+    "fps": 30,
+    "reps_in_demo": 5,
+    "demo_bytes": 432380,
+    "loop_bytes": 91452
+  },
+  {
+    "id": "incline-dumbbell-press",
+    "name_en": "Incline dumbbell press",
+    "name_ht": null,
+    "category": "Chest",
+    "equipment": "Dumbbells",
+    "primary_muscles": [
+      "Upper chest"
+    ],
+    "secondary_muscles": [
+      "Front shoulders",
+      "Triceps"
+    ],
+    "demo_key": "exercises/incline-dumbbell-press/demo.mp4",
+    "loop_key": "exercises/incline-dumbbell-press/loop.mp4",
+    "poster_key": "exercises/incline-dumbbell-press/poster.jpg",
+    "demo_duration_s": 21.5,
+    "loop_duration_s": 4.3,
+    "width": 720,
+    "height": 936,
+    "fps": 30,
+    "reps_in_demo": 5,
+    "demo_bytes": 358052,
+    "loop_bytes": 75798
+  },
+  {
+    "id": "seated-dumbbell-press",
+    "name_en": "Seated dumbbell shoulder press",
+    "name_ht": null,
+    "category": "Shoulders",
+    "equipment": "Dumbbells",
+    "primary_muscles": [
+      "Shoulders",
+      "Triceps"
+    ],
+    "secondary_muscles": [
+      "Upper back"
+    ],
+    "demo_key": "exercises/seated-dumbbell-press/demo.mp4",
+    "loop_key": "exercises/seated-dumbbell-press/loop.mp4",
+    "poster_key": "exercises/seated-dumbbell-press/poster.jpg",
+    "demo_duration_s": 21.5,
+    "loop_duration_s": 4.3,
+    "width": 720,
+    "height": 936,
+    "fps": 30,
+    "reps_in_demo": 5,
+    "demo_bytes": 391656,
+    "loop_bytes": 81575
+  },
+  {
+    "id": "dips",
+    "name_en": "Parallel bar dips",
+    "name_ht": null,
+    "category": "Chest",
+    "equipment": "Bodyweight",
+    "primary_muscles": [
+      "Chest",
+      "Triceps"
+    ],
+    "secondary_muscles": [
+      "Front shoulders"
+    ],
+    "demo_key": "exercises/dips/demo.mp4",
+    "loop_key": "exercises/dips/loop.mp4",
+    "poster_key": "exercises/dips/poster.jpg",
+    "demo_duration_s": 21.5,
+    "loop_duration_s": 4.3,
+    "width": 720,
+    "height": 936,
+    "fps": 30,
+    "reps_in_demo": 5,
+    "demo_bytes": 538217,
+    "loop_bytes": 111046
+  },
+  {
+    "id": "lat-pulldown",
+    "name_en": "Lat pulldown",
+    "name_ht": null,
+    "category": "Back",
+    "equipment": "Cable machine",
+    "primary_muscles": [
+      "Back"
+    ],
+    "secondary_muscles": [
+      "Biceps",
+      "Rear shoulders",
+      "Forearms"
+    ],
+    "demo_key": "exercises/lat-pulldown/demo.mp4",
+    "loop_key": "exercises/lat-pulldown/loop.mp4",
+    "poster_key": "exercises/lat-pulldown/poster.jpg",
+    "demo_duration_s": 21.5,
+    "loop_duration_s": 4.3,
+    "width": 720,
+    "height": 936,
+    "fps": 30,
+    "reps_in_demo": 5,
+    "demo_bytes": 418990,
+    "loop_bytes": 87992
+  },
+  {
+    "id": "seated-cable-row",
+    "name_en": "Seated cable row",
+    "name_ht": null,
+    "category": "Back",
+    "equipment": "Cable machine",
+    "primary_muscles": [
+      "Back"
+    ],
+    "secondary_muscles": [
+      "Biceps",
+      "Rear shoulders",
+      "Abs"
+    ],
+    "demo_key": "exercises/seated-cable-row/demo.mp4",
+    "loop_key": "exercises/seated-cable-row/loop.mp4",
+    "poster_key": "exercises/seated-cable-row/poster.jpg",
+    "demo_duration_s": 21.5,
+    "loop_duration_s": 4.3,
+    "width": 720,
+    "height": 936,
+    "fps": 30,
+    "reps_in_demo": 5,
+    "demo_bytes": 685793,
+    "loop_bytes": 139371
+  },
+  {
+    "id": "barbell-curl",
+    "name_en": "Barbell curl",
+    "name_ht": null,
+    "category": "Arms",
+    "equipment": "Barbell",
+    "primary_muscles": [
+      "Biceps"
+    ],
+    "secondary_muscles": [
+      "Forearms"
+    ],
+    "demo_key": "exercises/barbell-curl/demo.mp4",
+    "loop_key": "exercises/barbell-curl/loop.mp4",
+    "poster_key": "exercises/barbell-curl/poster.jpg",
+    "demo_duration_s": 21.5,
+    "loop_duration_s": 4.3,
+    "width": 720,
+    "height": 936,
+    "fps": 30,
+    "reps_in_demo": 5,
+    "demo_bytes": 323043,
+    "loop_bytes": 68752
+  },
+  {
+    "id": "skull-crusher",
+    "name_en": "Skull crusher",
+    "name_ht": null,
+    "category": "Arms",
+    "equipment": "Barbell",
+    "primary_muscles": [
+      "Triceps"
+    ],
+    "secondary_muscles": [
+      "Shoulders",
+      "Forearms"
+    ],
+    "demo_key": "exercises/skull-crusher/demo.mp4",
+    "loop_key": "exercises/skull-crusher/loop.mp4",
+    "poster_key": "exercises/skull-crusher/poster.jpg",
+    "demo_duration_s": 21.5,
+    "loop_duration_s": 4.3,
+    "width": 720,
+    "height": 936,
+    "fps": 30,
+    "reps_in_demo": 5,
+    "demo_bytes": 292822,
+    "loop_bytes": 63833
+  },
+  {
+    "id": "overhead-triceps-extension",
+    "name_en": "Overhead triceps extension",
+    "name_ht": null,
+    "category": "Arms",
+    "equipment": "Dumbbell",
+    "primary_muscles": [
+      "Triceps"
+    ],
+    "secondary_muscles": [
+      "Shoulders"
+    ],
+    "demo_key": "exercises/overhead-triceps-extension/demo.mp4",
+    "loop_key": "exercises/overhead-triceps-extension/loop.mp4",
+    "poster_key": "exercises/overhead-triceps-extension/poster.jpg",
+    "demo_duration_s": 21.5,
+    "loop_duration_s": 4.3,
+    "width": 720,
+    "height": 936,
+    "fps": 30,
+    "reps_in_demo": 5,
+    "demo_bytes": 271348,
+    "loop_bytes": 57941
+  },
+  {
+    "id": "dumbbell-shrug",
+    "name_en": "Dumbbell shrug",
+    "name_ht": null,
+    "category": "Shoulders",
+    "equipment": "Dumbbells",
+    "primary_muscles": [
+      "Traps"
+    ],
+    "secondary_muscles": [
+      "Forearms"
+    ],
+    "demo_key": "exercises/dumbbell-shrug/demo.mp4",
+    "loop_key": "exercises/dumbbell-shrug/loop.mp4",
+    "poster_key": "exercises/dumbbell-shrug/poster.jpg",
+    "demo_duration_s": 21.5,
+    "loop_duration_s": 4.3,
+    "width": 720,
+    "height": 936,
+    "fps": 30,
+    "reps_in_demo": 5,
+    "demo_bytes": 230683,
+    "loop_bytes": 50019
+  },
+  {
+    "id": "crunch",
+    "name_en": "Crunch",
+    "name_ht": null,
+    "category": "Core",
+    "equipment": "Bodyweight",
+    "primary_muscles": [
+      "Abs"
+    ],
+    "secondary_muscles": [],
+    "demo_key": "exercises/crunch/demo.mp4",
+    "loop_key": "exercises/crunch/loop.mp4",
+    "poster_key": "exercises/crunch/poster.jpg",
+    "demo_duration_s": 21.5,
+    "loop_duration_s": 4.3,
+    "width": 720,
+    "height": 936,
+    "fps": 30,
+    "reps_in_demo": 5,
+    "demo_bytes": 530919,
+    "loop_bytes": 108905
+  },
+  {
+    "id": "hanging-leg-raise",
+    "name_en": "Hanging leg raise",
+    "name_ht": null,
+    "category": "Core",
+    "equipment": "Bodyweight",
+    "primary_muscles": [
+      "Abs"
+    ],
+    "secondary_muscles": [
+      "Forearms",
+      "Back"
+    ],
+    "demo_key": "exercises/hanging-leg-raise/demo.mp4",
+    "loop_key": "exercises/hanging-leg-raise/loop.mp4",
+    "poster_key": "exercises/hanging-leg-raise/poster.jpg",
+    "demo_duration_s": 21.5,
+    "loop_duration_s": 4.3,
+    "width": 720,
+    "height": 936,
+    "fps": 30,
+    "reps_in_demo": 5,
+    "demo_bytes": 374339,
+    "loop_bytes": 78300
+  },
+  {
+    "id": "face-pull",
+    "name_en": "Face pull",
+    "name_ht": null,
+    "category": "Shoulders",
+    "equipment": "Cable machine",
+    "primary_muscles": [
+      "Upper back",
+      "Rear shoulders"
+    ],
+    "secondary_muscles": [
+      "Traps"
+    ],
+    "demo_key": "exercises/face-pull/demo.mp4",
+    "loop_key": "exercises/face-pull/loop.mp4",
+    "poster_key": "exercises/face-pull/poster.jpg",
+    "demo_duration_s": 21.5,
+    "loop_duration_s": 4.3,
+    "width": 720,
+    "height": 936,
+    "fps": 30,
+    "reps_in_demo": 5,
+    "demo_bytes": 387660,
+    "loop_bytes": 80607
+  },
+  {
+    "id": "good-morning",
+    "name_en": "Good morning",
+    "name_ht": null,
+    "category": "Legs",
+    "equipment": "Barbell",
+    "primary_muscles": [
+      "Hamstrings",
+      "Glutes"
+    ],
+    "secondary_muscles": [
+      "Lower back"
+    ],
+    "demo_key": "exercises/good-morning/demo.mp4",
+    "loop_key": "exercises/good-morning/loop.mp4",
+    "poster_key": "exercises/good-morning/poster.jpg",
+    "demo_duration_s": 21.5,
+    "loop_duration_s": 4.3,
+    "width": 720,
+    "height": 936,
+    "fps": 30,
+    "reps_in_demo": 5,
+    "demo_bytes": 701695,
+    "loop_bytes": 142928
+  }
+]

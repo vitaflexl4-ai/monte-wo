@@ -88,6 +88,7 @@ Vanilla HTML/CSS/ES modules, Python static-page generators, Cloudflare Pages Fun
 
 | Route | Purpose |
 |---|---|
+| `/intelligence/` | **Private** intelligence command center (ARGON/ULTRON/AU) — Cloudflare Access protected, fail-closed, no fabricated data; see `docs/INTELLIGENCE-COMMAND-CENTER.md` |
 | `/` | Existing trilingual landing + non-awarding educational strength estimate |
 | `/strength/` | Four independent discipline cards and authenticated athlete workspace |
 | `/methodology/` | Methodology status, calibration process, four draft MONTE Standards and evidence policy |

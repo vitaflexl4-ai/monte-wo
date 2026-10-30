@@ -1,0 +1,29 @@
+[
+  {
+    "id": "bench-press",
+    "homeId": "bench",
+    "exerciseId": "bench-press",
+    "title": "Bench press",
+    "muscleKey": "chest",
+    "muscle": "Chest · Triceps",
+    "guide": "/exercises/bench-press/"
+  },
+  {
+    "id": "back-squat",
+    "homeId": "squat",
+    "exerciseId": "back-squat",
+    "title": "Back squat",
+    "muscleKey": "legs",
+    "muscle": "Quads · Glutes",
+    "guide": "/exercises/back-squat/"
+  },
+  {
+    "id": "deadlift",
+    "homeId": "deadlift",
+    "exerciseId": null,
+    "title": "Deadlift",
+    "muscleKey": "posterior",
+    "muscle": "Back · Legs",
+    "guide": "/exercises/standards/#deadlift"
+  }
+]

@@ -71,7 +71,7 @@ test('Dashboard: food scan & macro logger is a labelled demo without fabricated 
  for(const item of copy.food.items){assert.deepEqual(Object.keys(item).sort(),['id','name','origin']);assert.ok(!/\d/.test(JSON.stringify(item)),'demo items carry no numbers')}
  assert.doesNotMatch(doc,/\d+\s*(?:g|kcal|calories)\b/i);
  assert.match(doc,/Food Scan &amp; Macro Logger|FOOD SCAN &amp; MACRO LOGGER/);assert.match(doc,/DEMO/);
- assert.match(read('public/_headers'),/Permissions-Policy: camera=\(\)/);
+ for(const f of ['public/dashboard.js','public/dashboard/index.html'])assert.ok(!/getUserMedia|capture=|mediaDevices/.test(read(f)),f+' never opens the camera: the food scan is a labelled demo');assert.match(read('public/_headers'),/Permissions-Policy: camera=\((self)?\), microphone=\(\)/);
 });
 
 test('Dashboard: client module keeps everything local (no fetch, storage, cookies or camera)',()=>{
@@ -91,13 +91,13 @@ test('Dashboard: internal links, fragments and assets resolve; offline shell reg
  assert.ok(checked>40);assert.ok(!doc.includes('href="/"'),'the shell does not send users back to the marketing homepage');
  for(const hash of doc.matchAll(/href="#([a-z]+)"/g))assert.ok(doc.includes(`id="${hash[1]}"`),hash[1]);
  const sw=read('public/sw.js');const assets=JSON.parse(sw.match(/const DASHBOARD_ASSETS=(\[.*?\]);/)[1]);
- assert.deepEqual(assets,['/dashboard/','/dashboard.css','/dashboard.js']);assert.match(sw,/const ASSETS=\[\.\.\.DASHBOARD_ASSETS,/);assert.match(sw,/montewo-core-v12/);
+ assert.deepEqual(assets,['/dashboard/','/dashboard.css','/dashboard.js']);assert.match(sw,/const ASSETS=\[\.\.\.DASHBOARD_ASSETS,/);assert.match(sw,/const CORE='montewo-core-v\d+-[a-z-]+';/,'cache name owned by the website build');
  for(const a of assets)assert.ok(existsSync(new URL('../public'+a+(a.endsWith('/')?'index.html':''),import.meta.url)),a);
 });
 
 test('Dashboard: public website routes, navigation and route count stay unchanged; /app/ links to the preview',()=>{
  const routes=JSON.parse(read('public/website-routes.json'));
- assert.equal(routes.length,49);assert.ok(!routes.includes('/dashboard/'));
+ assert.equal(routes.length,50,'public website routes: 49 + /downloads/ (main); /dashboard/, /intelligence/ and /account/callback/ are not public routes');assert.ok(!routes.includes('/dashboard/'));assert.ok(!routes.some(r=>r.startsWith('/intelligence')||r.startsWith('/account/')));
  assert.ok(!doc.includes('id="main-nav"'),'the app shell has its own navigation, not the marketing header');
  assert.match(read('public/app/index.html'),/<a href="\/dashboard\/">Preview the dashboard foundation \(demo\) ↗<\/a>/);
  assert.doesNotMatch(read('public/robots.txt'),/dashboard/);

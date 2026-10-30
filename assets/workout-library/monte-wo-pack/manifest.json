@@ -1,0 +1,260 @@
+[
+  {
+    "id": "dumbbell-curl",
+    "name_en": "Dumbbell curl",
+    "name_ht": null,
+    "category": "Arms",
+    "equipment": "Dumbbells",
+    "primary_muscles": [
+      "Biceps"
+    ],
+    "secondary_muscles": [
+      "Brachialis",
+      "Forearms"
+    ],
+    "demo_key": "exercises/dumbbell-curl/demo.mp4",
+    "loop_key": "exercises/dumbbell-curl/loop.mp4",
+    "poster_key": "exercises/dumbbell-curl/poster.jpg",
+    "demo_duration_s": 21.5,
+    "loop_duration_s": 4.3,
+    "width": 720,
+    "height": 936,
+    "fps": 30,
+    "reps_in_demo": 5,
+    "demo_bytes": 305653,
+    "loop_bytes": 64262
+  },
+  {
+    "id": "back-squat",
+    "name_en": "Back squat",
+    "name_ht": null,
+    "category": "Legs",
+    "equipment": "Barbell",
+    "primary_muscles": [
+      "Quadriceps",
+      "Glutes"
+    ],
+    "secondary_muscles": [
+      "Hamstrings",
+      "Calves",
+      "Lower back"
+    ],
+    "demo_key": "exercises/back-squat/demo.mp4",
+    "loop_key": "exercises/back-squat/loop.mp4",
+    "poster_key": "exercises/back-squat/poster.jpg",
+    "demo_duration_s": 21.5,
+    "loop_duration_s": 4.3,
+    "width": 720,
+    "height": 936,
+    "fps": 30,
+    "reps_in_demo": 5,
+    "demo_bytes": 703025,
+    "loop_bytes": 143520
+  },
+  {
+    "id": "bench-press",
+    "name_en": "Bench press",
+    "name_ht": null,
+    "category": "Chest",
+    "equipment": "Barbell",
+    "primary_muscles": [
+      "Chest",
+      "Triceps"
+    ],
+    "secondary_muscles": [
+      "Front shoulders"
+    ],
+    "demo_key": "exercises/bench-press/demo.mp4",
+    "loop_key": "exercises/bench-press/loop.mp4",
+    "poster_key": "exercises/bench-press/poster.jpg",
+    "demo_duration_s": 21.5,
+    "loop_duration_s": 4.3,
+    "width": 720,
+    "height": 936,
+    "fps": 30,
+    "reps_in_demo": 5,
+    "demo_bytes": 372454,
+    "loop_bytes": 79221
+  },
+  {
+    "id": "deadlift",
+    "name_en": "Deadlift",
+    "name_ht": null,
+    "category": "Back",
+    "equipment": "Barbell",
+    "primary_muscles": [
+      "Glutes",
+      "Hamstrings"
+    ],
+    "secondary_muscles": [
+      "Back",
+      "Quadriceps",
+      "Forearms"
+    ],
+    "demo_key": "exercises/deadlift/demo.mp4",
+    "loop_key": "exercises/deadlift/loop.mp4",
+    "poster_key": "exercises/deadlift/poster.jpg",
+    "demo_duration_s": 21.5,
+    "loop_duration_s": 4.3,
+    "width": 720,
+    "height": 936,
+    "fps": 30,
+    "reps_in_demo": 5,
+    "demo_bytes": 766472,
+    "loop_bytes": 156426
+  },
+  {
+    "id": "overhead-press",
+    "name_en": "Overhead press",
+    "name_ht": null,
+    "category": "Shoulders",
+    "equipment": "Barbell",
+    "primary_muscles": [
+      "Shoulders",
+      "Triceps"
+    ],
+    "secondary_muscles": [
+      "Chest"
+    ],
+    "demo_key": "exercises/overhead-press/demo.mp4",
+    "loop_key": "exercises/overhead-press/loop.mp4",
+    "poster_key": "exercises/overhead-press/poster.jpg",
+    "demo_duration_s": 21.5,
+    "loop_duration_s": 4.3,
+    "width": 720,
+    "height": 936,
+    "fps": 30,
+    "reps_in_demo": 5,
+    "demo_bytes": 466557,
+    "loop_bytes": 96839
+  },
+  {
+    "id": "barbell-row",
+    "name_en": "Barbell row",
+    "name_ht": null,
+    "category": "Back",
+    "equipment": "Barbell",
+    "primary_muscles": [
+      "Back"
+    ],
+    "secondary_muscles": [
+      "Biceps",
+      "Rear shoulders",
+      "Hamstrings",
+      "Glutes"
+    ],
+    "demo_key": "exercises/barbell-row/demo.mp4",
+    "loop_key": "exercises/barbell-row/loop.mp4",
+    "poster_key": "exercises/barbell-row/poster.jpg",
+    "demo_duration_s": 21.5,
+    "loop_duration_s": 4.3,
+    "width": 720,
+    "height": 936,
+    "fps": 30,
+    "reps_in_demo": 5,
+    "demo_bytes": 385863,
+    "loop_bytes": 81925
+  },
+  {
+    "id": "front-raise",
+    "name_en": "Dumbbell front raise",
+    "name_ht": null,
+    "category": "Shoulders",
+    "equipment": "Dumbbells",
+    "primary_muscles": [
+      "Front shoulders"
+    ],
+    "secondary_muscles": [
+      "Chest",
+      "Forearms"
+    ],
+    "demo_key": "exercises/front-raise/demo.mp4",
+    "loop_key": "exercises/front-raise/loop.mp4",
+    "poster_key": "exercises/front-raise/poster.jpg",
+    "demo_duration_s": 21.5,
+    "loop_duration_s": 4.3,
+    "width": 720,
+    "height": 936,
+    "fps": 30,
+    "reps_in_demo": 5,
+    "demo_bytes": 370275,
+    "loop_bytes": 77137
+  },
+  {
+    "id": "triceps-pushdown",
+    "name_en": "Triceps pushdown",
+    "name_ht": null,
+    "category": "Arms",
+    "equipment": "Cable",
+    "primary_muscles": [
+      "Triceps"
+    ],
+    "secondary_muscles": [
+      "Forearms"
+    ],
+    "demo_key": "exercises/triceps-pushdown/demo.mp4",
+    "loop_key": "exercises/triceps-pushdown/loop.mp4",
+    "poster_key": "exercises/triceps-pushdown/poster.jpg",
+    "demo_duration_s": 21.5,
+    "loop_duration_s": 4.3,
+    "width": 720,
+    "height": 936,
+    "fps": 30,
+    "reps_in_demo": 5,
+    "demo_bytes": 334542,
+    "loop_bytes": 71207
+  },
+  {
+    "id": "push-up",
+    "name_en": "Push-up",
+    "name_ht": null,
+    "category": "Chest",
+    "equipment": "Bodyweight",
+    "primary_muscles": [
+      "Chest",
+      "Triceps"
+    ],
+    "secondary_muscles": [
+      "Front shoulders",
+      "Abs"
+    ],
+    "demo_key": "exercises/push-up/demo.mp4",
+    "loop_key": "exercises/push-up/loop.mp4",
+    "poster_key": "exercises/push-up/poster.jpg",
+    "demo_duration_s": 21.5,
+    "loop_duration_s": 4.3,
+    "width": 720,
+    "height": 936,
+    "fps": 30,
+    "reps_in_demo": 5,
+    "demo_bytes": 479570,
+    "loop_bytes": 98107
+  },
+  {
+    "id": "pull-up",
+    "name_en": "Pull-up",
+    "name_ht": null,
+    "category": "Back",
+    "equipment": "Bodyweight",
+    "primary_muscles": [
+      "Back",
+      "Biceps"
+    ],
+    "secondary_muscles": [
+      "Shoulders",
+      "Forearms",
+      "Abs"
+    ],
+    "demo_key": "exercises/pull-up/demo.mp4",
+    "loop_key": "exercises/pull-up/loop.mp4",
+    "poster_key": "exercises/pull-up/poster.jpg",
+    "demo_duration_s": 21.5,
+    "loop_duration_s": 4.3,
+    "width": 720,
+    "height": 936,
+    "fps": 30,
+    "reps_in_demo": 5,
+    "demo_bytes": 423425,
+    "loop_bytes": 87832
+  }
+]

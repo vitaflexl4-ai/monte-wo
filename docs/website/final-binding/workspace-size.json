@@ -1,0 +1,10 @@
+{
+  "bytes": 124269305,
+  "MB": 124.27,
+  "MiB": 118.51,
+  "files": 1137,
+  "under128MB": true,
+  "under128MiB": true,
+  "noWorkspaceCacheFolders": true,
+  "preserved": "Uploads, source/runtime artwork, all delivered backups, credentials and local database state"
+}

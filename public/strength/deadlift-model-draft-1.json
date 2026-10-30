@@ -1,0 +1,22 @@
+{
+  "id": "deadlift-model-draft-1",
+  "discipline": "deadlift",
+  "version": "draft-1",
+  "purpose": "production",
+  "rulebookId": "deadlift-standard-draft-1",
+  "normalization": "bodyweight-lookup-v1",
+  "categories": [],
+  "estimate": null,
+  "requireVerifiedFrom": "titan",
+  "evidence": {
+    "dataset": "",
+    "license": "",
+    "calibrationReport": "",
+    "holdoutReport": "",
+    "biasReport": "",
+    "rankMeaningReport": "",
+    "population": "",
+    "limitations": "No thresholds calibrated or approved. No official rank or progress can be assigned."
+  },
+  "status": "draft"
+}

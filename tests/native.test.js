@@ -71,7 +71,7 @@ test('.env.example documents every variable the code reads, with placeholders on
  const example=read('.env.example');
  const used=new Set();
  for(const dir of ['functions','server']){for(const f of walk(path.join(root,dir)))for(const m of fs.readFileSync(f,'utf8').matchAll(/env\.([A-Z_]{3,})/g))used.add(m[1])}
- for(const name of used){if(['DB','WORKOUT_GIFS_BUCKET','RANKING_EVIDENCE'].includes(name))assert.ok(example.includes(name+' '),name+' binding documented');else assert.match(example,new RegExp('^'+name+'=','m'),name)}
+ for(const name of used){if(['DB','APP_DB','INTEL_DB','AGENT_DB','WORKOUT_GIFS_BUCKET','RANKING_EVIDENCE'].includes(name))assert.ok(example.includes(name+' '),name+' binding documented');else assert.match(example,new RegExp('^'+name+'=','m'),name)}
  for(const line of example.split('\n')){const m=line.match(/^([A-Z_]+)=([^#]*)/);if(!m)continue;const value=m[2].trim();
   const ok=value===''||/PLACEHOLDER|YOUR-TEAM|PASTE_/.test(value)||['false','true','1','upload'].includes(value)||/^\d+\.\d+\.\d+$/.test(value)||/^https:\/\/YOUR-TEAM/.test(value)||value.startsWith('/absolute/path/');
   assert.ok(ok,`suspicious non-placeholder value for ${m[1]}: ${value}`)}

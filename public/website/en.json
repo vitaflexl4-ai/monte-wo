@@ -1,0 +1,161 @@
+{
+  "home": {
+    "title": "MONTE WO — Free Strength Tools & Earned Progress",
+    "description": "Free strength calculators, written exercise guides and the MONTE WO app concept. Four independent disciplines; ranking standards remain draft, not official.",
+    "statusTitle": "A clear starting point.",
+    "statuses": [
+      {
+        "label": "AVAILABLE NOW",
+        "title": "Tools for your next session.",
+        "text": "Five strength calculators and a growing collection of written movement guides. Free to use, without an account.",
+        "link": "/tools/",
+        "cta": "Explore Free Tools ↗"
+      },
+      {
+        "label": "UNDER DEVELOPMENT",
+        "title": "Standards before status.",
+        "text": "Squat, Bench Press, Deadlift and Strict Biceps Curl. Each assessed independently. No official rank awards yet.",
+        "link": "/strength/",
+        "cta": "Understand the Strength Index ↗"
+      },
+      {
+        "label": "PRODUCT CONCEPT",
+        "title": "The app comes next.",
+        "text": "An athlete dashboard, training history and social features are planned—not live website features.",
+        "link": "/app/",
+        "cta": "See the app direction ↗"
+      }
+    ]
+  },
+  "tools": {
+    "eyebrow": "FREE TOOLS / REAL UTILITY",
+    "headline": "Prepare with purpose.",
+    "accent": "Start with the numbers.",
+    "intro": "Useful calculations, clear assumptions and no account required. Choose a tool for your next session—not a shortcut to a rank.",
+    "strengthTitle": "Your Strength Lab.",
+    "strengthIntro": "Five working calculators, running right on your device.",
+    "existingTitle": "More tools, already available.",
+    "existingIntro": "The existing nutrition and body-composition estimates remain available. General adult education—not a personal nutrition plan or medical advice.",
+    "futureTitle": "Room to grow. No empty promises.",
+    "futureText": "Further nutrition tools and personalized planning are planned for future releases. These additional features are not available on this website.",
+    "privacy": "The calculators run locally. Their inputs are not uploaded or saved to a profile. Offline use requires an initial visit and successful cache installation.",
+    "legacy": "The original one-rep max and plate-loading pages are still available at their existing URLs.",
+    "nutrition": [
+      {
+        "id": "protein",
+        "title": "Protein estimate",
+        "text": "Explore a daily protein estimate from bodyweight and an adjustable factor.",
+        "symbol": "◈"
+      },
+      {
+        "id": "tdee",
+        "title": "Energy needs",
+        "text": "Estimate resting energy expenditure and an activity-based daily total.",
+        "symbol": "ϟ"
+      },
+      {
+        "id": "macros",
+        "title": "Macro calculator",
+        "text": "See a transparent split of calories into protein, fat and carbohydrates.",
+        "symbol": "%"
+      },
+      {
+        "id": "body-fat",
+        "title": "Body-fat estimate",
+        "text": "A circumference-based approximation—not a clinical measurement.",
+        "symbol": "◎"
+      }
+    ]
+  },
+  "app": {
+    "title": "The MONTE WO App — Product Concept, Coming Soon",
+    "description": "Explore the planned MONTE WO app: independent discipline performance, training history and future social features. No app download or public athlete accounts yet.",
+    "eyebrow": "THE APP / A FIRST LOOK",
+    "headline": "Your work.",
+    "accent": "Your own climb.",
+    "intro": "A focused home for your training, built around progress you can understand—and strength recognition you have to earn.",
+    "notice": "INTERACTIVE SIMULATION — NOT A RELEASED APP",
+    "availability": "No native app download, public athlete account or launch date is available. Joining the waitlist requests updates only.",
+    "reference": "The visual direction follows the supplied MONTE WO app concept. The phone responds locally to your inputs. Badges and history rows are illustrative, not earned ranks or personal records. No qualification thresholds or athlete data are used.",
+    "features": [
+      {
+        "title": "A clear athlete dashboard.",
+        "text": "A planned view of your own training and four independent discipline records. No combined strength score or automatic starting rank.",
+        "symbol": "▦"
+      },
+      {
+        "title": "History that means something.",
+        "text": "Working sets, training history and personal records are planned for the app. This website does not store your workouts.",
+        "symbol": "↗"
+      },
+      {
+        "title": "A next step you can explain.",
+        "text": "Progress toward a qualifying standard can only be shown after the relevant methodology and thresholds are approved. There is no official progress percentage today.",
+        "symbol": "◇"
+      },
+      {
+        "title": "Community, on your terms.",
+        "text": "Friends and leaderboards are future possibilities, not live features. Privacy, eligibility and moderation need to be defined before release.",
+        "symbol": "◎"
+      },
+      {
+        "title": "Consistency, without free ranks.",
+        "text": "Attendance, streaks, XP, account age and engagement will never award strength ranks. Qualifying performance—not activity—must earn the recognition.",
+        "symbol": "≋"
+      }
+    ]
+  },
+  "standards": {
+    "title": "Launch Discipline Guide — Draft MONTE WO Variations",
+    "description": "Read the four proposed MONTE WO launch variations, equipment requirements and draft performance checks. These rules are not yet approved for official rank awards.",
+    "headline": "Learn the variation.",
+    "accent": "Understand the standard.",
+    "intro": "A general exercise guide is not automatically a ranking rulebook. These are the four proposed launch variations, drawn directly from the existing draft MONTE Standards.",
+    "notice": "DRAFT — NOT OFFICIAL. The judging protocol, demonstration footage and thresholds are not complete or approved. These summaries do not authorize official rank awards.",
+    "equipment": "Equipment & setup",
+    "checks": "Proposed performance checks",
+    "safety": "Choose manageable loads and suitable safety equipment. Stop for pain. Do not repeat a dangerous attempt to satisfy a camera angle or chase a rank.",
+    "cards": [
+      {
+        "id": "squat",
+        "label": "Squat",
+        "variation": "Free barbell back squat",
+        "equipment": "Barbell, plates and a suitable rack with correctly set safeties or competent spotters. High- or low-bar placement is included in the existing draft.",
+        "guide": "/exercises/back-squat/",
+        "difference": "Front squats and Smith-machine squats are different variations; they do not substitute for this draft standard."
+      },
+      {
+        "id": "bench",
+        "label": "Bench Press",
+        "variation": "Paused flat barbell bench press",
+        "equipment": "Free-weight barbell, plates and a flat bench with suitable safeties or competent spotting. A visible controlled pause is part of the draft.",
+        "guide": "/exercises/bench-press/",
+        "difference": "Dumbbell, incline and touch-and-go variations are not interchangeable with the paused-barbell draft."
+      },
+      {
+        "id": "deadlift",
+        "label": "Deadlift",
+        "variation": "Conventional barbell deadlift",
+        "equipment": "Barbell and full-size plates on a suitable floor. The existing draft uses conventional stance and excludes straps.",
+        "guide": null,
+        "difference": "The library’s Romanian deadlift guide is a different movement. Sumo, trap-bar, block and deficit pulls are not substitutes in this launch draft."
+      },
+      {
+        "id": "curl",
+        "label": "Strict Biceps Curl",
+        "variation": "Wall-strict straight-bar curl",
+        "equipment": "Straight bar, matching plates and a rigid vertical wall. Head, upper back and buttocks contact the wall in the draft setup.",
+        "guide": null,
+        "difference": "Dumbbell, EZ-bar and swinging curls are different variations. A dedicated technique demonstration for this exact variation is not yet available."
+      }
+    ]
+  },
+  "ranking": {
+    "title": "MONTE WO Strength Index — Four Disciplines, Draft Standards",
+    "description": "Nine earned rank identities across Squat, Bench Press, Deadlift and Strict Biceps Curl. No ranks from XP or streaks. Methodology is draft, not official.",
+    "headline": "Performance earns the rank.",
+    "body": "Each discipline stands on its own. A qualifying performance must meet that discipline’s approved rules and thresholds. There is no overall rank, no free Debitan and no promotion for attendance, streaks, XP, account age or engagement.",
+    "status": "Official rank awards are unavailable until the relevant standards are researched, tested and independently approved.",
+    "pilot": "Existing restricted technical pilot · not a public app feature"
+  }
+}

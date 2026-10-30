@@ -1,0 +1,24 @@
+{
+  "cli": {
+    "appVersionSource": "local"
+  },
+  "build": {
+    "preview": {
+      "node": "22.13.0",
+      "android": {
+        "buildType": "apk"
+      },
+      "distribution": "internal",
+      "credentialsSource": "remote",
+      "env": {
+        "MONTEWO_INTERNAL_APK_RISK_ACCEPTED": "true"
+      }
+    },
+    "production": {
+      "node": "22.13.0",
+      "android": {
+        "buildType": "apk"
+      }
+    }
+  }
+}

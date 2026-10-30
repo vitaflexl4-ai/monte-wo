@@ -1,0 +1,76 @@
+
+> @monte-wo/mobile@0.1.0 eas-build-post-install
+> npm run typecheck && npm run test:build-safety
+
+
+> @monte-wo/mobile@0.1.0 typecheck
+> tsc --noEmit
+
+
+> @monte-wo/mobile@0.1.0 test:build-safety
+> node --test tests/*.test.cjs
+
+TAP version 13
+# Subtest: known Android internal exception remains explicitly not public release approval
+ok 1 - known Android internal exception remains explicitly not public release approval
+  ---
+  duration_ms: 1.741689
+  type: 'test'
+  ...
+# Subtest: production, iOS and missing risk approval are denied
+ok 2 - production, iOS and missing risk approval are denied
+  ---
+  duration_ms: 0.563077
+  type: 'test'
+  ...
+# Subtest: unknown/new advisory fails closed
+ok 3 - unknown/new advisory fails closed
+  ---
+  duration_ms: 0.213984
+  type: 'test'
+  ...
+# Subtest: version drift fails closed
+ok 4 - version drift fails closed
+  ---
+  duration_ms: 0.259011
+  type: 'test'
+  ...
+# Subtest: critical or moderate advisories cannot use the exception
+ok 5 - critical or moderate advisories cannot use the exception
+  ---
+  duration_ms: 0.237699
+  type: 'test'
+  ...
+# Subtest: network/malformed/inconsistent audit cannot masquerade as clean
+ok 6 - network/malformed/inconsistent audit cannot masquerade as clean
+  ---
+  duration_ms: 1.29029
+  type: 'test'
+  ...
+# Subtest: zero findings still does not authorize publication
+ok 7 - zero findings still does not authorize publication
+  ---
+  duration_ms: 0.489431
+  type: 'test'
+  ...
+# Subtest: xcode uses patched CommonJS uuid v4 with valid project IDs
+ok 8 - xcode uses patched CommonJS uuid v4 with valid project IDs
+  ---
+  duration_ms: 48.721746
+  type: 'test'
+  ...
+# Subtest: preview profile is APK/internal/remote-signing with no auto submission
+ok 9 - preview profile is APK/internal/remote-signing with no auto submission
+  ---
+  duration_ms: 0.344883
+  type: 'test'
+  ...
+1..9
+# tests 9
+# suites 0
+# pass 9
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 117.597282

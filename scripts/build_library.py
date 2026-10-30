@@ -2,6 +2,9 @@
 from pathlib import Path
 import json,html,re
 from build_pages import header,footer
+from poster_assets import publish_posters
+from exercise_video_template import loop_block
+posters={p["exerciseId"]:p for p in publish_posters().values() if p["exerciseId"]}
 ROOT=Path(__file__).resolve().parent.parent
 PUB=ROOT/'public'
 esc=lambda s:html.escape(str(s),quote=True)
@@ -30,17 +33,17 @@ def icon(equipment):
  return f'<svg viewBox="0 0 120 80" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">{circle}<path d="{paths.get(equipment,paths["Barbell"])}"/></svg>'
 
 def card(x):
- m=x['media']; ready=bool(m)
+ m=x['media']; ready=bool(m); poster=posters.get(x['id']) if not ready else None
  search=' '.join([x['name'],x['equipment'],x['movement'],groupmap[x['group']]['name'],*x['muscles'],*x['secondary'],*x['aliases']])
- picture=(f'<img src="{esc(m["src"])}" alt="{esc(x["name"])} demonstration" loading="lazy">' if ready and m['type']=='image' else icon(x['equipment']))
- return f'''<a class="exercise-entry" href="/exercises/{x['id']}/" data-exercise data-name="{esc(x['name'])}" data-search="{esc(search)}" data-group="{x['group']}" data-equipment="{esc(x['equipment'])}" data-media="{'ready' if ready else 'pending'}"><div class="entry-art">{picture}<span class="equipment-chip">{esc(x['equipment'])}</span><span class="entry-art-label">{'SUPPLIED DEMONSTRATION' if ready and m['type']=='image' else 'EQUIPMENT SYMBOL · NOT A FORM DEMO'}</span></div><div class="entry-copy"><span class="entry-group">{groupmap[x['group']]['name']} <span>↗</span></span><h3>{esc(x['name'])}</h3><p>{esc(' · '.join(x['muscles']))}</p><div class="entry-status"><i class="{'media-ready' if ready else ''}"></i>{'Demonstration available' if ready else 'Written guide · animation coming'}</div></div></a>'''
+ picture=(f'<img class="workout-poster-img" src="{poster["src"]}" alt="{esc(x["name"])} — MONTE WO workout poster" width="400" height="500" loading="lazy" decoding="async">' if poster else f'<img src="{esc(m["src"])}" alt="{esc(x["name"])} demonstration" loading="lazy">' if ready and m['type']=='image' else icon(x['equipment']))
+ return f'''<a class="exercise-entry" href="/exercises/{x['id']}/" data-exercise data-name="{esc(x['name'])}" data-search="{esc(search)}" data-group="{x['group']}" data-equipment="{esc(x['equipment'])}" data-media="{'ready' if ready else 'pending'}"><div class="entry-art{' has-workout-poster' if poster else ''}">{picture}<span class="equipment-chip">{esc(x['equipment'])}</span><span class="entry-art-label">{'WORKOUT POSTER' if poster else 'SUPPLIED DEMONSTRATION' if ready and m['type']=='image' else 'EQUIPMENT SYMBOL · NOT A FORM DEMO'}</span></div><div class="entry-copy"><span class="entry-group">{groupmap[x['group']]['name']} <span>↗</span></span><h3>{esc(x['name'])}</h3><p>{esc(' · '.join(x['muscles']))}</p><div class="entry-status"><i class="{'media-ready' if ready else ''}"></i>{'Demonstration available' if ready else 'Written guide · workout poster' if poster else 'Written guide · animation coming'}</div></div></a>'''
 
 def cta():return '''<section class="library-app"><div><span class="eyebrow">THIS IS JUST THE WARM-UP.</span><h2>More movements.<br>More ways to <em>Monte Wo.</em></h2><p>More exercises, workout routines and offline training guides are planned for the Monte Wo app. Start with the website library while we build what’s next.</p><span class="app-honesty">APP COMING SOON · NO RELEASE DATE ANNOUNCED</span></div><div><a class="button" href="/waitlist/">Get launch updates ↗</a><a class="text-link" href="/app/">See what’s coming ↗</a></div></section>'''
 
 routes=[]
 def save(route,title,body,filterable=False):
  path=PUB/route;path.mkdir(parents=True,exist_ok=True);routes.append('/'+route+'/')
- doc=f'''<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#090c13"><title>{esc(title)} | Monte Wo</title><meta name="description" content="{esc(title)}. Browse muscle groups, equipment and written movement guides from Monte Wo. More workouts coming in the app."><link rel="icon" href="/assets/icon-32.png"><link rel="manifest" href="/manifest.json"><link rel="stylesheet" href="/fonts.css"><link rel="stylesheet" href="/style.css"><link rel="stylesheet" href="/launch.css"><link rel="stylesheet" href="/library.css"><script src="/site.js" type="module"></script><script src="/library.js" type="module"></script></head><body class="library-page" {'data-library' if filterable else ''}>{header}<main id="main" class="wrap">{body}</main>{footer}</body></html>'''
+ doc=f'''<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#090c13"><title>{esc(title)} | Monte Wo</title><meta name="description" content="{esc(title)}. Browse muscle groups, equipment and written movement guides from Monte Wo. More workouts coming in the app."><link rel="icon" href="/assets/icon-32.png"><link rel="manifest" href="/manifest.json"><link rel="stylesheet" href="/fonts.css"><link rel="stylesheet" href="/style.css"><link rel="stylesheet" href="/launch.css"><link rel="stylesheet" href="/library.css"><script src="/site.js" type="module"></script><script src="/library.js" type="module"></script><script src="/exercise-video.js" type="module"></script></head><body class="library-page" {'data-library' if filterable else ''}>{header}<main id="main" class="wrap">{body}</main>{footer}</body></html>'''
  (path/'index.html').write_text(doc)
 
 def browse(group=None):
@@ -69,7 +72,7 @@ for x in items:
  if m:
   media=f'<img src="{esc(m["src"])}" alt="{esc(x["name"])} demonstration">' if m['type']=='image' else f'<video src="{esc(m["src"])}" controls playsinline preload="metadata" aria-label="{esc(x["name"])} demonstration"></video>'
   media='<div class="guide-media">'+media+'</div>'
- else:media=f'<div class="guide-media pending-media">{icon(x["equipment"])}<span>FORM ANIMATION · COMING SOON</span><p>The written guide is available below.<br>We haven’t added a demonstration for this exercise yet.</p><small>Equipment symbol only—not exercise technique.</small></div>'
+ else:media=loop_block(x['id'])
  related=[i for i in items if i['group']==x['group'] and i['id']!=x['id']][:3]
  body=f'''<section class="guide-hero"><div class="library-breadcrumb"><a href="/exercises/">Library</a><span>/</span><a href="/exercises/muscle/{g['id']}/">{g['name']}</a></div><span class="eyebrow">{esc(x['equipment'])} / {esc(x['movement'])}</span><h1>{esc(x['name'])}<span>.</span></h1><p>{esc(' · '.join(x['muscles']))} <span class="guide-type">WRITTEN STARTER GUIDE</span></p></section><div class="guide-layout"><div>{media}<section class="guide-steps"><span class="eyebrow">MOVE WITH INTENTION</span><h2>How to approach it</h2><ol>{''.join('<li>'+esc(s)+'</li>' for s in x['steps'])}</ol><div class="guide-cue"><span>KEEP IN MIND</span><p>{esc(x['cue'])}</p></div></section></div><aside class="guide-aside"><section><h2>At a glance</h2><dl><dt>Primary muscles</dt><dd>{esc(', '.join(x['muscles']))}</dd><dt>Also involved</dt><dd>{esc(', '.join(x['secondary']) or 'Varies with technique and effort')}</dd><dt>Equipment</dt><dd>{esc(x['equipment'])}</dd><dt>Movement</dt><dd>{esc(x['movement'])}</dd></dl></section><section><span class="eyebrow">START WHERE YOU ARE</span><h2>Make it more manageable</h2><p>{esc(x['easier'])}</p></section><section class="guide-safety"><h2>Train with care</h2><p>{esc(x['safety'])}</p><small>General education, not a personalized workout or a substitute for a qualified coach. Stop if a movement causes pain.</small></section></aside></div><section class="related-guides"><div class="library-heading"><h2>Keep exploring</h2><a class="text-link" href="/exercises/muscle/{g['id']}/">All {g['name'].lower()} guides ↗</a></div><div class="library-grid">{''.join(card(i) for i in related)}</div></section>{cta()}'''
  save('exercises/'+x['id'],x['name'],body)

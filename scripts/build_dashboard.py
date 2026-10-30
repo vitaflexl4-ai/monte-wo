@@ -290,6 +290,7 @@ if 'const DASHBOARD_ASSETS=' in text:
     text = re.sub(r'const DASHBOARD_ASSETS=.*?;', 'const DASHBOARD_ASSETS=' + json.dumps(assets) + ';', text)
 else:
     text = text.replace('const ASSETS=[', 'const DASHBOARD_ASSETS=' + json.dumps(assets) + ';\nconst ASSETS=[...DASHBOARD_ASSETS,')
-text = re.sub(r"const CORE='[^']+';", "const CORE='montewo-core-v12-dashboard-foundation';", text)
+# The cache name (CORE) is owned by the website build (build_cockpit.py sets it last); adding DASHBOARD_ASSETS changes the
+# service-worker bytes, which is what triggers browsers to re-install and re-cache. Do not rewrite CORE here.
 sw.write_text(text)
 print('Built /dashboard/ application foundation: 9 views, 4 discipline cards (no awards), muscle view, demo food logger. No data, accounts or integrations.')

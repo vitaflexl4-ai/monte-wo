@@ -1,0 +1,118 @@
+{
+  "source": {
+    "repository": "vitaflexl4-ai/monte-wo",
+    "branch": "main",
+    "commit": "c9f7151e47d58afce20bc9251bc301ac405ed2ab"
+  },
+  "packages": [
+    {
+      "folder": "monte-wo-pack-2-dup",
+      "manifestEntries": 17,
+      "sqlRows": 17,
+      "manifestMatchesSql": true
+    },
+    {
+      "folder": "monte-wo-pack-2",
+      "manifestEntries": 28,
+      "sqlRows": 28,
+      "manifestMatchesSql": true
+    },
+    {
+      "folder": "monte-wo-pack-3",
+      "manifestEntries": 12,
+      "sqlRows": 12,
+      "manifestMatchesSql": true
+    },
+    {
+      "folder": "monte-wo-pack",
+      "manifestEntries": 10,
+      "sqlRows": 10,
+      "manifestMatchesSql": true
+    }
+  ],
+  "manifestEntries": 67,
+  "uniqueExercises": 57,
+  "duplicateEntries": [
+    {
+      "id": "dumbbell-curl",
+      "package": "monte-wo-pack",
+      "same_metadata_and_bytes": true
+    },
+    {
+      "id": "back-squat",
+      "package": "monte-wo-pack",
+      "same_metadata_and_bytes": true
+    },
+    {
+      "id": "bench-press",
+      "package": "monte-wo-pack",
+      "same_metadata_and_bytes": true
+    },
+    {
+      "id": "deadlift",
+      "package": "monte-wo-pack",
+      "same_metadata_and_bytes": true
+    },
+    {
+      "id": "overhead-press",
+      "package": "monte-wo-pack",
+      "same_metadata_and_bytes": true
+    },
+    {
+      "id": "barbell-row",
+      "package": "monte-wo-pack",
+      "same_metadata_and_bytes": true
+    },
+    {
+      "id": "front-raise",
+      "package": "monte-wo-pack",
+      "same_metadata_and_bytes": true
+    },
+    {
+      "id": "triceps-pushdown",
+      "package": "monte-wo-pack",
+      "same_metadata_and_bytes": true
+    },
+    {
+      "id": "push-up",
+      "package": "monte-wo-pack",
+      "same_metadata_and_bytes": true
+    },
+    {
+      "id": "pull-up",
+      "package": "monte-wo-pack",
+      "same_metadata_and_bytes": true
+    }
+  ],
+  "categories": {
+    "Arms": 7,
+    "Back": 7,
+    "Cardio": 5,
+    "Chest": 6,
+    "Core": 6,
+    "Legs": 16,
+    "Mobility": 2,
+    "Shoulders": 8
+  },
+  "physicalMediaFiles": 201,
+  "uniqueMediaFiles": 171,
+  "allMediaProbed": true,
+  "allManifestSqlRowsMatch": true,
+  "canonicalGuideOverlap": [
+    "back-squat",
+    "bench-press",
+    "dumbbell-curl",
+    "lat-pulldown",
+    "lateral-raise",
+    "overhead-press",
+    "push-up",
+    "romanian-deadlift",
+    "triceps-pushdown"
+  ],
+  "canonicalGuidesRetained": 14,
+  "mergedBrowseRecords": 62,
+  "scriptsExecuted": false,
+  "sqlExecuted": false,
+  "r2Uploaded": false,
+  "reviewStatus": "Technical file checks only. Exercise form, translation and rights approval not inferred."
+}

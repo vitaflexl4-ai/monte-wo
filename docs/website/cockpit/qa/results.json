@@ -1,0 +1,44 @@
+[
+  {
+    "name": "phone",
+    "passed": true,
+    "columns": 2,
+    "hoverFilterMs": 0.6,
+    "hoverPreviewReverts": true,
+    "clickPins": true,
+    "keyboard": true,
+    "viewSwitchClears": true,
+    "foodValuesHonest": true,
+    "noAutoplay": true,
+    "filters": true,
+    "errors": []
+  },
+  {
+    "name": "ipad",
+    "passed": true,
+    "columns": 3,
+    "hoverFilterMs": 1,
+    "hoverPreviewReverts": true,
+    "clickPins": true,
+    "keyboard": true,
+    "viewSwitchClears": true,
+    "foodValuesHonest": true,
+    "noAutoplay": true,
+    "filters": true,
+    "errors": []
+  },
+  {
+    "name": "desktop",
+    "passed": true,
+    "columns": 4,
+    "hoverFilterMs": 0.6,
+    "hoverPreviewReverts": true,
+    "clickPins": true,
+    "keyboard": true,
+    "viewSwitchClears": true,
+    "foodValuesHonest": true,
+    "noAutoplay": true,
+    "filters": true,
+    "errors": []
+  }
+]

@@ -168,10 +168,10 @@
   "content/strength/deadlift-standard-draft-1.json": "cffb2e1be3ca1e023086a95629d331a9f02e94a494750925c3d8dcb00784c498",
   "content/strength/curl-standard-draft-1.json": "0e9cbd06244f8099e665770c66161d4d256cbd8a86a265111e4c83530f2e0cf5",
   "content/strength/squat-model-draft-1.json": "6acb6a9f14f92ea48df77f29a5b6b1d6e56eae8b5fb4127dcf775f9ba1d64a81",
-  "functions/api/[[route]].js": "5fab0193bd591966a07a924bbaa7c135716a921f7aa25b0672aae7d8a335e3f9",
+  "functions/api/[[route]].js": "6f8328107d8cd9a9a96204b6d6d8f45f4f29099b1145ee5b997f0ce280142186",
   "server/strength/auth.js": "fb44ef9174a1d924cd5f8c7119caeff10f6dd69e520619d51905f7357c2f0069",
   "server/strength/engine.js": "53389d09d5d1cd467989c487b2ce6897b7102e63669ef98079a88fd0da6f11f4",
-  "server/strength/api.js": "0c72655311343a8f2cfff9449b0344985b7b98b74b056829b0b0543355abd39d",
+  "server/strength/api.js": "fc47a283f8f64b86397bca5e70f70f75cb4c1457eafccb979bbe81909db5e26f",
   "tests/fixtures/strength-fixtures.js": "57356d4cc844280a324c7c2cba36c62b11724be15879a0d0673da02244255954",
   "tests/fixtures/d1_sqlite.py": "7ce78057103bf91644afd42503e8f8ce219452ba3fdbc4166b5fc3c128e142ea"
 }

@@ -15,10 +15,10 @@ function request(route,{method='GET',origin=WEB,headers={},data=null}={}){const 
 const strength=(route,opts)=>handleStrength({request:request(route,opts),env:opts?.env||env},{fetcher});
 const withNative=extra=>({...env,NATIVE_CLIENTS_ENABLED:'true',...extra});
 const verifier='0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ-._~';
-before(async()=>{dir=mkdtempSync(join(tmpdir(),'monte-native-test-'));sqlite({script:readFileSync('migrations/0001_waitlist.sql','utf8')+readFileSync('migrations/0002_strength_index.sql','utf8')+readFileSync('migrations/0003_native_auth_codes.sql','utf8')});db={prepare:s=>new Statement(s),batch:async statements=>sqlite({statements})};
+before(async()=>{dir=mkdtempSync(join(tmpdir(),'monte-native-test-'));sqlite({script:readFileSync('migrations/0001_waitlist.sql','utf8')+readFileSync('migrations/0002_strength_index.sql','utf8')+readFileSync('migrations/0007_native_auth_codes.sql','utf8')});db={prepare:s=>new Statement(s),batch:async statements=>sqlite({statements})};
  for(const [id,role]of [['athlete','athlete'],['reviewer','reviewer']])await db.prepare('INSERT INTO mw_principals(id,subject,role) VALUES(?,?,?)').bind(id,id,role).run();
  keys=await crypto.subtle.generateKey({name:'RSASSA-PKCS1-v1_5',modulusLength:2048,publicExponent:new Uint8Array([1,0,1]),hash:'SHA-256'},true,['sign','verify']);jwk={...await crypto.subtle.exportKey('jwk',keys.publicKey),kid:'test-key',alg:'RS256'};
- env={DB:db,RANKING_ENABLED:'true',RANKING_ACCESS_ISSUER:'https://test-team.cloudflareaccess.com',RANKING_ACCESS_AUD:'test-audience'};});
+ env={DB:db,APP_DB:{...db},RANKING_ENABLED:'true',RANKING_ACCESS_ISSUER:'https://test-team.cloudflareaccess.com',RANKING_ACCESS_AUD:'test-audience'};});   // APP_DB: distinct binding object (same test file) — the Strength API never uses the waitlist binding
 after(()=>rmSync(dir,{recursive:true,force:true}));
 
 test('flag OFF (default): native origins, bearer tokens, handoff routes and CORS are all inert',async()=>{
@@ -94,7 +94,7 @@ test('flag ON: waitlist accepts a native Origin but every other guard (configura
 });
 
 test('migration 0003 is additive and operational only: no achievement table, no trigger changes, applies after 0002',()=>{
- const sql=readFileSync('migrations/0003_native_auth_codes.sql','utf8');
+ const sql=readFileSync('migrations/0007_native_auth_codes.sql','utf8');
  assert.match(sql,/CREATE TABLE mw_native_auth_codes\(/);assert.equal((sql.match(/CREATE TABLE/g)||[]).length,1);assert.doesNotMatch(sql,/DROP|ALTER|TRIGGER|mw_results|mw_rank_history|mw_audit|UPDATE /);
  assert.match(sql,/REFERENCES mw_principals\(subject\)/);
 });

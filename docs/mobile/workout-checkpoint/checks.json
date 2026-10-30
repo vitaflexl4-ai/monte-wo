@@ -1,0 +1,34 @@
+{
+  "root_node_tests": {
+    "passed": 137,
+    "failed": 0,
+    "command": "node --test tests/*.test.js"
+  },
+  "native_source_unit_tests": {
+    "passed": 37,
+    "failed": 0,
+    "command": "node --test tests/*.test.cjs (apps/mobile)"
+  },
+  "native_typescript": {
+    "passed": true,
+    "command": "tsc --noEmit -p apps/mobile/tsconfig.json",
+    "typescript": "6.0.3"
+  },
+  "metro_shared_directory": {
+    "passed": true
+  },
+  "browser": "See browser-results.json: three widths, restart, quota, corruption, concurrent tabs.",
+  "production_config_read": {
+    "available": false,
+    "workoutSync": false,
+    "registration": "operator-enrolled pilot only"
+  },
+  "native_install_tested": false,
+  "production_deployment_performed": false,
+  "remote_migrations_performed": false,
+  "limitations": [
+    "No Expo/native compilation or install was performed.",
+    "Temporary dependency installation used Node 20.20.2 with engine warnings; owner/native builds require Node 22.13+.",
+    "Full native UI browser regression was not rerun; browser checks use the explicitly labeled shared-engine harness."
+  ]
+}

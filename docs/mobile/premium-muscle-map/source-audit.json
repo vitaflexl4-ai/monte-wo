@@ -1,0 +1,32 @@
+{
+  "source": {
+    "branch": "main",
+    "commit": "3f60741742db3db0c92d6d316e81b3e4e430d7da",
+    "path": "index.html",
+    "sha256": "eb0526adb12f658ac415846afe5882271a9b70efe9f058fb97394d5144a11ece"
+  },
+  "regionTierMapping": {
+    "arms": "chanpyon",
+    "legs": "bati",
+    "chest": "fo",
+    "back": "avanse",
+    "core": "met"
+  },
+  "targetSelectors": [
+    ".m[data-m='arms'][data-v='f']",
+    ".m[data-m='arms'][data-v='b']",
+    ".m[data-m='legs'][data-v='f']",
+    ".m[data-m='legs'][data-v='b']",
+    ".m[data-m='chest'][data-v='f']",
+    ".m[data-m='back'][data-v='b']",
+    ".m[data-m='core'][data-v='f']",
+    ".m[data-m='core'][data-v='b']"
+  ],
+  "pathCounts": {
+    "f": 28,
+    "b": 26
+  },
+  "sourceScriptExecuted": false,
+  "rankRulesChanged": false,
+  "sourceFooterCorrection": "5 muscle regions, 4 independent ranked disciplines. Preserve approved F\u00f2 spelling."
+}

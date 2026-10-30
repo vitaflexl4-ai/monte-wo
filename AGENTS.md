@@ -54,6 +54,6 @@ npm run test:website && npm run test:browser && npm run test:phase2 && npm run t
 * Change Cloudflare settings, DNS, bindings, the `monte-wo-waitlist`/`flex-ai-db` resources, or submit store releases — these are owner actions.
 * Invent thresholds, award ranks, mark anything Verified, or publish a standard without the governed process.
 
-## Runtime operations (the two 24/7 agents)
+## Runtime operations (external 24/7 agents)
 
-Keys are issued by the owner with `node scripts/agent-key.mjs create …` (plaintext shown once; store it in the agent's secret manager). Discover tools from `GET /api/agent/tools`, authenticate with `Authorization: Bearer mwa_…`, coordinate through `PUT /api/agent/kv/<key>` with `If-Match`. Full reference, scopes and the suggested operations loop: `docs/release/AGENT_API.md`.
+Keys are issued by the owner with `node scripts/agent-key.mjs create …` (plaintext shown once; store it in the agent's secret manager; least privilege — e.g. `--scopes status:read,catalog:read,kv:read,kv:write`, never `*`, `--expires` ≤ 90 days). Discover tools from `GET /api/agent/tools`, authenticate with `Authorization: Bearer mwa_…`, coordinate through `PUT /api/agent/kv/<key>` with `If-Match`. Waitlist e-mail access and reviewer/admin Strength automation additionally need the server flags `AGENT_PII_ENABLED` / `AGENT_STRENGTH_PRIVILEGED_ENABLED` (owner decision). The Intelligence Command Center's own agents (ARGON, ULTRON, AU, TITAN) run in-process on `INTEL_DB` and do not use this API. Full reference, scopes, per-agent matrix and production plan: `docs/release/AGENT_API.md`.

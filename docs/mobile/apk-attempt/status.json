@@ -1,0 +1,33 @@
+{
+  "status": "blocked-authentication",
+  "date": "2026-10-15",
+  "branch": "feature/mobile-foundation",
+  "appId": "com.vitaflexbusinessgroup.montewo",
+  "version": "0.1.0",
+  "versionCode": 1,
+  "profile": "preview",
+  "distribution": "internal",
+  "requestedArtifact": "apk",
+  "expoAuthenticated": false,
+  "projectIdVerified": false,
+  "signingIdentityVerified": false,
+  "cloudBuildId": null,
+  "artifactUrl": null,
+  "artifactFileTypeVerified": false,
+  "signatureVerified": false,
+  "installationCompatibilityVerified": false,
+  "installationTestPerformed": false,
+  "auditBefore": {
+    "high": 15,
+    "moderate": 8
+  },
+  "auditAfter": {
+    "high": 15,
+    "moderate": 0
+  },
+  "internalRiskAcceptedByUser": true,
+  "publicReleaseAuthorized": false,
+  "productionChanged": false,
+  "databaseMigrationApplied": false,
+  "nextAction": "Owner runs official EAS browser login on their Mac; see ANDROID-APK-NEXT-STEPS.md"
+}

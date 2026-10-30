@@ -40,7 +40,11 @@
     "status2Title": "The app comes next.",
     "status2Text": "An athlete dashboard, training history and social features are planned—not live website features.",
     "status2Cta": "See the app direction ↗",
-    "toolsTitle": "Make your next session simpler."
+    "toolsTitle": "Make your next session simpler.",
+    "workoutPoster": "WORKOUT POSTER",
+    "posterNotice": "MONTE WO artwork—not an animated demonstration of exercise technique.",
+    "exerciseDesc": "Explore the MONTE WO workout posters and the written guides in our exercise library.",
+    "libraryNote": "Static workout posters · Written exercise guides available"
   },
   "ht": {
     "discoverRank": "Dekouvri Strength Index",
@@ -83,7 +87,11 @@
     "status2Title": "Aplikasyon an vini apre.",
     "status2Text": "Tablo atlèt, istwa antrènman ak fonksyon sosyal nan plan; yo pa fonksyon aktif sou sit la.",
     "status2Cta": "Gade direksyon aplikasyon an ↗",
-    "toolsTitle": "Fè pwochen sesyon ou pi senp."
+    "toolsTitle": "Fè pwochen sesyon ou pi senp.",
+    "workoutPoster": "AFICH EGZÈSIS",
+    "posterNotice": "Ilistrasyon MONTE WO—se pa yon demonstrasyon anime sou teknik egzèsis.",
+    "exerciseDesc": "Dekouvri afich egzèsis MONTE WO yo ak gid ekri nan bibliyotèk egzèsis nou an.",
+    "libraryNote": "Afich egzèsis estatik · Gid egzèsis ekri disponib"
   },
   "fr": {
     "discoverRank": "Découvrir le Strength Index",
@@ -126,6 +134,10 @@
     "status2Title": "L’application viendra ensuite.",
     "status2Text": "Tableau de bord, historique et fonctions sociales sont prévus, pas des fonctionnalités actives du site.",
     "status2Cta": "Explorer le concept d’application ↗",
-    "toolsTitle": "Simplifiez votre prochaine séance."
+    "toolsTitle": "Simplifiez votre prochaine séance.",
+    "workoutPoster": "AFFICHE D’EXERCICE",
+    "posterNotice": "Illustration MONTE WO — pas une démonstration animée de la technique.",
+    "exerciseDesc": "Découvrez les affiches MONTE WO et les guides écrits de notre bibliothèque d’exercices.",
+    "libraryNote": "Affiches statiques · Guides d’exercices écrits disponibles"
   }
 }

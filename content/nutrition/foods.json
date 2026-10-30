@@ -1,0 +1,45 @@
+{
+  "policy": "Per-serving values supplied and described as verified by the user on 2026-10-16. Not independently verified by MONTE WO. Daily targets must be explicitly entered.",
+  "targets": null,
+  "foods": [
+    {
+      "id": "griot",
+      "name": "Griot (Fried Pork)",
+      "status": "verified",
+      "serving": "100g",
+      "source": "User-provided verified record · 2026-10-16",
+      "macros": {
+        "calories": 290,
+        "protein": 24,
+        "carbs": 0,
+        "fats": 21
+      }
+    },
+    {
+      "id": "diri-djon-djon",
+      "name": "Diri ak Djon Djon",
+      "status": "verified",
+      "serving": "1 Cup",
+      "source": "User-provided verified record · 2026-10-16",
+      "macros": {
+        "calories": 360,
+        "protein": 8,
+        "carbs": 72,
+        "fats": 4
+      }
+    },
+    {
+      "id": "bannann-peze",
+      "name": "Bannann Peze",
+      "status": "verified",
+      "serving": "3 pieces",
+      "source": "User-provided verified record · 2026-10-16",
+      "macros": {
+        "calories": 210,
+        "protein": 1,
+        "carbs": 32,
+        "fats": 9
+      }
+    }
+  ]
+}

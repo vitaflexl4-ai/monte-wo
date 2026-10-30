@@ -1,0 +1,55 @@
+{
+  "name": "@monte-wo/mobile",
+  "version": "0.1.0",
+  "main": "index.ts",
+  "dependencies": {
+    "@react-navigation/bottom-tabs": "^7.21.0",
+    "@react-navigation/native": "^7.5.1",
+    "@react-navigation/native-stack": "^7.21.0",
+    "expo": "~57.0.30",
+    "expo-auth-session": "~57.0.16",
+    "expo-constants": "~57.0.22",
+    "expo-crypto": "~57.0.4",
+    "expo-document-picker": "~57.0.3",
+    "expo-file-system": "~57.0.7",
+    "expo-secure-store": "~57.0.4",
+    "expo-splash-screen": "~57.0.10",
+    "expo-status-bar": "~57.0.1",
+    "expo-system-ui": "~57.0.4",
+    "expo-video": "~57.0.5",
+    "expo-web-browser": "~57.0.3",
+    "lucide-react-native": "^1.57.0",
+    "react": "19.2.3",
+    "react-dom": "19.2.3",
+    "react-native": "0.86.3",
+    "react-native-safe-area-context": "~5.7.0",
+    "react-native-screens": "~4.26.0",
+    "react-native-svg": "15.15.4",
+    "react-native-web": "^0.21.2"
+  },
+  "devDependencies": {
+    "@types/react": "~19.2.2",
+    "typescript": "~6.0.3"
+  },
+  "scripts": {
+    "start": "expo start",
+    "android": "expo run:android",
+    "ios": "expo run:ios",
+    "web": "expo start --web",
+    "typecheck": "tsc --noEmit",
+    "sync": "python3 ../../scripts/sync_mobile_assets.py",
+    "prebuild": "expo prebuild --no-install",
+    "export:web": "expo export --platform web --output-dir web-build --max-workers 1",
+    "export:native": "expo export --platform android --platform ios --output-dir native-export --max-workers 1",
+    "test:build-safety": "node --test tests/*.test.cjs"
+  },
+  "private": true,
+  "engines": {
+    "node": ">=22.13.0"
+  },
+  "overrides": {
+    "xcode": {
+      "uuid": "11.1.1"
+    }
+  }
+}

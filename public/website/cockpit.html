@@ -1,0 +1,357 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="theme-color" content="#060b14" />
+    <title>Movement Cockpit — MONTE WO</title>
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="MONTE WO" />
+    <meta property="og:title" content="Movement Cockpit — MONTE WO" />
+    <meta
+      property="og:description"
+      content="Explore the premium muscle map, filter 62 exercise entries, and inspect Haitian food data availability. Example tiers, not earned ranks."
+    />
+    <meta property="og:image" content="/assets/monte-wo-social.jpg" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Movement Cockpit — MONTE WO" />
+    <meta name="twitter:image" content="/assets/monte-wo-social.jpg" />
+    <meta
+      name="description"
+      content="Explore MONTE WO's interactive muscle map and 62 exercise entries. Preview movements, filter locally, and explore user-provided Haitian food macros."
+    />
+    <link rel="icon" href="/assets/icon-32.png" />
+    <link rel="stylesheet" href="/fonts.css" />
+    <link rel="stylesheet" href="/cockpit.css" />
+    <script src="/cockpit.js" type="module"></script>
+  </head>
+  <body>
+    <a class="skip" href="#main">Skip to cockpit</a>
+    <div class="ambient" aria-hidden="true"></div>
+    <header class="site-header topbar">
+      <a href="/" class="brand" aria-label="MONTE WO home"
+        ><img
+          src="/assets/monte-wo-emblem.webp"
+          width="44"
+          height="24"
+          alt=""
+        /><span>MONTE <b>WO</b><small>LEVE. KLASE. MONTE WO.</small></span></a
+      >
+      <nav aria-label="Main navigation" id="main-nav">
+        <a href="/tools/">Free Tools</a><a href="/strength/">Strength Index</a
+        ><a href="/app/">The App</a
+        ><a href="/exercises/" aria-current="page">Exercises</a
+        ><a class="join" href="/waitlist/">Join Waitlist ↗</a>
+      </nav>
+      <details class="mobile-menu">
+        <summary aria-label="Open navigation">☰</summary>
+        <nav aria-label="Mobile navigation">
+          <a href="/">Home</a><a href="/tools/">Free Tools</a
+          ><a href="/strength/">Strength Index</a><a href="/app/">The App</a
+          ><a href="/exercises/">Exercises</a
+          ><a href="/waitlist/">Join Waitlist</a>
+        </nav>
+      </details>
+    </header>
+    <div class="workspace">
+      <aside class="rail" aria-label="Workspace sections">
+        <a href="#map" aria-label="Muscle map"
+          ><svg viewBox="0 0 24 24">
+            <circle cx="12" cy="4" r="2" />
+            <path d="M5 9l7-2 7 2M12 7v8m0 0-5 6m5-6 5 6" /></svg
+          ><span>MOVE</span></a
+        ><a href="#nutrition" aria-label="Nutrition"
+          ><svg viewBox="0 0 24 24">
+            <path
+              d="M5 3v7m3-7v7m3-7v7M5 7h6m-3 3v11m10-18v18m0-18c-5 3-5 10 0 10"
+            /></svg
+          ><span>FUEL</span></a
+        ><a href="#library" aria-label="Exercise grid"
+          ><svg viewBox="0 0 24 24">
+            <path d="M3 3h7v7H3zm11 0h7v7h-7zM3 14h7v7H3zm11 0h7v7h-7z" /></svg
+          ><span>EXPLORE</span></a
+        ><a href="/strength/" aria-label="Strength standards"
+          ><svg viewBox="0 0 24 24">
+            <path d="m12 2 9 5v10l-9 5-9-5V7Zm0 6 4 4-4 4-4-4Z" /></svg
+          ><span>RANKS</span></a
+        >
+      </aside>
+      <main id="main" tabindex="-1">
+        <div class="page-heading">
+          <div>
+            <div class="eyebrow">MONTE WO / MOVEMENT COCKPIT</div>
+            <h1>Find your next <span>move.</span></h1>
+            <p>Built for the work. Rooted in who you are.</p>
+          </div>
+          <div class="session-chip">
+            <i></i> LOCAL EXPLORER<small>No account connected</small><a href="#training-tools" class="session-entry">Open Logger &amp; Camera ↓</a>
+          </div>
+        </div>
+        <p id="boot-message" class="boot" role="status">
+          Loading interactive controls…
+        </p>
+        <noscript
+          ><style>
+            .boot {
+              display: none;
+            }
+          </style>
+          <div class="panel noscript">
+            Interactive filtering and food selection need JavaScript. No data is
+            saved.
+            <a href="/exercises/muscle/legs/">Browse written guides</a> or
+            <a href="/tools/">open Free Tools</a>.
+          </div></noscript
+        >
+        <section id="map" class="panel map-panel" aria-labelledby="map-heading">
+          <div class="section-head">
+            <div>
+              <div class="eyebrow">01 / EXPLORE YOUR MOVEMENT</div>
+              <h2 id="map-heading">Your body. Your blueprint.</h2>
+            </div>
+            <div class="view-switch" aria-label="Body view">
+              <button
+                type="button"
+                data-view-button="f"
+                aria-pressed="true"
+                data-requires-js
+                disabled
+              >
+                Front</button
+              ><button
+                type="button"
+                data-view-button="b"
+                aria-pressed="false"
+                data-requires-js
+                disabled
+              >
+                Back
+              </button>
+            </div>
+          </div>
+          <div class="map-stage" id="map-stage">
+            <svg class="connectors" aria-hidden="true"></svg>
+            <div class="map-column left"><!--LEFT_CARDS--></div>
+            <div class="figure">
+              <div class="figure-orbit" aria-hidden="true"></div>
+              <!--AVATAR--><span class="figure-label"
+                >HAITIAN SPIRIT. EVERY REP.</span
+              >
+            </div>
+            <div class="map-column right"><!--RIGHT_CARDS--></div>
+          </div>
+          <div class="map-caption">
+            <p>Hover to preview. Click or tap to pin a region.</p>
+            <a href="#library" id="map-match">Explore 62 exercises ↓</a>
+          </div>
+          <div
+            class="milestones"
+            tabindex="0"
+            aria-label="Nine rank milestones"
+          >
+            <!--RANKS-->
+          </div>
+          <p class="disclosure">
+            Example region tiers, not your achievements.
+            <b>9 ranks · 5 muscle regions · 4 ranked disciplines.</b>
+            Methodology: DRAFT — NOT OFFICIAL.
+          </p>
+        </section>
+        <section id="training-tools" aria-labelledby="training-tools-heading">
+ <div class="section-head"><div><div class="eyebrow">02 / YOUR SESSION, IN FOCUS</div><h2 id="training-tools-heading">Train with intent. Capture with care.</h2></div><span class="inventory">Local tools · no account required</span></div>
+ <div class="tools-bento">
+  <article class="panel logger-card" aria-labelledby="logger-heading"><div class="small-label">GYM HISTORY / LIVE SESSION</div><h3 id="logger-heading">Every set. Accounted for.</h3><p class="tool-description">Session-only draft: clears on reload. Nothing is uploaded unless you confirm an account save below. Training does not award ranks.</p>
+   <form id="set-form"><div class="set-fields"><label>Exercise Name<select id="set-exercise" required disabled><option value="">Choose an exercise</option></select></label><label>Weight (lbs)<input id="set-weight" type="number" inputmode="decimal" min="0" max="3000" step="0.01" placeholder="185" required disabled></label><label>Reps<input id="set-reps" type="number" inputmode="numeric" min="1" max="500" step="1" placeholder="5" required disabled></label><button class="accent-button" id="log-set" type="submit" disabled>Log Set <span aria-hidden="true">＋</span></button></div></form>
+   <p id="logger-status" class="tool-status" role="status" aria-live="polite">Choose an exercise and enter your first set.</p>
+   <div class="session-summary"><div><span>SETS LOGGED</span><strong id="set-count">0</strong></div><div><span>TOTAL VOLUME</span><strong><span id="total-volume">0</span> <small>lb·reps</small></strong></div></div>
+   <div class="history-scroll" tabindex="0" aria-label="Session set history"><table><caption class="visually-hidden">Logged sets, oldest first</caption><thead><tr><th>Exercise</th><th>lbs</th><th>Reps</th><th>Volume</th></tr></thead><tbody id="set-history"></tbody></table><p id="history-empty">Your history starts with the next rep.</p></div>
+   <div class="history-footer"><span>Volume = external weight × reps; not bodyweight or a rank score.</span><button id="clear-session" type="button" disabled>Clear session</button></div>
+   <div id="clear-confirm" class="clear-confirm" hidden><span>Clear all sets in this session?</span><button id="confirm-clear-session" type="button">Yes, clear</button><button id="cancel-clear-session" type="button">Keep sets</button></div>
+  </article>
+  <article class="panel scanner-card" aria-labelledby="scanner-heading"><div class="small-label">FOOD CAMERA / LIVE VIEWFINDER</div><h3 id="scanner-heading">A real lens. Your control.</h3><p class="tool-description">Real camera preview, not ingredient recognition. No recording, snapshots, uploads or nutrition analysis.</p>
+   <div class="camera-frame" id="camera-frame"><video id="food-camera" autoplay muted playsinline aria-label="Live food camera preview"></video><div id="camera-placeholder"><span aria-hidden="true">◎</span><strong>Camera is off</strong><small>Starts only when you choose to activate it.</small></div><span class="camera-badge" id="camera-badge">CAMERA OFF</span><div class="scan-overlay" id="scan-overlay" hidden><div class="scan-reticle" aria-hidden="true"><i></i></div><div class="scan-caption"><b>SCANNING FOOD MATRIX - ISOLATING INGREDIENTS...</b><span>Visual guide only · ingredient analysis is not running.</span></div></div></div>
+   <div class="camera-actions"><button type="button" id="activate-camera" class="accent-button">Activate Live Capture Engine</button><button type="button" id="stop-camera" disabled>Stop camera</button></div><p id="camera-status" class="tool-status" role="status" aria-live="polite">Your browser will request camera permission. Audio is never requested.</p><a class="subtle-link" href="/exercises/#training-tools" target="_blank" rel="noopener">Open in a new tab if this embedded preview blocks camera access ↗</a>
+  </article>
+ </div>
+<section class="panel account-panel" id="account-workouts" aria-labelledby="account-heading">
+ <div class="account-heading-row"><div><div class="small-label">SAME ACCOUNT / WEBSITE + NATIVE APP</div><h3 id="account-heading">Your training. One account.</h3></div><span class="account-state" id="account-identity">No account connected</span></div>
+ <p class="tool-description">The logger above is a session-only draft. Account saving is optional and requires enrolled-pilot sign-in. Device-only app history is separate and never uploaded automatically. Training records do not award ranks.</p>
+ <p class="account-origin">API origin: <code id="account-origin">this website</code></p>
+ <div class="account-actions"><button id="account-check" type="button">Check account service</button><button id="account-sign-in" type="button" class="accent-button" disabled>Sign in to pilot account</button><button id="account-sign-out" type="button" disabled>Sign out of this page</button></div>
+ <p id="account-status" role="status" aria-live="polite" class="tool-status">Account service has not been checked. Nothing has been uploaded.</p>
+ <p class="account-note">Sign-in opens a separate window and lasts only on this page. Reloading or leaving clears the in-memory sign-in and unsaved local sets. No token or private history is stored in browser storage. Public athlete signup is not available.</p>
+ <div class="account-columns"><div><h4>Save this session</h4><p class="account-note">Only canonical API exercises can be saved—some browse-only movements are not supported. Maximum 20 sets per exercise; no sets are silently omitted.</p>
+ <div class="account-fields"><label>Workout title<input id="account-title" type="text" maxlength="100" value="Training session"></label><label>Workout date<input id="account-date" type="date" min="1900-01-01"></label></div>
+ <button id="account-prepare" type="button" disabled>Review session for account save</button>
+ <div id="account-save-review" class="account-review" hidden><div id="account-review-details"></div><p class="account-note">Confirming sends exactly this workout to the account shown above. After a timeout, keep this page open and retry this same workout ID to avoid duplicate records. A reload loses the retry ID; check account history before creating another copy.</p><div class="account-actions"><button id="account-save-confirm" class="accent-button" type="button" disabled>Confirm account save</button><button id="account-save-cancel" type="button">Cancel prepared copy</button></div></div>
+ </div><div><h4>Account history</h4><div class="account-actions"><button id="account-history-refresh" type="button" disabled>Refresh account history</button><button id="account-history-more" type="button" disabled>Load older workouts</button></div><p id="account-history-status" class="tool-status" role="status">Sign in to read account records. Local sets and illustrative phone-preview rows are not account history.</p><div id="account-history" class="account-history" tabindex="0" role="region" aria-label="Account workout records"></div></div></div>
+ <p class="account-note">Use the same enrolled identity and API origin in the native app, then refresh its Account workouts tab. A ready service or successful web save alone is not proof of cross-device sync. <a href="/app/#app-connections">Connection status ↗</a></p>
+</section>
+</section>
+
+<section id="nutrition" aria-labelledby="nutrition-heading">
+          <div class="section-head">
+            <div>
+              <div class="eyebrow">03 / FUEL YOUR MOVEMENT</div>
+              <h2 id="nutrition-heading">The Haitian table.</h2>
+            </div>
+            <a class="text-link" href="/tools/#nutrition-tools"
+              >Nutrition tools ↗</a
+            >
+          </div>
+          <div class="nutrition-bento">
+            <div class="panel food-panel">
+              <div class="small-label">
+                <span class="tiny-icon">◌</span> NUTRITION DASHBOARD
+              </div>
+              <h3>Culture on the plate.<br />Clarity in the numbers.</h3>
+              <p>Choose a dish to inspect its documented serving and macros.</p>
+              <div class="food-pills"><!--FOOD_PILLS--></div>
+              <div class="food-info" role="status" aria-live="polite">
+                <strong id="food-name">Choose a dish</strong
+                ><span id="food-status"
+                  >Only verified repository values are used.</span
+                >
+              </div>
+              <a href="/tools/macros/" class="subtle-link"
+                >Plan macros with the existing calculator ↗</a
+              >
+            </div>
+            <div class="macro-grid"><!--MACROS--></div>
+          </div>
+          <details class="target-settings"><summary>Set my daily targets <span>Optional · session only</span></summary><form id="target-form"><div class="target-fields"><label>Calories (kcal)<input id="target-calories" type="number" min="1" max="20000" step="any" placeholder="Your target" required></label><label>Protein (g)<input id="target-protein" type="number" min="0.1" max="2000" step="any" placeholder="Your target" required></label><label>Carbs (g)<input id="target-carbs" type="number" min="0.1" max="2000" step="any" placeholder="Your target" required></label><label>Fats (g)<input id="target-fats" type="number" min="0.1" max="2000" step="any" placeholder="Your target" required></label></div><button type="submit" class="accent-button">Apply targets</button><button type="button" id="clear-targets">Clear targets</button><p id="target-status" class="tool-status" role="status">No targets set. Ring percentages compare this one serving with your entered targets—not a daily food log.</p></form></details>
+          <p class="nutrition-note">Per-serving macros supplied as verified by you; not independently verified. Values are not recalculated from macro energy. Rings compare the selected serving with your explicitly entered targets. No food is logged.</p>
+        </section>
+        <section id="library" aria-labelledby="library-heading">
+          <div class="section-head">
+            <div>
+              <div class="eyebrow">04 / THE MOVEMENT LIBRARY</div>
+              <h2 id="library-heading">Turn intent into action.</h2>
+            </div>
+            <span class="inventory"
+              >62 entries <i>/</i> 57 animations <i>/</i> 14 guides</span
+            >
+          </div>
+          <div class="library-toolbar panel">
+            <div class="search-row">
+              <label class="search-label"
+                ><span aria-hidden="true">⌕</span
+                ><input
+                  id="exercise-search"
+                  type="search"
+                  placeholder="Search movements, muscles, equipment…"
+                  aria-label="Search exercises"
+                  data-requires-js
+                  disabled /></label
+              ><label class="sort-label"
+                ><span>Sort</span
+                ><select
+                  id="sort"
+                  aria-label="Sort exercises"
+                  data-requires-js
+                  disabled
+                >
+                  <option value="az">A → Z</option>
+                  <option value="za">Z → A</option>
+                </select></label
+              ><button class="reset" id="reset" data-requires-js disabled>
+                Reset
+              </button>
+            </div>
+            <div class="group-pills" aria-label="Filter muscle groups">
+              <button
+                data-group="all"
+                aria-pressed="true"
+                data-requires-js
+                disabled
+              >
+                All movements</button
+              ><!--GROUPS-->
+            </div>
+            <div class="secondary-filters">
+              <label
+                >Equipment
+                <select id="equipment" data-requires-js disabled>
+                  <option value="all">Any equipment</option>
+                  <option value="bodyweight">Bodyweight</option>
+                  <option value="barbell">Barbell</option>
+                  <option value="dumbbells">Dumbbells</option>
+                  <option value="cable">Cable</option>
+                  <option value="machine">Machine</option>
+                </select></label
+              ><label
+                >Library
+                <select id="source" data-requires-js disabled>
+                  <option value="all">All entries</option>
+                  <option value="pack">Source animations</option>
+                  <option value="guides">Written guides</option>
+                </select></label
+              ><span id="match-count" role="status" aria-live="polite"
+                >62 matching exercises</span
+              >
+            </div>
+          </div>
+          <div class="exercise-grid" id="exercise-grid"><!--EXERCISES--></div>
+          <div id="empty" class="empty panel" hidden>
+            <h3>No movements match these filters.</h3>
+            <p>Try a different search or clear the filters.</p>
+            <button data-reset data-requires-js disabled>
+              Show all movements ↗
+            </button>
+          </div>
+          <p class="disclosure">
+            Source animations are previews, not form approval or individualized
+            coaching. Written guides remain separate. Video streams load only
+            when requested; connection speed affects playback.
+          </p>
+        </section>
+
+        <footer>
+          <a class="footer-brand" href="/">MONTE WO <span>BY VITAFLEX</span></a
+          ><span>LIFT. RANK. CLIMB HIGH.</span>
+          <nav aria-label="Legal and help">
+            <a href="/privacy/">Privacy</a
+            ><a href="/delete-account/">Delete Account</a
+            ><a href="/contact/">Contact</a
+            ><a href="/waitlist/">Join Waitlist ↗</a>
+          </nav>
+        </footer>
+      </main>
+    </div>
+    <dialog id="exercise-dialog" aria-labelledby="dialog-title">
+      <div class="dialog-head">
+        <div>
+          <div class="eyebrow" id="dialog-group"></div>
+          <h2 id="dialog-title"></h2>
+        </div>
+        <button id="close-dialog" aria-label="Close exercise">✕</button>
+      </div>
+      <div class="dialog-content">
+        <div class="player-area">
+          <img id="dialog-poster" alt="" /><video
+            id="exercise-video"
+            controls
+            playsinline
+            preload="none"
+            hidden
+          ></video>
+          <div id="playback-buttons">
+            <button data-play="demo">Play demo</button
+            ><button data-play="loop">Play loop</button>
+          </div>
+          <p id="video-status" role="status"></p>
+        </div>
+        <div class="exercise-info">
+          <p id="dialog-equipment"></p>
+          <ol id="dialog-steps"></ol>
+          <p id="dialog-note"></p>
+          <a id="guide-link">Open written guide ↗</a>
+          <p class="disclosure">
+            No ranks awarded here. Source-pack form and rights review remains
+            pending.
+          </p>
+        </div>
+      </div>
+    </dialog>
+  </body>
+</html>

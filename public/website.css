@@ -14,3 +14,13 @@
 @media(max-width:380px){.foundation-app-hero .orbit-two{display:none}}
 .site-header nav .foundation-mobile-waitlist{display:none}
 @media(max-width:900px){.site-header nav .foundation-mobile-waitlist{display:block;color:#aad9ff;border-top:1px solid #304b66;margin-top:6px}}
+
+/* Approved static posters: preserve existing cards, contain the complete artwork. */
+.exercise-image.has-workout-poster,.entry-art.has-workout-poster{background:#0a0a0a;overflow:hidden}
+.exercise-image.has-workout-poster>img.workout-poster-img,.entry-art.has-workout-poster>img.workout-poster-img{width:100%;height:100%;object-fit:contain;object-position:center;display:block}
+.exercise-image.has-workout-poster::before,.exercise-image.has-workout-poster::after{display:none}
+.exercise-image.poster-preview{height:min(60vh,500px)}
+.guide-media.poster-media{display:flex;flex-direction:column;gap:12px;padding:20px;background:#0a0a0a;text-align:center}
+.guide-media.poster-media>img.workout-poster-img{display:block;width:100%;height:auto;max-height:500px;object-fit:contain;margin:0 auto}
+.guide-media.poster-media>span{font-size:11px;letter-spacing:.12em;color:var(--muted,#a0aec0)}
+.guide-media.poster-media>small{color:var(--muted,#a0aec0)}

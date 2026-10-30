@@ -1,0 +1,32 @@
+[
+  {
+    "label": "phone",
+    "columns": 2,
+    "passed": true,
+    "keyboardOpen": true,
+    "filteredPlayback": true,
+    "filterStateRetained": true,
+    "emptyReset": true,
+    "errors": []
+  },
+  {
+    "label": "ipad",
+    "columns": 3,
+    "passed": true,
+    "keyboardOpen": true,
+    "filteredPlayback": true,
+    "filterStateRetained": true,
+    "emptyReset": true,
+    "errors": []
+  },
+  {
+    "label": "desktop",
+    "columns": 4,
+    "passed": true,
+    "keyboardOpen": true,
+    "filteredPlayback": true,
+    "filterStateRetained": true,
+    "emptyReset": true,
+    "errors": []
+  }
+]

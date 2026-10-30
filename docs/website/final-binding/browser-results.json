@@ -1,0 +1,40 @@
+[
+  {
+    "name": "phone",
+    "passed": true,
+    "verifiedServingMacros": true,
+    "explicitTargets": true,
+    "sessionVolume": true,
+    "camera": "Synthetic browser webcam fixture, not a physical-device test",
+    "cameraStopsTracks": true,
+    "realRepositoryLoopPlayback": true,
+    "errors": []
+  },
+  {
+    "name": "tablet",
+    "passed": true,
+    "verifiedServingMacros": true,
+    "explicitTargets": true,
+    "sessionVolume": true,
+    "camera": "Synthetic browser webcam fixture, not a physical-device test",
+    "cameraStopsTracks": true,
+    "realRepositoryLoopPlayback": true,
+    "errors": []
+  },
+  {
+    "name": "desktop",
+    "passed": true,
+    "verifiedServingMacros": true,
+    "explicitTargets": true,
+    "sessionVolume": true,
+    "camera": "Synthetic browser webcam fixture, not a physical-device test",
+    "cameraStopsTracks": true,
+    "realRepositoryLoopPlayback": true,
+    "errors": []
+  },
+  {
+    "name": "permission-denied",
+    "passed": true,
+    "actionableError": true
+  }
+]

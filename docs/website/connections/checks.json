@@ -1,0 +1,13 @@
+{
+  "root_tests_passed": 151,
+  "native_source_tests_passed": 37,
+  "native_typescript_check": "passed",
+  "publisher_idempotency": "passed",
+  "public_production_writes": false,
+  "database_migrations": false,
+  "public_signup_implemented": false,
+  "cross_device_sync_verified": false,
+  "website_account_workout_flow_implemented": false,
+  "native_install_tested": false,
+  "owner_checker": "bash syntax checked; authenticated execution is owner-run"
+}
