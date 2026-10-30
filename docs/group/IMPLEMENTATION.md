@@ -62,3 +62,7 @@ Portfolio rows, count, detail routes and venture offline assets now derive from 
 The logo-led direction was retained. Source/layout review identified tiny 6–8px labels, mobile hero positioning tied to absolute pixel offsets, multiple contradictory CSS overrides, and portfolio hover padding that moved content. The refinement replaces those with one readable stylesheet, an intrinsic grid hero that stacks at 820px, larger secondary text, consistent spacing, visible focus states and 44px primary controls. Venture rows use stable hover surfaces and directional arrows rather than shifting padding. The long Intelligence Corp title has a deliberate second line and mobile category placement. Venture detail pages share the same improved rhythm. No contact section or explanatory marketing copy was added.
 
 Browser regressions now check seven viewport widths per route, headline/logo separation, portfolio text clipping, stable hover geometry, keyboard focus and reduced-motion preferences in addition to decoded images, links and screenshots. Security/domain-verification behavior is unchanged.
+
+## Transparent-logo request
+
+The hero and header now use genuine transparent PNGs (`vitaflex-business-group.png`, `vitaflex-monogram.png`) with an RGBA favicon. Background removal is applied to the original black-background logo; supplied originals are unchanged. CSS screen blending is removed, and the offline cache is versioned for the PNG change. The full-resolution transparent deliverable is `brand-assets/group/vitaflex-business-group-transparent.png`.

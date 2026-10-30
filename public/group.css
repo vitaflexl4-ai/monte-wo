@@ -55,7 +55,7 @@ a:hover { color: #e5d3af; }
   color: #bdb9ad;
 }
 /* The supplied artwork is displayed without recoloring or redrawing. */
-.brand-logo { display: block; width: 61px; height: 40px; object-fit: contain; mix-blend-mode: screen; }
+.brand-logo { display: block; width: 61px; height: 40px; object-fit: contain; }
 .nav-link {
   display: inline-flex;
   align-items: center;
@@ -106,7 +106,7 @@ em { font-family: Georgia, 'Times New Roman', serif; font-weight: 400; color: #d
   width: 100%;
   height: auto;
   object-fit: contain;
-  mix-blend-mode: screen;
+ 
   animation: reveal 1.2s ease both;
 }
 .hero-baseline {
