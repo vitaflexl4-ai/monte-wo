@@ -121,10 +121,12 @@ Body schemas: `GET /api/agent/openapi.json`. Field semantics of the Strength Ind
 
 ## 5. Wiring agents to it
 
+* **Handover pack**: `docs/release/AGENT_HANDOVER.md` — owner checklist, what the agent receives, the brief, the acceptance test.
+* **MCP / CLI client** (`scripts/agent-mcp.mjs`, single file, zero dependencies, Node ≥ 18): run with no arguments it is a stdio **MCP server** (Claude Desktop, Claude Code, Cursor, …) that discovers the tools from `GET /api/agent/tools`, lists only the ones the key's scopes and linked role allow, and sends an `instructions` brief built from the key's real scopes and the server's policy flags; `check` / `tools` / `call <tool> [json]` make it a CLI with cron-friendly exit codes. Env: `MONTE_WO_AGENT_URL`, `MONTE_WO_AGENT_KEY`. Tested end to end (`npm run test:agent-mcp`, 6 tests) and against the real Workers runtime.
 * **Any HTTP-capable agent framework**: load `GET /api/agent/tools` and expose each entry as a tool; execute by calling `http.method http.path` on the origin with the bearer header, path parameters substituted, `body` as JSON. Tool descriptions carry the scope and role requirements.
 * **24/7 loop (operations/monitoring agent)**: `GET /status` every 1–5 minutes → alert when any `storage.*Database` is `error`, or a feature flag flips; `GET /metrics` hourly → trend agent audit volume and (once bound) waitlist and review queues; `GET /audit?source=agent` → verify that every action by every key is accounted for.
 * **Coordination between agents**: `PUT /kv/lock:<task>` with `If-Match: 0` is an atomic create-if-absent lock (verified: 6 concurrent attempts in the unit test and 8 in the real Workers runtime ⇒ exactly one `201`, the rest `409 version-conflict`); release with `DELETE` or by bumping the version with `If-Match: <n>`.
-* An MCP server wrapper is a thin follow-up (one process translating MCP tool calls to these HTTP calls) — not built here.
+* The MCP server wrapper is `scripts/agent-mcp.mjs` (see above); evidence upload/stream (binary) stay HTTP-only.
 
 ## 6. Privacy and security notes
 

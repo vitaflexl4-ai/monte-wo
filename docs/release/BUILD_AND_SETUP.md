@@ -41,7 +41,7 @@ Never hand-edit generated HTML under `public/`; change `content/` or `scripts/` 
 |---|---|
 | Local web + API emulation (Cloudflare) | `npm run dev` → http://localhost:8080 (website) and `/dashboard/` (app shell) |
 | Local waitlist with a throwaway D1 | `npm run db:local && npm run dev:waitlist` (port 8081; `LOCAL_DEVELOPMENT=true` only) |
-| Local Agent API + Strength Index + waitlist on the same throwaway D1 (bindings `DB`/`APP_DB`/`AGENT_DB`, `AGENT_API_ENABLED`, `RANKING_ENABLED`, rate limit 50) | `npm run db:local && npm run dev:agent` (port 8082); keys: `node scripts/agent-key.mjs create --name test --scopes status:read,kv:read,kv:write` then `curl -H 'Authorization: Bearer mwa_…' http://localhost:8082/api/agent/whoami` |
+| Local Agent API + Strength Index + waitlist on the same throwaway D1 (bindings `DB`/`APP_DB`/`AGENT_DB`, `AGENT_API_ENABLED`, `RANKING_ENABLED`, rate limit 50) | `npm run db:local && npm run dev:agent` (port 8082); keys: `node scripts/agent-key.mjs create --name test --scopes status:read,kv:read,kv:write` then `MONTE_WO_AGENT_URL=http://localhost:8082 MONTE_WO_AGENT_KEY=mwa_… node scripts/agent-mcp.mjs check` (or `curl -H 'Authorization: Bearer mwa_…' http://localhost:8082/api/agent/whoami`) |
 | Rebuild everything | `npm run build` |
 | Native web bundle (Capacitor `webDir`) | `npm run build:native` → `build/native/` (+ `native-build.json` report) |
 | Copy bundle into native projects | `npx cap sync` (both) / `npx cap sync android` / `npx cap sync ios` — `npm run native:sync` does build:native + sync |

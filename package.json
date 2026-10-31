@@ -34,6 +34,8 @@
     "test:deploy": "node tests/deploy-script.harness.mjs",
     "test:native-api": "node --test tests/native-api.test.js",
     "test:agent-api": "node --test tests/agent-api.test.js",
+    "test:agent-mcp": "node --test tests/agent-mcp.test.js",
+    "agent:mcp": "node scripts/agent-mcp.mjs",
     "agent:key": "node scripts/agent-key.mjs",
     "build:dashboard": "python3 scripts/build_dashboard.py",
     "test:dashboard": "node --test tests/dashboard.test.js",
