@@ -31,5 +31,16 @@
     "detail": "A venture in development under VitaFlex Business Group.",
     "destination": null,
     "destinationLabel": null
+  },
+  {
+    "slug": "lifeline",
+    "name": "Lifeline",
+    "logo": null,
+    "category": "Game simulation",
+    "status": "In Development",
+    "description": "Lifeline. A game simulation in development under VitaFlex Business Group.",
+    "detail": "A game simulation in development under VitaFlex Business Group.",
+    "destination": null,
+    "destinationLabel": null
   }
 ]

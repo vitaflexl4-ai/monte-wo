@@ -66,3 +66,7 @@ Browser regressions now check seven viewport widths per route, headline/logo sep
 ## Transparent-logo request
 
 The hero and header now use genuine transparent PNGs (`vitaflex-business-group.png`, `vitaflex-monogram.png`) with an RGBA favicon. Background removal is applied to the original black-background logo; supplied originals are unchanged. CSS screen blending is removed, and the offline cache is versioned for the PNG change. The full-resolution transparent deliverable is `brand-assets/group/vitaflex-business-group-transparent.png`.
+
+## Fourth venture: Lifeline
+
+Lifeline is listed as a game simulation in development, as confirmed by the owner. The registry generates its fourth portfolio entry, detail page at `/ventures/lifeline/`, updated count and offline cache entry. No public game URL, launch claim, download, mechanics or supplied logo has been invented. Portfolio browser counts now follow the registry rather than a fixed number.

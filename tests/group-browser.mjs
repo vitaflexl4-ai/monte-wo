@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 const browser=await chromium.launch({headless:true});
 const page=await browser.newPage();const errors=[];page.on('pageerror',e=>errors.push(e.message));
+const ventures=JSON.parse(readFileSync('content/group/ventures.json'));
 const base=process.env.TEST_ORIGIN||'http://localhost:8080';
 for(const route of JSON.parse(readFileSync('public/group-routes.json'))){
  assert.equal((await page.goto(base+route)).status(),200);
@@ -14,7 +15,7 @@ for(const route of JSON.parse(readFileSync('public/group-routes.json'))){
   await page.setViewportSize({width,height:900});await page.evaluate(()=>document.fonts.ready);
   assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),route+' '+width);
   if(route==='/'){
-   assert.equal(await page.locator('.venture-row').count(),3);
+   assert.equal(await page.locator('.venture-row').count(),ventures.length);
    const layout=await page.evaluate(()=>{
     const headline=document.querySelector('.hero-heading').getBoundingClientRect(),art=document.querySelector('.hero-art').getBoundingClientRect();
     const separated=headline.right<=art.left+1||art.right<=headline.left+1||headline.bottom<=art.top+1||art.bottom<=headline.top+1;
