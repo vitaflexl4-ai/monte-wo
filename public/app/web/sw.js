@@ -2,8 +2,8 @@
    Not a workout sync engine: it never touches /api/, the website or the site-wide /sw.js caches.
    The BUILD id and BUNDLES list below are filled in by scripts/build_webapp.py from the export
    (bundle hash → a new cache per build; older app caches are deleted on activate). */
-const BUILD = 'c8680cd352036457';
-const BUNDLES = ["_expo/static/js/web/index-c8680cd352036457d80b25ac71739a62.js"];
+const BUILD = '122f962881f462df';
+const BUNDLES = ["_expo/static/js/web/index-122f962881f462dff0821383eeb4e357.js"];
 const CACHE = 'mw-webapp-' + BUILD;
 const SCOPE = new URL('./', self.location.href).pathname;
 const PRECACHE = ['./', 'manifest.webmanifest', 'pwa.js'].concat(BUNDLES).map((p) => new URL(p, self.location.href).pathname);

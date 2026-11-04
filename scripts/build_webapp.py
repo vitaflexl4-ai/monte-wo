@@ -136,7 +136,13 @@ def finish(out: Path) -> dict:
     if manifest.get("display") != "standalone" or manifest.get("start_url") != "./" or manifest.get("scope") != "./":
         fail("manifest.webmanifest must stay a standalone app scoped to its own directory")
     app_config = (APP / "app.config.ts").read_text(encoding="utf-8")
-    version = re.search(r'version:\s*"([^"]+)"', app_config)
+    # The marketing version lives in app.config.ts as the fallback of semver(process.env.MONTEWO_APP_VERSION, "x.y.z")
+    # (older revisions used a plain `version: "x.y.z"`); the web export never applies the CI env override.
+    version = re.search(r'semver\(\s*process\.env\.MONTEWO_APP_VERSION\s*,\s*"(\d+\.\d+\.\d+)"\s*\)', app_config) or re.search(
+        r'version:\s*"(\d+\.\d+\.\d+)"', app_config
+    )
+    if not version:
+        fail("could not read the app version from apps/mobile/app.config.ts")
     expo = json.loads((APP / "package.json").read_text(encoding="utf-8")).get("dependencies", {}).get("expo", "")
     info = {
         "app": "MONTE WO",

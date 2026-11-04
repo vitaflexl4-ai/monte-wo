@@ -1,0 +1,185 @@
+# MONTE WO — iOS build of THE APP (apps/mobile, Expo / React Native — the same codebase as the web app at
+# /app/web/ and the Android build).
+#
+# What this proves: the generated Xcode project (expo prebuild + CocoaPods) compiles in the Release
+# configuration with the JavaScript bundle embedded, on a GitHub macOS runner. The artifact is an iOS
+# SIMULATOR app (runs in Xcode's Simulator on a Mac; it cannot be installed on an iPhone).
+#
+# What it deliberately does NOT do: archive, sign or upload. A device/TestFlight/App Store build needs the
+# account holder's Apple Developer membership, distribution certificate, provisioning profile and App Store
+# Connect access — see docs/release/IOS_RELEASE.md (EAS Build with the owner's Apple account, or Xcode on a
+# Mac). No secret is referenced by this workflow.
+name: App — iOS (Simulator build, unsigned)
+
+on:
+  # Manual run from the Actions tab, or a push to an arena/* working branch whose commit message contains
+  # "[build-app]" (the agent sandbox cannot dispatch workflows and has no macOS/Xcode).
+  push:
+    branches: ["arena/**"]
+  workflow_dispatch:
+    inputs:
+      version_name:
+        description: "Marketing version (MAJOR.MINOR.PATCH). Empty = app.config.ts default."
+        required: false
+        default: ""
+      build_number:
+        description: "iOS build number (positive integer, must only increase). Empty = this run number."
+        required: false
+        default: ""
+
+permissions:
+  contents: read
+
+concurrency:
+  group: app-ios-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  simulator-build:
+    name: Build for iOS Simulator (expo prebuild + CocoaPods + xcodebuild, Release, unsigned)
+    if: github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[build-app]')
+    runs-on: macos-latest
+    timeout-minutes: 75
+    defaults:
+      run:
+        working-directory: apps/mobile
+    env:
+      CI: 1
+      EXPO_NO_TELEMETRY: 1
+      MONTEWO_APP_VERSION: ${{ inputs.version_name }}
+      MONTEWO_IOS_BUILD_NUMBER: ${{ inputs.build_number || github.run_number }}
+      SCHEME: MONTEWO
+    steps:
+      - name: Check out
+        uses: actions/checkout@v5
+
+      - name: Node 22
+        uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: apps/mobile/package-lock.json
+
+      - name: Toolchain versions
+        run: |
+          xcodebuild -version
+          pod --version
+          node --version
+
+      - name: Install app dependencies (lockfile)
+        run: npm ci
+
+      - name: Typecheck + app test suites
+        run: |
+          npx tsc --noEmit
+          node --test tests/*.test.cjs
+          node scripts/make-native-icons.cjs --check
+
+      - name: Generate the native project (expo prebuild)
+        run: |
+          npx expo prebuild --platform ios --no-install --clean
+          test -f "ios/$SCHEME.xcodeproj/project.pbxproj" || { echo "::error title=Xcode project missing::expected ios/$SCHEME.xcodeproj"; exit 1; }
+          echo "## Generated Xcode project" >> "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+          grep -E "PRODUCT_BUNDLE_IDENTIFIER|MARKETING_VERSION|CURRENT_PROJECT_VERSION|IPHONEOS_DEPLOYMENT_TARGET" "ios/$SCHEME.xcodeproj/project.pbxproj" | sed 's/^[[:space:]]*//' | sort -u >> "$GITHUB_STEP_SUMMARY"
+          /usr/libexec/PlistBuddy -c "Print :CFBundleShortVersionString" -c "Print :CFBundleVersion" -c "Print :CFBundleDisplayName" -c "Print :CFBundleURLTypes:0:CFBundleURLSchemes:0" "ios/$SCHEME/Info.plist" >> "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+          BUILD="$(/usr/libexec/PlistBuddy -c "Print :CFBundleVersion" "ios/$SCHEME/Info.plist")"
+          [ "$BUILD" = "$MONTEWO_IOS_BUILD_NUMBER" ] || { echo "::error title=Build number mismatch::Info.plist CFBundleVersion is $BUILD, expected $MONTEWO_IOS_BUILD_NUMBER"; exit 1; }
+
+      - name: CocoaPods cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/Library/Caches/CocoaPods
+            ~/.cocoapods
+          key: pods-app-ios-${{ runner.os }}-${{ hashFiles('apps/mobile/package-lock.json') }}
+          restore-keys: |
+            pods-app-ios-${{ runner.os }}-
+
+      - name: pod install
+        working-directory: apps/mobile/ios
+        run: |
+          pod install 2>&1 | tee "$RUNNER_TEMP/pod-install.log" | grep --line-buffered -E "Installing|Generating|Integrating|error|Error|warning|Pod installation complete" || true
+          STATUS="${PIPESTATUS[0]}"
+          if [ "$STATUS" != "0" ]; then
+            echo "::error title=pod install failed::exit $STATUS"
+            grep -nE "error|Error|\\[!\\]" "$RUNNER_TEMP/pod-install.log" | tail -n 8 | while IFS= read -r line; do echo "::error title=CocoaPods::${line:0:900}"; done
+            tail -n 60 "$RUNNER_TEMP/pod-install.log"
+            exit "$STATUS"
+          fi
+          test -d "$SCHEME.xcworkspace" || { echo "::error title=Workspace missing::pod install did not create $SCHEME.xcworkspace"; exit 1; }
+
+      - name: xcodebuild (Release, iOS Simulator, no code signing)
+        working-directory: apps/mobile/ios
+        run: |
+          xcodebuild \
+            -workspace "$SCHEME.xcworkspace" \
+            -scheme "$SCHEME" \
+            -configuration Release \
+            -sdk iphonesimulator \
+            -destination 'generic/platform=iOS Simulator' \
+            -derivedDataPath "$RUNNER_TEMP/DerivedData" \
+            CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY="" \
+            build 2>&1 | tee "$RUNNER_TEMP/xcodebuild.log" | grep --line-buffered -E "^\*\* |error:|BUILD|Build target|Bundle React Native|PhaseScriptExecution" || true
+          STATUS="${PIPESTATUS[0]}"
+          if [ "$STATUS" != "0" ]; then
+            echo "::error title=xcodebuild failed::exit $STATUS — the next annotations are the error lines of the build log (full log in the xcodebuild-log artifact)"
+            grep -nE "error:|fatal error|Command PhaseScriptExecution failed" "$RUNNER_TEMP/xcodebuild.log" | tail -n 8 | while IFS= read -r line; do echo "::error title=xcodebuild::${line:0:900}"; done
+            tail -n 60 "$RUNNER_TEMP/xcodebuild.log"
+            exit "$STATUS"
+          fi
+
+      - name: Keep the build logs (failures only)
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: xcodebuild-log
+          path: |
+            ${{ runner.temp }}/xcodebuild.log
+            ${{ runner.temp }}/pod-install.log
+          if-no-files-found: ignore
+          retention-days: 7
+
+      - name: Package the Simulator app
+        id: package
+        run: |
+          APP="$(find "$RUNNER_TEMP/DerivedData/Build/Products/Release-iphonesimulator" -maxdepth 1 -name "*.app" | head -n1)"
+          test -n "$APP" || { echo "::error title=No .app produced::nothing under Release-iphonesimulator"; exit 1; }
+          test -f "$APP/main.jsbundle" || { echo "::error title=JS bundle missing::$APP has no main.jsbundle — the Release build did not embed the app"; exit 1; }
+          VERSION="$(/usr/libexec/PlistBuddy -c "Print :CFBundleShortVersionString" "$APP/Info.plist")"
+          BUNDLE_ID="$(/usr/libexec/PlistBuddy -c "Print :CFBundleIdentifier" "$APP/Info.plist")"
+          BASE="monte-wo-ios-simulator-${VERSION}-${MONTEWO_IOS_BUILD_NUMBER}-${GITHUB_SHA::7}"
+          mkdir -p dist
+          ditto -c -k --sequesterRsrc --keepParent "$APP" "dist/${BASE}.zip"
+          node -e '
+            const fs = require("fs");
+            fs.writeFileSync("dist/build-info.json", JSON.stringify({
+              app: "MONTE WO", source: "apps/mobile (Expo / React Native)", bundleIdentifier: process.argv[1],
+              version: process.argv[2], buildNumber: Number(process.argv[3]), commit: process.env.GITHUB_SHA,
+              workflowRun: `${process.env.GITHUB_SERVER_URL}/${process.env.GITHUB_REPOSITORY}/actions/runs/${process.env.GITHUB_RUN_ID}`,
+              target: "iOS Simulator (arm64/x86_64), Release configuration, unsigned",
+              installableOnDevice: false,
+              note: "Run in Xcode Simulator: unzip, `xcrun simctl boot \"iPhone 16\"`, `xcrun simctl install booted MONTEWO.app`, `xcrun simctl launch booted " + process.argv[1] + "`. Device/TestFlight/App Store builds need the owner Apple account (docs/release/IOS_RELEASE.md)."
+            }, null, 2) + "\n");
+          ' "$BUNDLE_ID" "$VERSION" "$MONTEWO_IOS_BUILD_NUMBER"
+          cat dist/build-info.json
+          ls -la dist
+          echo "base=$BASE" >> "$GITHUB_OUTPUT"
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          {
+            echo "## iOS Simulator build"
+            echo "- \`${BASE}.zip\` (artifact below) — bundle id \`$BUNDLE_ID\`, version \`$VERSION\`, build \`$MONTEWO_IOS_BUILD_NUMBER\`"
+            echo "- Unsigned Simulator build: proves the iOS project compiles with the JS bundle embedded. It cannot be installed on an iPhone."
+            echo "- Device / TestFlight / App Store: owner Apple Developer account required — docs/release/IOS_RELEASE.md"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload Simulator app artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: monte-wo-ios-simulator-${{ steps.package.outputs.version }}-${{ env.MONTEWO_IOS_BUILD_NUMBER }}
+          path: |
+            apps/mobile/dist/*.zip
+            apps/mobile/dist/build-info.json
+          if-no-files-found: error
+          retention-days: 30
