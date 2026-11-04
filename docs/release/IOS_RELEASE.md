@@ -1,6 +1,52 @@
 # MONTE WO — iOS release (App Store)
 
-**State:** Xcode-compatible project committed (`ios/App/App.xcodeproj`, Swift Package Manager, shared scheme `App`) and structurally verified; **never compiled yet** — there is no macOS/Xcode in the Arena sandbox. Compilation, signing, archiving and upload are owner actions on a Mac (or the manual macOS GitHub Actions workflow for the compile check). Nothing is submitted to App Store Connect by anything in this repository.
+**State (2026-11-04):** two iOS projects exist in this repository and only one should reach the App Store
+(`RELEASE_STATUS.md` §4 item 13, recommendation: the Expo app). **§0 is the current path** — the app in `apps/mobile`
+(Expo / React Native; the same code as the web app at `/app/web/` and the Android build) generates its Xcode project
+with `expo prebuild` and compiles on a GitHub macOS runner (Release configuration, iOS Simulator, unsigned). §1–§7
+describe the earlier Capacitor shell of `/dashboard/` (`com.vitaflex.montewo`), kept intact. There is still no
+macOS/Xcode in the Arena sandbox; **device, TestFlight and App Store builds require the account holder's Apple
+Developer membership** and are owner actions (EAS Build or Xcode). Nothing in this repository submits anything to
+App Store Connect.
+
+## 0. The app (`apps/mobile`, Expo) — iOS project and builds
+
+### 0.1 Identity and versioning
+
+| Item | Value | Where |
+|---|---|---|
+| Bundle identifier | `com.vitaflex.montewovitaflex` (mirrors the Android application id of the same app; **not registered with Apple yet — the owner may still change it until the first App Store Connect record exists**) | `apps/mobile/app.config.ts` → `ios.bundleIdentifier` |
+| Display name / scheme | MONTE WO · Xcode project and scheme `MONTEWO` (generated from the name) | `expo prebuild` → `ios/MONTEWO.xcodeproj`, `ios/MONTEWO/Info.plist` |
+| Version / build | `MONTEWO_APP_VERSION` (default `1.0.0`) → `CFBundleShortVersionString`; `MONTEWO_IOS_BUILD_NUMBER` (default `1`; CI uses the run number) → `CFBundleVersion` | `app.config.ts` (`version`, `ios.buildNumber`) |
+| Devices / orientation / appearance | iPhone only (`supportsTablet: false` — no iPad screenshots required), portrait, dark UI style | `app.config.ts` |
+| Deployment target | iOS 16.4 (Expo SDK 57 default) | generated `Podfile` / `project.pbxproj` |
+| Icon / splash | approved brand emblem (`assets/brand-icon.png`, 512 px — Apple's 1024 px App Store icon is upscaled from it; supply a 1024 px master if the owner has one) on `#090C13` | `app.config.ts` |
+| URL scheme | `montewo://` (`montewo://auth` sign-in redirect) | `Info.plist` → `CFBundleURLTypes` (generated) |
+| Privacy / compliance keys | `ITSAppUsesNonExemptEncryption = NO` (HTTPS only); no camera/photo/location usage descriptions — the app requests none (evidence files come through the system document picker) | `app.config.ts` → `ios.infoPlist` |
+| Signing | none committed (`CODE_SIGN_STYLE` left to Xcode/EAS; no Team ID in the repository) | — |
+
+### 0.2 GitHub Actions — `.github/workflows/app-ios.yml` ("App — iOS (Simulator build, unsigned)")
+
+* **Trigger:** Actions → *Run workflow* (inputs `version_name`, `build_number`), **or** a push to an `arena/**` branch with `[build-app]` in the commit message. No secret is referenced.
+* **Steps (macos-latest):** `npm ci` → `tsc` + app suites + brand-artwork check → `npx expo prebuild --platform ios --no-install --clean` (+ build-number assertion) → `pod install` (prebuilt React Native core + precompiled Expo modules) → `xcodebuild -workspace MONTEWO.xcworkspace -scheme MONTEWO -configuration Release -sdk iphonesimulator … CODE_SIGNING_ALLOWED=NO build` → checks that `main.jsbundle` is embedded → zips `MONTEWO.app`.
+* **Artifact (30 days):** `monte-wo-ios-simulator-<version>-<build>` (`monte-wo-ios-simulator-<version>-<build>-<sha>.zip` + `build-info.json`, `installableOnDevice: false`). Run it on a Mac: unzip, `xcrun simctl boot "iPhone 16"`, `xcrun simctl install booted MONTEWO.app`, `xcrun simctl launch booted com.vitaflex.montewovitaflex`.
+* **What it proves / does not prove:** the generated iOS project compiles with the production JS bundle on the current Xcode; it says nothing about App Review, signing or device behaviour.
+
+### 0.3 Device, TestFlight and App Store builds — owner path
+
+1. **Apple Developer Program** membership (paid; organisation enrolment needs a D-U-N-S number) — owner purchase, never made by the agent.
+2. Register the App ID (`com.vitaflex.montewovitaflex` or the final choice) and create the App Store Connect record "MONTE WO"; agree to the current agreements; add privacy-policy and support URLs on the confirmed domain.
+3. **Recommended: EAS Build** (the owner already has the EAS project `9df7e721-…` used for the Android preview): `cd apps/mobile && npx eas-cli build --platform ios --profile production` — EAS creates/stores the distribution certificate and provisioning profile with the owner's Apple ID (nothing enters the repository), uploads to TestFlight only with `eas submit`, which is **not** configured here and needs explicit authorization. Note the build security gate: `scripts/check-build-security.cjs` currently denies iOS/production while the dependency advisories listed in `RELEASE_STATUS.md` remain un-reviewed — the owner must re-review (or the advisories must be resolved) before a store build is produced.
+4. **Alternative: Xcode on a Mac** — `cd apps/mobile && npm ci && npx expo prebuild --platform ios && (cd ios && pod install) && open ios/MONTEWO.xcworkspace`; select the `MONTEWO` scheme → Signing & Capabilities → choose the Team (automatic signing) → Product → Archive → Distribute (App Store Connect / TestFlight). Command-line archive/export follows §4 with `-workspace MONTEWO.xcworkspace -scheme MONTEWO`.
+5. Do not commit `.p12`, `.mobileprovision`, API keys or `ExportOptions.plist` with a Team ID (`apps/mobile/.gitignore` already blocks the certificate/profile extensions).
+
+### 0.4 Verification evidence
+
+See `RELEASE_STATUS.md` §2 ("GitHub Actions — App, iOS") for the run ids and results.
+
+---
+
+The sections below describe the **Capacitor shell** (`ios/App` at the repository root, `com.vitaflex.montewo`), unchanged.
 
 ## 1. Identity and versioning
 

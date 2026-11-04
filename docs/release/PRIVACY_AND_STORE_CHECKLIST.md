@@ -35,6 +35,14 @@ Legend: ✅ done in repo · 🟡 prepared, needs owner input · ⛔ missing / ow
 * Permissions: none requested on the web (evidence upload uses the browser's file picker when the backend exists).
 * Store disclosures are unaffected: the web app is not a store artifact; Google Play / App Store entries still describe the native builds.
 
+### 2c. Native builds of the Expo app (added 2026-11-04 — `apps/mobile`, workflows `app-android.yml` / `app-ios.yml`)
+
+* **Permissions (Android):** `android.permission.INTERNET` only. Expo's template defaults (`READ/WRITE_EXTERNAL_STORAGE`, `SYSTEM_ALERT_WINDOW`, `VIBRATE`) are blocked in `app.config.ts`; the workflow fails if the source manifest declares anything else and records the *merged* permissions of the built APK (`aapt2 dump permissions`) in the job summary — use that list for the Play "Permissions" and Data safety answers, not assumptions.
+* **iOS usage descriptions:** none (no camera, photos, location, microphone or tracking APIs are used; evidence files come through the system document picker). `ITSAppUsesNonExemptEncryption = NO` is declared (HTTPS only) — owner confirms at submission.
+* **Identifiers:** Android `com.vitaflex.montewovitaflex` (fixed — matches the installed EAS preview); iOS `com.vitaflex.montewovitaflex` (changeable until the first App Store Connect record). Deep link `montewo://auth` (sign-in return only, single-use code, no token).
+* **Data on device:** workouts/preferences in the app's local storage (`workout-storage.ts`); session token in `expo-secure-store` on native (Keychain / Keystore-backed), memory only on the web. Network: the configured API origin only; production has no `APP_DB`/`MOBILE_ENABLED`, so account services report "not configured" — Play Data safety / Apple App Privacy stay "no data collected" **until** the owner enables the mobile API (then: account identifier + e-mail, performance submissions, evidence files → re-submit disclosures).
+* **Signing honesty:** CI artifacts without the owner's keystore secrets are debug-signed (internal testing only, never uploadable); iOS artifacts are unsigned Simulator builds. Neither is a store submission.
+
 ## 3. Platform policy items
 
 | Topic | Status | Notes |
@@ -73,8 +81,8 @@ Legend: ✅ done in repo · 🟡 prepared, needs owner input · ⛔ missing / ow
 
 | Asset | Spec | Source | Status |
 |---|---|---|---|
-| App icon | Play 512×512 PNG (no alpha), iOS 1024×1024 PNG (no alpha); launcher icons for all densities (`android/app/src/main/res/mipmap-*`) and `ios/App/App/Assets.xcassets/AppIcon.appiconset` currently hold the **Capacitor template icons** | derive from `public/assets/icon.svg` / `icon-512.png` (approved brand) | ⛔ generate with `@capacitor/assets` (`npx @capacitor/assets generate --iconBackgroundColor '#090c13'` from a 1024-px source) — owner approval of the rendering |
-| Splash screen | Android 12+ splash (icon on `#090c13`), iOS `Splash.imageset` (template images today) | brand emblem | ⛔ |
+| App icon | Play 512×512 PNG (no alpha), iOS 1024×1024 PNG (no alpha). **Expo app (`apps/mobile`): done from the approved emblem** — `icon` = `assets/brand-icon.png` (512 px), adaptive icon = `assets/native/adaptive-icon-foreground.png` on `#090C13`, generated per density by `expo prebuild` (the 1024 px App Store icon is upscaled from 512 px; a 1024 px master from the owner would be better). Capacitor shells: launcher icons for all densities (`android/app/src/main/res/mipmap-*`) and `ios/App/App/Assets.xcassets/AppIcon.appiconset` still hold the **Capacitor template icons** | derive from `public/assets/icon.svg` / `icon-512.png` (approved brand) | ⛔ generate with `@capacitor/assets` (`npx @capacitor/assets generate --iconBackgroundColor '#090c13'` from a 1024-px source) — owner approval of the rendering |
+| Splash screen | **Expo app: done** — `expo-splash-screen` plugin, emblem (200 px) on `#090C13`, Android 12+ and iOS. Capacitor shells: Android 12+ splash (icon on `#090c13`), iOS `Splash.imageset` (template images today) | brand emblem | 🟡 (Expo ✅ / Capacitor ⛔) |
 | Feature graphic (Play) | 1024×500 | brand | ⛔ |
 | Screenshots | Play: ≥2 phone (16:9/9:16, 320–3840 px); App Store: 6.9" and 6.5" iPhone sets (+ iPad if offered) | capture from device/simulator; `docs/dashboard/screenshots/` are web captures and can guide composition | ⛔ |
 | Promo video | optional | — | — |

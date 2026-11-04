@@ -23,8 +23,8 @@ linked from the MONTE WO web" is therefore met with **the same code**, not a thi
 
 | Target | Build | Entry |
 |---|---|---|
-| Android (internal preview) | EAS, `apps/mobile` (`com.vitaflex.montewovitaflex`) | installed APK |
-| iOS | EAS, `apps/mobile` (not built yet) | — |
+| Android | **GitHub Actions `app-android.yml`** (`expo prebuild` + Gradle → APK + Play `.aab`, debug-signed until the owner adds the keystore secrets) or EAS (`preview` APK / `production` app bundle), `apps/mobile` (`com.vitaflex.montewovitaflex`) | installed APK |
+| iOS | **GitHub Actions `app-ios.yml`** (`expo prebuild` + CocoaPods + `xcodebuild`, Release, iOS Simulator, unsigned) — device/TestFlight/App Store only with the owner's Apple account (EAS or Xcode) | Simulator `.app` artifact |
 | **Web (new)** | `python3 scripts/build_webapp.py` → `expo export --platform web` with `experiments.baseUrl = /app/web` → committed to **`public/app/web/`** | **`/app/web/`** on the site (header link "Open the App", `/app/` page, home hero) |
 
 How it is wired (all reversible, no native identifiers changed):
@@ -54,6 +54,16 @@ On the web the app calls **its own origin** (`window.location.origin` → `/api/
 `APP_DB`/`MOBILE_ENABLED`, so sign-in and cloud history report "not configured on this deployment" inside the
 app — the same honest state as the Android preview build; the workout library, muscle map and device-local
 workouts work without any backend.
+
+**Native builds of the app (added 2026-11-04):** the native projects are *generated*, not committed —
+`apps/mobile/android/` and `apps/mobile/ios/` are gitignored and recreated by `npx expo prebuild` from
+`app.config.ts` (identity, brand icon/splash, `montewo://` scheme, INTERNET-only permissions, env-driven
+version/versionCode/buildNumber). Two helper scripts live next to the app: `scripts/make-native-icons.cjs`
+(adaptive-icon foreground derived from the approved emblem, `--check` in CI) and
+`scripts/configure-android-signing.cjs` (switches the generated Gradle release signing to the owner's upload
+keystore only when all four `ANDROID_KEYSTORE_*` secrets exist; values are read from the environment at build
+time). The workflows are opt-in (`workflow_dispatch` or `[build-app]` in an `arena/**` commit), `contents: read`,
+and never upload to a store. Details: `ANDROID_RELEASE.md` §0, `IOS_RELEASE.md` §0, evidence in `RELEASE_STATUS.md` §2.
 
 **Open decision for the owner (not blocking):** the repository now carries two native approaches — the Expo app
 (`apps/mobile`, application ID `com.vitaflex.montewovitaflex`) and the Capacitor shells of `/dashboard/`

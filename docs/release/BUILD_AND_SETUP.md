@@ -63,7 +63,29 @@ npm --prefix apps/mobile run typecheck && npm --prefix apps/mobile run test:buil
 
 The export is deterministic (same lockfile + sources → identical bytes; verified twice in the sandbox). Never edit
 `public/app/web/` by hand: change `apps/mobile/` (or `apps/mobile/public/` for the PWA shell files) and rebuild.
-Shell `EXPO_PUBLIC_*` variables are deliberately not passed to the export.
+Shell `EXPO_PUBLIC_*` variables are deliberately not passed to the export. Any change to `app.config.ts` changes
+the web bundle too (the public config is embedded) — rebuild and commit `public/app/web/` with it.
+
+### 4c. Native builds of the app (apps/mobile → APK / AAB / iOS)
+
+```bash
+# GitHub Actions (the normal way — the sandbox has no JDK/Android SDK/Xcode):
+#   Actions → "App — Android (APK + AAB)" / "App — iOS (Simulator build, unsigned)" → Run workflow,
+#   or push an arena/** commit whose message contains [build-app]  (both workflows run)
+# Local, Android (JDK 17 + Android SDK/NDK 27.1 installed):
+cd apps/mobile && npm ci
+node scripts/make-native-icons.cjs --check             # derived brand artwork is current
+npx expo prebuild --platform android --no-install --clean
+node scripts/configure-android-signing.cjs             # debug keystore unless ANDROID_KEYSTORE_* are exported
+(cd android && ./gradlew --no-daemon :app:assembleRelease :app:bundleRelease)
+# Local, iOS (macOS + Xcode + CocoaPods):
+npx expo prebuild --platform ios --no-install --clean && (cd ios && pod install)
+(cd ios && xcodebuild -workspace MONTEWO.xcworkspace -scheme MONTEWO -configuration Release -sdk iphonesimulator \
+  -destination 'generic/platform=iOS Simulator' CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO build)
+# Versions (optional env, CI sets them): MONTEWO_APP_VERSION=1.0.0 MONTEWO_ANDROID_VERSION_CODE=<int> MONTEWO_IOS_BUILD_NUMBER=<int>
+```
+
+Outputs and signing states are described in `ANDROID_RELEASE.md` §0 and `IOS_RELEASE.md` §0.
 
 ## 5. Tests
 
