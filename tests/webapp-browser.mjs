@@ -49,7 +49,8 @@ try{
  // 2. Get Started → the five tabs of the same app the Android build ships (bottom tabs render role="tab").
  step='mobile: get started';
  await page.getByRole('button',{name:'Get Started',exact:true}).click();
- const tabs=['Home','Train','Library','History','Account'];
+ // Tab labels as the app titles them (App.tsx: Library → "Explore", Account → "Profile").
+ const tabs=['Home','Train','Explore','History','Profile'];
  const tabOf=name=>page.getByRole('tab',{name:new RegExp('^'+name)});
  for(const tab of tabs)await tabOf(tab).waitFor({timeout:20000});
  await page.screenshot({path:shot('home')});
