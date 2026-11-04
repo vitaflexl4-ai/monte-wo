@@ -1,0 +1,5 @@
+# Generated web app export (apps/mobile → scripts/build_webapp.py). Reviewed through its sources and CI's
+# re-export check, not line by line: keep pull-request diffs readable.
+public/app/web/_expo/** -diff linguist-generated=true
+public/app/web/assets/** -diff linguist-generated=true
+public/app/web/metadata.json linguist-generated=true

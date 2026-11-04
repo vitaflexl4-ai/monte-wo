@@ -3,7 +3,8 @@
 # Proves, from a clean checkout: dependencies install from the lockfile, the generated site is in sync with its
 # sources (content/ + scripts/ → public/; "never edit generated HTML independently"), the unit suites pass
 # (one documented pre-existing baseline item tolerated — see scripts/ci-unit-tests.sh), the native bundle is
-# deterministic and its tests pass. No secrets, no deployment, no store upload. Cloudflare Pages previews are
+# deterministic and its tests pass, and the web app (public/app/web/, exported from apps/mobile) matches its sources
+# and renders in a browser. No secrets, no deployment, no store upload. Cloudflare Pages previews are
 # produced independently by the owner's Git integration; merging to main is a production deployment.
 name: CI
 
@@ -68,3 +69,30 @@ jobs:
           npm run test:native
           npm run test:native-api
           npm run test:agent-api
+
+      # The web app at public/app/web/ is apps/mobile (Expo / React Native — the Android/iOS code) exported for
+      # the browser by scripts/build_webapp.py. Prove the committed export matches its sources and still runs.
+      - name: Web app — apps/mobile dependencies (lockfile)
+        run: npm --prefix apps/mobile ci
+
+      - name: Web app — app typecheck + app unit suites
+        run: |
+          npm --prefix apps/mobile run typecheck
+          npm --prefix apps/mobile run test:build-safety
+
+      - name: Web app — committed public/app/web/ equals a fresh export (deterministic, no hand edits)
+        run: python3 scripts/build_webapp.py --check
+
+      - name: Web app — renders in Chromium (phone + desktop, tabs, manifest, worker, offline)
+        run: |
+          npx playwright install --with-deps chromium
+          node tests/webapp-browser.mjs
+
+      - name: Keep the web app screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: webapp-browser-screenshots
+          path: test-results/webapp-*.png
+          if-no-files-found: ignore
+          retention-days: 7

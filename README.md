@@ -148,7 +148,7 @@ Outputs `../Monte-Wo-Strength-Index.html` and `../Monte-Wo-Strength-Index-Cloudf
 - `public/strength.js`, `public/strength.css`: athlete/admin clients and accessible responsive presentation.
 - `content/exercises.json`: exercise library; see `docs/EXERCISE-LIBRARY.md` before adding packages.
 
-Never edit generated HTML independently. `npm run build` rebuilds the company pages, tools, library, then the Strength Index. Only build metadata after source changes; image extraction is separately `python3 scripts/build_ranks.py --assets`.
+Never edit generated HTML independently. `npm run build` rebuilds the company pages, tools, library, then the Strength Index. Only build metadata after source changes; image extraction is separately `python3 scripts/build_ranks.py --assets`. The web app at `/app/web/` (`public/app/web/`) is the Expo app in `apps/mobile/` exported for the browser: regenerate it with `npm --prefix apps/mobile ci && npm run build:webapp` after any `apps/mobile` change and commit the result (CI re-exports and diffs it).
 
 ## Governance and deployment
 

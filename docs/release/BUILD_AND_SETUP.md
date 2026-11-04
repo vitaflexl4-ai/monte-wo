@@ -51,6 +51,20 @@ Never hand-edit generated HTML under `public/`; change `content/` or `scripts/` 
 | iOS archive **[owner]** | see `IOS_RELEASE.md` |
 | Deploy web **[owner, after authorization]** | see `WEB_DEPLOYMENT.md` (`npm run deploy` targets Pages project `vitaflex-monte-wo`, branch `main`) |
 
+### 4b. Web app (apps/mobile → public/app/web/)
+
+```bash
+npm --prefix apps/mobile ci                 # Expo / React Native dependencies (lockfile)
+npm run build:webapp                        # expo export --platform web (base /app/web) → public/app/web/, then commit it
+npm run check:webapp                        # CI check: a fresh export must equal the committed public/app/web/
+python3 scripts/build_webapp.py --output /tmp/web-build   # local QA export, nothing published
+npm --prefix apps/mobile run typecheck && npm --prefix apps/mobile run test:build-safety
+```
+
+The export is deterministic (same lockfile + sources → identical bytes; verified twice in the sandbox). Never edit
+`public/app/web/` by hand: change `apps/mobile/` (or `apps/mobile/public/` for the PWA shell files) and rebuild.
+Shell `EXPO_PUBLIC_*` variables are deliberately not passed to the export.
+
 ## 5. Tests
 
 | Suite | Command | Needs |
@@ -62,6 +76,11 @@ Never hand-edit generated HTML under `public/`; change `content/` or `scripts/` 
 | Browser: packaged app (Capacitor routing emulation, phone viewport, offline workflows) | `npm run test:native-browser` (env `NATIVE_PREVIEW_URL`, default http://localhost:3000) | `npm run preview:native` + Playwright Chromium |
 
 Install Playwright's browser once with `npx playwright install chromium` (not possible inside the Arena sandbox; there a locally provided Chromium was used via `PLAYWRIGHT_BROWSERS_PATH`).
+
+* Web app: `npm run test:webapp` (static checks of the committed export, PWA files, site wiring, honest copy) and
+  `npm run test:webapp-browser` (Playwright Chromium: Welcome → Get Started → five tabs on a phone viewport,
+  manifest + icons, worker scope `/app/web/`, offline reload, desktop viewport; screenshots in `test-results/`).
+  The browser test needs `npx playwright install chromium` — CI runs it; the agent sandbox cannot download browsers.
 
 ## 6. Database: migrations, schema, backup and recovery
 

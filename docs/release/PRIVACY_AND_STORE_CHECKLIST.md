@@ -27,6 +27,14 @@ Legend: ✅ done in repo · 🟡 prepared, needs owner input · ⛔ missing / ow
 
 **Must be updated when** (each is a re-submission with changed disclosures): waitlist works in-app (email, language, consent timestamp → "Contact info"), accounts via Cloudflare Access (identifier, email), performance submissions (health & fitness data), evidence video upload (user content, camera/photos permissions), any analytics.
 
+### 2b. Web app at `/app/web/` (added 2026-11-04 — same app as Android/iOS, in the browser)
+
+* Data on the device only: workouts and preferences in the browser's `localStorage` (the app's own `workout-storage.ts`, web branch); the install-banner dismissal flag `mw.webapp.install.dismissed`. No cookies are set by the app.
+* Session: held in memory only on the web (never persisted); sign-in is reported as "not configured" until the owner enables the mobile API and lists `https://<host>/app/web/` in `MOBILE_REDIRECT_URIS`.
+* Network: same origin only (`/api/mobile/*`); the service worker caches the app's own files under `/app/web/` and never `/api/*`. `pwa.js` contains no analytics, no third-party requests.
+* Permissions: none requested on the web (evidence upload uses the browser's file picker when the backend exists).
+* Store disclosures are unaffected: the web app is not a store artifact; Google Play / App Store entries still describe the native builds.
+
 ## 3. Platform policy items
 
 | Topic | Status | Notes |

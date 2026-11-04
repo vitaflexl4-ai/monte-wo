@@ -140,6 +140,16 @@ select:focus-visible,
   background: #10223a;
   color: #c9e4ff;
 }
+.join-app {
+  background: transparent;
+  border-color: #304b66;
+  color: #aad9ff;
+}
+.join-app:hover,
+.join-app:focus-visible {
+  border-color: #4fa3ff;
+  color: #fff;
+}
 .mobile-menu {
   display: none;
 }

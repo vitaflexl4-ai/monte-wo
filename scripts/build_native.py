@@ -39,7 +39,7 @@ CONFIG = ROOT / "capacitor.config.json"
 SHELL = SOURCE / "dashboard" / "index.html"
 
 EXCLUDED_FILES = {"_headers", "_redirects", "sw.js", "robots.txt", "sitemap.xml", ".DS_Store"}
-EXCLUDED_DIRS = {"strength/admin"}
+EXCLUDED_DIRS = {"strength/admin", "app/web"}  # app/web = the exported Expo web app (scripts/build_webapp.py)
 TEXT_SUFFIXES = {".html", ".js", ".webmanifest", ".json"}
 
 

@@ -1,0 +1,31 @@
+{
+  "id": "./",
+  "name": "MONTE WO",
+  "short_name": "MONTE WO",
+  "description": "The MONTE WO training app: workout library, muscle map and four independent Discipline Ranks (Squat, Bench Press, Deadlift, Biceps Curl). Self-reported results stay Provisional; MONTE Verified requires evidence review.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#090c13",
+  "theme_color": "#090c13",
+  "lang": "en",
+  "categories": [
+    "fitness",
+    "health",
+    "sports"
+  ],
+  "icons": [
+    {
+      "src": "/assets/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/assets/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

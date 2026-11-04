@@ -35,6 +35,7 @@ toolsjs=re.sub(r'^import .*?;\n','',toolsjs,flags=re.M).replace('export const ',
 nav="""document.addEventListener('click',event=>{const button=event.target.closest('button[type="submit"],input[type="submit"]');if(!button?.form||button.disabled)return;event.preventDefault();if(button.form.reportValidity())button.form.dispatchEvent(new Event('submit',{bubbles:true,cancelable:true}));},true);document.addEventListener('click',event=>{const link=event.target.closest('a[href]');if(!link)return;const href=link.getAttribute('href');if(!href.startsWith('/'))return;event.preventDefault();const [path,hash]=href.split('#');window.parent.postMessage({type:'mw-nav',path:path||'/',hash:hash?'#'+hash:''},'*')});window.addEventListener('load',()=>{if(window.__MW_HASH){requestAnimationFrame(()=>document.getElementById(window.__MW_HASH.slice(1))?.scrollIntoView())}});"""
 routes={'/':pub/'index.html'}
 for file in sorted(pub.rglob('index.html')):
+ if file.parent.relative_to(pub).as_posix().startswith('app/web'):continue  # exported web app, not a website page
  if file!=pub/'index.html':routes['/'+file.parent.relative_to(pub).as_posix()+'/']=file
 strengthjs=(pub/'ranks.js').read_text()+'\n'+(pub/'strength.js').read_text()
 strengthjs=re.sub(r'^import .*?;\n','',strengthjs,flags=re.M).replace('export const ','const ').replace('export function ','function ')

@@ -13,6 +13,54 @@
 
 What Capacitor is: an Apache-2.0 runtime (`@capacitor/core`, `@capacitor/android`, `@capacitor/ios` 8.5.3, pinned exactly in `package.json`) that embeds a WebView and serves the bundled web files from a local origin (`https://localhost` on Android, `capacitor://localhost` on iOS). It is not a hosted service; nothing phones home.
 
+## 1b. Update 2026-11-04 — the web app is the Expo app (`apps/mobile`) exported for the browser
+
+Since §1 was written, `main` merged a complete **Expo SDK 57 / React Native 0.86** application in `apps/mobile/`
+(Welcome, Home, Train, Library, History, Account; muscle map; workout library; `/api/mobile/*` client with PKCE
+sign-in; Android internal preview built with EAS — `content/mobile-release.json`). That app is what the owner
+runs on a phone today ("the Google app"). The request "a web app that is functional like the Android/iOS app,
+linked from the MONTE WO web" is therefore met with **the same code**, not a third implementation:
+
+| Target | Build | Entry |
+|---|---|---|
+| Android (internal preview) | EAS, `apps/mobile` (`com.vitaflex.montewovitaflex`) | installed APK |
+| iOS | EAS, `apps/mobile` (not built yet) | — |
+| **Web (new)** | `python3 scripts/build_webapp.py` → `expo export --platform web` with `experiments.baseUrl = /app/web` → committed to **`public/app/web/`** | **`/app/web/`** on the site (header link "Open the App", `/app/` page, home hero) |
+
+How it is wired (all reversible, no native identifiers changed):
+
+* `apps/mobile/app.config.ts` — `web` block (name, Metro, single-page output) and `experiments.baseUrl` taken
+  from `MONTEWO_WEB_BASE_URL`, which only `scripts/build_webapp.py` sets; `expo start`, `npm run web` and
+  `npm run export:web` behave exactly as before.
+* `apps/mobile/public/` — the browser chrome around the bundle: `index.html` template (PWA meta, Apple tags,
+  loading state), `manifest.webmanifest` (standalone, `scope`/`start_url` = its own directory, the approved
+  `/assets/icon-192.png` + `icon-512.png`), `sw.js` (offline shell for `/app/web/` only; cache name
+  `mw-webapp-<bundle hash>`, never `/api/`), `pwa.js` (splash removal, worker registration, install prompt +
+  iOS "Add to Home Screen" hint). Expo copies this folder into the export verbatim.
+* `apps/mobile/src/api.ts` — one web-only line: the sign-in return URL is now the directory the app is served
+  from (`new URL("./", window.location.href)`) instead of the never-hosted `/mobile/`. Native code paths are
+  untouched. The server still accepts only URIs listed in `MOBILE_REDIRECT_URIS` (owner config when the mobile
+  API is enabled).
+* `scripts/build_webapp.py` — export (offline, `EXPO_PUBLIC_*` of the shell stripped so no origin or key can be
+  baked in), fill the worker placeholders, verify (bundle referenced under `/app/web/`, manifest standalone, no
+  credential shapes), publish to `public/app/web/`, or `--check` (CI: a fresh export must equal the commit).
+* Website: `scripts/build_website.py` treats `app/web` like `/dashboard/` (own chrome; not a website route, not
+  in the sitemap); the header gets `site.json → webApp` ("Open the App", en/ht/fr via `home-messages.json`);
+  `/app/` explains how to install on Android / iPhone / desktop with an honest-state notice; the home hero gets
+  a button. `scripts/build_native.py` excludes `app/web/` from the Capacitor bundle; `public/_headers` makes
+  the shell files `no-cache` and the hashed bundle/assets immutable.
+
+On the web the app calls **its own origin** (`window.location.origin` → `/api/mobile/*`). Production has no
+`APP_DB`/`MOBILE_ENABLED`, so sign-in and cloud history report "not configured on this deployment" inside the
+app — the same honest state as the Android preview build; the workout library, muscle map and device-local
+workouts work without any backend.
+
+**Open decision for the owner (not blocking):** the repository now carries two native approaches — the Expo app
+(`apps/mobile`, application ID `com.vitaflex.montewovitaflex`) and the Capacitor shells of `/dashboard/`
+(`com.vitaflex.montewo`, §1). Only one should go to the stores. Given that the Expo app is the functional
+product and now also the web app, the recommended path is: Expo = Android + iOS + web; keep `/dashboard/` and
+the Capacitor projects as reversible foundation work until that is decided. Nothing has been deleted.
+
 ## 2. Repository layout (what is where)
 
 ```

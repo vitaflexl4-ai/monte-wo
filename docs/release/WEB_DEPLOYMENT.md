@@ -12,6 +12,18 @@
 * Functions: `functions/api/[[route]].js` (routes every `/api/*` to `server/`).
 * Pages project name in the existing script: **`vitaflex-monte-wo`**, production branch **`main`** (`package.json` → `"deploy": "wrangler pages deploy public --project-name vitaflex-monte-wo --branch main"`). Verify this is the intended account/project before running.
 * The app shell is served at `/dashboard/` (`noindex`); the public site at `/`. Making the app the root is a pending product decision — not changed.
+* **The web app** — `apps/mobile` (the Android/iOS code) exported for the browser — is served at **`/app/web/`**
+  from the committed `public/app/web/` (86 files, ≈5.6 MB: one hashed bundle, hashed poster assets, `index.html`,
+  `manifest.webmanifest`, `sw.js`, `pwa.js`, `build-info.json`). It is part of `public/`, so every Pages deployment
+  (direct upload or the Git integration building `main`) ships it with no extra build step: the export is committed
+  and CI proves it equals a fresh export (`python3 scripts/build_webapp.py --check`). Regenerate after any
+  `apps/mobile` change: `npm --prefix apps/mobile ci && npm run build:webapp`, then commit `public/app/web/`.
+  Caching is declared in `public/_headers` (`/app/web/_expo/*` and `/app/web/assets/*` immutable for a year —
+  file names carry content hashes; the shell files `no-cache`). The app's service worker is scoped to `/app/web/`
+  and never caches `/api/*`; the site worker `/sw.js` does not touch the app directory.
+* Web sign-in from the app returns to `https://<host>/app/web/`; when the mobile API is enabled, that exact URI
+  must be in `MOBILE_REDIRECT_URIS` (see `docs/mobile/OPERATIONS.md`). Until then the app states that account
+  services are not configured — nothing is fabricated.
 
 ## 2. Pre-deployment checklist (owner)
 
