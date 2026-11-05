@@ -43,8 +43,10 @@ on:
 permissions:
   contents: read
 
+# Only opted-in runs share a cancel group: a push WITHOUT [build-app] creates a skipped run that must not cancel
+# a build still in progress (run 41946430864 finished every step and was then cancelled by such a skipped run).
 concurrency:
-  group: app-android-${{ github.ref }}
+  group: app-android-${{ github.ref }}-${{ github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[build-app]') }}
   cancel-in-progress: true
 
 jobs:

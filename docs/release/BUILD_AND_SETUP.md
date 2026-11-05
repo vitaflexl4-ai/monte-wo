@@ -71,10 +71,13 @@ the web bundle too (the public config is embedded) — rebuild and commit `publi
 ```bash
 # GitHub Actions (the normal way — the sandbox has no JDK/Android SDK/Xcode):
 #   Actions → "App — Android (APK + AAB)" / "App — iOS (Simulator build, unsigned)" → Run workflow,
-#   or push an arena/** commit whose message contains [build-app]  (both workflows run)
+#   or push an arena/** commit whose message contains [build-app]  (both workflows run);
+#   add [publish-apk] (or the publish_release input) to also publish the APK as a GitHub pre-release
+#   app-android-v<version>-<versionCode> — test builds only, never the .aab, never a store upload.
 # Local, Android (JDK 17 + Android SDK/NDK 27.1 installed):
 cd apps/mobile && npm ci
 node scripts/make-native-icons.cjs --check             # derived brand artwork is current
+MONTEWO_BUILD_CHANNEL=internal-ci MONTEWO_INTERNAL_APK_RISK_ACCEPTED=true node scripts/check-build-security.cjs  # blocking gate (security/reviewed-advisories.json)
 npx expo prebuild --platform android --no-install --clean
 node scripts/configure-android-signing.cjs             # debug keystore unless ANDROID_KEYSTORE_* are exported
 (cd android && ./gradlew --no-daemon :app:assembleRelease :app:bundleRelease)
@@ -85,7 +88,7 @@ npx expo prebuild --platform ios --no-install --clean && (cd ios && pod install)
 # Versions (optional env, CI sets them): MONTEWO_APP_VERSION=1.0.0 MONTEWO_ANDROID_VERSION_CODE=<int> MONTEWO_IOS_BUILD_NUMBER=<int>
 ```
 
-Outputs and signing states are described in `ANDROID_RELEASE.md` §0 and `IOS_RELEASE.md` §0.
+Outputs and signing states are described in `ANDROID_RELEASE.md` §0 and `IOS_RELEASE.md` §0. Store-asset drafts (Play/App Store screenshots, feature graphic, 1024² icon) come from `npm run store:assets` (Playwright Chromium; CI uploads them as artifact `store-assets`) → `test-results/store-assets/`.
 
 ## 5. Tests
 

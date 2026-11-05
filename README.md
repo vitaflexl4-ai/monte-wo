@@ -11,8 +11,11 @@ Managed by **VitaFlex Business Group** · Montewo@vitaflexbusinessgroup.com
 produced by GitHub Actions — Actions → "App — Android (APK + AAB)" / "App — iOS (Simulator build, unsigned)" → *Run
 workflow*, or push an `arena/**` commit containing `[build-app]`. Without the owner's keystore secrets the Android
 artifacts are debug-signed (installable for testing, not Play-uploadable); the iOS artifact is an unsigned Simulator
-build (device/TestFlight need the owner's Apple account). Details: `docs/release/ANDROID_RELEASE.md` §0,
-`docs/release/IOS_RELEASE.md` §0, evidence in `docs/release/RELEASE_STATUS.md` §2.
+build (device/TestFlight need the owner's Apple account). **Android test build (pre-release, debug-signed):**
+`https://github.com/vitaflexl4-ai/monte-wo/releases/tag/app-android-v1.0.0-3` — also linked with its SHA-256 from
+`/downloads/`; a commit containing `[build-app] [publish-apk]` publishes the next one. Not an official release, not
+Google Play. Details: `docs/release/ANDROID_RELEASE.md` §0, `docs/release/IOS_RELEASE.md` §0, evidence in
+`docs/release/RELEASE_STATUS.md` §2.
 
 Earlier packaging (kept, reversible, pending the owner's decision — `docs/release/RELEASE_STATUS.md` §4 item 13):
 the website's `/dashboard/` shell wrapped by **Capacitor 8** native shells: `capacitor.config.json` (`com.vitaflex.montewo`, placeholder ID pending owner confirmation), `android/`, `ios/`. `npm run build:native` derives the packaged bundle (`build/native/`, root = the `/dashboard/` app shell, links rewritten for Capacitor's local server) and `npx cap sync` copies it into both projects. Native binaries have **not** been compiled yet (needs JDK/Android SDK or macOS/Xcode — manual GitHub Actions workflows are provided); the API is deliberately not reachable from the shells until the owner approves the connectivity/auth design. Read `docs/release/RELEASE_STATUS.md` first, then `ARCHITECTURE.md`, `BUILD_AND_SETUP.md`, `WEB_DEPLOYMENT.md`, `ANDROID_RELEASE.md`, `IOS_RELEASE.md`, `PRIVACY_AND_STORE_CHECKLIST.md` (all in `docs/release/`). Env reference: `.env.example` (placeholders only).
