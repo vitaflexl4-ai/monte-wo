@@ -19,11 +19,11 @@
         "cta": "Understand the Strength Index ↗"
       },
       {
-        "label": "ANDROID PREVIEW",
-        "title": "Try the Android preview.",
-        "text": "An Android preview build is available through Expo for early testing. This is not a public release; iOS and public athlete accounts are not available.",
+        "label": "ANDROID TEST BUILD",
+        "title": "Try the Android test build.",
+        "text": "A test build of the Android app (pre-release APK from the project’s GitHub Actions) is available for early testing. This is not an official release; iOS and public athlete accounts are not available.",
         "link": "/downloads/",
-        "cta": "Open Android Preview ↗"
+        "cta": "Get the Android test build ↗"
       }
     ]
   },
@@ -68,14 +68,14 @@
     ]
   },
   "app": {
-    "title": "The MONTE WO App — Web App & Android Preview Build",
-    "description": "Open the MONTE WO app in your browser and install it on Android, iPhone or desktop — the same app as the Android preview build. No store release yet. Strength standards remain draft, not official.",
+    "title": "The MONTE WO App — Web App & Android Test Build",
+    "description": "Open the MONTE WO app in your browser and install it on Android, iPhone or desktop — the same app as the Android test build (pre-release APK). No store release yet. Strength standards remain draft, not official.",
     "eyebrow": "THE APP / A FIRST LOOK",
     "headline": "Your work.",
     "accent": "Your own climb.",
     "intro": "A focused home for your training, built around progress you can understand—and strength recognition you have to earn.",
     "notice": "INTERACTIVE SIMULATION — NOT A RELEASED APP",
-    "availability": "An internal Android preview build is also available through Expo for early testing. No Google Play listing or iOS build is available yet; the web app above is the same application.",
+    "availability": "An Android test build (pre-release APK, debug-signed) is also available from the downloads page for early testing. No Google Play listing or iOS build is available yet; the web app above is the same application.",
     "reference": "The visual direction follows the supplied MONTE WO app concept. The phone responds locally to your inputs. Badges and history rows are illustrative, not earned ranks or personal records. No qualification thresholds or athlete data are used.",
     "features": [
       {

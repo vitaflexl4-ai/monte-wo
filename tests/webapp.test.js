@@ -103,7 +103,7 @@ test('Web app: linked from the whole website, excluded from website routes, nati
  assert.equal([...app.matchAll(/<article class="foundation-tool-card"><span class="eyebrow">(ANDROID|IPHONE &amp; IPAD|DESKTOP)<\/span>/g)].length,3,'install steps for Android, iPhone/iPad and desktop');
  assert.match(app,/Add to Home Screen/);assert.match(app,/HONEST STATE/);assert.match(app,/not connected yet/);assert.match(app,/nothing in the app awards an official Discipline Rank/);
  assert.match(app,/Google Play and App Store releases are still in preparation/);assert.doesNotMatch(app,/href="https:\/\/(?:apps\.apple\.com|play\.google\.com)/);
- assert.match(app,/<title>The MONTE WO App — Web App &amp; Android Preview Build<\/title>/);
+ assert.match(app,/<title>The MONTE WO App — Web App &amp; Android Test Build<\/title>/);
  assert.match(app,/<a href="\/dashboard\/">Preview the dashboard foundation \(demo\) ↗<\/a>/,'existing demo link kept');
  const messages=JSON.parse(read('content/website/home-messages.json'));
  assert.deepEqual([messages.en.openApp,messages.ht.openApp,messages.fr.openApp],['Open the App','Louvri aplikasyon an','Ouvrir l’application']);
