@@ -251,3 +251,114 @@ em { font-family: Georgia, 'Times New Roman', serif; font-weight: 400; color: #d
   html { scroll-behavior: auto; }
   *, *::before, *::after { animation: none !important; transition: none !important; }
 }
+
+/* Group information stays in the footer, leaving the venture-first header intact. */
+.footer-links { display: flex; align-items: center; gap: 26px; }
+.footer-links [aria-current="page"] { color: var(--gold); }
+
+/* Founder — a personal essay, not a corporate biography template. */
+.founder { padding-bottom: 96px; }
+.founder-intro {
+  padding: clamp(64px, 8vw, 112px) 0 66px;
+  border-bottom: 1px solid var(--line);
+}
+.founder-intro > .index-label { margin: 0 0 38px; }
+.founder-intro h1 {
+  font-size: clamp(78px, 10vw, 144px);
+  letter-spacing: .025em;
+  line-height: .95;
+  margin: 0 0 32px;
+}
+.founder-subtitle {
+  max-width: 660px;
+  margin: 0;
+  font: italic clamp(28px, 3.1vw, 44px)/1.35 Georgia, 'Times New Roman', serif;
+  letter-spacing: -.025em;
+  text-wrap: balance;
+  color: #d9c9aa;
+}
+.founder-role { margin: 28px 0 0; font-size: 12px; color: var(--muted); letter-spacing: .035em; }
+.founder-reading-layout {
+  display: grid;
+  grid-template-columns: minmax(190px, 1fr) minmax(0, 680px);
+  column-gap: clamp(44px, 7vw, 128px);
+  padding-top: 72px;
+}
+.founder-aside { min-width: 0; }
+.founder-chapters { position: sticky; top: 40px; }
+.founder-chapters > .index-label { margin: 0 0 22px; }
+.founder-chapters a {
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+  min-height: 44px;
+  padding: 10px 0;
+  font-size: 12px;
+  color: var(--muted);
+  line-height: 1.6;
+  transition: color .25s;
+}
+.founder-chapters a span { font-size: 10px; color: var(--gold); letter-spacing: .04em; }
+.founder-chapters a:hover, .founder-chapters a:focus-visible { color: var(--paper); }
+.founder-prose { min-width: 0; width: 100%; max-width: 680px; }
+.founder-chapter { scroll-margin-top: 40px; margin: 0 0 56px; }
+.founder-chapter h2 {
+  margin: 0 0 24px;
+  font: 400 27px/1.3 Georgia, 'Times New Roman', serif;
+  letter-spacing: -.015em;
+  color: var(--paper);
+}
+.founder-chapter p {
+  margin: 0 0 24px;
+  font-size: 17px;
+  line-height: 1.95;
+  color: #d1d0c7;
+}
+.founder-chapter p:last-child { margin-bottom: 0; }
+.founder-chapter:first-child p:first-of-type {
+  font: 400 24px/1.65 Georgia, 'Times New Roman', serif;
+  color: #e2ded3;
+}
+.founder-closing { padding-top: 40px; border-top: 1px solid var(--line); }
+.founder-conviction {
+  margin: 0 0 30px;
+  font: 400 clamp(25px, 2.3vw, 32px)/1.5 Georgia, 'Times New Roman', serif;
+  letter-spacing: -.015em;
+  color: #d9c9aa;
+}
+.founder-postscript { margin: 0 0 18px; font-size: 17px; line-height: 1.8; }
+.founder-postscript em { color: var(--muted); }
+.founder-signature { margin: 0; color: var(--paper); font: 28px/1.4 Georgia, 'Times New Roman', serif; }
+.founder-return { margin-top: 56px; text-transform: uppercase; color: var(--gold); }
+@media (max-width: 1050px) {
+  .founder-reading-layout { column-gap: 40px; grid-template-columns: minmax(170px, 1fr) minmax(0, 680px); }
+}
+@media (max-width: 820px) {
+  .founder-intro { padding-top: 64px; padding-bottom: 48px; }
+  .founder-reading-layout { grid-template-columns: 1fr; padding-top: 32px; gap: 48px; }
+  .founder-chapters { position: static; display: grid; grid-template-columns: 1fr 1fr; gap: 0 24px; padding-bottom: 24px; border-bottom: 1px solid var(--line); }
+  .founder-chapters > .index-label { grid-column: 1 / -1; margin-bottom: 12px; }
+  .founder-prose { width: min(100%, 680px); justify-self: center; }
+}
+@media (max-width: 500px) {
+  .footer { flex-wrap: wrap; gap: 8px 20px; }
+  .footer-links { gap: 20px; }
+  .founder { padding-bottom: 60px; }
+  .founder-intro { padding-top: 48px; padding-bottom: 36px; }
+  .founder-intro > .index-label { font-size: 9px; margin-bottom: 30px; }
+  .founder-intro h1 { font-size: clamp(72px, 20vw, 94px); margin-bottom: 24px; }
+  .founder-subtitle { font-size: clamp(27px, 7.2vw, 34px); line-height: 1.4; }
+  .founder-role { margin-top: 22px; font-size: 11px; }
+  .founder-reading-layout { gap: 36px; }
+  .founder-chapters { column-gap: 16px; }
+  .founder-chapters a { font-size: 11px; gap: 9px; }
+  .founder-chapter { margin-bottom: 44px; }
+  .founder-chapter h2 { font-size: 24px; margin-bottom: 20px; }
+  .founder-chapter p { font-size: 16px; line-height: 1.9; margin-bottom: 22px; }
+  .founder-chapter:first-child p:first-of-type { font-size: 22px; line-height: 1.65; }
+  .founder-closing { padding-top: 30px; }
+  .founder-return { margin-top: 40px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .founder-chapters a { transition: none; }
+}

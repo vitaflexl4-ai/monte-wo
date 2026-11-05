@@ -30,7 +30,9 @@
     "export:website": "python3 scripts/export_preview.py --website",
     "deploy:intelligence": "node scripts/deploy-intelligence.mjs",
     "deploy:intelligence:check": "node scripts/deploy-intelligence.mjs --check",
-    "test:deploy": "node tests/deploy-script.harness.mjs"
+    "test:deploy": "node tests/deploy-script.harness.mjs",
+    "test:founder": "node --test tests/founder.test.js",
+    "test:founder-browser": "node tests/founder-browser.mjs"
   },
   "devDependencies": {
     "@playwright/test": "^1.50.0",

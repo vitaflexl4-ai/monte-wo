@@ -1,0 +1,128 @@
+{
+  "scope": "Local founder-profile review; not committed, pushed or deployed",
+  "route": "/founder/",
+  "presentationName": "Sony",
+  "source": "content/group/founder.json",
+  "biographyPreserved": {
+    "narrativeParagraphs": 9,
+    "closingStatement": true,
+    "postscript": true
+  },
+  "tests": {
+    "baseline": {
+      "total": 218,
+      "passed": 216,
+      "failed": 2
+    },
+    "final": {
+      "total": 224,
+      "passed": 222,
+      "failed": 2,
+      "newFailures": 0
+    },
+    "knownFailures": [
+      "Lab protected-source checksum expectation for wrangler.toml",
+      "Website protected-source checksum expectation for wrangler.toml"
+    ],
+    "founderStatic": {
+      "passed": 6,
+      "failed": 0,
+      "groupReferencesChecked": 131
+    },
+    "productReferencesChecked": 2112,
+    "groupBrowser": {
+      "passed": true,
+      "routes": 7,
+      "widths": [
+        320,
+        390,
+        600,
+        768,
+        820,
+        1024,
+        1440
+      ]
+    },
+    "founderBrowser": {
+      "passed": true,
+      "viewports": [
+        [
+          320,
+          740
+        ],
+        [
+          390,
+          844
+        ],
+        [
+          600,
+          900
+        ],
+        [
+          768,
+          1024
+        ],
+        [
+          844,
+          390
+        ],
+        [
+          1024,
+          900
+        ],
+        [
+          1440,
+          1000
+        ],
+        [
+          1920,
+          1080
+        ]
+      ],
+      "keyboard": true,
+      "noJavaScript": true,
+      "reducedMotion": true,
+      "chapterNavigation": true,
+      "readingWidthCappedAt680px": true,
+      "unexpectedPageErrors": 0,
+      "failedHttpAssets": 0
+    },
+    "accessibility": {
+      "browser": "153.0.8010.0",
+      "page": "/founder/",
+      "tool": "axe-core via @axe-core/playwright",
+      "checks": "WCAG 2 A/AA, 2.1 A/AA and 2.2 AA tags",
+      "results": [
+        {
+          "width": 1440,
+          "violations": [],
+          "incomplete": [],
+          "passes": 18
+        },
+        {
+          "width": 768,
+          "violations": [],
+          "incomplete": [],
+          "passes": 18
+        },
+        {
+          "width": 390,
+          "violations": [],
+          "incomplete": [],
+          "passes": 18
+        },
+        {
+          "width": 320,
+          "violations": [],
+          "incomplete": [],
+          "passes": 18
+        }
+      ]
+    },
+    "notPerformed": [
+      "Production deployment",
+      "Physical-device Safari/Firefox testing",
+      "VoiceOver/NVDA testing"
+    ]
+  }
+}

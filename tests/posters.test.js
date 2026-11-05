@@ -43,7 +43,7 @@ test('Posters: library posters never masquerade as technique demonstrations',()=
 });
 test('Posters: contained artwork and offline assets remain explicit',()=>{
  assert.ok(read('public/website.css').includes('object-fit:contain'));
- const sw=read('public/sw.js');assert.ok(sw.includes('montewo-core-v25-lifeline'));
+ const sw=read('public/sw.js');assert.ok(sw.includes('montewo-core-v27-sony-profile'));
  assert.ok(sw.includes('/workout-posters.js'));
  for(const p of Object.values(workoutPosters))assert.ok(sw.includes(p.src));
 });

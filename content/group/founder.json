@@ -1,0 +1,43 @@
+{
+  "name": "Sony",
+  "role": "A non-alien.",
+  "subtitle": "A journey of purpose, gratitude, and service.",
+  "description": "Sony. A non-alien. A personal reflection on family, education, faith, Haiti, and a life of purpose and service.",
+  "chapters": [
+    {
+      "id": "roots",
+      "title": "Roots & gratitude",
+      "paragraphs": [
+        "My journey has been shaped by family, faith, education, and a lasting appreciation for the opportunities life has afforded me. Above all, it has been guided by a deep love for Haiti and a desire to make a meaningful contribution wherever life may lead.",
+        "I have been fortunate to have a family whose sacrifices, encouragement, and constant support have made much of my journey possible. Their presence has been a source of strength, and I remain deeply grateful for everything they have invested in me. As I continue to grow, I hope to honor that investment through my actions, becoming increasingly responsible for my own path and, in time, giving them reasons to be proud."
+      ]
+    },
+    {
+      "id": "learning",
+      "title": "Learning & building",
+      "paragraphs": [
+        "My interest in leadership began early. Throughout my school years, from primary education onward, I had the privilege of serving as head of my class. Those experiences introduced me to responsibility, communication, and the importance of working with others. I later pursued higher education, earning a bachelor's degree in Business Administration and a Master of Business Administration (MBA). I have also pursued professional certifications in personal training, artificial intelligence, and Bloomberg trading.",
+        "My professional interests have developed across business, fitness, technology, and innovation. Through VitaFlex Business Group, I seek to develop independent ventures and explore opportunities with meaningful potential. One of these ambitions is VitaFlex Intelligence Corp, a project whose vision I have been developing for approximately eight years. I believe in allowing ideas the time and attention they deserve, and I look forward to introducing it when the time is right.",
+        "Over the years, I have also come to understand that education and experience, valuable as they are, do not exempt anyone from the need to remain a student of life."
+      ]
+    },
+    {
+      "id": "perspective",
+      "title": "Perspective & responsibility",
+      "paragraphs": [
+        "Perhaps one of my most important personal lessons has been learning to see the world differently. In my younger years, I sometimes carried the impression that the world needed me more than I needed it. With time, I came to appreciate how much larger life is than any one individual. The world does not revolve around us; rather, we are given an opportunity to find our place within it and contribute in whatever ways we can.",
+        "This understanding has gradually shaped my view of leadership. I have come to value quiet responsibility over recognition, substance over appearances, and service over titles. I believe there is always something to learn from others, regardless of their position or circumstances."
+      ]
+    },
+    {
+      "id": "service",
+      "title": "Faith, Haiti & service",
+      "paragraphs": [
+        "My faith in God remains an important part of my life, providing guidance and perspective. My love for Haiti is equally close to my heart. I remain hopeful about its future and believe that every individual, in their own capacity, has a role to play in advancing its dignity, opportunities, and progress.",
+        "I am grateful to pursue life as one who serves. I do not consider my journey complete, nor do I presume to have all the answers. There is still much to understand, much to improve, and much to contribute. I hope to approach each new chapter with an open mind, a grateful heart, and a willingness to do the work that lies ahead."
+      ]
+    }
+  ],
+  "closing": "Ultimately, I hope to live a life that reflects my values, honors those who have stood beside me, and leaves something worthwhile for others.",
+  "postscript": "The journey continues."
+}
