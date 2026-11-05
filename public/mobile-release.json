@@ -2,6 +2,41 @@
   "product": "MONTE WO",
   "operator": "VitaFlex Business Group",
   "sourceVersion": "0.1.0",
-  "android": {"status": "unreleased", "apkUrl": null, "playUrl": null, "version": null, "releasedAt": null, "bytes": null, "sha256": null, "minSdk": null, "signingCertificateSha256": null, "installationTest": null},
-  "ios": {"status": "unreleased", "testFlightUrl": null, "appStoreUrl": null}
+  "android": {
+    "status": "unreleased",
+    "apkUrl": null,
+    "playUrl": null,
+    "version": null,
+    "releasedAt": null,
+    "bytes": null,
+    "sha256": null,
+    "minSdk": null,
+    "signingCertificateSha256": null,
+    "installationTest": null,
+    "testBuild": {
+      "label": "Android test build (GitHub pre-release)",
+      "url": "https://github.com/vitaflexl4-ai/monte-wo/releases/download/app-android-v1.0.0-3/monte-wo-1.0.0-3-0b8618b.apk",
+      "releaseUrl": "https://github.com/vitaflexl4-ai/monte-wo/releases/tag/app-android-v1.0.0-3",
+      "runUrl": "https://github.com/vitaflexl4-ai/monte-wo/actions/runs/41946430838",
+      "version": "1.0.0",
+      "versionCode": 3,
+      "commit": "0b8618b",
+      "bytes": 91630065,
+      "sha256": "07c7322edb23900c4c4d0ece86ca1cc652a0efc599a233f1f3ed3dc38c6bc072",
+      "signing": "debug-keystore",
+      "signingCertificateSha256": "fac61745dc0903786fb9ede62a962b399f7348f0bb6f899b8332667591033b9c",
+      "minSdk": 24,
+      "releasedAt": "2026-11-04",
+      "note": "Internal/test build produced by .github/workflows/app-android.yml and published as a GitHub pre-release. Not an official release, not Google Play; signed with the public Android debug keystore, so a future Play-signed MONTE WO cannot update it in place. The official APK stays unreleased until signing, installation testing and integrity checks are complete."
+    },
+    "previewUrl": "https://expo.dev/accounts/vitaflex/projects/monte-wo/builds/7a8a3e7f-c088-45e9-8111-218fb60c5b52",
+    "previewLabel": "Android preview build",
+    "previewVersion": "0.1.0",
+    "previewNote": "Internal preview only; not an official public release. Access the EAS build page to install."
+  },
+  "ios": {
+    "status": "unreleased",
+    "testFlightUrl": null,
+    "appStoreUrl": null
+  }
 }

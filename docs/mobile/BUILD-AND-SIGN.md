@@ -46,7 +46,7 @@ npx eas-cli build --platform ios --profile production
 
 Profiles:
 - `preview`: signed Android APK for internal/direct-install testing; iOS simulator build (not installable on an iPhone).
-- `production`: Android AAB for Google Play, iOS device/store build for TestFlight/App Store.
+- `production`: Android AAB for Google Play (`buildType: app-bundle` since 2026-11-04 — it was `apk`), iOS device/store build for TestFlight/App Store.
 - `ios-device`: ad-hoc/internal iOS device build; Apple membership/device registration required.
 
 Use the existing application signing identity if one exists. Never regenerate it casually. EAS/owner-managed credentials stay out of Git, ZIPs, browser code and chat. Back up the original keystore and credentials securely in the owner's credential manager. `EXPO_TOKEN`, Apple secrets and Google service-account credentials belong only in trusted secret stores. Only the API URL and project linkage are public configuration.

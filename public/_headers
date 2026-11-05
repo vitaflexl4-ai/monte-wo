@@ -24,3 +24,28 @@
   Referrer-Policy: no-referrer
   Cache-Control: no-store
   Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self'; font-src 'self'; frame-ancestors 'none'; base-uri 'none'; form-action 'self'
+
+# MONTE WO web app (apps/mobile export, scripts/build_webapp.py): shell files refresh on every visit, content-hashed files are immutable.
+/app/web/
+  Cache-Control: no-cache
+
+/app/web/index.html
+  Cache-Control: no-cache
+
+/app/web/sw.js
+  Cache-Control: no-cache
+
+/app/web/manifest.webmanifest
+  Cache-Control: no-cache
+
+/app/web/pwa.js
+  Cache-Control: no-cache
+
+/app/web/build-info.json
+  Cache-Control: no-cache
+
+/app/web/_expo/*
+  Cache-Control: public, max-age=31536000, immutable
+
+/app/web/assets/*
+  Cache-Control: public, max-age=31536000, immutable

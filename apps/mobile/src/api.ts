@@ -129,7 +129,9 @@ export async function signIn() {
   const state = Crypto.randomUUID(),
     redirectUri =
       Platform.OS === "web"
-        ? API_BASE + "/mobile/"
+        ? // The web app's own directory (https://<host>/app/web/ on the site): the popup must return to
+          // the page that opened it. The server allows it only when MOBILE_REDIRECT_URIS lists it exactly.
+          new URL("./", window.location.href).href
         : AuthSession.makeRedirectUri({ scheme: "montewo", path: "auth" });
   const url =
     API_BASE +

@@ -1,0 +1,398 @@
+{
+  "_note": "Source copy for the MONTE WO application shell (Step 1). Everything marked demo or notConnected is placeholder UI state. No athlete data, nutrition values, official ranks or integrations exist here.",
+  "route": "/dashboard/",
+  "title": "Dashboard | MONTE WO",
+  "description": "MONTE WO app shell: four independent discipline cards, a muscle character view and a demo food scan and macro logger. No athlete data, official ranks or integrations are connected yet.",
+  "brandTag": "FOUNDATION · STEP 1",
+  "motto": "Leve. Klase. Monte Wo.",
+  "message": "MEASURE. PROVE. RANK. CLIMB.",
+  "status": {
+    "notConnected": "NOT CONNECTED",
+    "demo": "DEMO",
+    "draft": "DRAFT — NOT OFFICIAL",
+    "planned": "PLANNED · NOT IN STEP 1",
+    "available": "AVAILABLE TODAY",
+    "placeholder": "PLACEHOLDER · NOT IMPLEMENTED IN STEP 1"
+  },
+  "account": {
+    "label": "Athlete",
+    "value": "Not signed in",
+    "note": "Accounts are not connected in this foundation."
+  },
+  "disciplineLabels": {
+    "squat": "Squat",
+    "bench": "Bench Press",
+    "deadlift": "Deadlift",
+    "curl": "Biceps Curl"
+  },
+  "navigation": [
+    {
+      "id": "dashboard",
+      "label": "Dashboard",
+      "icon": "grid"
+    },
+    {
+      "id": "profile",
+      "label": "My Profile",
+      "icon": "user"
+    },
+    {
+      "id": "performance",
+      "label": "Performance",
+      "icon": "bar"
+    },
+    {
+      "id": "standards",
+      "label": "Standards",
+      "icon": "rule"
+    },
+    {
+      "id": "rankings",
+      "label": "Rankings",
+      "icon": "peak"
+    },
+    {
+      "id": "library",
+      "label": "Exercise Library",
+      "icon": "book"
+    },
+    {
+      "id": "nutrition",
+      "label": "Nutrition",
+      "icon": "leaf"
+    },
+    {
+      "id": "verification",
+      "label": "Verification",
+      "icon": "shield"
+    },
+    {
+      "id": "settings",
+      "label": "Settings",
+      "icon": "cog"
+    }
+  ],
+  "dashboard": {
+    "eyebrow": "OVERVIEW",
+    "title": "Dashboard",
+    "subtitle": "Nothing is connected yet — every panel shows its real state.",
+    "statusStrip": [
+      {
+        "label": "Account",
+        "status": "notConnected"
+      },
+      {
+        "label": "Standards",
+        "status": "draft"
+      },
+      {
+        "label": "Nutrition source",
+        "status": "notConnected"
+      },
+      {
+        "label": "Camera",
+        "status": "notConnected"
+      }
+    ],
+    "disciplinesEyebrow": "DISCIPLINE RANKS / FOUR INDEPENDENT CARDS",
+    "disciplinesNote": "No rank transfers between disciplines and no overall rank is calculated. A card can only show an earned rank after approved standards exist and a qualifying performance is recorded.",
+    "noRank": "No official rank",
+    "noRankText": "Standards draft; athlete data not connected.",
+    "standardLabel": "MONTE Standard",
+    "athleteLabel": "Athlete data"
+  },
+  "muscle": {
+    "eyebrow": "PANEL 01 / MUSCLE CHARACTER VIEW",
+    "title": "Where the work shows.",
+    "intro": "Hover over or select a region to see its name and status. Regions map to the launch disciplines and the existing exercise guides.",
+    "figureLabel": "Anatomical silhouette with four selectable regions: chest, core, arms and legs.",
+    "previewIdle": "Hover or select a region",
+    "detailIdle": "Select a region",
+    "detailIdleText": "Each region will show its linked discipline records once athlete data is connected. Nothing is connected in this foundation.",
+    "disciplinesLabel": "Launch disciplines",
+    "guideLabel": "Written exercise guides",
+    "guideCta": "Open the guides",
+    "statusText": "No athlete data is linked to this region. Its badge stays NOT CONNECTED until performances and approved standards exist.",
+    "regions": [
+      {
+        "id": "chest",
+        "name": "Chest",
+        "status": "notConnected",
+        "disciplines": [
+          "Bench Press"
+        ],
+        "guide": "/exercises/muscle/chest/",
+        "text": "Pressing strength. The Bench Press discipline is judged under its own MONTE Standard."
+      },
+      {
+        "id": "core",
+        "name": "Core",
+        "status": "notConnected",
+        "disciplines": [],
+        "guide": "/exercises/muscle/core/",
+        "text": "Bracing and trunk control support every launch discipline, but no rank is awarded for the core itself."
+      },
+      {
+        "id": "arms",
+        "name": "Arms",
+        "status": "notConnected",
+        "disciplines": [
+          "Biceps Curl"
+        ],
+        "guide": "/exercises/muscle/arms/",
+        "text": "Elbow flexion strength. The Strict Biceps Curl discipline has its own draft standard."
+      },
+      {
+        "id": "legs",
+        "name": "Legs",
+        "status": "notConnected",
+        "disciplines": [
+          "Squat",
+          "Deadlift"
+        ],
+        "guide": "/exercises/muscle/legs/",
+        "text": "Squat and hinge strength. Squat and Deadlift are ranked independently of each other."
+      }
+    ]
+  },
+  "food": {
+    "eyebrow": "PANEL 02 / FOOD SCAN & MACRO LOGGER",
+    "title": "Fuel the climb.",
+    "intro": "A demo of the planned logger. Searching and quick filters work with four demo items only; nutrition values are not available because no food database is connected.",
+    "searchLabel": "Search food",
+    "searchPlaceholder": "Search demo foods…",
+    "searchHelp": "Demo search over four sample items. No food database, API or saved history is connected.",
+    "filtersLabel": "Quick filters",
+    "scanButton": "Scan Food via Camera",
+    "scanHelp": "Opens a viewfinder mockup. No camera permission is requested and nothing is captured.",
+    "resultsLabel": "Demo results",
+    "emptyResults": "Type a food name or choose a quick filter to see a demo item.",
+    "noMatch": "No demo match. A real food database is not connected yet.",
+    "addButton": "Add to demo log",
+    "logLabel": "Today’s demo log",
+    "logEmpty": "Nothing logged. Entries stay in this page only and are not saved.",
+    "removeButton": "Remove",
+    "valuesUnavailable": "Nutrition values unavailable",
+    "macrosLabel": "Macro summary",
+    "macroNote": "Protein, carbohydrate and fat totals need a connected nutrition source. Totals stay empty rather than showing invented numbers.",
+    "macros": [
+      {
+        "id": "protein",
+        "name": "Protein"
+      },
+      {
+        "id": "carbs",
+        "name": "Carbs"
+      },
+      {
+        "id": "fats",
+        "name": "Fats"
+      }
+    ],
+    "items": [
+      {
+        "id": "griot",
+        "name": "Griot",
+        "origin": "Haitian · fried marinated pork"
+      },
+      {
+        "id": "diri-djon-djon",
+        "name": "Diri ak Djon Djon",
+        "origin": "Haitian · black mushroom rice"
+      },
+      {
+        "id": "chicken-breast",
+        "name": "Chicken Breast",
+        "origin": "Lean poultry"
+      },
+      {
+        "id": "oatmeal",
+        "name": "Oatmeal",
+        "origin": "Whole grain"
+      }
+    ]
+  },
+  "camera": {
+    "eyebrow": "CAMERA VIEWFINDER / MOCKUP",
+    "title": "Food scanning is not connected.",
+    "frameLabel": "Viewfinder mockup — no live camera feed",
+    "text": "This mockup shows where the camera view will appear. It does not request camera permission, capture images or recognize food. The website’s security headers currently disable camera access for all pages.",
+    "close": "Close mockup"
+  },
+  "views": {
+    "profile": {
+      "eyebrow": "MY PROFILE / NOT CONNECTED",
+      "title": "Athlete profile",
+      "text": "Accounts, bodyweight and athlete categories are part of the MVP plan. There is no public account system yet, so nothing can be saved or displayed here.",
+      "planned": [
+        "Athlete account and sign-in",
+        "Bodyweight and relevant athlete categories",
+        "Profile revisions that performances snapshot",
+        "Private by default; server-side authorization"
+      ],
+      "links": [
+        {
+          "label": "Privacy Policy",
+          "href": "/privacy/"
+        }
+      ]
+    },
+    "performance": {
+      "eyebrow": "PERFORMANCE / NOT CONNECTED",
+      "title": "Performance records",
+      "text": "Discipline-specific entries with load, unit, repetitions, date, equipment and testing conditions are planned. Tested maximums will stay separate from estimated one-rep maximums.",
+      "planned": [
+        "Submit a performance per discipline",
+        "Tested single vs. estimated 1RM, clearly labelled",
+        "Performance history with methodology version",
+        "Provisional and MONTE Verified statuses"
+      ],
+      "links": [
+        {
+          "label": "Estimate a 1RM in the free Strength Lab",
+          "href": "/strength-lab/one-rep-max/"
+        },
+        {
+          "label": "Training percentages",
+          "href": "/strength-lab/percentages/"
+        },
+        {
+          "label": "Warm-up planner",
+          "href": "/strength-lab/warm-up/"
+        }
+      ]
+    },
+    "standards": {
+      "eyebrow": "STANDARDS / MONTE STANDARD",
+      "title": "Four draft protocols",
+      "text": "Every discipline has a written MONTE Standard: the variation, equipment and validity checks a performance must meet. All four are draft and not approved, so they cannot award ranks.",
+      "links": [
+        {
+          "label": "Read the four draft variations",
+          "href": "/exercises/standards/"
+        },
+        {
+          "label": "Methodology status and calibration process",
+          "href": "/methodology/"
+        }
+      ]
+    },
+    "rankings": {
+      "eyebrow": "RANKINGS / MONTE WO STRENGTH INDEX™",
+      "title": "Nine ranks per discipline",
+      "text": "Each discipline climbs the same nine rank identities independently. No threshold tables are approved, so no athlete holds any of these ranks yet and no progress percentage can be shown.",
+      "links": [
+        {
+          "label": "Rank identities",
+          "href": "/strength-ranks/"
+        },
+        {
+          "label": "Strength Index overview",
+          "href": "/strength/"
+        }
+      ]
+    },
+    "library": {
+      "eyebrow": "EXERCISE LIBRARY / AVAILABLE TODAY",
+      "title": "Written guides by muscle group",
+      "text": "The existing library has seven groups and written guides. Demonstrations and in-app exercise tracking are planned, not connected.",
+      "links": [
+        {
+          "label": "Open the full exercise library",
+          "href": "/exercises/"
+        }
+      ]
+    },
+    "nutrition": {
+      "eyebrow": "NUTRITION / DEMO ONLY",
+      "title": "Food search, Haitian options and macro tracking",
+      "text": "The Food Scan & Macro Logger on the Dashboard is a demo. Food search, camera scanning and protein, carbohydrate and fat tracking need a real nutrition source that has not been selected or approved.",
+      "planned": [
+        "Food search with a licensed nutrition database",
+        "Haitian foods, including Griot and Diri ak Djon Djon",
+        "Camera-based food scanning",
+        "Protein, carbohydrate and fat tracking"
+      ],
+      "links": [
+        {
+          "label": "Macro calculator",
+          "href": "/tools/macros/"
+        },
+        {
+          "label": "Protein calculator",
+          "href": "/tools/protein/"
+        },
+        {
+          "label": "TDEE calculator",
+          "href": "/tools/tdee/"
+        },
+        {
+          "label": "Body-fat estimate",
+          "href": "/tools/body-fat/"
+        }
+      ]
+    },
+    "verification": {
+      "eyebrow": "VERIFICATION / NOT CONNECTED",
+      "title": "Provisional and MONTE Verified",
+      "text": "Self-reported performances are Provisional. MONTE Verified requires evidence reviewed and approved by an authorized reviewer. Verification never raises a rank by itself, athletes cannot approve their own evidence, and reviewer decisions are kept as an audit history.",
+      "planned": [
+        "Evidence upload per performance",
+        "Independent reviewer decisions with reasons",
+        "Immutable review and audit history"
+      ],
+      "links": [
+        {
+          "label": "Evidence policy in the methodology",
+          "href": "/methodology/"
+        }
+      ]
+    },
+    "settings": {
+      "eyebrow": "SETTINGS / NOT CONNECTED",
+      "title": "Preferences",
+      "text": "Units, language and privacy controls will live here once accounts exist. This foundation stores nothing: no cookies, local storage or server records are created by the dashboard.",
+      "planned": [
+        "Units (kg / lb)",
+        "Language (English, Kreyòl, Français)",
+        "Privacy, export and deletion controls"
+      ],
+      "links": [
+        {
+          "label": "Delete account or clear this device",
+          "href": "/delete-account/"
+        },
+        {
+          "label": "Privacy Policy",
+          "href": "/privacy/"
+        },
+        {
+          "label": "Terms of Service",
+          "href": "/terms/"
+        },
+        {
+          "label": "Methodology status",
+          "href": "/methodology/"
+        },
+        {
+          "label": "About MONTE WO (public site)",
+          "href": "/about/"
+        }
+      ]
+    }
+  },
+  "plannedLabel": "Planned for the MVP",
+  "availableLabel": "Works today on the public site",
+  "aboutLabel": "About MONTE WO",
+  "appName": "MONTE WO",
+  "tabs": {
+    "primary": [
+      "dashboard",
+      "performance",
+      "rankings",
+      "nutrition"
+    ],
+    "more": "More",
+    "moreLabel": "More · open full navigation"
+  }
+}

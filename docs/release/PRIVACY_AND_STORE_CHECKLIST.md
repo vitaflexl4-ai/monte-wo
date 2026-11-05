@@ -1,0 +1,95 @@
+# MONTE WO — privacy, policy and store-listing checklist
+
+Legend: ✅ done in repo · 🟡 prepared, needs owner input · ⛔ missing / owner action. "v0.1.0 as packaged" = the native shells built from this commit (offline, no API origin configured).
+
+## 1. Legal pages and URLs
+
+| Item | Web | Native bundle | Status |
+|---|---|---|---|
+| Privacy policy | `/privacy/` | `/privacy/index.html` (linked from Settings) | ✅ page exists · ⛔ **public HTTPS URL requires the confirmed production domain** (stores need an absolute URL) · 🟡 content must be re-read by the owner/legal once the API, accounts and evidence uploads are enabled (data categories change) |
+| Terms of use | `/terms/` | `/terms/index.html` | ✅ page · 🟡 same review note; Apple needs an EULA only if the standard one is insufficient |
+| Account deletion | `/delete-account/` (also "clear this device" action) | `/delete-account/index.html` | ✅ page prepared · not required until accounts exist; **Play: web URL + in-app path; Apple: in-app initiation** once account creation ships |
+| Support / contact | `/contact/` | packaged | ✅ page · ⛔ support URL + email must be reachable on the confirmed domain |
+
+## 2. Data collection disclosure — v0.1.0 as packaged (truthful today)
+
+| Question | Answer for v0.1.0 | Evidence |
+|---|---|---|
+| Does the app collect or share user data? | **No.** No accounts, no analytics SDK, no crash reporting SDK, no ads, no third-party SDKs besides the Capacitor runtime. The demo food log is in-memory and discarded on close. | `tests/native-browser.mjs` asserts zero network writes; `AndroidManifest.xml` has only INTERNET; no `NS*UsageDescription` keys |
+| Network access? | Yes (INTERNET permission) but **no endpoint is reachable in a default build**: `NATIVE_API_ORIGIN` is empty, so `/api/*` resolves to the local bundle server (404) and the ranking page says "not configured for this app build"; the waitlist says "use the website". A build with `NATIVE_API_ORIGIN` set **plus** `NATIVE_CLIENTS_ENABLED=true` on the server adds sign-in and private records → disclosures change (see below). | `tests/native.test.js`, `tests/native-browser.mjs` |
+| Device data stored? | `localStorage` only for preferences already used by the web (e.g. language, calculator inputs on tool pages). No identifiers. | web code unchanged |
+| Permissions | Android: INTERNET. iOS: none. Camera is **not** requested (the food-scan button opens a dialog that explains the camera is not connected). | test-enforced |
+| Automation (Agent API) | Off by default. Waitlist e-mail access needs both a key with `waitlist:read` **and** the server flag `AGENT_PII_ENABLED=true` (default off; `waitlist:stats` gives counts without personal data). When the owner enables both, the AI-agent platform receiving those keys processes waitlist emails → name it as a processor in the privacy policy; deletion requests can be honoured by agents via `POST /api/agent/waitlist/forget` (audited as a hash). The packaged app never carries agent keys. | `docs/release/AGENT_API.md` |
+| URL scheme / deep link | `com.vitaflex.montewo://auth` is registered on both platforms for the sign-in return only; it carries a short-lived single-use code, never a token or personal data. | `AndroidManifest.xml`, `Info.plist`, `server/native.js` |
+| Encryption export compliance (Apple) | Uses only standard HTTPS/no proprietary crypto → `ITSAppUsesNonExemptEncryption = NO` can be declared (add key to Info.plist before submission) | 🟡 owner to confirm |
+
+**Play Data safety form (v0.1.0):** "No data collected", "No data shared", no security-practices claims needed beyond "data encrypted in transit: N/A". **Apple App Privacy (v0.1.0):** "Data Not Collected".
+
+**Must be updated when** (each is a re-submission with changed disclosures): waitlist works in-app (email, language, consent timestamp → "Contact info"), accounts via Cloudflare Access (identifier, email), performance submissions (health & fitness data), evidence video upload (user content, camera/photos permissions), any analytics.
+
+### 2b. Web app at `/app/web/` (added 2026-11-04 — same app as Android/iOS, in the browser)
+
+* Data on the device only: workouts and preferences in the browser's `localStorage` (the app's own `workout-storage.ts`, web branch); the install-banner dismissal flag `mw.webapp.install.dismissed`. No cookies are set by the app.
+* Session: held in memory only on the web (never persisted); sign-in is reported as "not configured" until the owner enables the mobile API and lists `https://<host>/app/web/` in `MOBILE_REDIRECT_URIS`.
+* Network: same origin only (`/api/mobile/*`); the service worker caches the app's own files under `/app/web/` and never `/api/*`. `pwa.js` contains no analytics, no third-party requests.
+* Permissions: none requested on the web (evidence upload uses the browser's file picker when the backend exists).
+* Store disclosures are unaffected: the web app is not a store artifact; Google Play / App Store entries still describe the native builds.
+
+### 2c. Native builds of the Expo app (added 2026-11-04 — `apps/mobile`, workflows `app-android.yml` / `app-ios.yml`)
+
+* **Permissions (Android):** `android.permission.INTERNET` only. Expo's template defaults (`READ/WRITE_EXTERNAL_STORAGE`, `SYSTEM_ALERT_WINDOW`, `VIBRATE`) are blocked in `app.config.ts`; the workflow fails if the source manifest declares anything else and records the *merged* permissions of the built APK (`aapt2 dump permissions`) in the job summary — use that list for the Play "Permissions" and Data safety answers, not assumptions.
+* **iOS usage descriptions:** none (no camera, photos, location, microphone or tracking APIs are used; evidence files come through the system document picker). `ITSAppUsesNonExemptEncryption = NO` is declared (HTTPS only) — owner confirms at submission.
+* **Identifiers:** Android `com.vitaflex.montewovitaflex` (fixed — matches the installed EAS preview); iOS `com.vitaflex.montewovitaflex` (changeable until the first App Store Connect record). Deep link `montewo://auth` (sign-in return only, single-use code, no token).
+* **Data on device:** workouts/preferences in the app's local storage (`workout-storage.ts`); session token in `expo-secure-store` on native (Keychain / Keystore-backed), memory only on the web. Network: the configured API origin only; production has no `APP_DB`/`MOBILE_ENABLED`, so account services report "not configured" — Play Data safety / Apple App Privacy stay "no data collected" **until** the owner enables the mobile API (then: account identifier + e-mail, performance submissions, evidence files → re-submit disclosures).
+* **Signing honesty:** CI artifacts without the owner's keystore secrets are debug-signed (internal testing only, never uploadable); iOS artifacts are unsigned Simulator builds. Neither is a store submission.
+
+## 3. Platform policy items
+
+| Topic | Status | Notes |
+|---|---|---|
+| Google Play Developer account | ⛔ owner | registration fee, identity/organisation verification, D-U-N-S for organisations |
+| Apple Developer Program | ⛔ owner | annual membership, organisation enrolment |
+| App Store 4.2 minimum functionality | ⛔ product decision | see `IOS_RELEASE.md` §6 — a placeholder shell is likely to be rejected |
+| Play "closed testing" prerequisite for new personal accounts | 🟡 | plan 14-day closed test with the required tester count if the account is personal |
+| Target API level | ✅ targetSdk 36 (meets the current ≥35 requirement for new apps — verify at upload time) | `android/variables.gradle` |
+| Health/fitness content | ✅ no medical claims; standards shown as DRAFT — NOT OFFICIAL; Provisional vs Verified explained | app shell copy |
+| User-generated content | n/a in v0.1.0 | evidence video review flow exists server-side only |
+| Children | not directed at children; age rating via questionnaires | |
+| Accessibility | shell has focus management, aria-current, 1 h1/view, 320-px layouts (browser-tested) | continue to test with TalkBack/VoiceOver on device |
+| Third-party code attribution | Inter font (OFL 1.1, license file shipped), Capacitor (Apache-2.0) | `BUILD_AND_SETUP.md` §8 |
+
+## 4. Store listing drafts (English; Kreyòl ayisyen / Français to follow the site's localisation)
+
+**Name:** MONTE WO
+**Subtitle (App Store, ≤30):** Strength ranks, honestly earned
+**Short description (Play, ≤80):** Four lifts, nine Discipline Ranks. Track strength and climb the MONTE Climb Scale.
+
+**Full description (draft — all statements true for v0.1.0; adjust when features ship):**
+> MONTE WO by VitaFlex is a strength-training companion built around the MONTE WO Strength Index™. Four independent disciplines — Squat, Bench Press, Deadlift and Biceps Curl — each have their own nine Discipline Ranks, from Debitan to Lejand. There is no combined score and no shortcut: ranks are never transferred between disciplines, and nothing you do except lifting to a MONTE Standard moves you up the MONTE Climb Scale.
+>
+> In this early release you can explore the app foundation: your Dashboard with Discipline Rank cards, the Muscle Character View that maps muscle groups to disciplines, the Exercise Library guides, the Strength Lab calculators (one-rep max, percentages, plates, warm-up, unit converter) and a demo of the Food Scan & Macro Logger. Current MONTE Standards are shown as DRAFT — NOT OFFICIAL while they are under review; no official rank is awarded in this version.
+>
+> Coming later, after review: self-reported performances with Provisional status, MONTE Verified ranks after authorised evidence review, transparent performance history and methodology versions.
+>
+> MONTE WO does not collect personal data in this version and requests no permissions beyond internet access.
+
+**Keywords (App Store, ≤100 chars):** strength,powerlifting,squat,bench,deadlift,curl,one rep max,ranks,fitness,haiti
+**Category:** Health & Fitness · **Price:** Free · **Ads:** none · **In-app purchases:** none
+**Release notes v0.1.0 (draft):** First public foundation: Dashboard, Discipline Rank cards (no awards yet), Muscle Character View, Exercise Library, Strength Lab, demo food logger. Standards are draft; accounts and verification are not yet available.
+
+## 5. Store assets — outstanding
+
+| Asset | Spec | Source | Status |
+|---|---|---|---|
+| App icon | Play 512×512 PNG (no alpha), iOS 1024×1024 PNG (no alpha). **Expo app (`apps/mobile`): done from the approved emblem** — `icon` = `assets/brand-icon.png` (512 px), adaptive icon = `assets/native/adaptive-icon-foreground.png` on `#090C13`, generated per density by `expo prebuild` (the 1024 px App Store icon is upscaled from 512 px; a 1024 px master from the owner would be better). Capacitor shells: launcher icons for all densities (`android/app/src/main/res/mipmap-*`) and `ios/App/App/Assets.xcassets/AppIcon.appiconset` still hold the **Capacitor template icons** | derive from `public/assets/icon.svg` / `icon-512.png` (approved brand) | ⛔ generate with `@capacitor/assets` (`npx @capacitor/assets generate --iconBackgroundColor '#090c13'` from a 1024-px source) — owner approval of the rendering |
+| Splash screen | **Expo app: done** — `expo-splash-screen` plugin, emblem (200 px) on `#090C13`, Android 12+ and iOS. Capacitor shells: Android 12+ splash (icon on `#090c13`), iOS `Splash.imageset` (template images today) | brand emblem | 🟡 (Expo ✅ / Capacitor ⛔) |
+| Feature graphic (Play) | 1024×500 | **draft generated**: `docs/release/store-assets/feature-graphic.html` (approved emblem + Inter, tagline "LIFT. RANK. CLIMB HIGH. / LEVE. KLASE. MONTE WO.", the four disciplines, "standards DRAFT — NOT OFFICIAL"; no invented UI) rendered by `tests/store-assets.mjs` → CI artifact `store-assets/google-play-feature-graphic-1024x500.png` | 🟡 draft — owner review (not viewable from the sandbox); edit the HTML, rerun `npm run store:assets` |
+| Screenshots | Play: ≥2 phone (16:9/9:16, 320–3840 px); App Store: 6.9" and 6.5" iPhone sets (+ iPad if offered) | **drafts generated** by `tests/store-assets.mjs` from the web build of the same app (`public/app/web/`): Welcome, Home, Train, Explore, History, Profile at 1080×1920 (Play), 1320×2868 (6.9") and 1284×2778 (6.5"); no device status bar; CI artifact `store-assets` (30 days; first set: run `41946430845`) | 🟡 drafts — owner review; re-capture on a phone / the Simulator artifact if the stores or the owner require device captures |
+| App icon 1024² | App Store 1024×1024 PNG | `store-assets/app-icon-1024x1024-upscaled-from-512.png` — upscaled from the approved 512 px emblem | 🟡 usable but soft — a 1024 px master from the owner is better |
+| Promo video | optional | — | — |
+
+## 6. Security hygiene (verified in repo)
+
+* No keystore, certificate, provisioning profile, `.env`, service-account or API key is tracked (`tests/native.test.js` scans `git ls-files` and workflow files; `.gitignore` blocks `*.jks`, `*.keystore`, `*.p12`, `*.mobileprovision`, `*.cer`, `.env*`).
+* Signing is injected only through environment variables / GitHub secrets at build time.
+* Private evidence never enters the bundle (`strength/admin/` excluded; evidence lives only in the private R2 bucket, reviewer-gated).

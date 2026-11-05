@@ -1,0 +1,30 @@
+{
+  "id": "/dashboard/",
+  "name": "MONTE WO",
+  "short_name": "MONTE WO",
+  "description": "MONTE WO app shell: four independent discipline cards, a muscle character view and a demo food scan and macro logger. No athlete data, official ranks or integrations are connected yet.",
+  "start_url": "/dashboard/",
+  "scope": "/dashboard/",
+  "display": "standalone",
+  "background_color": "#090c13",
+  "theme_color": "#090c13",
+  "categories": [
+    "fitness",
+    "health",
+    "sports"
+  ],
+  "icons": [
+    {
+      "src": "/assets/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/assets/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

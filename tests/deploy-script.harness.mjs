@@ -26,7 +26,7 @@ function makeRepoCopy() {
   mkdirSync(join(dir, 'scripts'), { recursive: true });
   cpSync(join(ROOT, 'wrangler.toml'), join(dir, 'wrangler.toml'));
   cpSync(join(ROOT, 'intelligence-worker/wrangler.toml'), join(dir, 'intelligence-worker/wrangler.toml'));
-  for (const f of ['0003_intelligence.sql', '0004_intelligence_ops.sql', '0005_intelligence_titan.sql', '0006_operator_case_normalization.sql']) cpSync(join(ROOT, 'migrations', f), join(dir, 'migrations', f));
+  for (const f of ['0003_intelligence.sql', '0004_intelligence_ops.sql', '0005_intelligence_titan.sql', '0006_operator_case_normalization.sql', '0008_agent_api.sql']) cpSync(join(ROOT, 'migrations', f), join(dir, 'migrations', f));
   cpSync(join(ROOT, 'scripts/deploy-intelligence.mjs'), join(dir, 'scripts/deploy-intelligence.mjs'));
   if (existsSync(join(ROOT, 'deploy.config.json'))) cpSync(join(ROOT, 'deploy.config.json'), join(dir, 'deploy.config.json'));
   // minimal but REAL files the preflight validates (paths + parseability)
@@ -39,6 +39,7 @@ function makeRepoCopy() {
   writeFileSync(join(dir, 'public/intelligence/room.js'), '// room');
   writeFileSync(join(dir, 'functions/api/[[route]].js'), 'export const onRequest = () => new Response();');
   writeFileSync(join(dir, 'server/intelligence/api.js'), 'export const handleIntelligence = () => new Response();');
+  writeFileSync(join(dir, 'server/agent.js'), 'export const handleAgent = () => new Response();');
   writeFileSync(join(dir, 'intelligence-worker/src/index.js'), 'export default {}');
   writeFileSync(join(dir, 'package.json'), JSON.stringify({ name: 'test', scripts: { build: 'node -e "console.log(\'build ok\')"' } }, null, 2));
   return dir;
@@ -85,6 +86,8 @@ async function scenarioTest(name, fn) {
 }
 
 const ACCESS = ['--access-issuer', 'https://vitaflex.cloudflareaccess.com', '--access-aud', 'aud-1234'];
+// The committed wrangler.toml carries commented examples (DB, AGENT_DB, …); only the auto-written block counts.
+const prodBlock = toml => toml.slice(toml.indexOf('# >>> intelligence-production'), toml.indexOf('# <<< intelligence-production'));
 
 await scenarioTest('happy path: existing DB, everything deployed, fail-closed verify', async dir => {
   await withLocalOrigin((req, res) => {
@@ -106,6 +109,81 @@ await scenarioTest('happy path: existing DB, everything deployed, fail-closed ve
     assert.match(log, /INSERT OR REPLACE INTO intel_operators/, 'operator grant executed');
     assert.match(r.stdout, /0006_operator_case_normalization\.sql already applied/, 'settings marker gates 0006');
     assert.ok(!/--file.{0,12}migrations\/0006/.test(log), '0006 never re-applied once its marker exists');
+    // Agent API is strictly opt-in: without --with-agent-api nothing about it reaches Cloudflare.
+    assert.ok(!prodBlock(toml).includes('AGENT_DB') && !prodBlock(toml).includes('AGENT_API_ENABLED'), 'no Agent API binding/flag by default');
+    assert.ok(!/0008_agent_api/.test(log), '0008 never applied by default');
+    assert.ok(!/\/api\/agent\//.test(r.stdout), 'no Agent API verification by default');
+    assert.match(r.stdout, /Agent API NOT enabled \(default\)/, 'summary says the Agent API stayed off');
+  });
+});
+
+await scenarioTest('--with-agent-api: AGENT_DB bound to the intelligence DB, 0008 applied once (gated), flag set, whoami verified fail-closed', async dir => {
+  await withLocalOrigin((req, res) => { res.writeHead(req.url.includes('/api/') ? 401 : 200); res.end(''); }, async origin => {
+    const r = await runDeploy(dir, [...ACCESS, '--with-agent-api'], 'happy', origin);
+    assert.equal(r.status, 0, 'exit 0:\n' + r.stdout + r.stderr);
+    const toml = readFileSync(join(dir, 'wrangler.toml'), 'utf8');
+    const ids = [...toml.matchAll(/binding = "(INTEL_DB|AGENT_DB)"\ndatabase_name = "monte-wo-intelligence"\ndatabase_id = "([^"]+)"/g)].map(m => [m[1], m[2]]);
+    assert.deepEqual(ids, [['INTEL_DB', 'aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee'], ['AGENT_DB', 'aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee']], 'AGENT_DB is the same database as INTEL_DB, never the waitlist one');
+    assert.match(toml, /^AGENT_API_ENABLED = "true"$/m, 'flag written inside the [vars] of the marked block');
+    assert.ok(!/binding = "DB"/.test(prodBlock(toml)), 'waitlist binding untouched (not requested)');
+    const log = readFileSync(join(dir, 'fake.log'), 'utf8');
+    const files = [...log.matchAll(/"--file","migrations\/(000\d_[a-z_]+\.sql)"/g)].map(m => m[1]);
+    assert.deepEqual(files, ['0008_agent_api.sql'], 'only the Agent API migration applied (intelligence ones already present)');
+    assert.match(log, /"d1","execute","monte-wo-intelligence","--remote","--file","migrations\/0008_agent_api\.sql"/, 'applied with d1 execute --file to the intelligence DB');
+    assert.match(r.stdout, /\/api\/agent\/whoami -> 401/, 'Agent API verified fail-closed after deploy');
+    assert.match(r.stdout, /Agent API ENABLED on this deployment/, 'summary tells the owner how to issue least-privilege keys');
+    assert.match(r.stdout, /scripts\/agent-key\.mjs create --name <AGENT> --scopes status:read,catalog:read,kv:read,kv:write/, 'no wildcard or admin role suggested');
+    assert.ok(!/--scopes "?\*/.test(r.stdout) && !/--role admin/.test(r.stdout), 'never suggests * scopes or an admin principal');
+  });
+});
+
+await scenarioTest('--with-agent-api re-run: mw_agent_keys present → 0008 not re-applied, binding still written', async dir => {
+  await withLocalOrigin((req, res) => { res.writeHead(req.url.includes('/api/') ? 401 : 200); res.end(''); }, async origin => {
+    const r = await runDeploy(dir, [...ACCESS, '--with-agent-api'], 'agentdone', origin);
+    assert.equal(r.status, 0, 'exit 0:\n' + r.stdout + r.stderr);
+    assert.match(r.stdout, /0008_agent_api\.sql already applied \(mw_agent_keys present\)/);
+    const log = readFileSync(join(dir, 'fake.log'), 'utf8');
+    assert.ok(!/--file.{0,12}migrations\/0008/.test(log), '0008 never re-applied');
+    assert.match(readFileSync(join(dir, 'wrangler.toml'), 'utf8'), /binding = "AGENT_DB"/, 'binding re-written idempotently');
+  });
+});
+
+await scenarioTest('config with_agent_api: true enables it with zero flags (what the GitHub workflow runs)', async dir => {
+  writeFileSync(join(dir, 'deploy.config.json'), JSON.stringify({
+    project_name: 'vitaflex-monte-wo-live', enable_worker: false, with_waitlist: false, with_agent_api: true,
+    account_id: 'cafebabe-0000-1111-2222-333333333333', access_issuer: 'https://cfg.cloudflareaccess.com', access_aud: 'cfg-aud'
+  }));
+  await withLocalOrigin((req, res) => { res.writeHead(req.url.includes('/api/') ? 401 : 200); res.end(''); }, async origin => {
+    const r = await runDeploy(dir, ['--use-config'], 'happy', origin);
+    assert.equal(r.status, 0, 'exit 0:\n' + r.stdout + r.stderr);
+    const toml = readFileSync(join(dir, 'wrangler.toml'), 'utf8');
+    assert.match(toml, /binding = "AGENT_DB"/); assert.match(toml, /^AGENT_API_ENABLED = "true"$/m);
+    assert.match(readFileSync(join(dir, 'fake.log'), 'utf8'), /0008_agent_api\.sql/, 'migration applied from config');
+  });
+});
+
+await scenarioTest('--with-agent-api then a deploy WITHOUT it: the block drops AGENT_DB + flag again (config is the source of truth)', async dir => {
+  await withLocalOrigin((req, res) => { res.writeHead(req.url.includes('/api/') ? 401 : 200); res.end(''); }, async origin => {
+    let r = await runDeploy(dir, [...ACCESS, '--with-agent-api'], 'agentdone', origin);
+    assert.equal(r.status, 0, 'first run exit 0:\n' + r.stdout + r.stderr);
+    r = await runDeploy(dir, [...ACCESS], 'agentdone', origin);
+    assert.equal(r.status, 0, 'second run exit 0:\n' + r.stdout + r.stderr);
+    const toml = readFileSync(join(dir, 'wrangler.toml'), 'utf8');
+    assert.ok(!prodBlock(toml).includes('AGENT_DB') && !prodBlock(toml).includes('AGENT_API_ENABLED'), 'Agent API binding and flag removed on the next deploy without the option');
+    assert.match(toml, /binding = "INTEL_DB"/, 'intelligence binding kept');
+    assert.equal((toml.match(/intelligence-production \(auto-written/g) || []).length, 1, 'exactly one marked block');
+  });
+});
+
+await scenarioTest('SECURITY: with --with-agent-api, an unauthenticated 200 from /api/agent/whoami aborts the deploy', async dir => {
+  await withLocalOrigin((req, res) => {
+    if (req.url.startsWith('/api/agent/')) { res.writeHead(200, { 'content-type': 'application/json' }); res.end('{"key":{"name":"leak"}}'); }
+    else if (req.url.startsWith('/api/')) { res.writeHead(401); res.end(''); }
+    else { res.writeHead(200); res.end(''); }
+  }, async origin => {
+    const r = await runDeploy(dir, [...ACCESS, '--with-agent-api'], 'happy', origin);
+    assert.equal(r.status, 1, 'must abort:\n' + r.stdout + r.stderr);
+    assert.match(r.stdout + r.stderr, /SECURITY: the Agent API answered 200 WITHOUT authentication/);
   });
 });
 

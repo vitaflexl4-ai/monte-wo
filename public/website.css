@@ -24,3 +24,8 @@
 .guide-media.poster-media>img.workout-poster-img{display:block;width:100%;height:auto;max-height:500px;object-fit:contain;margin:0 auto}
 .guide-media.poster-media>span{font-size:11px;letter-spacing:.12em;color:var(--muted,#a0aec0)}
 .guide-media.poster-media>small{color:var(--muted,#a0aec0)}
+/* Web app link in the header: visible on every width, styled as the one action that opens the app. */
+.site-header nav .foundation-nav-app{color:#aad9ff;border:1px solid #304b66;border-radius:999px;padding:6px 12px}
+.site-header nav .foundation-nav-app:hover,.site-header nav .foundation-nav-app:focus-visible{border-color:#4fa3ff;color:#fff}
+@media(max-width:900px){.site-header nav .foundation-nav-app{display:inline-block;margin-top:8px}}
+.hero-buttons .button-app{background:transparent;color:#aad9ff;border:1px solid #304b66}.hero-buttons .button-app:hover{border-color:#4fa3ff;color:#fff}

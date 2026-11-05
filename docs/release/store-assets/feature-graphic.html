@@ -1,0 +1,45 @@
+<!doctype html>
+<!--
+  MONTE WO — Google Play feature graphic (1024 x 500). Rendered to PNG by tests/store-assets.mjs (Playwright,
+  CI artifact "store-assets"). Only approved brand material is used: the emblem (public/assets/monte-wo-emblem.webp)
+  and the Inter font files shipped with the site. Same composition language as public/assets/monte-wo-social.jpg.
+  Open it in a browser at exactly 1024 x 500 to preview; no build step edits it.
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>MONTE WO — feature graphic 1024×500</title>
+<style>
+  @font-face { font-family: "Inter"; font-weight: 900; src: url("/assets/inter-900.ttf") format("truetype"); }
+  @font-face { font-family: "Inter"; font-weight: 800; src: url("/assets/inter-800.ttf") format("truetype"); }
+  @font-face { font-family: "Inter"; font-weight: 600; src: url("/assets/inter-600.ttf") format("truetype"); }
+  @font-face { font-family: "Inter"; font-weight: 400; src: url("/assets/inter-400.ttf") format("truetype"); }
+  html, body { margin: 0; padding: 0; background: #090c13; }
+  body { width: 1024px; height: 500px; overflow: hidden; font-family: Inter, system-ui, sans-serif; color: #eef3fb; position: relative; }
+  .grid { position: absolute; inset: 0; left: 600px;
+    background-image: linear-gradient(rgba(70, 110, 170, .16) 1px, transparent 1px), linear-gradient(90deg, rgba(70, 110, 170, .16) 1px, transparent 1px);
+    background-size: 42px 42px; mask-image: linear-gradient(90deg, transparent, #000 25%); -webkit-mask-image: linear-gradient(90deg, transparent, #000 25%); }
+  .glow { position: absolute; width: 520px; height: 520px; right: -120px; top: -160px; border-radius: 50%;
+    background: radial-gradient(closest-side, rgba(0, 140, 255, .22), transparent 70%); }
+  .emblem { position: absolute; left: 72px; top: 54px; width: 190px; height: auto; }
+  .word { position: absolute; left: 72px; top: 196px; font-weight: 900; font-size: 92px; letter-spacing: -2px; line-height: 1; }
+  .tag { position: absolute; left: 74px; top: 300px; font-weight: 800; font-size: 32px; color: #4da3ff; letter-spacing: .5px; }
+  .ht { position: absolute; left: 74px; top: 346px; font-weight: 600; font-size: 22px; color: #a9b8cf; letter-spacing: .4px; }
+  .rule { position: absolute; left: 74px; right: 72px; top: 400px; height: 2px; background: linear-gradient(90deg, #1f5fa8, rgba(31, 95, 168, .05)); }
+  .foot { position: absolute; left: 74px; top: 418px; font-weight: 600; font-size: 17px; color: #c5d1e4; letter-spacing: 1px; }
+  .foot b { color: #eef3fb; }
+  .draft { position: absolute; left: 74px; top: 452px; font-weight: 400; font-size: 14px; color: #8a9ab3; letter-spacing: .3px; }
+</style>
+</head>
+<body>
+  <div class="grid"></div>
+  <div class="glow"></div>
+  <img class="emblem" src="/assets/monte-wo-emblem.webp" alt="">
+  <div class="word">MONTE WO</div>
+  <div class="tag">LIFT. RANK. CLIMB HIGH.</div>
+  <div class="ht">LEVE. KLASE. MONTE WO.</div>
+  <div class="rule"></div>
+  <div class="foot"><b>SQUAT</b> / <b>BENCH PRESS</b> / <b>DEADLIFT</b> / <b>BICEPS CURL</b> — 9 DISCIPLINE RANKS EACH</div>
+  <div class="draft">MONTE WO Strength Index™ · standards DRAFT — NOT OFFICIAL · Managed by VitaFlex Business Group</div>
+</body>
+</html>

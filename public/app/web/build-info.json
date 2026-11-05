@@ -1,0 +1,12 @@
+{
+  "app": "MONTE WO",
+  "source": "apps/mobile (Expo / React Native; same codebase as the Android and iOS builds)",
+  "baseUrl": "/app/web/",
+  "appVersion": "1.0.0",
+  "expo": "~57.0.30",
+  "build": "122f962881f462df",
+  "bundles": [
+    "_expo/static/js/web/index-122f962881f462dff0821383eeb4e357.js"
+  ],
+  "generatedBy": "scripts/build_webapp.py — do not edit; rebuild with `npm run build:webapp`"
+}

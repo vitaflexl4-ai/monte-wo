@@ -37,6 +37,7 @@ if(signup){
  function unavailable(text){message(text+' You can contact Montewo@vitaflexbusinessgroup.com for help.','error');submit.disabled=true}
  const errors={email:'Enter a valid email address.',consent:'Please read the Privacy Policy and check the consent box.',verification:'Please complete the security check again.','verification-unavailable':'The security check is temporarily unavailable. Please try later.','rate-limit':'Too many requests. Please try again after the current hour.','storage-unavailable':'Your signup could not be saved. Please try later.',unavailable:'Signup is not configured yet. Please try later.',origin:'This form must be submitted from the Monte Wo website.',blocked:'This signup could not be accepted.',invalid:'Check your information and try again.'};
  async function loadConfig(){
+  if(window.__MW_NATIVE){unavailable('Waitlist signup is not available inside the app yet — please use the website. Nothing has been submitted.');return}
   if(!navigator.onLine){unavailable('You’re offline. A waitlist signup requires internet. Nothing has been submitted.');return}
   try{
    const res=await fetch('/api/waitlist/config',{cache:'no-store',signal:AbortSignal.timeout(10000)});if(!res.ok)throw new Error('config');config=await res.json();
@@ -71,6 +72,6 @@ if(signup){
  window.addEventListener('online',()=>{if(!config?.available)loadConfig();else{ready();message('You’re back online. Complete the form to join.')}});
  loadConfig();
 }
-if('serviceWorker' in navigator)window.addEventListener('load',()=>{navigator.serviceWorker.register('/sw.js').catch(()=>{})});
+if('serviceWorker' in navigator&&!window.__MW_NATIVE)window.addEventListener('load',()=>{navigator.serviceWorker.register('/sw.js').catch(()=>{})});
 
 applyRankVisuals();

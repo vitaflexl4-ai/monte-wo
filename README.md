@@ -4,7 +4,44 @@
 **LEVE. KLASE. MONTE WO. / LIFT. RANK. CLIMB HIGH.**
 Managed by **VitaFlex Business Group** · Montewo@vitaflexbusinessgroup.com
 
-## Latest change — Website Step 2 only
+## Latest change — the app on every platform (web + Android APK/AAB + iOS), not store-ready
+
+**The app** is `apps/mobile` (Expo / React Native). One codebase, three targets: the web app at **`/app/web/`**
+(`npm run build:webapp` → committed `public/app/web/`), an **Android APK + Google Play `.aab`** and an **iOS build**
+produced by GitHub Actions — Actions → "App — Android (APK + AAB)" / "App — iOS (Simulator build, unsigned)" → *Run
+workflow*, or push an `arena/**` commit containing `[build-app]`. Without the owner's keystore secrets the Android
+artifacts are debug-signed (installable for testing, not Play-uploadable); the iOS artifact is an unsigned Simulator
+build (device/TestFlight need the owner's Apple account). **Android test build (pre-release, debug-signed):**
+`https://github.com/vitaflexl4-ai/monte-wo/releases/tag/app-android-v1.0.0-3` — also linked with its SHA-256 from
+`/downloads/`; a commit containing `[build-app] [publish-apk]` publishes the next one. Not an official release, not
+Google Play. Details: `docs/release/ANDROID_RELEASE.md` §0, `docs/release/IOS_RELEASE.md` §0, evidence in
+`docs/release/RELEASE_STATUS.md` §2.
+
+Earlier packaging (kept, reversible, pending the owner's decision — `docs/release/RELEASE_STATUS.md` §4 item 13):
+the website's `/dashboard/` shell wrapped by **Capacitor 8** native shells: `capacitor.config.json` (`com.vitaflex.montewo`, placeholder ID pending owner confirmation), `android/`, `ios/`. `npm run build:native` derives the packaged bundle (`build/native/`, root = the `/dashboard/` app shell, links rewritten for Capacitor's local server) and `npx cap sync` copies it into both projects. Native binaries have **not** been compiled yet (needs JDK/Android SDK or macOS/Xcode — manual GitHub Actions workflows are provided); the API is deliberately not reachable from the shells until the owner approves the connectivity/auth design. Read `docs/release/RELEASE_STATUS.md` first, then `ARCHITECTURE.md`, `BUILD_AND_SETUP.md`, `WEB_DEPLOYMENT.md`, `ANDROID_RELEASE.md`, `IOS_RELEASE.md`, `PRIVACY_AND_STORE_CHECKLIST.md` (all in `docs/release/`). Env reference: `.env.example` (placeholders only).
+
+```sh
+npm run build:native && npm run preview:native   # packaged-app preview on :3000, Capacitor routing emulated
+npm run test:native                              # config, bundle, secrets hygiene, workflows (part of npm test)
+npm run test:native-browser                      # packaged-app workflows in a browser (preview must be running)
+```
+
+## Preserved — App Foundation Step 1
+
+`/dashboard/` is the MONTE WO **app shell** (not a website page): sidebar navigation on desktop, a native-style bottom tab bar + "More" drawer on phones and tablets (Dashboard, My Profile, Performance, Standards, Rankings, Exercise Library, Nutrition, Verification, Settings), an installable standalone manifest, four independent **Discipline Rank** cards, a **Muscle Character View** (interactive Chest / Core / Arms / Legs silhouette) and a **Food Scan & Macro Logger** demo with a camera-viewfinder mockup. It runs on local UI state only — **no accounts, athlete data, official ranks, nutrition data, camera access, backend, storage or external API**. Every unconnected element is labelled NOT CONNECTED / DEMO / PLACEHOLDER · NOT IMPLEMENTED IN STEP 1, and the shell is excluded from the public route list, navigation, sitemap and search indexing.
+
+Source of truth: `content/dashboard/en.json` + `scripts/build_dashboard.py` (runs last in `npm run build`; never edit `public/dashboard/index.html` by hand), `public/dashboard.css`, `public/dashboard.js`.
+
+```sh
+npm run build                     # ends with build_dashboard.py
+npm run test:dashboard            # static checks (also part of npm test)
+npm run dev                       # then open /dashboard/
+npm run test:dashboard-browser    # Playwright behaviour + responsive suite against :8080
+```
+
+See [`docs/dashboard/STEP-1-REPORT.md`](docs/dashboard/STEP-1-REPORT.md) for the executed tests, screenshots (`docs/dashboard/screenshots/`), limitations and open decisions. Step 2 (real data, accounts, verification, nutrition sources) is not started and needs explicit approval.
+
+## Preserved — Website Step 2
 
 The public site now has consistent navigation, one Free Tools entry point, a non-awarding app concept without pretend athlete data, a four-discipline draft-variation guide, accessible mobile navigation, page-specific sharing metadata and a real 404 page. **No app, account system, dashboard or ranking backend was added or expanded in this phase.**
 
@@ -123,7 +160,7 @@ Outputs `../Monte-Wo-Strength-Index.html` and `../Monte-Wo-Strength-Index-Cloudf
 - `public/strength.js`, `public/strength.css`: athlete/admin clients and accessible responsive presentation.
 - `content/exercises.json`: exercise library; see `docs/EXERCISE-LIBRARY.md` before adding packages.
 
-Never edit generated HTML independently. `npm run build` rebuilds the company pages, tools, library, then the Strength Index. Only build metadata after source changes; image extraction is separately `python3 scripts/build_ranks.py --assets`.
+Never edit generated HTML independently. `npm run build` rebuilds the company pages, tools, library, then the Strength Index. Only build metadata after source changes; image extraction is separately `python3 scripts/build_ranks.py --assets`. The web app at `/app/web/` (`public/app/web/`) is the Expo app in `apps/mobile/` exported for the browser: regenerate it with `npm --prefix apps/mobile ci && npm run build:webapp` after any `apps/mobile` change and commit the result (CI re-exports and diffs it).
 
 ## Governance and deployment
 

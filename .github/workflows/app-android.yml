@@ -1,0 +1,341 @@
+# MONTE WO — Android build of THE APP (apps/mobile, Expo / React Native — the same codebase as the web app at
+# /app/web/ and the iOS build). Produces an installable APK and a Google Play .aab as workflow artifacts.
+#
+# Nothing in this file embeds a secret and nothing is uploaded to Google Play. Signing:
+#   - with the four repository secrets below the release build type is signed with the owner's upload
+#     keystore (Play-uploadable when it is the key registered for the app):
+#       ANDROID_KEYSTORE_BASE64   base64 of the upload keystore (.jks)
+#       ANDROID_KEYSTORE_PASSWORD keystore password
+#       ANDROID_KEY_ALIAS         key alias inside the keystore
+#       ANDROID_KEY_PASSWORD      key password
+#   - without them the build keeps Expo's default: signed with the public debug keystore -> installable on a
+#     phone for INTERNAL TESTING ONLY, rejected by Google Play, and not updatable in place by a Play build.
+#
+# The native project (apps/mobile/android/) is gitignored and regenerated here with `expo prebuild`;
+# app identity, icon, permissions and version come from apps/mobile/app.config.ts.
+name: App — Android (APK + AAB)
+
+on:
+  # Manual run from the Actions tab, or a push to an arena/* working branch whose commit message contains
+  # "[build-app]" (the agent sandbox cannot dispatch workflows and cannot compile Android itself).
+  # "[publish-apk]" in the same commit message (or the publish_release input) additionally publishes the APK
+  # as a GitHub pre-release: tag app-android-v<version>-<versionCode>, assets = APK + build-info.json + SHA256SUMS.
+  push:
+    branches: ["arena/**"]
+  workflow_dispatch:
+    inputs:
+      version_name:
+        description: "Marketing version (MAJOR.MINOR.PATCH). Empty = app.config.ts default."
+        required: false
+        default: ""
+      version_code:
+        description: "Google Play versionCode (positive integer, must only increase). Empty = this run number."
+        required: false
+        default: ""
+      publish_release:
+        description: "Also publish the APK as a GitHub pre-release (public direct download, labelled as a test build)"
+        type: boolean
+        required: false
+        default: false
+
+# The build job only reads the repository. Only the (opt-in) publish job gets contents: write, to create the
+# pre-release; it never touches branches.
+permissions:
+  contents: read
+
+# Only opted-in runs share a cancel group: a push WITHOUT [build-app] creates a skipped run that must not cancel
+# a build still in progress (run 41946430864 finished every step and was then cancelled by such a skipped run).
+concurrency:
+  group: app-android-${{ github.ref }}-${{ github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[build-app]') }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Build APK + AAB (expo prebuild + Gradle)
+    if: github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[build-app]')
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    outputs:
+      version: ${{ steps.outputs.outputs.version }}
+      code: ${{ env.MONTEWO_ANDROID_VERSION_CODE }}
+      signer: ${{ steps.verify.outputs.signer }}
+      fingerprint: ${{ steps.verify.outputs.fingerprint }}
+      mode: ${{ steps.signing.outputs.mode }}
+    defaults:
+      run:
+        working-directory: apps/mobile
+    env:
+      CI: 1
+      EXPO_NO_TELEMETRY: 1
+      MONTEWO_APP_VERSION: ${{ inputs.version_name }}
+      MONTEWO_ANDROID_VERSION_CODE: ${{ inputs.version_code || github.run_number }}
+    steps:
+      - name: Check out
+        uses: actions/checkout@v5
+
+      - name: Node 22
+        uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: apps/mobile/package-lock.json
+
+      - name: JDK 17 (React Native 0.86 / AGP 8.12 / Gradle 9)
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: Android SDK (preinstalled on GitHub Ubuntu runners) — accept licenses, ensure packages
+        run: |
+          SDK="${ANDROID_HOME:-${ANDROID_SDK_ROOT:-/usr/local/lib/android/sdk}}"
+          echo "ANDROID_HOME=$SDK" >> "$GITHUB_ENV"
+          echo "ANDROID_SDK_ROOT=$SDK" >> "$GITHUB_ENV"
+          SDKMANAGER="$SDK/cmdline-tools/latest/bin/sdkmanager"
+          test -x "$SDKMANAGER" || SDKMANAGER="$(ls -d "$SDK"/cmdline-tools/*/bin/sdkmanager | head -n1)"
+          yes | "$SDKMANAGER" --licenses > /dev/null 2>&1 || true
+          "$SDKMANAGER" --install "platforms;android-36" "build-tools;36.0.0" "platform-tools" "ndk;27.1.12297006" "cmake;3.22.1" > /dev/null
+          echo "$SDK/build-tools/36.0.0" >> "$GITHUB_PATH"
+
+      - name: Gradle caches
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: gradle-app-android-${{ runner.os }}-${{ hashFiles('apps/mobile/package-lock.json') }}
+          restore-keys: |
+            gradle-app-android-${{ runner.os }}-
+
+      - name: Install app dependencies (lockfile)
+        run: npm ci
+
+      - name: Typecheck + app test suites
+        run: |
+          npx tsc --noEmit
+          node --test tests/*.test.cjs
+          node scripts/make-native-icons.cjs --check
+
+      - name: Build security gate (BLOCKING — reviewed internal-testing exception, apps/mobile/security/reviewed-advisories.json)
+        env:
+          MONTEWO_BUILD_CHANNEL: internal-ci
+          MONTEWO_INTERNAL_APK_RISK_ACCEPTED: "true"
+        run: node scripts/check-build-security.cjs
+
+      - name: Generate the native project (expo prebuild)
+        run: |
+          npx expo prebuild --platform android --no-install --clean
+          echo "sdk.dir=$ANDROID_HOME" > android/local.properties
+          echo "## Generated Android project" >> "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+          grep -E "applicationId|versionCode|versionName|namespace" android/app/build.gradle | sed 's/^ *//' >> "$GITHUB_STEP_SUMMARY"
+          grep -E "uses-permission" android/app/src/main/AndroidManifest.xml | sed 's/^ *//' >> "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+          grep -q "versionCode $MONTEWO_ANDROID_VERSION_CODE$" android/app/build.gradle || { echo "::error title=versionCode mismatch::expected versionCode $MONTEWO_ANDROID_VERSION_CODE in android/app/build.gradle"; exit 1; }
+          grep -E 'uses-permission' android/app/src/main/AndroidManifest.xml | grep -v 'tools:node="remove"' | grep -vq 'android.permission.INTERNET' && { echo "::error title=Unexpected Android permission::the manifest declares more than INTERNET — review app.config.ts blockedPermissions"; exit 1; } || true
+
+      - name: Prepare signing material (only if secrets exist)
+        env:
+          ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+        run: |
+          if [ -n "$ANDROID_KEYSTORE_BASE64" ]; then
+            echo "$ANDROID_KEYSTORE_BASE64" | base64 -d > "$RUNNER_TEMP/upload-keystore.jks"
+            echo "ANDROID_KEYSTORE_PATH=$RUNNER_TEMP/upload-keystore.jks" >> "$GITHUB_ENV"
+            echo "Upload keystore provided."
+          else
+            echo "No ANDROID_KEYSTORE_BASE64 secret — the build will be debug-signed (internal testing only)."
+          fi
+
+      - name: Configure release signing
+        id: signing
+        env:
+          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        run: node scripts/configure-android-signing.cjs
+
+      - name: Gradle assembleRelease + bundleRelease
+        working-directory: apps/mobile/android
+        env:
+          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+          GRADLE_OPTS: -Dorg.gradle.daemon=false
+        run: |
+          chmod +x gradlew
+          # Full log to a file; only task/status lines stream to the job output (the full log is uploaded on failure).
+          ./gradlew --no-daemon --stacktrace :app:assembleRelease :app:bundleRelease 2>&1 | tee "$RUNNER_TEMP/gradle.log" | grep --line-buffered -E "^> Task|BUILD|FAILURE|What went wrong|^e: |error:" || true
+          STATUS="${PIPESTATUS[0]}"
+          if [ "$STATUS" != "0" ]; then
+            echo "::error title=Gradle build failed::exit $STATUS — the next annotations are the last error lines of the Gradle log (full log in the gradle-log artifact)"
+            grep -nE "^e: |error:|FAILURE|What went wrong|Exception|Caused by" "$RUNNER_TEMP/gradle.log" | tail -n 8 | while IFS= read -r line; do echo "::error title=Gradle::${line:0:900}"; done
+            tail -n 60 "$RUNNER_TEMP/gradle.log"
+            exit "$STATUS"
+          fi
+
+      - name: Keep the Gradle log (failures only)
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: gradle-log
+          path: ${{ runner.temp }}/gradle.log
+          if-no-files-found: ignore
+          retention-days: 7
+
+      - name: Verify outputs and signatures
+        id: verify
+        run: |
+          APK=android/app/build/outputs/apk/release/app-release.apk
+          AAB=android/app/build/outputs/bundle/release/app-release.aab
+          ls -la "$APK" "$AAB"
+          apksigner verify --print-certs "$APK" > "$RUNNER_TEMP/apk-certs.txt"
+          cat "$RUNNER_TEMP/apk-certs.txt"
+          if grep -q "CN=Android Debug" "$RUNNER_TEMP/apk-certs.txt"; then
+            SIGNER="debug keystore (internal testing only — NOT Play-uploadable)"
+            [ "${{ steps.signing.outputs.mode }}" = "debug-keystore" ] || { echo "::error title=Signing mismatch::secrets were configured but the APK is debug-signed"; exit 1; }
+          else
+            SIGNER="upload keystore from repository secrets"
+            [ "${{ steps.signing.outputs.mode }}" = "upload-keystore" ] || { echo "::error title=Signing mismatch::unexpected signer"; exit 1; }
+          fi
+          jarsigner -verify "$AAB" > /dev/null && echo "AAB jar signature verified."
+          echo "## Permissions in the built APK (merged manifest — what Google Play will show)" >> "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+          aapt2 dump permissions "$APK" | tee -a "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+          echo "signer=$SIGNER" >> "$GITHUB_OUTPUT"
+          echo "fingerprint=$(grep -m1 'SHA-256 digest' "$RUNNER_TEMP/apk-certs.txt" | sed 's/.*: //')" >> "$GITHUB_OUTPUT"
+
+      - name: Name the outputs and write build-info.json
+        id: outputs
+        run: |
+          VERSION="$(grep -oE 'versionName "[0-9]+\.[0-9]+\.[0-9]+"' android/app/build.gradle | grep -oE '[0-9]+\.[0-9]+\.[0-9]+')"
+          test -n "$VERSION" || { echo "::error title=versionName not found::android/app/build.gradle has no versionName"; exit 1; }
+          CODE="$MONTEWO_ANDROID_VERSION_CODE"
+          SHA="${GITHUB_SHA::7}"
+          BASE="monte-wo-${VERSION}-${CODE}-${SHA}"
+          mkdir -p dist
+          cp android/app/build/outputs/apk/release/app-release.apk "dist/${BASE}.apk"
+          cp android/app/build/outputs/bundle/release/app-release.aab "dist/${BASE}.aab"
+          node -e '
+            const fs = require("fs");
+            const info = {
+              app: "MONTE WO", source: "apps/mobile (Expo / React Native)", applicationId: "com.vitaflex.montewovitaflex",
+              versionName: process.argv[1], versionCode: Number(process.argv[2]), commit: process.env.GITHUB_SHA,
+              workflowRun: `${process.env.GITHUB_SERVER_URL}/${process.env.GITHUB_REPOSITORY}/actions/runs/${process.env.GITHUB_RUN_ID}`,
+              signing: process.argv[3], signerSha256: process.argv[4],
+              playUploadable: process.argv[3].startsWith("upload keystore"),
+              note: "Debug-signed builds are for internal testing only: Google Play rejects them and a Play-signed build cannot update them in place (uninstall first)."
+            };
+            fs.writeFileSync("dist/build-info.json", JSON.stringify(info, null, 2) + "\n");
+          ' "$VERSION" "$CODE" "${{ steps.verify.outputs.signer }}" "${{ steps.verify.outputs.fingerprint }}"
+          cat dist/build-info.json
+          echo "base=$BASE" >> "$GITHUB_OUTPUT"
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          {
+            echo "## Android build"
+            echo "- APK / AAB: \`${BASE}.apk\` / \`${BASE}.aab\` (artifacts below)"
+            echo "- versionName \`$VERSION\`, versionCode \`$CODE\`, commit \`$SHA\`"
+            echo "- Signed with: **${{ steps.verify.outputs.signer }}**"
+            echo "- Install the APK on a phone: download the APK artifact, unzip it on the phone (Files app), open the .apk and allow \"install unknown apps\" for the browser/Files app once. Use \`adb install -r ${BASE}.apk\` from a computer."
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: monte-wo-android-apk-${{ steps.outputs.outputs.version }}-${{ env.MONTEWO_ANDROID_VERSION_CODE }}
+          path: |
+            apps/mobile/dist/*.apk
+            apps/mobile/dist/build-info.json
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Upload AAB artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: monte-wo-android-aab-${{ steps.outputs.outputs.version }}-${{ env.MONTEWO_ANDROID_VERSION_CODE }}
+          path: |
+            apps/mobile/dist/*.aab
+            apps/mobile/dist/build-info.json
+          if-no-files-found: error
+          retention-days: 30
+
+  publish:
+    name: Publish the APK as a GitHub pre-release (opt-in)
+    needs: build
+    if: needs.build.result == 'success' && (inputs.publish_release == true || contains(github.event.head_commit.message, '[publish-apk]'))
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: write
+    env:
+      GH_TOKEN: ${{ github.token }}
+      GH_REPO: ${{ github.repository }}
+      VERSION: ${{ needs.build.outputs.version }}
+      CODE: ${{ needs.build.outputs.code }}
+      SIGNER: ${{ needs.build.outputs.signer }}
+      FINGERPRINT: ${{ needs.build.outputs.fingerprint }}
+      SIGNING_MODE: ${{ needs.build.outputs.mode }}
+    steps:
+      - name: Download the APK artifact of this run
+        uses: actions/download-artifact@v4
+        with:
+          name: monte-wo-android-apk-${{ needs.build.outputs.version }}-${{ needs.build.outputs.code }}
+          path: release
+
+      - name: Create the pre-release (replaces a release with the same tag)
+        id: release
+        run: |
+          set -euo pipefail
+          TAG="app-android-v${VERSION}-${CODE}"
+          APK="$(ls release/*.apk | head -n1)"
+          test -f "$APK" || { echo "::error title=No APK in artifact::nothing to publish"; exit 1; }
+          test -f release/build-info.json || { echo "::error title=build-info.json missing::artifact incomplete"; exit 1; }
+          (cd release && sha256sum "$(basename "$APK")" build-info.json > SHA256SUMS.txt)
+          SHA="$(sha256sum "$APK" | cut -d' ' -f1)"
+          BYTES="$(stat -c %s "$APK")"
+          if [ "$SIGNING_MODE" = "upload-keystore" ]; then
+            SIGNING_LINE="Signed with the owner's upload keystore (certificate SHA-256 \`$FINGERPRINT\`)."
+            PLAY_LINE="This build is signed with the registered upload key; the matching \`.aab\` is in the workflow artifacts for Google Play."
+          else
+            SIGNING_LINE="**Signed with the public Android debug keystore** (certificate SHA-256 \`$FINGERPRINT\`) — a test build, not a release identity."
+            PLAY_LINE="Google Play rejects debug-signed builds; a future Play-signed MONTE WO cannot update this APK in place (uninstall first)."
+          fi
+          cat > notes.md <<NOTES
+          # MONTE WO app — Android ${VERSION} · test build ${CODE}
+
+          **Pre-release test build for internal testing — not an official release and not Google Play.** It may be
+          replaced at any time. Built from commit \`${GITHUB_SHA}\` by [workflow run ${GITHUB_RUN_ID}](${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}).
+
+          | | |
+          |---|---|
+          | Application ID | \`com.vitaflex.montewovitaflex\` |
+          | versionName / versionCode | \`${VERSION}\` / \`${CODE}\` |
+          | File | \`$(basename "$APK")\` — ${BYTES} bytes |
+          | SHA-256 | \`${SHA}\` |
+          | Minimum Android | 7.0 (API 24) |
+          | Permissions | INTERNET only (see the workflow summary for the merged manifest) |
+          | Signing | ${SIGNING_LINE} |
+
+          ${PLAY_LINE}
+
+          **Install:** download the \`.apk\` on the phone, open it, allow "install unknown apps" for the browser/Files app once, then turn that permission off again. Compare the SHA-256 with the value above (\`SHA256SUMS.txt\`). Keep Play Protect on. If an older MONTE WO test build or the Expo preview is installed with a different signing key, uninstall it first.
+
+          **What works in this build:** the app opens offline (library, muscle map, device-local workouts). Account services report "not configured on this deployment" until the owner enables the mobile API. MONTE WO Strength Index™ standards are DRAFT — NOT OFFICIAL; no official rank is awarded.
+          NOTES
+          gh release delete "$TAG" --cleanup-tag -y 2>/dev/null || true
+          URL="$(gh release create "$TAG" "$APK" release/build-info.json release/SHA256SUMS.txt \
+            --prerelease --target "$GITHUB_SHA" \
+            --title "MONTE WO app — Android ${VERSION} (test build ${CODE})" \
+            --notes-file notes.md)"
+          ASSET="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/releases/download/${TAG}/$(basename "$APK")"
+          echo "release_url=$URL" >> "$GITHUB_OUTPUT"
+          echo "asset_url=$ASSET" >> "$GITHUB_OUTPUT"
+          echo "sha256=$SHA" >> "$GITHUB_OUTPUT"
+          echo "bytes=$BYTES" >> "$GITHUB_OUTPUT"
+          {
+            echo "## Published pre-release"
+            echo "- Release: $URL"
+            echo "- Direct APK: $ASSET (${BYTES} bytes, SHA-256 \`${SHA}\`)"
+            echo "- Signing: ${SIGNER}"
+          } >> "$GITHUB_STEP_SUMMARY"
+          echo "::notice title=APK published::$ASSET"

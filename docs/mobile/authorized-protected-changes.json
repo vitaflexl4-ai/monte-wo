@@ -1,17 +1,17 @@
 {
   "server/strength/api.js": {
     "before": "fc47a283f8f64b86397bca5e70f70f75cb4c1457eafccb979bbe81909db5e26f",
-    "after": "60195f666481bbca13b8d707087985420d1bce119ce5544d46868d93e595e4b9",
-    "reason": "Select isolated APP_DB; explicit legacy opt-in only. Ranking, auth and review implementation below the entry binding stays unchanged."
+    "after": "0b914365c04d5637aa2df8e008a212537c5d60867de66e6d2262d93306f921b9",
+    "reason": "Select isolated APP_DB; explicit legacy opt-in only (main). Plus, from the native/agent branch: optional deps.authenticate injection so the Agent API can act as a linked principal under the same guards, and the native sign-in handoff routes (/native-login, /native-token, flag NATIVE_CLIENTS_ENABLED). Ranking, auth and review implementation stays unchanged."
   },
   "functions/api/[[route]].js": {
     "before": "6f8328107d8cd9a9a96204b6d6d8f45f4f29099b1145ee5b997f0ce280142186",
-    "after": "399d398c74967bc499661caccc4835a7b027d7175f9aa198f6aeb68eb5abc2d9",
-    "reason": "Add gated /api/mobile/ dispatch. Existing waitlist and media routes unchanged."
+    "after": "8ea4fae2b86dfc0886ea68c7aa4bbccb95dad8065ab17238873123f56783ea8f",
+    "reason": "Add gated /api/mobile/ and /api/intelligence/ dispatch (main) plus gated /api/agent/ dispatch (404 unless AGENT_API_ENABLED) and the native CORS preflight/withCors wrapper (inert unless NATIVE_CLIENTS_ENABLED). Existing waitlist and media routes unchanged."
   },
   "wrangler.toml": {
     "before": "cd8435e7291ebdd2c533d6f04abd2d55b5c3d9dca64c684d9ebda814f1f0fd05",
-    "after": "beab7b76ea6abe6467e927c9011cdb5efa893d3793f6a508468b20491d68c3e2",
-    "reason": "Correct unsafe historical comment recommending waitlist DB reuse. No active binding, resource ID or deployment setting added."
+    "after": "1367fbd107ddc8e248779cb8b689998a9152b11be37f9898f7ad4bbedc364717",
+    "reason": "Comments only, no active binding, resource ID or deployment setting: documents the INTEL_DB binding (main), corrects the historical comment that recommended reusing the waitlist DB for the Strength Index (APP_DB is the application binding) and documents the optional AGENT_DB binding + Agent API policy flags."
   }
 }

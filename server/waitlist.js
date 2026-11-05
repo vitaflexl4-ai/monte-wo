@@ -1,3 +1,4 @@
+import {trustedOrigin} from './native.js';
 const VERSION='2026-10-11-v1';
 const MAX_BODY=4096;
 const response=(data,status=200)=>new Response(JSON.stringify(data),{status,headers:{'Content-Type':'application/json','Cache-Control':'no-store','X-Content-Type-Options':'nosniff'}});
@@ -25,7 +26,7 @@ export async function handleWaitlist({request,env}){
  if(url.pathname!=='/api/waitlist')return response({error:'Not found'},404);
  if(request.method!=='POST')return new Response(null,{status:405,headers:{Allow:'POST'}});
  if(!config.available)return response({error:'unavailable'},503);
- if(request.headers.get('Origin')!==url.origin)return response({error:'origin'},403);
+ if(!trustedOrigin(request,env,url))return response({error:'origin'},403);
  if(!(request.headers.get('Content-Type')||'').toLowerCase().startsWith('application/json'))return response({error:'content-type'},415);
  let payload;try{payload=await readBody(request)}catch{return response({error:'invalid'},400)}
  const input=validateSignup(payload);if(typeof input==='string')return response({error:input},400);

@@ -52,7 +52,7 @@ Protect **`/api/mobile/auth/authorize`** with the existing Access identity polic
 
 Native sign-in uses browser-based S256 PKCE, random state, a 120-second single-use code, an exact redirect allowlist and an expiring opaque session. Provider assertions are AES-GCM encrypted at rest; native token hashes, not raw tokens, are stored. SecureStore keeps native sessions on-device. Sessions expire no later than the provider assertion or eight hours; no silent refresh is implemented. Re-authenticate when expired. Disabling a principal invalidates its access. Rotating the encryption key invalidates existing sessions: coordinate this operation.
 
-The browser QA export is not the production web account client. It holds a session in memory only and defaults to disabled sign-in. Enabling its optional browser callback would require separately allowing the exact HTTPS `/mobile/` URI and testing popup behavior. Production native sign-in requires a build with the custom URI scheme; Expo Go is not the acceptance environment.
+The browser build is now published at `/app/web/` on the site (`scripts/build_webapp.py`, see `docs/release/WEB_DEPLOYMENT.md`). It holds a session in memory only. Its sign-in popup returns to the directory the app is served from — `https://<host>/app/web/` — so enabling web sign-in requires listing that exact HTTPS URI in `MOBILE_REDIRECT_URIS` and testing popup behavior; until then the app reports that account services are not configured. Production native sign-in requires a build with the custom URI scheme; Expo Go is not the acceptance environment.
 
 ## API contract
 

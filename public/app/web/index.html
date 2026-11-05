@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, shrink-to-fit=no" />
+    <title>MONTE WO</title>
+    <!--
+      MONTE WO web app template (apps/mobile/public/index.html). `expo export --platform web` fills the
+      placeholders and appends the app bundle; scripts/build_webapp.py publishes the result at /app/web/.
+      Every URL below is RELATIVE so the export works at /app/web/ on the site and at / in local QA.
+    -->
+    <meta name="description" content="The MONTE WO training app in your browser: workout library, muscle map, four independent Discipline Ranks. Same app as the Android build; installable on Android, iOS and desktop." />
+    <meta name="theme-color" content="#090c13" />
+    <meta name="color-scheme" content="dark" />
+    <meta name="application-name" content="MONTE WO" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-title" content="MONTE WO" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="robots" content="noindex" />
+    <link rel="manifest" href="manifest.webmanifest" />
+    <link rel="icon" href="/assets/icon.svg" type="image/svg+xml" />
+    <link rel="icon" href="/assets/icon-32.png" sizes="32x32" type="image/png" />
+    <link rel="apple-touch-icon" href="/assets/icon-180.png" />
+    <!-- The `react-native-web` recommended style reset: https://necolas.github.io/react-native-web/docs/setup/#root-element -->
+    <style id="expo-reset">
+      /* These styles make the body full-height */
+      html,
+      body {
+        height: 100%;
+      }
+      /* These styles disable body scrolling if you are using <ScrollView> */
+      body {
+        overflow: hidden;
+      }
+      /* These styles make the root element full-height */
+      #root {
+        display: flex;
+        height: 100%;
+        flex: 1;
+      }
+    </style>
+    <style id="mw-webapp-chrome">
+      body { margin: 0; background: #090c13; color: #e8eef7; }
+      /* Loading state shown until the app mounts (removed by pwa.js). */
+      #mw-splash { position: fixed; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; background: #090c13; color: #e8eef7; font: 500 14px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; z-index: 2; }
+      #mw-splash .mw-splash-brand { font-size: 28px; font-weight: 800; letter-spacing: 0.22em; }
+      #mw-splash .mw-splash-brand b { color: #4fa3ff; }
+      #mw-splash .mw-splash-note { color: #8fa3bf; font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; }
+      #mw-splash .mw-splash-bar { width: 140px; height: 3px; border-radius: 3px; background: #1a2333; overflow: hidden; }
+      #mw-splash .mw-splash-bar i { display: block; width: 40%; height: 100%; background: #4fa3ff; animation: mw-splash-slide 1.1s ease-in-out infinite alternate; }
+      @keyframes mw-splash-slide { from { transform: translateX(-100%); } to { transform: translateX(350%); } }
+      /* Install banner (only when the browser reports the app as installable, or iOS Safari outside standalone). */
+      #mw-install { position: fixed; top: 0; left: 0; right: 0; z-index: 3; display: flex; align-items: center; gap: 10px; padding: calc(env(safe-area-inset-top, 0px) + 8px) 12px 8px; background: #111a28; color: #e8eef7; border-bottom: 1px solid #27364d; font: 500 13px/1.4 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+      #mw-install p { flex: 1; margin: 0; }
+      #mw-install button { font: inherit; border-radius: 999px; padding: 6px 12px; border: 1px solid #27364d; background: transparent; color: #aad9ff; cursor: pointer; }
+      #mw-install button.mw-install-action { background: #4fa3ff; border-color: #4fa3ff; color: #06101c; font-weight: 700; }
+      #mw-install button:focus-visible { outline: 2px solid #aad9ff; outline-offset: 2px; }
+    </style>
+    <script src="pwa.js" defer></script>
+  </head>
+
+  <body>
+    <noscript>
+      <p style="padding:24px;font:500 15px/1.5 -apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif">MONTE WO needs JavaScript to run. Enable it, or use the free tools at <a href="/tools/" style="color:#4fa3ff">/tools/</a>.</p>
+    </noscript>
+    <div id="mw-splash" aria-live="polite">
+      <div class="mw-splash-brand">MONTE <b>WO</b></div>
+      <div class="mw-splash-bar" aria-hidden="true"><i></i></div>
+      <div class="mw-splash-note">Loading the app</div>
+    </div>
+    <!-- The root element for your Expo app. -->
+    <div id="root"></div>
+  <script src="/app/web/_expo/static/js/web/index-122f962881f462dff0821383eeb4e357.js" defer></script>
+</body>
+</html>

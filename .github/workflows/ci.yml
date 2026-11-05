@@ -1,0 +1,110 @@
+# MONTE WO — continuous integration for every branch and pull request (humans and AI agents alike).
+#
+# Proves, from a clean checkout: dependencies install from the lockfile, the generated site is in sync with its
+# sources (content/ + scripts/ → public/; "never edit generated HTML independently"), the unit suites pass
+# (one documented pre-existing baseline item tolerated — see scripts/ci-unit-tests.sh), the native bundle is
+# deterministic and its tests pass, and the web app (public/app/web/, exported from apps/mobile) matches its sources
+# and renders in a browser. No secrets, no deployment, no store upload. Cloudflare Pages previews are
+# produced independently by the owner's Git integration; merging to main is a production deployment.
+name: CI
+
+on:
+  push:
+    branches-ignore: ["main"]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    name: Build, generated-source sync, unit + native tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Check out
+        uses: actions/checkout@v5
+
+      - name: Node 22
+        uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies (lockfile)
+        run: npm ci
+
+      - name: Web build (source of truth is content/ + scripts/)
+        run: npm run build
+
+      - name: Generated files must match their sources (rebuild produced no diff)
+        run: |
+          if [ -n "$(git status --porcelain)" ]; then
+            echo "::error::npm run build changed tracked files — commit the regenerated output (never edit generated HTML by hand):"
+            git status --porcelain
+            git diff --stat
+            exit 1
+          fi
+
+      - name: Unit tests (all suites)
+        run: bash scripts/ci-unit-tests.sh
+
+      - name: Keep the unit-test TAP log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ci-unit-test-tap-log
+          path: tap.log
+          if-no-files-found: ignore
+          retention-days: 7
+
+      - name: Native bundle (deterministic) + native suites
+        run: |
+          npm run build:native
+          npm run test:native
+          npm run test:native-api
+          npm run test:agent-api
+
+      # The web app at public/app/web/ is apps/mobile (Expo / React Native — the Android/iOS code) exported for
+      # the browser by scripts/build_webapp.py. Prove the committed export matches its sources and still runs.
+      - name: Web app — apps/mobile dependencies (lockfile)
+        run: npm --prefix apps/mobile ci
+
+      - name: Web app — app typecheck + app unit suites
+        run: |
+          npm --prefix apps/mobile run typecheck
+          npm --prefix apps/mobile run test:build-safety
+
+      - name: Web app — committed public/app/web/ equals a fresh export (deterministic, no hand edits)
+        run: python3 scripts/build_webapp.py --check
+
+      - name: Web app — renders in Chromium (phone + desktop, tabs, manifest, worker, offline)
+        run: |
+          npx playwright install --with-deps chromium
+          node tests/webapp-browser.mjs
+
+      - name: Keep the web app screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: webapp-browser-screenshots
+          path: test-results/webapp-*.png
+          if-no-files-found: ignore
+          retention-days: 7
+
+      - name: Store asset drafts (Play/App Store screenshots, feature graphic, 1024 icon) from the same app
+        run: node tests/store-assets.mjs
+
+      - name: Keep the store asset drafts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: store-assets
+          path: test-results/store-assets/
+          if-no-files-found: ignore
+          retention-days: 30

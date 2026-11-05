@@ -12,6 +12,7 @@
     {"path":"/exercises/", "label":"Exercises", "key":"navExercises"}
   ],
   "cta":{"path":"/waitlist/", "label":"Join the Waitlist", "key":"joinWaitlist"},
+  "webApp":{"path":"/app/web/", "label":"Open the App", "key":"openApp"},
   "ui":{
     "en":{"open":"Open navigation", "close":"Close navigation"},
     "ht":{"open":"Louvri meni an", "close":"Fèmen meni an"},
