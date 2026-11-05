@@ -1,5 +1,5 @@
 {
-  "scope": "Latest official biography update: local review only; not committed, pushed, published or deployed",
+  "scope": "Definitive biography published with owner authorization",
   "route": "/sony/",
   "presentationName": "Sony",
   "presentationTitle": "The Person Behind the Vision",
@@ -119,9 +119,16 @@
       ]
     },
     "notPerformed": [
-      "Production deployment",
       "Physical-device Safari/Firefox testing",
       "VoiceOver/NVDA testing"
     ]
+  },
+  "deployment": {
+    "revision": "b400e324a0aa2db4fd644409e4a7ca7c8cf2343a",
+    "project": "vitaflex",
+    "workflow": "https://github.com/vitaflexl4-ai/monte-wo/actions/runs/41958705764",
+    "liveProfileRetrievedAndContentConfirmed": true,
+    "liveVenturePagesRetrieved": 4,
+    "githubRunnerCustomDomainCheck": "Cloudflare challenge HTTP 403; independent webpage retrieval succeeded"
   }
 }

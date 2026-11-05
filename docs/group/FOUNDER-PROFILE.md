@@ -2,7 +2,11 @@
 
 ## Current status
 
-This is the local review version of the latest official biography. **No commit, push, publication or deployment was performed for this update.** Production remains on the previously authorized revision. New authorization is required before publishing these changes.
+The owner subsequently authorized publication. The definitive biography is now deployed to the domain-owning Cloudflare Pages project `vitaflex` at revision `b400e324a0aa2db4fd644409e4a7ca7c8cf2343a`.
+
+The live page at https://vitaflexbusinessgroup.com/sony/ was retrieved successfully and its complete latest biography and title were confirmed. All four custom-domain venture pages were also retrieved successfully after publication. Build, group/profile browser suites, publication, production-alias route checks and private-API protection checks passed in the deployment workflow.
+
+Evidence: https://github.com/vitaflexl4-ai/monte-wo/actions/runs/41958705764 . The workflow remains red only because the strict custom-domain request from the GitHub runner encounters Cloudflare's HTTP 403 challenge; the independent webpage retrieval succeeded. No security setting was disabled.
 
 Local review: port 8080, footer **Sony**, `/sony/`.
 
@@ -77,5 +81,5 @@ If using an existing locally provisioned Chromium, set `BROWSER_EXECUTABLE_PATH`
 ## Outstanding
 
 1. Two existing tests expect a different checksum for `wrangler.toml`. The file and protected-source assertions were not weakened or changed to make these pass.
-2. This definitive biography still requires owner authorization before deployment. No claim is made that the new text is live.
+2. Publication was authorized and completed as recorded above; automated GitHub-runner custom-domain verification still encounters the existing Cloudflare challenge.
 3. Physical-device Safari/Firefox and VoiceOver/NVDA testing were not performed; local Chromium, keyboard and JavaScript-disabled tests were performed as listed.
