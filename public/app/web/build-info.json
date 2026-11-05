@@ -4,9 +4,9 @@
   "baseUrl": "/app/web/",
   "appVersion": "1.0.0",
   "expo": "~57.0.30",
-  "build": "122f962881f462df",
+  "build": "7493a1353067aa88",
   "bundles": [
-    "_expo/static/js/web/index-122f962881f462dff0821383eeb4e357.js"
+    "_expo/static/js/web/index-7493a1353067aa889f52b842e77e2ae0.js"
   ],
   "generatedBy": "scripts/build_webapp.py — do not edit; rebuild with `npm run build:webapp`"
 }
