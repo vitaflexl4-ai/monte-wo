@@ -20,8 +20,10 @@ try {
  await page.locator('.footer-links a[href="/sony/"]').focus();
  await page.keyboard.press('Enter');await page.waitForURL('**/sony/');
  assert.equal(await page.locator('h1').textContent(),'SONY');
+ assert.equal(await page.locator('.founder-subtitle').textContent(),'The Person Behind the Vision');
+ assert.doesNotMatch(await page.locator('article').innerText(),/A non-alien|A journey of purpose|Ultimately, I hope/);
  assert.deepEqual(await page.locator('.founder-chapter p').allTextContents(),paragraphs);
- assert.equal(await page.locator('.footer-links [aria-current="page"]').textContent(),'A non-alien');
+ assert.equal(await page.locator('.footer-links [aria-current="page"]').textContent(),'Sony');
  assert.equal(await page.locator('script,form,iframe').count(),0);
  const viewports=[{width:320,height:740},{width:390,height:844},{width:600,height:900},{width:768,height:1024},{width:844,height:390},{width:1024,height:900},{width:1440,height:1000},{width:1920,height:1080}];
  for(const viewport of viewports){

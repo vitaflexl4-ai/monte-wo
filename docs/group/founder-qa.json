@@ -1,35 +1,36 @@
 {
-  "scope": "Local founder-profile review; not committed, pushed or deployed",
-  "route": "/founder/",
+  "scope": "Latest official biography update: local review only; not committed, pushed, published or deployed",
+  "route": "/sony/",
   "presentationName": "Sony",
+  "presentationTitle": "The Person Behind the Vision",
   "source": "content/group/founder.json",
-  "biographyPreserved": {
-    "narrativeParagraphs": 9,
-    "closingStatement": true,
-    "postscript": true
+  "content": {
+    "narrativeParagraphs": 10,
+    "verbatimClosing": true,
+    "postscript": "The journey continues.",
+    "previousNarrativeAndClosingRemoved": true,
+    "singleProfile": true
+  },
+  "preservation": {
+    "homepageMainByteForByteUnchanged": true,
+    "ventureRegistryUnchanged": true,
+    "ventures": 4
   },
   "tests": {
-    "baseline": {
-      "total": 218,
-      "passed": 216,
-      "failed": 2
-    },
-    "final": {
-      "total": 224,
-      "passed": 222,
-      "failed": 2,
-      "newFailures": 0
-    },
-    "knownFailures": [
-      "Lab protected-source checksum expectation for wrangler.toml",
-      "Website protected-source checksum expectation for wrangler.toml"
-    ],
-    "founderStatic": {
-      "passed": 6,
+    "profileStatic": {
+      "passed": 7,
       "failed": 0,
-      "groupReferencesChecked": 131
+      "referencesChecked": 131
     },
-    "productReferencesChecked": 2112,
+    "fullSuite": {
+      "total": 225,
+      "passed": 223,
+      "failed": 2,
+      "knownFailures": [
+        "Lab protected-source checksum expectation for wrangler.toml",
+        "Website protected-source checksum expectation for wrangler.toml"
+      ]
+    },
     "groupBrowser": {
       "passed": true,
       "routes": 7,
@@ -43,7 +44,7 @@
         1440
       ]
     },
-    "founderBrowser": {
+    "profileBrowser": {
       "passed": true,
       "viewports": [
         [
@@ -89,9 +90,7 @@
     },
     "accessibility": {
       "browser": "153.0.8010.0",
-      "page": "/founder/",
-      "tool": "axe-core via @axe-core/playwright",
-      "checks": "WCAG 2 A/AA, 2.1 A/AA and 2.2 AA tags",
+      "route": "/sony/",
       "results": [
         {
           "width": 1440,

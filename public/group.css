@@ -277,7 +277,6 @@ em { font-family: Georgia, 'Times New Roman', serif; font-weight: 400; color: #d
   text-wrap: balance;
   color: #d9c9aa;
 }
-.founder-role { margin: 28px 0 0; font-size: 12px; color: var(--muted); letter-spacing: .035em; }
 .founder-reading-layout {
   display: grid;
   grid-template-columns: minmax(190px, 1fr) minmax(0, 680px);
@@ -348,7 +347,6 @@ em { font-family: Georgia, 'Times New Roman', serif; font-weight: 400; color: #d
   .founder-intro > .index-label { font-size: 9px; margin-bottom: 30px; }
   .founder-intro h1 { font-size: clamp(72px, 20vw, 94px); margin-bottom: 24px; }
   .founder-subtitle { font-size: clamp(27px, 7.2vw, 34px); line-height: 1.4; }
-  .founder-role { margin-top: 22px; font-size: 11px; }
   .founder-reading-layout { gap: 36px; }
   .founder-chapters { column-gap: 16px; }
   .founder-chapters a { font-size: 11px; gap: 9px; }

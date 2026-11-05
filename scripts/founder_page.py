@@ -31,8 +31,7 @@ def render_founder(page):
       <header class="founder-intro">
         <p class="index-label">A PERSONAL NOTE</p>
         <h1 id="founder-name">{escape(profile['name'].upper())}</h1>
-        <p class="founder-subtitle">{escape(profile['subtitle'])}</p>
-        <p class="founder-role">{escape(profile['role'])}</p>
+        <p class="founder-subtitle">{escape(profile['title'])}</p>
       </header>
       <div class="founder-reading-layout">
         <aside class="founder-aside">
@@ -53,5 +52,5 @@ def render_founder(page):
       </div>
     </article>'''
     return page(
-        f'{profile["name"]} — A non-alien', profile['description'], body, '/sony/'
+        f'{profile["name"]} — {profile["title"]}', profile['description'], body, '/sony/'
     )

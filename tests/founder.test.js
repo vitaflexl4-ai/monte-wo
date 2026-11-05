@@ -11,12 +11,14 @@ const docFor=route=>read('public'+(route==='/'?'/index.html':route+'index.html')
 
 test('Founder: source is a first-name-only personal essay, not a resume or venture launch',()=>{
  assert.equal(profile.name,'Sony');
- assert.equal(profile.role,'A non-alien.');
+ assert.equal(profile.title,'The Person Behind the Vision');
+ assert.equal(profile.role,undefined);
+ assert.equal(profile.subtitle,undefined);
  assert.doesNotMatch(founder.replace(/(?:class|id|aria-labelledby)="[^"]*"/g,''),/founder/i);
- assert.equal(profile.subtitle,'A journey of purpose, gratitude, and service.');
+ assert.doesNotMatch(founder,/A non-alien|A journey of purpose, gratitude, and service/);
  assert.equal(profile.chapters.length,4);
  const paragraphs=profile.chapters.flatMap(chapter=>chapter.paragraphs);
- assert.equal(paragraphs.length,9);
+ assert.equal(paragraphs.length,10);
  assert.ok(paragraphs.some(p=>p.includes("bachelor's degree in Business Administration")&&p.includes('Master of Business Administration (MBA)')));
  assert.ok(paragraphs.some(p=>p.includes('approximately eight years')));
  assert.ok(paragraphs.some(p=>p.includes('My faith in God')&&p.includes('Haiti')));
@@ -46,11 +48,11 @@ test('Founder: chapter anchors, metadata, canonical and current-page link are co
   assert.ok(founder.includes(`id="${chapter.id}"`));
   assert.ok(founder.includes(`aria-labelledby="${chapter.id}-title"`));
  }
- assert.ok(founder.includes('<title>Sony — A non-alien | VitaFlex Business Group</title>'));
+ assert.ok(founder.includes('<title>Sony — The Person Behind the Vision | VitaFlex Business Group</title>'));
  assert.ok(founder.includes('rel="canonical" href="https://vitaflexbusinessgroup.com/sony/"'));
- assert.ok(founder.includes('property="og:title" content="Sony — A non-alien"'));
+ assert.ok(founder.includes('property="og:title" content="Sony — The Person Behind the Vision"'));
  assert.ok(founder.includes(`name="description" content="${escape(profile.description)}"`));
- assert.ok(founder.includes('<a href="/sony/" aria-current="page">A non-alien</a>'));
+ assert.ok(founder.includes('<a href="/sony/" aria-current="page">Sony</a>'));
  assert.match(founder,/<main id="main" tabindex="-1">/);
 });
 
@@ -90,10 +92,25 @@ test('Founder: every group link, asset and fragment resolves without fabricated 
 
 test('Founder: offline upgrade is deduplicated and source content is not downloaded at runtime',()=>{
  const sw=read('public/sw.js');
- assert.match(sw,/montewo-core-v27-sony-profile/);
+ assert.match(sw,/montewo-core-v28-official-biography/);
  assert.equal(sw.split("'/sony/'").length-1,1);
  assert.equal(routes.filter(route=>route==='/sony/').length,1);
  assert.doesNotMatch(founder,/fetch\(|founder\.json/);
  const css=read('public/group.css');assert.match(css,/prefers-reduced-motion/);
  assert.ok(read('scripts/build_website.py').includes("{'monte-wo','ventures','founder','sony'}"));
+});
+
+test('Biography update: only the definitive version is presented, with no duplicate profile',()=>{
+ const text=profile.chapters.flatMap(chapter=>chapter.paragraphs).join('\n');
+ assert.ok(text.includes('Fitness, in particular, holds a special place in my life.'));
+ assert.ok(text.includes('listening can be as valuable as speaking'));
+ assert.ok(text.includes('discretion over unnecessary attention'));
+ assert.equal(profile.closing,'I hope to live with enough wisdom to keep learning, enough humility to keep listening, and enough conviction to keep serving.');
+ for(const outdated of ['a lasting appreciation for the opportunities','Perhaps one of my most important personal lessons','remain a student of life','Ultimately, I hope to live a life','A journey of purpose, gratitude, and service.','A non-alien']){
+  assert.ok(!founder.includes(escape(outdated)),outdated);
+ }
+ assert.equal(routes.filter(route=>route==='/sony/').length,1);
+ assert.ok(!existsSync('public/founder/index.html'));
+ assert.ok(read('public/_redirects').includes('/founder/ /sony/ 301'));
+ assert.ok(founder.includes('<p class="founder-subtitle">The Person Behind the Vision</p>'));
 });
