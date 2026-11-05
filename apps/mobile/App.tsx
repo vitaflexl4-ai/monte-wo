@@ -48,7 +48,9 @@ import {
   Utensils,
   ArrowRight,
   Layers3,
+  Mountain,
 } from "lucide-react-native";
+import Constants from "expo-constants";
 import * as Crypto from "expo-crypto";
 import * as DocumentPicker from "expo-document-picker";
 import { File } from "expo-file-system";
@@ -127,6 +129,16 @@ import {
 } from "./src/muscle-map";
 
 import {deviceWorkouts} from "./src/workout-storage";
+import {
+  deviceStrength,
+  heaviest,
+  modelFor,
+  strengthMessage,
+  type LocalPerformance,
+  type PerformanceInput,
+  type StrengthState,
+} from "./src/strength-local";
+import rankCatalog from "./src/generated/ranks.json";
 import {validateSet, validateWorkout, workoutVolume} from "../../shared/workouts.js";
 
 const volumeLabel = (workout: Workout) => {
@@ -147,6 +159,13 @@ type AppState = {
   refreshLocal: () => Promise<void>;
   saveLocal: (workout: Workout) => Promise<void>;
   deleteLocal: (id: string) => Promise<void>;
+  strength: StrengthState;
+  strengthReady: boolean;
+  strengthStatus: string;
+  refreshStrength: () => Promise<void>;
+  saveProfileLocal: (input: {bodyweight: string; unit: "kg" | "lb"; sexCategory: "female" | "male" | "unclassified"; ageYears: number}) => Promise<void>;
+  addPerformanceLocal: (input: PerformanceInput) => Promise<LocalPerformance>;
+  removePerformanceLocal: (id: string) => Promise<void>;
   next: string | null;
   available: boolean;
   status: string;
@@ -182,6 +201,35 @@ function Provider({ children }: PropsWithChildren) {
     const result = await deviceWorkouts.remove(id);
     setLocalWorkouts(result.workouts);
     setLocalStatus(result.warning || "Deleted from device history and its recovery copy.");
+  }
+  const [strength, setStrength] = useState<StrengthState>({version: 1, revision: 0, profile: null, performances: []});
+  const [strengthReady, setStrengthReady] = useState(false);
+  const [strengthStatus, setStrengthStatus] = useState("Loading device records…");
+  const DEVICE_NOTE = "Saved on this device · not synced to an account · assessed by the shared MONTE WO engine";
+  async function refreshStrength() {
+    try {
+      setStrength(await deviceStrength.load());
+      setStrengthReady(true);
+      setStrengthStatus(DEVICE_NOTE);
+    } catch (error) {
+      setStrengthReady(false);
+      setStrengthStatus(strengthMessage(error));
+    }
+  }
+  async function saveProfileLocal(input: {bodyweight: string; unit: "kg" | "lb"; sexCategory: "female" | "male" | "unclassified"; ageYears: number}) {
+    setStrength(await deviceStrength.saveProfile(input));
+    setStrengthReady(true);
+    setStrengthStatus(DEVICE_NOTE);
+  }
+  async function addPerformanceLocal(input: PerformanceInput) {
+    const result = await deviceStrength.addPerformance(input);
+    setStrength(result.state);
+    setStrengthReady(true);
+    setStrengthStatus(DEVICE_NOTE);
+    return result.record;
+  }
+  async function removePerformanceLocal(id: string) {
+    setStrength(await deviceStrength.removePerformance(id));
   }
   const [me, setMe] = useState<any>(null),
     [workouts, setWorkouts] = useState<Workout[]>([]),
@@ -275,6 +323,7 @@ function Provider({ children }: PropsWithChildren) {
     refresh();
     refreshCatalog();
     refreshLocal();
+    refreshStrength();
     return stop;
   }, []);
   return (
@@ -287,6 +336,7 @@ function Provider({ children }: PropsWithChildren) {
         refreshCatalog,
         workouts,
         localWorkouts, localStatus, localReady, refreshLocal, saveLocal, deleteLocal,
+        strength, strengthReady, strengthStatus, refreshStrength, saveProfileLocal, addPerformanceLocal, removePerformanceLocal,
         next,
         available,
         status,
@@ -545,7 +595,7 @@ function Welcome({ navigation }: any) {
     </SafeAreaView>
   );
 }
-function RankLadder({ strip = false }: { strip?: boolean }) {
+function RankLadder({ strip = false, onPress }: { strip?: boolean; onPress?: () => void }) {
   const items = Object.entries(rankNames).map(([id, name]) => (
     <View
       key={id}
@@ -593,7 +643,105 @@ function RankLadder({ strip = false }: { strip?: boolean }) {
       <Text style={v.subtle}>
         Rank ladder only—not your achievements. Each discipline is independent.
       </Text>
+      {onPress && (
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel="See the nine ranks"
+          onPress={onPress}
+          style={{ flexDirection: "row", alignItems: "center", gap: 6 }}
+        >
+          <Text style={{ color: C.cyan, fontWeight: "700", fontSize: 12 }}>
+            See the nine ranks and the MONTE Standards
+          </Text>
+          <ArrowRight size={14} color={C.cyan} />
+        </Pressable>
+      )}
     </Card>
+  );
+}
+const disciplineNameOf = (id: string) =>
+  disciplines.find((d) => d.id === id)?.name || id;
+const loadLabel = (p: LocalPerformance) =>
+  `${p.data.load} ${p.data.unit} × ${p.data.reps}`;
+// MONTE Climb Scale — the nine rank identities and the state of each discipline's MONTE Standard.
+function Ranks({ navigation }: any) {
+  const a = useApp();
+  return (
+    <Screen>
+      <PageHeader
+        eyebrow="MONTE CLIMB SCALE"
+        title="Nine ranks. Every one earned."
+        subtitle="Per discipline. No overall rank, no free Debitan, nothing from streaks or XP."
+      />
+      <Notice text="DRAFT — NOT OFFICIAL. The four MONTE Standards (draft-1) await approval. Until a standard is approved, no rank can be awarded here or on the website — the ladder below shows what will be earned, not what has been." />
+      <Card>
+        {(rankCatalog as any[]).map((r) => (
+          <View
+            key={r.id}
+            accessibilityLabel={`Rank ${r.ordinal}: ${r.name}`}
+            style={{ flexDirection: "row", alignItems: "center", gap: 12 }}
+          >
+            <Image source={rankArt[r.id]} style={{ width: 56, height: 56 }} resizeMode="contain" />
+            <View style={{ flex: 1, gap: 2 }}>
+              <Text style={[v.tiny, { color: r.color }]}>RANK {String(r.ordinal).padStart(2, "0")}</Text>
+              <Text style={{ color: C.text, fontSize: 18, fontWeight: "800" }}>{r.name}</Text>
+            </View>
+            <View style={{ width: 6, height: 40, borderRadius: 3, backgroundColor: r.color }} />
+          </View>
+        ))}
+        <Text style={v.subtle}>
+          Debitan is earned too. Rank identities, not awarded achievements. Verification adds no bonus strength points.
+        </Text>
+      </Card>
+      <Text style={v.sectionTitle}>Your four disciplines</Text>
+      {disciplines.map((d) => {
+        const rule = ruleFor(d.id) as any, model = modelFor(d.id);
+        const best = heaviest(a.strength.performances, d.id);
+        const card = a.me?.disciplines?.find((c: any) => c.discipline === d.id);
+        const earned = card?.verified || card?.provisional;
+        return (
+          <Card key={d.id}>
+            <View style={s.row}>
+              <View style={{ flexDirection: "row", gap: 8, alignItems: "center", flex: 1 }}>
+                <LiftGlyph id={d.id} size={30} />
+                <Text style={s.heading}>{d.name}</Text>
+              </View>
+              <View style={v.pill}>
+                <Text style={v.pillText}>
+                  {earned?.rankId ? rankNames[earned.rankId] : "NO RANK YET"}
+                </Text>
+              </View>
+            </View>
+            <Body>
+              {rule.title} · {rule.version} ·{" "}
+              {model?.status === "approved" && rule.status === "approved"
+                ? "approved"
+                : "DRAFT — awaiting approval, thresholds not published"}
+            </Body>
+            {model?.requireVerifiedFrom && (
+              <Body>
+                Once approved: self-reported lifts earn Provisional ranks below{" "}
+                {rankNames[model.requireVerifiedFrom]}; {rankNames[model.requireVerifiedFrom]} and above need MONTE Verified evidence review.
+              </Body>
+            )}
+            <Body>
+              {best
+                ? `Heaviest logged on this device: ${loadLabel(best)} (${best.data.performedOn}). A log entry, not a rank.`
+                : "Nothing logged on this device yet."}
+            </Body>
+            <Button
+              title={"Open " + d.name}
+              secondary
+              onPress={() => navigation.navigate("Discipline", { id: d.id })}
+            />
+          </Card>
+        );
+      })}
+      <Button title="Log a performance" onPress={() => navigation.navigate("Performance")} />
+      <Text style={v.subtle}>
+        Website reference: /strength-ranks/ and /methodology/ describe the same nine ranks and draft standards.
+      </Text>
+    </Screen>
   );
 }
 function Home({ navigation }: any) {
@@ -710,9 +858,15 @@ function Home({ navigation }: any) {
       </Pressable>
       <View style={s.row}>
         <Text style={v.sectionTitle}>Your Discipline Ranks</Text>
-        <View style={v.pill}>
-          <Text style={v.pillText}>DRAFT STANDARDS</Text>
-        </View>
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel="Open the MONTE Climb Scale"
+          onPress={() => navigation.navigate("Ranks")}
+          style={[v.pill, { flexDirection: "row", alignItems: "center", gap: 4 }]}
+        >
+          <Mountain size={11} color={C.cyan} />
+          <Text style={v.pillText}>THE NINE RANKS</Text>
+        </Pressable>
       </View>
       <View style={s.grid}>
         {disciplines.map((d) => {
@@ -724,6 +878,7 @@ function Home({ navigation }: any) {
           const perf =
             rank &&
             a.me.performances?.find((p: any) => p.id === rank.performanceId);
+          const best = a.me ? null : heaviest(a.strength.performances, d.id);
           return (
             <Pressable
               key={d.id}
@@ -750,18 +905,24 @@ function Home({ navigation }: any) {
               </View>
               <View style={v.pill}>
                 <Text style={v.pillText}>
-                  {rank ? rankNames[rank.rankId] : "NOT RANKED"}
+                  {rank ? rankNames[rank.rankId] : "NO RANK YET"}
                 </Text>
               </View>
               <Text style={{ fontSize: 21, fontWeight: "700", color: C.text }}>
-                {perf ? perf.data.load + " " + perf.data.unit : "—"}
+                {perf
+                  ? perf.data.load + " " + perf.data.unit
+                  : best
+                    ? best.data.load + " " + best.data.unit
+                    : "—"}
               </Text>
               <Text style={v.subtle}>
                 {rank?.status === "verified"
                   ? "MONTE Verified"
                   : rank
                     ? "Provisional · self-reported"
-                    : "No verified performance"}
+                    : best
+                      ? "Logged · standards awaiting approval"
+                      : "Tap to log a lift"}
               </Text>
             </Pressable>
           );
@@ -769,8 +930,9 @@ function Home({ navigation }: any) {
       </View>
       <Text style={v.subtle}>
         MONTE WO Strength Index™ · DRAFT — NOT OFFICIAL. No combined score or
-        overall rank.
+        overall rank. Standards must be approved before any rank is awarded.
       </Text>
+      <RankLadder strip onPress={() => navigation.navigate("Ranks")} />
       <View style={{ flexDirection: "row", gap: 10 }}>
         <Pressable
           style={v.quick}
@@ -809,7 +971,6 @@ function Home({ navigation }: any) {
           </View>
         </View>
       </Card>
-      <RankLadder />
       <View style={s.row}>
         <Text style={v.sectionTitle}>Health connections</Text>
         <Text style={v.subtle}>NOT CONNECTED</Text>
@@ -847,7 +1008,7 @@ function Home({ navigation }: any) {
             onPress={() => navigation.navigate("SignIn")}
           />
           <Text style={[v.subtle, { textAlign: "center" }]}>
-            Device training available · account sync requires pilot enrollment.
+            Everything above works on this device without an account · account sync requires pilot enrollment.
           </Text>
         </View>
       )}
@@ -1691,6 +1852,38 @@ function HistoryScreen({ navigation }: any) {
             </Card>
           ))}
         </>
+      ) : !a.me && tab === "performances" ? (
+        <>
+          <Notice text={a.strengthStatus} />
+          <Body>Performances logged on this device, assessed by the shared MONTE WO engine. With draft standards no rank is awarded; records are kept so the history is transparent when a standard is approved.</Body>
+          {a.strengthReady && !a.strength.performances.length && (
+            <Notice text="No performances logged on this device yet. Use Home → Log a performance." />
+          )}
+          {a.strength.performances.map((p) => (
+            <Card key={p.id}>
+              <Label>{disciplineNameOf(p.data.discipline)} · DEVICE RECORD</Label>
+              <Text style={s.heading}>{loadLabel(p)}</Text>
+              <Body>
+                {p.data.performedOn} · {p.data.resultType === "tested" ? "Tested single" : "Estimated 1RM"} · bodyweight {p.data.bodyweight} {p.data.bodyweightUnit}
+              </Body>
+              <Body>{p.assessment.explanation}</Body>
+              <Text style={s.small}>{p.assessment.rulebookId} · {p.assessment.modelId} · status: {p.assessment.status}</Text>
+              <Button
+                title="Delete device record"
+                danger
+                secondary
+                busy={op.busy}
+                onPress={() =>
+                  confirm("Delete this device performance?", "Removes it from this device. No account record is changed.", () =>
+                    op.run(async () => {
+                      await a.removePerformanceLocal(p.id);
+                    }))
+                }
+              />
+            </Card>
+          ))}
+          <Button title="Log a performance" onPress={() => navigation.navigate("Performance")} />
+        </>
       ) : !a.me ? (
         <SignInCard navigation={navigation} />
       ) : tab === "workouts" ? (
@@ -1849,6 +2042,8 @@ function Performance({ navigation }: any) {
   const rule =
     a.me?.disciplines?.find((c: any) => c.discipline === discipline)
       ?.rulebook || ruleFor(discipline);
+  const profile = a.me ? a.me.profile?.data : a.strength.profile;
+  const onDevice = !a.me;
   return (
     <Screen>
       <PageHeader
@@ -1857,13 +2052,20 @@ function Performance({ navigation }: any) {
         subtitle="A training set is not automatically a qualifying performance."
       />
       <Notice text="DRAFT — NOT OFFICIAL. Unapproved standards cannot award official ranks. A tested single means one actual repetition, not a multi-rep estimate." />
-      {!a.me ? (
-        <SignInCard navigation={navigation} />
-      ) : !a.me.profile ? (
-        <Button
-          title="Create your profile first"
-          onPress={() => navigation.navigate("Profile")}
-        />
+      {onDevice && (
+        <Notice text={a.strengthReady ? "No account connected: this performance is saved on this device and assessed by the shared MONTE WO engine. " + (a.available ? "Sign in to keep it in an account." : "Account services are not enabled on this deployment.") : a.strengthStatus} />
+      )}
+      {!profile ? (
+        <Card>
+          <Label>{onDevice ? "DEVICE PROFILE SNAPSHOT NEEDED" : "PROFILE NEEDED"}</Label>
+          <Body>
+            Bodyweight, age and reference category are part of every performance record. They are stored {onDevice ? "on this device only" : "in your account"} and no rank is awarded for saving them.
+          </Body>
+          <Button
+            title="Create your profile first"
+            onPress={() => navigation.navigate("Profile")}
+          />
+        </Card>
       ) : (
         <Card>
           <DisciplinePicker
@@ -1919,15 +2121,37 @@ function Performance({ navigation }: any) {
             />
           ))}
           <Body>
-            Uses your saved profile snapshot: {a.me.profile.data.bodyweight}{" "}
-            {a.me.profile.data.unit}. Updating your profile cannot fabricate a
+            Uses your saved profile snapshot: {profile.bodyweight}{" "}
+            {profile.unit}. Updating your profile cannot fabricate a
             new achievement.
           </Body>
           <Button
-            title="Submit performance"
+            title={onDevice ? "Save performance on this device" : "Submit performance"}
             busy={op.busy}
             onPress={() =>
               op.run(async () => {
+                if (onDevice) {
+                  let record: LocalPerformance;
+                  try {
+                    record = await a.addPerformanceLocal({
+                      discipline,
+                      load,
+                      unit: unit as "kg" | "lb",
+                      reps: Number(reps),
+                      resultType: kind as "tested" | "estimated",
+                      performedOn: date,
+                      checks,
+                    });
+                  } catch (e) {
+                    throw Error(strengthMessage(e));
+                  }
+                  op.setMessage(
+                    `Saved on this device: ${disciplineNameOf(discipline)} ${loadLabel(record)}. Assessment: ${record.assessment.explanation}`,
+                  );
+                  setLoad("");
+                  setChecks({});
+                  return;
+                }
                 const p = a.me.profile.data;
                 await post("/strength/performances", {
                   discipline,
@@ -2052,6 +2276,26 @@ function Discipline({ route, navigation }: any) {
       {!card?.modelApproved || !card?.ruleApproved ? (
         <Notice text="DRAFT — NOT OFFICIAL. No approved thresholds are available for this discipline. No official MONTE Climb Scale percentage is shown." />
       ) : null}
+      {!a.me && (
+        <Card>
+          <Label>ON THIS DEVICE · NO ACCOUNT</Label>
+          {(() => {
+            const mine = a.strength.performances.filter((p) => p.data.discipline === id);
+            const best = heaviest(mine, id);
+            return (
+              <>
+                <Text style={s.title}>{best ? loadLabel(best) : "Nothing logged yet"}</Text>
+                <Body>
+                  {best
+                    ? `Heaviest of ${mine.length} logged ${mine.length === 1 ? "performance" : "performances"} (${best.data.performedOn}). ${best.assessment.explanation}`
+                    : "Log a tested single or an estimated 1RM. The shared MONTE WO engine assesses it against this discipline's MONTE Standard."}
+                </Body>
+              </>
+            );
+          })()}
+          <Button title="See the nine ranks" secondary onPress={() => navigation.navigate("Ranks")} />
+        </Card>
+      )}
       <Card>
         <Label>RELATED TRAINING ANIMATION</Label>
         <Button
@@ -2076,7 +2320,7 @@ function Discipline({ route, navigation }: any) {
             : "A training animation is not evidence of a qualifying performance."}
         </Text>
       </Card>
-      {["verified", "provisional"].map((kind) => (
+      {(a.me ? ["verified", "provisional"] : []).map((kind) => (
         <Card key={kind}>
           <Label>
             {kind === "verified"
@@ -2124,7 +2368,7 @@ function Discipline({ route, navigation }: any) {
 function Profile() {
   const a = useApp(),
     op = useOperation(),
-    p = a.me?.profile?.data,
+    p = a.me ? a.me.profile?.data : a.strength.profile,
     [weight, setWeight] = useState(p?.bodyweight || ""),
     [age, setAge] = useState(p?.ageYears ? String(p.ageYears) : ""),
     [unit, setUnit] = useState(p?.unit || "kg"),
@@ -2171,12 +2415,30 @@ function Profile() {
           Software limits are not proof that a standard has been validated for
           your category.
         </Body>
+        {!a.me && (
+          <Body>
+            No account connected: this snapshot stays on this device (not encrypted by MONTE WO) and is attached to performances you log here.
+          </Body>
+        )}
         <Button
-          title="Save profile revision"
-          disabled={!a.me}
+          title={a.me ? "Save profile revision" : "Save on this device"}
           busy={op.busy}
           onPress={() =>
             op.run(async () => {
+              if (!a.me) {
+                try {
+                  await a.saveProfileLocal({
+                    bodyweight: weight,
+                    unit: unit as "kg" | "lb",
+                    sexCategory: category as "female" | "male" | "unclassified",
+                    ageYears: Number(age),
+                  });
+                } catch (e) {
+                  throw Error(strengthMessage(e));
+                }
+                op.setMessage("Profile saved on this device. No rank was awarded by this change.");
+                return;
+              }
               await post("/strength/profiles", {
                 profile: {
                   bodyweight: weight,
@@ -2205,7 +2467,22 @@ function Account({ navigation }: any) {
     <Screen>
       <PageHeader eyebrow="YOUR ACCOUNT" title="Private by default." />
       {!a.me ? (
-        <SignInCard navigation={navigation} />
+        <>
+          <Card>
+            <Label>WORKS ON THIS DEVICE · NO ACCOUNT NEEDED</Label>
+            <Body>
+              Workouts, performances, the exercise library, the muscle map and the nine-rank MONTE Climb Scale all work here without signing in. Records stay on this device.
+            </Body>
+            <Body>
+              {a.strength.profile
+                ? `Device profile: ${a.strength.profile.bodyweight} ${a.strength.profile.unit} · ${a.strength.profile.ageYears} y · ${a.strength.profile.sexCategory}`
+                : "No device profile yet (needed to log a performance)."}
+            </Body>
+            <Button title={a.strength.profile ? "Edit device profile" : "Create device profile"} onPress={() => navigation.navigate("Profile")} />
+            <Button title="The nine ranks" secondary onPress={() => navigation.navigate("Ranks")} />
+          </Card>
+          <SignInCard navigation={navigation} />
+        </>
       ) : (
         <Card>
           <Label>CONNECTED ACCOUNT</Label>
@@ -2275,7 +2552,7 @@ function Account({ navigation }: any) {
       </Card>
       <Card>
         <Label>VITAFLEX BUSINESS GROUP</Label>
-        <Body>MONTE WO 0.1.0 · pre-release</Body>
+        <Body>MONTE WO {Constants.expoConfig?.version || "1.0.0"} · pre-release test build</Body>
         <Body>{a.status}</Body>
         <Button
           title="Contact support"
@@ -2617,6 +2894,11 @@ export default function App() {
                     name="Discipline"
                     component={Discipline}
                     options={{ title: "Discipline Rank" }}
+                  />
+                  <Stack.Screen
+                    name="Ranks"
+                    component={Ranks}
+                    options={{ title: "MONTE Climb Scale" }}
                   />
                   <Stack.Screen
                     name="Performance"
