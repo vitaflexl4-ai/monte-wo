@@ -20,6 +20,10 @@ test('App workflows: opt-in triggers, source rebuild, no credentials, no store s
     assert.ok(/branches: \["arena\/\*\*"\]/.test(text), wf + ' push trigger must be limited to arena/** working branches');
     assert.ok(/contains\(github\.event\.head_commit\.message, '\[build-app\]'\)/.test(text), wf + ' push runs must be opt-in per commit ([build-app])');
     assert.ok(/^permissions:\n  contents: read/m.test(text), wf + ' needs read-only repository permissions');
+    const yamlOnly = text.replace(/^  publish:[\s\S]*$/m, '').split('\n').filter(l => !/^\s*#/.test(l)).join('\n');
+    assert.ok(!/\bcontents: write\b/.test(yamlOnly), wf + ' only the opt-in Android publish job may hold contents: write');
+    assert.ok(text.includes('node scripts/check-build-security.cjs') && text.includes('MONTEWO_BUILD_CHANNEL: internal-ci'), wf + ' must run the blocking build security gate in the internal-ci channel');
+    assert.ok(!text.includes('continue-on-error: true'), wf + ' must not silence failing steps');
     for (const m of text.matchAll(/^\s*-?\s*name: (.+)$/gm)) {
       const v = m[1].trim();
       assert.ok(/^["']/.test(v) || !v.includes(': '), wf + ' unquoted step name with ": " breaks YAML: ' + v);
@@ -47,6 +51,21 @@ test('Android workflow: env-driven signing, both outputs, signature verification
   assert.ok(text.includes('java-version: 17') && text.includes('"ndk;27.1.12297006"') && text.includes('"platforms;android-36"'), 'toolchain pinned to React Native 0.86 requirements');
   assert.ok(text.includes('MONTEWO_ANDROID_VERSION_CODE: ${{ inputs.version_code || github.run_number }}'), 'versionCode must be monotonic by default');
   assert.ok(!text.includes('[deploy]') && !text.includes('wrangler'), 'the Android build never touches Cloudflare');
+});
+
+test('Android publish job: opt-in GitHub pre-release of the test APK only (no store, honest notes, checksums)', () => {
+  const text = read(ANDROID);
+  const publish = text.slice(text.indexOf('\n  publish:'));
+  assert.ok(publish.length > 100, 'publish job present');
+  assert.ok(/needs: build/.test(publish) && /needs\.build\.result == 'success'/.test(publish), 'publishes only a successful build of the same run');
+  assert.ok(publish.includes("inputs.publish_release == true || contains(github.event.head_commit.message, '[publish-apk]')"), 'publishing is opt-in per dispatch input or [publish-apk] commit tag');
+  assert.ok(/permissions:\n      contents: write/.test(publish), 'release creation needs contents: write on this job only');
+  assert.ok(publish.includes('actions/download-artifact@v4') && publish.includes('monte-wo-android-apk-${{ needs.build.outputs.version }}-${{ needs.build.outputs.code }}'), 'the APK comes from this run\'s artifact');
+  assert.ok(publish.includes('--prerelease') && publish.includes('--target "$GITHUB_SHA"') && publish.includes('TAG="app-android-v${VERSION}-${CODE}"'), 'pre-release tagged per version/versionCode at the built commit');
+  assert.ok(publish.includes('sha256sum') && publish.includes('SHA256SUMS.txt') && publish.includes('release/build-info.json'), 'checksums + build-info are published with the APK');
+  assert.ok(publish.includes('not an official release and not Google Play') && publish.includes('Signed with the public Android debug keystore') && publish.includes('DRAFT — NOT OFFICIAL'), 'release notes stay honest about test status, signing and draft standards');
+  assert.ok(!/secrets\./.test(publish) || /secrets\.GITHUB_TOKEN/.test(publish), 'publish job uses only the workflow token');
+  assert.ok(!/\.aab/.test(publish.replace(/matching \\`\.aab\\`/g, '')), 'the Play bundle (.aab) is never published publicly — it stays a workflow artifact');
 });
 
 test('iOS workflow: unsigned Simulator build only, no secrets, embedded bundle check', () => {

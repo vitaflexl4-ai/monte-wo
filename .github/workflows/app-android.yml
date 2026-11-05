@@ -18,6 +18,8 @@ name: App — Android (APK + AAB)
 on:
   # Manual run from the Actions tab, or a push to an arena/* working branch whose commit message contains
   # "[build-app]" (the agent sandbox cannot dispatch workflows and cannot compile Android itself).
+  # "[publish-apk]" in the same commit message (or the publish_release input) additionally publishes the APK
+  # as a GitHub pre-release: tag app-android-v<version>-<versionCode>, assets = APK + build-info.json + SHA256SUMS.
   push:
     branches: ["arena/**"]
   workflow_dispatch:
@@ -30,7 +32,14 @@ on:
         description: "Google Play versionCode (positive integer, must only increase). Empty = this run number."
         required: false
         default: ""
+      publish_release:
+        description: "Also publish the APK as a GitHub pre-release (public direct download, labelled as a test build)"
+        type: boolean
+        required: false
+        default: false
 
+# The build job only reads the repository. Only the (opt-in) publish job gets contents: write, to create the
+# pre-release; it never touches branches.
 permissions:
   contents: read
 
@@ -44,6 +53,12 @@ jobs:
     if: github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[build-app]')
     runs-on: ubuntu-latest
     timeout-minutes: 90
+    outputs:
+      version: ${{ steps.outputs.outputs.version }}
+      code: ${{ env.MONTEWO_ANDROID_VERSION_CODE }}
+      signer: ${{ steps.verify.outputs.signer }}
+      fingerprint: ${{ steps.verify.outputs.fingerprint }}
+      mode: ${{ steps.signing.outputs.mode }}
     defaults:
       run:
         working-directory: apps/mobile
@@ -99,20 +114,11 @@ jobs:
           node --test tests/*.test.cjs
           node scripts/make-native-icons.cjs --check
 
-      - name: Dependency advisory report (informational — see docs/release/RELEASE_STATUS.md, build security gate)
-        run: |
-          npm audit --package-lock-only --json > "$RUNNER_TEMP/audit.json" || true
-          node -e '
-            const a = require(process.env.RUNNER_TEMP + "/audit.json");
-            const c = a.metadata && a.metadata.vulnerabilities;
-            if (!c) { console.log("audit unavailable"); process.exit(0); }
-            const roots = new Set();
-            for (const v of Object.values(a.vulnerabilities || {})) for (const via of v.via || []) if (typeof via === "object") roots.add(via.name + " " + via.range);
-            const line = `npm audit (apps/mobile, build tooling): total ${c.total} — critical ${c.critical}, high ${c.high}, moderate ${c.moderate}, low ${c.low}; roots: ${[...roots].join(", ") || "none"}`;
-            console.log(line);
-            require("fs").appendFileSync(process.env.GITHUB_STEP_SUMMARY, "- " + line + "\n");
-            if (c.total > 0) console.log("::warning title=Open dependency advisories::" + line + ". Owner re-review required before any public release (docs/release/RELEASE_STATUS.md).");
-          '
+      - name: Build security gate (BLOCKING — reviewed internal-testing exception, apps/mobile/security/reviewed-advisories.json)
+        env:
+          MONTEWO_BUILD_CHANNEL: internal-ci
+          MONTEWO_INTERNAL_APK_RISK_ACCEPTED: "true"
+        run: node scripts/check-build-security.cjs
 
       - name: Generate the native project (expo prebuild)
         run: |
@@ -250,3 +256,84 @@ jobs:
             apps/mobile/dist/build-info.json
           if-no-files-found: error
           retention-days: 30
+
+  publish:
+    name: Publish the APK as a GitHub pre-release (opt-in)
+    needs: build
+    if: needs.build.result == 'success' && (inputs.publish_release == true || contains(github.event.head_commit.message, '[publish-apk]'))
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: write
+    env:
+      GH_TOKEN: ${{ github.token }}
+      GH_REPO: ${{ github.repository }}
+      VERSION: ${{ needs.build.outputs.version }}
+      CODE: ${{ needs.build.outputs.code }}
+      SIGNER: ${{ needs.build.outputs.signer }}
+      FINGERPRINT: ${{ needs.build.outputs.fingerprint }}
+      SIGNING_MODE: ${{ needs.build.outputs.mode }}
+    steps:
+      - name: Download the APK artifact of this run
+        uses: actions/download-artifact@v4
+        with:
+          name: monte-wo-android-apk-${{ needs.build.outputs.version }}-${{ needs.build.outputs.code }}
+          path: release
+
+      - name: Create the pre-release (replaces a release with the same tag)
+        id: release
+        run: |
+          set -euo pipefail
+          TAG="app-android-v${VERSION}-${CODE}"
+          APK="$(ls release/*.apk | head -n1)"
+          test -f "$APK" || { echo "::error title=No APK in artifact::nothing to publish"; exit 1; }
+          test -f release/build-info.json || { echo "::error title=build-info.json missing::artifact incomplete"; exit 1; }
+          (cd release && sha256sum "$(basename "$APK")" build-info.json > SHA256SUMS.txt)
+          SHA="$(sha256sum "$APK" | cut -d' ' -f1)"
+          BYTES="$(stat -c %s "$APK")"
+          if [ "$SIGNING_MODE" = "upload-keystore" ]; then
+            SIGNING_LINE="Signed with the owner's upload keystore (certificate SHA-256 \`$FINGERPRINT\`)."
+            PLAY_LINE="This build is signed with the registered upload key; the matching \`.aab\` is in the workflow artifacts for Google Play."
+          else
+            SIGNING_LINE="**Signed with the public Android debug keystore** (certificate SHA-256 \`$FINGERPRINT\`) — a test build, not a release identity."
+            PLAY_LINE="Google Play rejects debug-signed builds; a future Play-signed MONTE WO cannot update this APK in place (uninstall first)."
+          fi
+          cat > notes.md <<NOTES
+          # MONTE WO app — Android ${VERSION} · test build ${CODE}
+
+          **Pre-release test build for internal testing — not an official release and not Google Play.** It may be
+          replaced at any time. Built from commit \`${GITHUB_SHA}\` by [workflow run ${GITHUB_RUN_ID}](${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}).
+
+          | | |
+          |---|---|
+          | Application ID | \`com.vitaflex.montewovitaflex\` |
+          | versionName / versionCode | \`${VERSION}\` / \`${CODE}\` |
+          | File | \`$(basename "$APK")\` — ${BYTES} bytes |
+          | SHA-256 | \`${SHA}\` |
+          | Minimum Android | 7.0 (API 24) |
+          | Permissions | INTERNET only (see the workflow summary for the merged manifest) |
+          | Signing | ${SIGNING_LINE} |
+
+          ${PLAY_LINE}
+
+          **Install:** download the \`.apk\` on the phone, open it, allow "install unknown apps" for the browser/Files app once, then turn that permission off again. Compare the SHA-256 with the value above (\`SHA256SUMS.txt\`). Keep Play Protect on. If an older MONTE WO test build or the Expo preview is installed with a different signing key, uninstall it first.
+
+          **What works in this build:** the app opens offline (library, muscle map, device-local workouts). Account services report "not configured on this deployment" until the owner enables the mobile API. MONTE WO Strength Index™ standards are DRAFT — NOT OFFICIAL; no official rank is awarded.
+          NOTES
+          gh release delete "$TAG" --cleanup-tag -y 2>/dev/null || true
+          URL="$(gh release create "$TAG" "$APK" release/build-info.json release/SHA256SUMS.txt \
+            --prerelease --target "$GITHUB_SHA" \
+            --title "MONTE WO app — Android ${VERSION} (test build ${CODE})" \
+            --notes-file notes.md)"
+          ASSET="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/releases/download/${TAG}/$(basename "$APK")"
+          echo "release_url=$URL" >> "$GITHUB_OUTPUT"
+          echo "asset_url=$ASSET" >> "$GITHUB_OUTPUT"
+          echo "sha256=$SHA" >> "$GITHUB_OUTPUT"
+          echo "bytes=$BYTES" >> "$GITHUB_OUTPUT"
+          {
+            echo "## Published pre-release"
+            echo "- Release: $URL"
+            echo "- Direct APK: $ASSET (${BYTES} bytes, SHA-256 \`${SHA}\`)"
+            echo "- Signing: ${SIGNER}"
+          } >> "$GITHUB_STEP_SUMMARY"
+          echo "::notice title=APK published::$ASSET"

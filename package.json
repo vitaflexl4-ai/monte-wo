@@ -42,6 +42,7 @@
     "check:webapp": "python3 scripts/build_webapp.py --check",
     "test:webapp": "node --test tests/webapp.test.js",
     "test:webapp-browser": "node tests/webapp-browser.mjs",
+    "store:assets": "node tests/store-assets.mjs",
     "test:dashboard": "node --test tests/dashboard.test.js",
     "test:dashboard-browser": "node tests/dashboard-browser.mjs",
     "build:native": "python3 scripts/build_native.py",

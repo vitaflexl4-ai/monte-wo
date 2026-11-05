@@ -96,3 +96,15 @@ jobs:
           path: test-results/webapp-*.png
           if-no-files-found: ignore
           retention-days: 7
+
+      - name: Store asset drafts (Play/App Store screenshots, feature graphic, 1024 icon) from the same app
+        run: node tests/store-assets.mjs
+
+      - name: Keep the store asset drafts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: store-assets
+          path: test-results/store-assets/
+          if-no-files-found: ignore
+          retention-days: 30

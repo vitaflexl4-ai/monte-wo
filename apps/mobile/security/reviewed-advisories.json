@@ -1,0 +1,179 @@
+{
+  "$comment": "Reviewed dependency advisories for apps/mobile — read by scripts/check-build-security.cjs. Every entry is build tooling that never enters the app bundle. Any new advisory, changed range/severity or changed installed version fails the gate closed until this file is re-reviewed.",
+  "reviewedAt": "2026-11-04",
+  "review": "Arena agent dependency review on 2026-11-04 (npm audit --package-lock-only, Expo SDK ~57.0.30); approved by the owner in chat the same day (\"execute all these points and publish. You have full permission\"). Supersedes the 2026-10-15 exception (braces/node-forge, 15 high) whose advisory set no longer matched the registry.",
+  "scope": "Node-only Expo build tooling (@expo/cli, config plugins, prebuild/export, metro config). The Hermes bundle contains app sources and runtime dependencies only; none of the packages below is imported by app code.",
+  "publicReleaseAuthorized": false,
+  "allowedChannels": [
+    "eas-preview-android",
+    "internal-ci"
+  ],
+  "channelNotes": {
+    "eas-preview-android": "EAS profile `preview`, Android, MONTEWO_INTERNAL_APK_RISK_ACCEPTED=true (internal APK, owner exception since 2026-10-15)",
+    "internal-ci": "GitHub Actions app-android.yml / app-ios.yml with MONTEWO_BUILD_CHANNEL=internal-ci — artifacts are labelled internal/test builds (debug-signed APK/AAB unless the owner keystore secrets exist; unsigned iOS Simulator build)"
+  },
+  "deniedChannels": "EAS `production` builds and anything intended for Google Play / App Store stay denied until the advisories are resolved (planned: tooling update pass + Expo SDK 58) or this file is re-reviewed by the owner.",
+  "installedVersions": {
+    "deepmerge": [
+      "4.3.1"
+    ],
+    "glob": [
+      "13.0.6"
+    ],
+    "minimatch": [
+      "10.2.6"
+    ],
+    "node-forge": [
+      "1.4.0"
+    ],
+    "zod": [
+      "3.25.76"
+    ]
+  },
+  "advisories": [
+    {
+      "name": "deepmerge",
+      "url": "https://github.com/advisories/GHSA-gcqx-w48m-w2h4",
+      "range": ">=4.2.0 <=4.3.1",
+      "severity": "low",
+      "title": "deepmerge mergeObject() allows prototype poisoning of returned objects",
+      "usedBy": "@expo/config (merging app config objects at build time) — Node-only",
+      "remediation": "requires Expo SDK 58 (@expo/config)"
+    },
+    {
+      "name": "glob",
+      "url": "https://github.com/advisories/GHSA-3g3m-2fjr-6pw4",
+      "range": ">=9.0.0 <=14.0.1",
+      "severity": "moderate",
+      "title": "Glob: AbortSignal cancellation bypass allows post-timeout filesystem traversal",
+      "usedBy": "@expo/config-plugins, @expo/metro-config, @expo/fingerprint (file discovery during prebuild/export) — Node-only",
+      "remediation": "requires Expo SDK 58"
+    },
+    {
+      "name": "minimatch",
+      "url": "https://github.com/advisories/GHSA-g3hv-75wg-m249",
+      "range": ">=7.0.0 <11.0.1",
+      "severity": "moderate",
+      "title": "minimatch has potential denial of service via globparts amplification",
+      "usedBy": "glob dependency inside the same Expo tooling — Node-only",
+      "remediation": "requires Expo SDK 58"
+    },
+    {
+      "name": "node-forge",
+      "url": "https://github.com/advisories/GHSA-4487-j8r4-4g2f",
+      "range": "<=1.4.0",
+      "severity": "low",
+      "title": "Forge: verifyCertificateChain() removes trusted CA certificates with the same subject from the CA store",
+      "usedBy": "@expo/cli (dev-server HTTPS certificates) and @expo/code-signing-certificates (EAS/Expo CLI certificate tooling) — Node-only, never imported by app code",
+      "remediation": "npm audit fix (node-forge ≥1.5, also bumps @expo/prebuild-config 57.0.10→57.0.11 and adds @expo/dom-webview/@expo/log-box; 320 lock lines) — deferred to a dedicated tooling-update pass with a full rebuild verification"
+    },
+    {
+      "name": "node-forge",
+      "url": "https://github.com/advisories/GHSA-4642-5mcj-2rqw",
+      "range": "<=1.4.0",
+      "severity": "low",
+      "title": "Forge: ASN.1 OID first arc truncation in asn1.oidToDer",
+      "usedBy": "@expo/cli (dev-server HTTPS certificates) and @expo/code-signing-certificates (EAS/Expo CLI certificate tooling) — Node-only, never imported by app code",
+      "remediation": "npm audit fix (node-forge ≥1.5, also bumps @expo/prebuild-config 57.0.10→57.0.11 and adds @expo/dom-webview/@expo/log-box; 320 lock lines) — deferred to a dedicated tooling-update pass with a full rebuild verification"
+    },
+    {
+      "name": "node-forge",
+      "url": "https://github.com/advisories/GHSA-525v-9gp9-w22h",
+      "range": "<=1.4.0",
+      "severity": "moderate",
+      "title": "Forge: TLS client crash when the server sends no certificate",
+      "usedBy": "@expo/cli (dev-server HTTPS certificates) and @expo/code-signing-certificates (EAS/Expo CLI certificate tooling) — Node-only, never imported by app code",
+      "remediation": "npm audit fix (node-forge ≥1.5, also bumps @expo/prebuild-config 57.0.10→57.0.11 and adds @expo/dom-webview/@expo/log-box; 320 lock lines) — deferred to a dedicated tooling-update pass with a full rebuild verification"
+    },
+    {
+      "name": "node-forge",
+      "url": "https://github.com/advisories/GHSA-5cwg-6vw7-rj6p",
+      "range": "<=1.4.0",
+      "severity": "moderate",
+      "title": "Forge: AES-GCM authentication bypass via unvalidated tagLength option",
+      "usedBy": "@expo/cli (dev-server HTTPS certificates) and @expo/code-signing-certificates (EAS/Expo CLI certificate tooling) — Node-only, never imported by app code",
+      "remediation": "npm audit fix (node-forge ≥1.5, also bumps @expo/prebuild-config 57.0.10→57.0.11 and adds @expo/dom-webview/@expo/log-box; 320 lock lines) — deferred to a dedicated tooling-update pass with a full rebuild verification"
+    },
+    {
+      "name": "node-forge",
+      "url": "https://github.com/advisories/GHSA-5x38-2vff-x55p",
+      "range": "<=1.4.0",
+      "severity": "high",
+      "title": "Forge: X.509 basicConstraints bypass in verifyCertificateChain() via deprecated extension OIDs 2.5.29.10 and 2.5.29.13",
+      "usedBy": "@expo/cli (dev-server HTTPS certificates) and @expo/code-signing-certificates (EAS/Expo CLI certificate tooling) — Node-only, never imported by app code",
+      "remediation": "npm audit fix (node-forge ≥1.5, also bumps @expo/prebuild-config 57.0.10→57.0.11 and adds @expo/dom-webview/@expo/log-box; 320 lock lines) — deferred to a dedicated tooling-update pass with a full rebuild verification"
+    },
+    {
+      "name": "node-forge",
+      "url": "https://github.com/advisories/GHSA-6wvx-3r32-xmcg",
+      "range": "<=1.4.0",
+      "severity": "moderate",
+      "title": "Forge: Prototype Pollution in forge.http cookie handling via a malicious Set-Cookie",
+      "usedBy": "@expo/cli (dev-server HTTPS certificates) and @expo/code-signing-certificates (EAS/Expo CLI certificate tooling) — Node-only, never imported by app code",
+      "remediation": "npm audit fix (node-forge ≥1.5, also bumps @expo/prebuild-config 57.0.10→57.0.11 and adds @expo/dom-webview/@expo/log-box; 320 lock lines) — deferred to a dedicated tooling-update pass with a full rebuild verification"
+    },
+    {
+      "name": "node-forge",
+      "url": "https://github.com/advisories/GHSA-7wch-p9px-956x",
+      "range": "<=1.4.0",
+      "severity": "high",
+      "title": "Forge: Regular expression denial of service in PEM decoding (pem.decode)",
+      "usedBy": "@expo/cli (dev-server HTTPS certificates) and @expo/code-signing-certificates (EAS/Expo CLI certificate tooling) — Node-only, never imported by app code",
+      "remediation": "npm audit fix (node-forge ≥1.5, also bumps @expo/prebuild-config 57.0.10→57.0.11 and adds @expo/dom-webview/@expo/log-box; 320 lock lines) — deferred to a dedicated tooling-update pass with a full rebuild verification"
+    },
+    {
+      "name": "node-forge",
+      "url": "https://github.com/advisories/GHSA-86w9-cpqp-85rv",
+      "range": "<=1.4.0",
+      "severity": "high",
+      "title": "node-forge RSA PKCS#1 v1.5 signature verification accepts extra nested DigestAlgorithm elements",
+      "usedBy": "@expo/cli (dev-server HTTPS certificates) and @expo/code-signing-certificates (EAS/Expo CLI certificate tooling) — Node-only, never imported by app code",
+      "remediation": "npm audit fix (node-forge ≥1.5, also bumps @expo/prebuild-config 57.0.10→57.0.11 and adds @expo/dom-webview/@expo/log-box; 320 lock lines) — deferred to a dedicated tooling-update pass with a full rebuild verification"
+    },
+    {
+      "name": "node-forge",
+      "url": "https://github.com/advisories/GHSA-8hrf-8g6f-7xwp",
+      "range": "<=1.4.0",
+      "severity": "high",
+      "title": "Forge: Denial of service in TLS record processing via a record interleaved with a fragmented handshake message",
+      "usedBy": "@expo/cli (dev-server HTTPS certificates) and @expo/code-signing-certificates (EAS/Expo CLI certificate tooling) — Node-only, never imported by app code",
+      "remediation": "npm audit fix (node-forge ≥1.5, also bumps @expo/prebuild-config 57.0.10→57.0.11 and adds @expo/dom-webview/@expo/log-box; 320 lock lines) — deferred to a dedicated tooling-update pass with a full rebuild verification"
+    },
+    {
+      "name": "node-forge",
+      "url": "https://github.com/advisories/GHSA-h6cr-wjv9-3cpp",
+      "range": "<=1.4.0",
+      "severity": "low",
+      "title": "Forge: Denial of Service via infinite loop in BigInteger.modInverse() with negative input (incomplete fix of CVE-2026-33891)",
+      "usedBy": "@expo/cli (dev-server HTTPS certificates) and @expo/code-signing-certificates (EAS/Expo CLI certificate tooling) — Node-only, never imported by app code",
+      "remediation": "npm audit fix (node-forge ≥1.5, also bumps @expo/prebuild-config 57.0.10→57.0.11 and adds @expo/dom-webview/@expo/log-box; 320 lock lines) — deferred to a dedicated tooling-update pass with a full rebuild verification"
+    },
+    {
+      "name": "node-forge",
+      "url": "https://github.com/advisories/GHSA-hqq3-7jhf-c5jx",
+      "range": "<=1.4.0",
+      "severity": "high",
+      "title": "Forge: Denial of service in TLS record processing via call stack exhaustion",
+      "usedBy": "@expo/cli (dev-server HTTPS certificates) and @expo/code-signing-certificates (EAS/Expo CLI certificate tooling) — Node-only, never imported by app code",
+      "remediation": "npm audit fix (node-forge ≥1.5, also bumps @expo/prebuild-config 57.0.10→57.0.11 and adds @expo/dom-webview/@expo/log-box; 320 lock lines) — deferred to a dedicated tooling-update pass with a full rebuild verification"
+    },
+    {
+      "name": "node-forge",
+      "url": "https://github.com/advisories/GHSA-jc66-7q78-782g",
+      "range": "<=1.4.0",
+      "severity": "high",
+      "title": "Forge: PKCS#12 MAC forgery and constant-key PBE via zero iteration count",
+      "usedBy": "@expo/cli (dev-server HTTPS certificates) and @expo/code-signing-certificates (EAS/Expo CLI certificate tooling) — Node-only, never imported by app code",
+      "remediation": "npm audit fix (node-forge ≥1.5, also bumps @expo/prebuild-config 57.0.10→57.0.11 and adds @expo/dom-webview/@expo/log-box; 320 lock lines) — deferred to a dedicated tooling-update pass with a full rebuild verification"
+    },
+    {
+      "name": "zod",
+      "url": "https://github.com/advisories/GHSA-mrhx-c7xc-m3w5",
+      "range": "<4.6.6",
+      "severity": "high",
+      "title": "Zod can exhaust memory while validating oversized constrained collections",
+      "usedBy": "@expo/cli (schema validation of CLI/config input) — Node-only",
+      "remediation": "requires Expo SDK 58 (@expo/cli with zod ≥4.6.6) — a major upgrade, planned separately"
+    }
+  ]
+}

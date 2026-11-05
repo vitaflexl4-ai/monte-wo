@@ -75,6 +75,12 @@ jobs:
           node --test tests/*.test.cjs
           node scripts/make-native-icons.cjs --check
 
+      - name: Build security gate (BLOCKING — reviewed internal-testing exception, apps/mobile/security/reviewed-advisories.json)
+        env:
+          MONTEWO_BUILD_CHANNEL: internal-ci
+          MONTEWO_INTERNAL_APK_RISK_ACCEPTED: "true"
+        run: node scripts/check-build-security.cjs
+
       - name: Generate the native project (expo prebuild)
         run: |
           npx expo prebuild --platform ios --no-install --clean
