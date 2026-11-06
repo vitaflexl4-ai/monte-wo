@@ -2,7 +2,7 @@
 
 ## Status
 
-Validated locally; deployment pending the existing `vitaflex` workflow. Baseline source is preserved in Git at `5c57afe`. No new public page, section, text, navigation, brand claim, contact detail, image, design rule or functionality was introduced. All 61 pre-existing HTML bodies and 165 static files match the pinned preservation baseline. Eight full-page screenshot pairs (homepage/profile × 320/390/768/1440px) are pixel-identical.
+Published to the existing `vitaflex` project at revision `6a1596d2715efea265147ece053109021aee9a5e`. Preview and production Pages checks passed all 55 paths. The final preferred-domain default-request audit is blocked by Cloudflare; details below. Baseline source is preserved in Git at `5c57afe`. No new public page, section, text, navigation, brand claim, contact detail, image, design rule or functionality was introduced. All 61 pre-existing HTML bodies and 165 static files match the pinned preservation baseline. Eight full-page screenshot pairs (homepage/profile × 320/390/768/1440px) are pixel-identical.
 
 ## 1. Already correct
 
@@ -88,11 +88,28 @@ The audit deliberately distinguishes alternate-origin path validation from prefe
 
 ## 5. Deployment
 
-Pending the existing guarded workflow. Target is only the existing domain-owning Cloudflare Pages project **vitaflex**, production branch **main**. Preview must pass the existing schema/API checks and the new all-55 HTTP audit before production publication. Final URLs and status will be recorded after execution.
+**Publication actually occurred**, following successful preview validation, to only the existing domain-owning Cloudflare Pages project **vitaflex**, production branch **main**.
+
+- Preview: https://ea3b4850.vitaflex.pages.dev/.
+- Immutable production deployment: https://f4c7468a.vitaflex.pages.dev/.
+- Production domain: https://vitaflexbusinessgroup.com/.
+- Revision: `6a1596d2715efea265147ece053109021aee9a5e`.
+- Workflow/evidence: https://github.com/vitaflexl4-ai/monte-wo/actions/runs/42269079880.
+- Build, browser regression, all 24 targeted tests, preview gate, production publication, configuration-preservation assertions, and production Pages verification passed.
+- Preview and production Pages: **55/55 direct HTTP 200**, all 55 canonicals/OG URLs and title/description/indexability checks passed. robots.txt and sitemap returned 200. Legacy `/founder/` returned 301 to `/sony/`.
+- Cloudflare's preview-only `X-Robots-Tag: noindex` was observed, as appropriate for a preview. Production Pages probes had no such header. Source public pages do not contain unintended noindex.
+- Private API verification: preview 503 fail-closed, production 401. This checks protection, not an authenticated end-to-end workflow.
+- Preferred domain, default Node/GitHub-runner requests: **55/55 paths returned 403**. robots.txt returned 200, sitemap returned 403. The audit explicitly used the local validated path list after remote sitemap failure; **zero preferred-domain pages had metadata validated in that default-request audit**. The final workflow step therefore failed; the overall run is not green.
+- Preferred-domain User-Agent probes: Googlebot, Bingbot and OAI-SearchBot each returned 200 on `/`, `/sony/` and `/robots.txt`, with no `X-Robots-Tag: noindex`. PerplexityBot returned 403/challenge on `/` and `/sony/`, but 200 on `/robots.txt`. These header-only identity probes do not authenticate verified crawlers and do not prove indexing or actual AI-system access.
+- Preferred-domain legacy/HTTP/www redirect probes were blocked by 403/challenge, so their edge redirect behavior could not be confirmed from the runner. The deployed Pages legacy 301 was confirmed separately.
+- Fresh independent retrieval of the preferred-domain homepage and Sony profile succeeded and showed unchanged visible content. This does not substitute for the blocked all-55 default-request audit.
+- No DNS, WAF, security protection, project, Worker, binding or application system was changed beyond publication to the existing project.
+
+Machine-readable receipts, crawler status arrays and deployment metadata are in `docs/group/entity-recognition-evidence.json`. Full 55-row HTTP reports are retained in the workflow's `group-deployment-evidence` artifact. GitHub truncates long annotation messages; the report does not imply that truncated annotations contain every HTTP row.
 
 ## 6. Remaining issues and limits
 
-- Existing Cloudflare custom-domain challenges can block CI requests. No security setting was weakened to bypass them; actual responses will be recorded separately from successful Pages-host audits.
+- **Unresolved edge access:** preferred-domain default CI requests are blocked on all 55 paths, and PerplexityBot-labeled probes are challenged on homepage/profile. Review real verified-crawler events and relevant Cloudflare bot/WAF policy before any narrowly scoped policy decision. No security setting was weakened or bypass rule introduced. Successful Pages-host checks must not be presented as successful preferred-domain generic crawling.
 - Real verified-Googlebot/Bingbot/AI crawler access and selected canonical/indexing status require appropriate search-engine webmaster tools and edge logs. Search Console/Bing Webmaster Tools access was not available. No indexing, ranking or AI inclusion is claimed.
 - Nine legacy MONTE WO HTML-validator findings remain; no visible body or functional button semantics were changed under the strict preservation rule.
 - Two unrelated pre-existing protected-source checksum failures remain; their assertions/config were not weakened.

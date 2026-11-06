@@ -1,5 +1,5 @@
 {
-  "status": "Validated locally; deployment pending",
+  "status": "Published to vitaflex; production Pages all-55 audit passed; preferred-domain default-request audit blocked at the edge",
   "baselineRevision": "5c57afe",
   "homeGraph": {
     "@context": "https://schema.org",
@@ -954,5 +954,582 @@
       "sony": "passed",
       "monteWo": "9 pre-existing findings; confirmed on baseline; unchanged visible body"
     }
-  }
+  },
+  "deployment": {
+    "project": "vitaflex",
+    "productionBranch": "main",
+    "revision": "6a1596d2715efea265147ece053109021aee9a5e",
+    "preview": "https://ea3b4850.vitaflex.pages.dev",
+    "productionDeployment": "https://f4c7468a.vitaflex.pages.dev",
+    "productionDomain": "https://vitaflexbusinessgroup.com",
+    "workflow": "https://github.com/vitaflexl4-ai/monte-wo/actions/runs/42269079880",
+    "productionBindingsAndDomainsPreserved": true,
+    "workflowConclusion": "failure at preferred-domain HTTP audit after successful publication and production Pages verification",
+    "independentRetrieval": "Fresh preferred-domain homepage and Sony profile retrieved successfully",
+    "googleOrBingIndexingVerified": false
+  },
+  "deploymentReceipts": [
+    {
+      "title": "Crawler response probes (not verified-bot authentication)",
+      "data": [
+        {
+          "origin": "https://vitaflexbusinessgroup.com",
+          "agent": "Googlebot",
+          "path": "/",
+          "status": 200,
+          "xRobotsTag": null,
+          "challenge": null
+        },
+        {
+          "origin": "https://vitaflexbusinessgroup.com",
+          "agent": "Googlebot",
+          "path": "/sony/",
+          "status": 200,
+          "xRobotsTag": null,
+          "challenge": null
+        },
+        {
+          "origin": "https://vitaflexbusinessgroup.com",
+          "agent": "Googlebot",
+          "path": "/robots.txt",
+          "status": 200,
+          "xRobotsTag": null,
+          "challenge": null
+        },
+        {
+          "origin": "https://vitaflexbusinessgroup.com",
+          "agent": "Bingbot",
+          "path": "/",
+          "status": 200,
+          "xRobotsTag": null,
+          "challenge": null
+        },
+        {
+          "origin": "https://vitaflexbusinessgroup.com",
+          "agent": "Bingbot",
+          "path": "/sony/",
+          "status": 200,
+          "xRobotsTag": null,
+          "challenge": null
+        },
+        {
+          "origin": "https://vitaflexbusinessgroup.com",
+          "agent": "Bingbot",
+          "path": "/robots.txt",
+          "status": 200,
+          "xRobotsTag": null,
+          "challenge": null
+        },
+        {
+          "origin": "https://vitaflexbusinessgroup.com",
+          "agent": "OAI-SearchBot",
+          "path": "/",
+          "status": 200,
+          "xRobotsTag": null,
+          "challenge": null
+        },
+        {
+          "origin": "https://vitaflexbusinessgroup.com",
+          "agent": "OAI-SearchBot",
+          "path": "/sony/",
+          "status": 200,
+          "xRobotsTag": null,
+          "challenge": null
+        },
+        {
+          "origin": "https://vitaflexbusinessgroup.com",
+          "agent": "OAI-SearchBot",
+          "path": "/robots.txt",
+          "status": 200,
+          "xRobotsTag": null,
+          "challenge": null
+        },
+        {
+          "origin": "https://vitaflexbusinessgroup.com",
+          "agent": "PerplexityBot",
+          "path": "/",
+          "status": 403,
+          "xRobotsTag": null,
+          "challenge": "challenge"
+        },
+        {
+          "origin": "https://vitaflexbusinessgroup.com",
+          "agent": "PerplexityBot",
+          "path": "/sony/",
+          "status": 403,
+          "xRobotsTag": null,
+          "challenge": "challenge"
+        },
+        {
+          "origin": "https://vitaflexbusinessgroup.com",
+          "agent": "PerplexityBot",
+          "path": "/robots.txt",
+          "status": 200,
+          "xRobotsTag": null,
+          "challenge": null
+        }
+      ]
+    },
+    {
+      "title": "Redirect response probes",
+      "data": [
+        {
+          "url": "https://vitaflexbusinessgroup.com/founder/",
+          "status": 403,
+          "location": null,
+          "challenge": "challenge"
+        },
+        {
+          "url": "http://vitaflexbusinessgroup.com/",
+          "status": 403,
+          "location": null,
+          "challenge": "challenge"
+        },
+        {
+          "url": "https://www.vitaflexbusinessgroup.com/",
+          "status": 403,
+          "location": null,
+          "challenge": "challenge"
+        }
+      ]
+    },
+    {
+      "title": "Public sitemap HTTP audit",
+      "data": {
+        "origin": "https://vitaflexbusinessgroup.com",
+        "urls": 55,
+        "checked": 55,
+        "statuses": {
+          "403": 55
+        },
+        "robotsStatus": 200,
+        "sitemapStatus": 403,
+        "metadataValidated": 0,
+        "passed": false,
+        "note": "Summary from the recorded annotation prefix; full preferred-domain JSON is in the workflow artifact."
+      }
+    },
+    {
+      "title": "Crawler response probes (not verified-bot authentication)",
+      "data": [
+        {
+          "origin": "https://vitaflex.pages.dev",
+          "agent": "Googlebot",
+          "path": "/",
+          "status": 200,
+          "xRobotsTag": null,
+          "challenge": null
+        },
+        {
+          "origin": "https://vitaflex.pages.dev",
+          "agent": "Googlebot",
+          "path": "/sony/",
+          "status": 200,
+          "xRobotsTag": null,
+          "challenge": null
+        },
+        {
+          "origin": "https://vitaflex.pages.dev",
+          "agent": "Googlebot",
+          "path": "/robots.txt",
+          "status": 200,
+          "xRobotsTag": null,
+          "challenge": null
+        },
+        {
+          "origin": "https://vitaflex.pages.dev",
+          "agent": "Bingbot",
+          "path": "/",
+          "status": 200,
+          "xRobotsTag": null,
+          "challenge": null
+        },
+        {
+          "origin": "https://vitaflex.pages.dev",
+          "agent": "Bingbot",
+          "path": "/sony/",
+          "status": 200,
+          "xRobotsTag": null,
+          "challenge": null
+        },
+        {
+          "origin": "https://vitaflex.pages.dev",
+          "agent": "Bingbot",
+          "path": "/robots.txt",
+          "status": 200,
+          "xRobotsTag": null,
+          "challenge": null
+        },
+        {
+          "origin": "https://vitaflex.pages.dev",
+          "agent": "OAI-SearchBot",
+          "path": "/",
+          "status": 200,
+          "xRobotsTag": null,
+          "challenge": null
+        },
+        {
+          "origin": "https://vitaflex.pages.dev",
+          "agent": "OAI-SearchBot",
+          "path": "/sony/",
+          "status": 200,
+          "xRobotsTag": null,
+          "challenge": null
+        },
+        {
+          "origin": "https://vitaflex.pages.dev",
+          "agent": "OAI-SearchBot",
+          "path": "/robots.txt",
+          "status": 200,
+          "xRobotsTag": null,
+          "challenge": null
+        },
+        {
+          "origin": "https://vitaflex.pages.dev",
+          "agent": "PerplexityBot",
+          "path": "/",
+          "status": 200,
+          "xRobotsTag": null,
+          "challenge": null
+        },
+        {
+          "origin": "https://vitaflex.pages.dev",
+          "agent": "PerplexityBot",
+          "path": "/sony/",
+          "status": 200,
+          "xRobotsTag": null,
+          "challenge": null
+        },
+        {
+          "origin": "https://vitaflex.pages.dev",
+          "agent": "PerplexityBot",
+          "path": "/robots.txt",
+          "status": 200,
+          "xRobotsTag": null,
+          "challenge": null
+        }
+      ]
+    },
+    {
+      "title": "Redirect response probes",
+      "data": [
+        {
+          "url": "https://vitaflex.pages.dev/founder/",
+          "status": 301,
+          "location": "/sony/",
+          "challenge": null
+        }
+      ]
+    },
+    {
+      "title": "Public sitemap HTTP audit",
+      "data": {
+        "origin": "https://vitaflex.pages.dev",
+        "urls": 55,
+        "checked": 55,
+        "statuses": {
+          "200": 55
+        },
+        "robotsStatus": 200,
+        "sitemapStatus": 200,
+        "metadataValidated": 55,
+        "passed": true,
+        "problems": [],
+        "output": "evidence/production-sitemap-audit.json"
+      }
+    },
+    {
+      "title": "Verified deployed SEO and routes",
+      "data": {
+        "origin": "https://vitaflex.pages.dev",
+        "profile": "Sony Alexis",
+        "canonical": "https://vitaflexbusinessgroup.com/sony/",
+        "routes": 8,
+        "robots": true,
+        "sitemap": true,
+        "personEntities": 1,
+        "publishedDegrees": 2,
+        "homepageOrganization": true,
+        "websiteSchema": true,
+        "apiStatus": 401
+      }
+    },
+    {
+      "title": "Main-domain project deployed",
+      "data": {
+        "project": "vitaflex",
+        "revision": "6a1596d2715efea265147ece053109021aee9a5e",
+        "preview": "https://ea3b4850.vitaflex.pages.dev",
+        "production": "https://f4c7468a.vitaflex.pages.dev",
+        "domain": "https://vitaflexbusinessgroup.com"
+      }
+    },
+    {
+      "title": "Crawler response probes (not verified-bot authentication)",
+      "data": [
+        {
+          "origin": "https://ea3b4850.vitaflex.pages.dev",
+          "agent": "Googlebot",
+          "path": "/",
+          "status": 200,
+          "xRobotsTag": "noindex",
+          "challenge": null
+        },
+        {
+          "origin": "https://ea3b4850.vitaflex.pages.dev",
+          "agent": "Googlebot",
+          "path": "/sony/",
+          "status": 200,
+          "xRobotsTag": "noindex",
+          "challenge": null
+        },
+        {
+          "origin": "https://ea3b4850.vitaflex.pages.dev",
+          "agent": "Googlebot",
+          "path": "/robots.txt",
+          "status": 200,
+          "xRobotsTag": "noindex",
+          "challenge": null
+        },
+        {
+          "origin": "https://ea3b4850.vitaflex.pages.dev",
+          "agent": "Bingbot",
+          "path": "/",
+          "status": 200,
+          "xRobotsTag": "noindex",
+          "challenge": null
+        },
+        {
+          "origin": "https://ea3b4850.vitaflex.pages.dev",
+          "agent": "Bingbot",
+          "path": "/sony/",
+          "status": 200,
+          "xRobotsTag": "noindex",
+          "challenge": null
+        },
+        {
+          "origin": "https://ea3b4850.vitaflex.pages.dev",
+          "agent": "Bingbot",
+          "path": "/robots.txt",
+          "status": 200,
+          "xRobotsTag": "noindex",
+          "challenge": null
+        },
+        {
+          "origin": "https://ea3b4850.vitaflex.pages.dev",
+          "agent": "OAI-SearchBot",
+          "path": "/",
+          "status": 200,
+          "xRobotsTag": "noindex",
+          "challenge": null
+        },
+        {
+          "origin": "https://ea3b4850.vitaflex.pages.dev",
+          "agent": "OAI-SearchBot",
+          "path": "/sony/",
+          "status": 200,
+          "xRobotsTag": "noindex",
+          "challenge": null
+        },
+        {
+          "origin": "https://ea3b4850.vitaflex.pages.dev",
+          "agent": "OAI-SearchBot",
+          "path": "/robots.txt",
+          "status": 200,
+          "xRobotsTag": "noindex",
+          "challenge": null
+        },
+        {
+          "origin": "https://ea3b4850.vitaflex.pages.dev",
+          "agent": "PerplexityBot",
+          "path": "/",
+          "status": 200,
+          "xRobotsTag": "noindex",
+          "challenge": null
+        },
+        {
+          "origin": "https://ea3b4850.vitaflex.pages.dev",
+          "agent": "PerplexityBot",
+          "path": "/sony/",
+          "status": 200,
+          "xRobotsTag": "noindex",
+          "challenge": null
+        },
+        {
+          "origin": "https://ea3b4850.vitaflex.pages.dev",
+          "agent": "PerplexityBot",
+          "path": "/robots.txt",
+          "status": 200,
+          "xRobotsTag": "noindex",
+          "challenge": null
+        }
+      ]
+    },
+    {
+      "title": "Redirect response probes",
+      "data": [
+        {
+          "url": "https://ea3b4850.vitaflex.pages.dev/founder/",
+          "status": 301,
+          "location": "/sony/",
+          "challenge": null
+        }
+      ]
+    },
+    {
+      "title": "Public sitemap HTTP audit",
+      "data": {
+        "origin": "https://ea3b4850.vitaflex.pages.dev",
+        "urls": 55,
+        "checked": 55,
+        "statuses": {
+          "200": 55
+        },
+        "robotsStatus": 200,
+        "sitemapStatus": 200,
+        "metadataValidated": 55,
+        "passed": true,
+        "problems": [],
+        "output": "evidence/preview-sitemap-audit.json"
+      }
+    },
+    {
+      "title": "Verified deployed SEO and routes",
+      "data": {
+        "origin": "https://ea3b4850.vitaflex.pages.dev",
+        "profile": "Sony Alexis",
+        "canonical": "https://vitaflexbusinessgroup.com/sony/",
+        "routes": 8,
+        "robots": true,
+        "sitemap": true,
+        "personEntities": 1,
+        "publishedDegrees": 2,
+        "homepageOrganization": true,
+        "websiteSchema": true,
+        "apiStatus": 503
+      }
+    },
+    {
+      "title": "Crawler response probes (not verified-bot authentication)",
+      "data": [
+        {
+          "origin": "http://127.0.0.1:8080",
+          "agent": "Googlebot",
+          "path": "/",
+          "status": 200,
+          "xRobotsTag": null,
+          "challenge": null
+        },
+        {
+          "origin": "http://127.0.0.1:8080",
+          "agent": "Googlebot",
+          "path": "/sony/",
+          "status": 200,
+          "xRobotsTag": null,
+          "challenge": null
+        },
+        {
+          "origin": "http://127.0.0.1:8080",
+          "agent": "Googlebot",
+          "path": "/robots.txt",
+          "status": 200,
+          "xRobotsTag": null,
+          "challenge": null
+        },
+        {
+          "origin": "http://127.0.0.1:8080",
+          "agent": "Bingbot",
+          "path": "/",
+          "status": 200,
+          "xRobotsTag": null,
+          "challenge": null
+        },
+        {
+          "origin": "http://127.0.0.1:8080",
+          "agent": "Bingbot",
+          "path": "/sony/",
+          "status": 200,
+          "xRobotsTag": null,
+          "challenge": null
+        },
+        {
+          "origin": "http://127.0.0.1:8080",
+          "agent": "Bingbot",
+          "path": "/robots.txt",
+          "status": 200,
+          "xRobotsTag": null,
+          "challenge": null
+        },
+        {
+          "origin": "http://127.0.0.1:8080",
+          "agent": "OAI-SearchBot",
+          "path": "/",
+          "status": 200,
+          "xRobotsTag": null,
+          "challenge": null
+        },
+        {
+          "origin": "http://127.0.0.1:8080",
+          "agent": "OAI-SearchBot",
+          "path": "/sony/",
+          "status": 200,
+          "xRobotsTag": null,
+          "challenge": null
+        },
+        {
+          "origin": "http://127.0.0.1:8080",
+          "agent": "OAI-SearchBot",
+          "path": "/robots.txt",
+          "status": 200,
+          "xRobotsTag": null,
+          "challenge": null
+        },
+        {
+          "origin": "http://127.0.0.1:8080",
+          "agent": "PerplexityBot",
+          "path": "/",
+          "status": 200,
+          "xRobotsTag": null,
+          "challenge": null
+        },
+        {
+          "origin": "http://127.0.0.1:8080",
+          "agent": "PerplexityBot",
+          "path": "/sony/",
+          "status": 200,
+          "xRobotsTag": null,
+          "challenge": null
+        },
+        {
+          "origin": "http://127.0.0.1:8080",
+          "agent": "PerplexityBot",
+          "path": "/robots.txt",
+          "status": 200,
+          "xRobotsTag": null,
+          "challenge": null
+        }
+      ]
+    },
+    {
+      "title": "Redirect response probes",
+      "data": []
+    },
+    {
+      "title": "Public sitemap HTTP audit",
+      "data": {
+        "origin": "http://127.0.0.1:8080",
+        "urls": 55,
+        "checked": 55,
+        "statuses": {
+          "200": 55
+        },
+        "robotsStatus": 200,
+        "sitemapStatus": 200,
+        "metadataValidated": 55,
+        "passed": true,
+        "problems": [],
+        "output": "evidence/local-sitemap-audit.json"
+      }
+    }
+  ]
 }
