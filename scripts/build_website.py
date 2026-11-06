@@ -76,6 +76,15 @@ exec(compile((ROOT/'scripts/build_downloads.py').read_text(),str(ROOT/'scripts/b
 # never rewritten with public metadata, never listed in website-routes.json, never in the sitemap.
 PRIVATE_DIRS=frozenset({'intelligence'})
 paths=sorted(f for f in P.rglob('index.html') if not (set(f.parent.relative_to(P).parts)&(PRIVATE_DIRS|{'monte-wo','ventures','founder','sony'})))+[P/'404.html'];metadata={'/':copy['home'],'/app/':copy['app'],'/strength/':copy['ranking'],'/exercises/standards/':copy['standards'],'/tools/':{'title':'Free Strength & Fitness Calculators | MONTE WO','description':'Five strength calculators plus existing educational nutrition tools. Estimate 1RM, training percentages, balanced plates, kg/lb and warm-up loads locally, without an account.'}}
+# Distinct descriptions for existing public tools; visible content is unchanged.
+description_overrides={
+ '/methodology/': 'Read the draft MONTE WO Strength Index methodology: evidence, independent disciplines, transparent standards, and why official rank awards remain unavailable.',
+ '/strength-lab/converter/': 'Convert kilograms to pounds or pounds to kilograms with the MONTE WO Strength Lab. Use the exact conversion factor locally, without an account.',
+ '/strength-lab/plates/': 'Plan balanced barbell loading with the MONTE WO Smart Plate Calculator. Include your bar, collars and available plate inventory, in kilograms or pounds.',
+ '/strength-lab/one-rep-max/': 'Estimate a one-rep maximum from a recent working set with the Epley formula. A free MONTE WO planning tool, not an instruction to attempt a maximum.',
+ '/strength-lab/percentages/': 'Calculate training loads from a tested or estimated one-rep maximum with MONTE WO. Choose kilograms or pounds and optional load rounding.',
+ '/strength-lab/warm-up/': 'Plan adjustable warm-up sets toward a working weight or estimated maximum with MONTE WO. Review the planning assumptions and adapt the example to your session.'
+}
 canonical_routes=[]
 for file in paths:
  path='/' if file==P/'index.html' else '/404.html' if file==P/'404.html' else '/'+file.parent.relative_to(P).as_posix()+'/'
@@ -90,8 +99,9 @@ for file in paths:
  doc=re.sub(r'<meta (?:property="og:[^"]*"|name="twitter:[^"]*"|name="robots")[^>]*>','',doc);doc=re.sub(r'<link rel="canonical"[^>]*>','',doc)
  if path in metadata:
   m=metadata[path];doc=re.sub(r'<title>.*?</title>','<title>'+esc(m['title'])+'</title>',doc,flags=re.S);doc=re.sub(r'<meta name="description"[^>]*>','<meta name="description" content="'+esc(m['description'])+'">',doc)
+ if path in description_overrides:doc=re.sub(r'<meta name="description"[^>]*>','<meta name="description" content="'+esc(description_overrides[path])+'">',doc)
  if path=='/404.html':doc=re.sub(r'<title>.*?</title>','<title>Page not found | MONTE WO</title>',doc);doc=re.sub(r'<meta name="description"[^>]*>','<meta name="description" content="This MONTE WO page could not be found. Return home or explore the free tools.">',doc)
- title=html.unescape(re.search(r'<title>(.*?)</title>',doc,re.S)[1]);desc_match=re.search(r'<meta name="description" content="([^"]*)"',doc); description=html.unescape(desc_match[1]) if desc_match else "Monte Wo Premium Performance Library";private=path in ['/strength/admin/','/404.html']
+ title=html.unescape(re.search(r'<title>(.*?)</title>',doc,re.S)[1]);desc_match=re.search(r'<meta name="description" content="([^"]*)"',doc); description=html.unescape(desc_match[1]) if desc_match else "Monte Wo Premium Performance Library";private=path in ['/strength/admin/','/account/callback/','/404.html']
  meta=f'<meta property="og:type" content="website"><meta property="og:site_name" content="MONTE WO"><meta property="og:title" content="{esc(title)}"><meta property="og:description" content="{esc(description)}"><meta property="og:image" content="{origin}/assets/monte-wo-social.jpg"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta property="og:image:alt" content="MONTE WO. Lift. Rank. Climb high. Free tools available; ranking standards draft, not official."><meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="{esc(title)}"><meta name="twitter:description" content="{esc(description)}"><meta name="twitter:image" content="{origin}/assets/monte-wo-social.jpg">'
  if private:meta+='<meta name="robots" content="noindex, nofollow">'
  elif origin:meta+=f'<link rel="canonical" href="{origin}{path}"><meta property="og:url" content="{origin}{path}">';canonical_routes.append(path)

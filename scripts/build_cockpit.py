@@ -1,6 +1,6 @@
 """Build only the Exercises cockpit. No source JS evaluation, network, SQL or uploads."""
 from pathlib import Path
-import json,html,hashlib,re,shutil
+import json,html,hashlib,re,shutil,os
 ROOT=Path(__file__).resolve().parents[1];P=ROOT/'public'
 def esc(v):return html.escape(str(v),quote=True)
 def build():
@@ -41,6 +41,12 @@ def build():
  replacements={'LEFT_CARDS':''.join(card(r) for r in model['regions'] if r['side']=='l'),'RIGHT_CARDS':''.join(card(r) for r in model['regions'] if r['side']=='r'),'AVATAR':avatar,'RANKS':''.join(f'<div class="milestone"><img src="/assets/ranks/{id}.webp" alt="" width="30" height="30">{name}</div>' for id,name in names.items()),'FOOD_PILLS':''.join(f'<button data-food="{esc(f["id"])}" aria-pressed="false" data-requires-js disabled>{esc(f["name"])}</button>' for f in foods['foods']),'MACROS':macros,'GROUPS':''.join(f'<button data-group="{esc(g["id"])}" aria-pressed="false" data-requires-js disabled>{esc(g["name"])}</button>' for g in catalog['groups']),'EXERCISES':cards}
  doc=(ROOT/'content/website/cockpit.html').read_text()
  for key,value in replacements.items():doc=doc.replace('<!--'+key+'-->',value)
+ # This final renderer used to erase the canonical added by build_website.
+ origin=os.environ.get('SITE_ORIGIN',json.loads((ROOT/'content/website/site.json').read_text())['publicOrigin']).rstrip('/')
+ if origin:
+  description=html.unescape(re.search(r'<meta\s+name="description"\s+content="([^"]*)"',doc)[1])
+  doc=doc.replace('content="/assets/monte-wo-social.jpg"','content="'+origin+'/assets/monte-wo-social.jpg"')
+  doc=doc.replace('</head>',f'<link rel="canonical" href="{origin}/exercises/"><meta property="og:url" content="{origin}/exercises/"><meta name="twitter:description" content="{esc(description)}"></head>')
  (P/'exercises/index.html').write_text(doc)
  (P/'cockpit-map.json').write_text(json.dumps(model,ensure_ascii=False,separators=(',',':'))+'\n')
  (P/'cockpit-nutrition.json').write_text(json.dumps(foods,ensure_ascii=False,indent=2)+'\n')

@@ -2,3 +2,4 @@ User-agent: *
 Allow: /
 Disallow: /api/
 Disallow: /strength/admin/
+Sitemap: https://vitaflexbusinessgroup.com/sitemap.xml

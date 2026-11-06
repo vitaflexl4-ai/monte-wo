@@ -1,7 +1,7 @@
 """A quiet, text-first founder essay, built with the existing group page shell.
 
 Content stays in content/group/founder.json. No invented portrait, contact CTA,
-resume widgets, external fonts, client JavaScript or personal-name enrichment.
+resume widgets, external fonts, client JavaScript or unsupported biographical enrichment.
 """
 from pathlib import Path
 import html
@@ -30,7 +30,7 @@ def render_founder(page):
     body = f'''<article class="founder frame" aria-labelledby="founder-name">
       <header class="founder-intro">
         <p class="index-label">A PERSONAL NOTE</p>
-        <h1 id="founder-name">{escape(profile['name'].upper())}</h1>
+        <h1 id="founder-name">{escape(profile['name'])}</h1>
         <p class="founder-subtitle">{escape(profile['title'])}</p>
       </header>
       <div class="founder-reading-layout">
@@ -51,6 +51,21 @@ def render_founder(page):
         </div>
       </div>
     </article>'''
-    return page(
-        f'{profile["name"]} — {profile["title"]}', profile['description'], body, '/sony/'
-    )
+    url = 'https://vitaflexbusinessgroup.com/sony/'
+    # Only identity, affiliation and interests supported by the owner/biography.
+    # No jobTitle, unverified sameAs links, portrait, dates or address.
+    structured_data = {
+        '@context': 'https://schema.org',
+        '@graph': [
+            {'@type': 'Person', '@id': url + '#person', 'name': profile['name'],
+             'url': url, 'description': profile['description'],
+             'affiliation': {'@type': 'Organization', 'name': 'VitaFlex Business Group',
+                             'url': 'https://vitaflexbusinessgroup.com/'},
+             'knowsAbout': ['Business', 'Entrepreneurship', 'Fitness', 'Technology']},
+            {'@type': 'ProfilePage', '@id': url + '#profile', 'url': url,
+             'name': profile['seoTitle'], 'description': profile['description'],
+             'inLanguage': 'en', 'mainEntity': {'@id': url + '#person'}}
+        ]
+    }
+    return page(profile['seoTitle'], profile['description'], body, '/sony/',
+                structured_data=structured_data, exact_title=True)

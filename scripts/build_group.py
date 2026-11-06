@@ -7,9 +7,13 @@ E=lambda s:html.escape(str(s),quote=True)
 ventures=json.loads((ROOT/'content/group/ventures.json').read_text())
 origin='https://vitaflexbusinessgroup.com'
 
-def page(title,description,body,path='/'):
+def page(title,description,body,path='/',structured_data=None,exact_title=False):
  founder_current=' aria-current="page"' if path=='/sony/' else ''
- return f'''<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>{E(title)} | VitaFlex Business Group</title><meta name="description" content="{E(description)}"><link rel="canonical" href="{origin}{path}"><meta property="og:type" content="website"><meta property="og:site_name" content="VitaFlex Business Group"><meta property="og:title" content="{E(title)}"><meta property="og:description" content="{E(description)}"><meta property="og:url" content="{origin}{path}"><meta name="theme-color" content="#0b0c0b"><link rel="icon" href="/assets/group/favicon.png" type="image/png"><link rel="stylesheet" href="/group.css"></head><body data-design="noir"><a class="skip" href="#main">Skip to content</a><header class="frame header"><a class="brand" href="/" aria-label="VitaFlex Business Group home"><img class="brand-logo" src="/assets/group/vitaflex-monogram.png" width="61" height="40" alt=""><span>VITAFLEX <small>BUSINESS GROUP</small></span></a><a class="nav-link" href="/#ventures">The portfolio <span aria-hidden="true">↗</span></a></header><main id="main" tabindex="-1">{body}</main><footer class="frame footer"><span>© 2026 VITAFLEX BUSINESS GROUP</span><span class="footer-motto">ONE GROUP. A BIGGER VISION.</span><nav class="footer-links" aria-label="Group information"><a href="/sony/"{founder_current}>Sony</a><a href="/privacy/">Privacy</a></nav></footer></body></html>'''
+ full_title=title if exact_title else title+' | VitaFlex Business Group'
+ image=origin+'/assets/group/vitaflex-business-group.png'
+ social_type='profile' if path=='/sony/' else 'website'
+ schema='<script type="application/ld+json">'+json.dumps(structured_data,ensure_ascii=False).replace('<','\\u003c')+'</script>' if structured_data else ''
+ return f'''<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>{E(full_title)}</title><meta name="description" content="{E(description)}"><link rel="canonical" href="{origin}{path}"><meta name="robots" content="index, follow, max-image-preview:large"><meta property="og:type" content="{social_type}"><meta property="og:site_name" content="VitaFlex Business Group"><meta property="og:title" content="{E(title)}"><meta property="og:description" content="{E(description)}"><meta property="og:url" content="{origin}{path}"><meta property="og:image" content="{image}"><meta property="og:image:width" content="1024"><meta property="og:image:height" content="1024"><meta property="og:image:alt" content="VitaFlex Business Group — gold VF emblem"><meta name="twitter:card" content="summary"><meta name="twitter:title" content="{E(title)}"><meta name="twitter:description" content="{E(description)}"><meta name="twitter:image" content="{image}"><meta name="twitter:image:alt" content="VitaFlex Business Group — gold VF emblem">{schema}<meta name="theme-color" content="#0b0c0b"><link rel="icon" href="/assets/group/favicon.png" type="image/png"><link rel="stylesheet" href="/group.css"></head><body data-design="noir"><a class="skip" href="#main">Skip to content</a><header class="frame header"><a class="brand" href="/" aria-label="VitaFlex Business Group home"><img class="brand-logo" src="/assets/group/vitaflex-monogram.png" width="61" height="40" alt=""><span>VITAFLEX <small>BUSINESS GROUP</small></span></a><a class="nav-link" href="/#ventures">The portfolio <span aria-hidden="true">↗</span></a></header><main id="main" tabindex="-1">{body}</main><footer class="frame footer"><span>© 2026 VITAFLEX BUSINESS GROUP</span><span class="footer-motto">ONE GROUP. A BIGGER VISION.</span><nav class="footer-links" aria-label="Group information"><a href="/sony/"{founder_current}>Meet Sony Alexis</a><a href="/privacy/">Privacy</a></nav></footer></body></html>'''
 
 def wordmark(v):
  if v['slug']=='vitaflex-training':return 'VitaFlex <em>Training</em>'
@@ -52,13 +56,24 @@ for file in P.rglob('index.html'):
  file.write_text(doc)
 (P/'group-routes.json').write_text(json.dumps(routes,indent=2)+'\n')
 # Existing MONTE WO service worker must not strand returning visitors on the old root.
-sw=P/'sw.js';text=sw.read_text();text=re.sub(r"const CORE='[^']+';","const CORE='montewo-core-v28-official-biography';",text)
+sw=P/'sw.js';text=sw.read_text();text=re.sub(r"const CORE='[^']+';","const CORE='montewo-core-v29-sony-alexis-seo';",text)
 text=text.replace("'/group.css','/group-sculpture.svg','/group-mark.svg','/monte-wo/','/ventures/monte-wo/','/ventures/vitaflex-training/',", "")
 text=re.sub(r"'(?:/assets/group/[^']+|/group.css|/group-mark.svg|/group-sculpture.svg|/monte-wo/|/founder/|/sony/|/ventures/[^']+/)',", '', text)
+text=re.sub(r"'/assets/inter-(?:400|600)\.woff2',",'',text)
 venture_assets=''.join(repr('/ventures/'+v['slug']+'/')+',' for v in ventures)
-text=text.replace("const ASSETS=[", "const ASSETS=['/assets/group/vitaflex-business-group.png','/assets/group/vitaflex-monogram.png','/assets/group/favicon.png','/group.css','/group-sculpture.svg','/group-mark.svg','/monte-wo/','/sony/',"+venture_assets,1);sw.write_text(text)
+text=text.replace("const ASSETS=[", "const ASSETS=['/assets/inter-400.woff2','/assets/inter-600.woff2','/assets/group/vitaflex-business-group.png','/assets/group/vitaflex-monogram.png','/assets/group/favicon.png','/group.css','/group-sculpture.svg','/group-mark.svg','/monte-wo/','/sony/',"+venture_assets,1);sw.write_text(text)
 # Group metadata stays independent from product metadata.
 sitemap=P/'sitemap.xml'
 if sitemap.exists():
- text=sitemap.read_text();text=text.replace('</urlset>',''.join(f'<url><loc>{origin}{p}</loc></url>' for p in routes if p!='/')+'</urlset>');sitemap.write_text(text)
+ import xml.etree.ElementTree as ET
+ ns='http://www.sitemaps.org/schemas/sitemap/0.9'
+ ET.register_namespace('',ns)
+ tree=ET.parse(sitemap); root=tree.getroot()
+ existing={node.text for node in root.findall('{'+ns+'}url/{'+ns+'}loc')}
+ for path in routes:
+  url=origin+path
+  if url not in existing:
+   ET.SubElement(ET.SubElement(root,'{'+ns+'}url'),'{'+ns+'}loc').text=url
+   existing.add(url)
+ tree.write(sitemap,encoding='UTF-8',xml_declaration=True)
 print('Corporate group built:', ', '.join(routes))

@@ -9,8 +9,8 @@ const routes=JSON.parse(read('public/group-routes.json'));
 const escape=text=>text.replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;').replaceAll("'",'&#x27;');
 const docFor=route=>read('public'+(route==='/'?'/index.html':route+'index.html'));
 
-test('Founder: source is a first-name-only personal essay, not a resume or venture launch',()=>{
- assert.equal(profile.name,'Sony');
+test('Founder: source uses owner-authorized identity and personal essay, not a resume or venture launch',()=>{
+ assert.equal(profile.name,'Sony Alexis');
  assert.equal(profile.title,'The Person Behind the Vision');
  assert.equal(profile.role,undefined);
  assert.equal(profile.subtitle,undefined);
@@ -23,7 +23,7 @@ test('Founder: source is a first-name-only personal essay, not a resume or ventu
  assert.ok(paragraphs.some(p=>p.includes('approximately eight years')));
  assert.ok(paragraphs.some(p=>p.includes('My faith in God')&&p.includes('Haiti')));
  assert.equal(profile.postscript,'The journey continues.');
- assert.doesNotMatch(founder,/<form\b|<script\b|download=|mailto:|<iframe\b/);
+ assert.doesNotMatch(founder,/<form\b|download=|mailto:|<iframe\b/);
  assert.equal((founder.match(/<img\b/g)||[]).length,1,'Only the existing group mark; no fabricated portrait');
 });
 
@@ -34,7 +34,7 @@ test('Founder: every supplied paragraph is rendered verbatim and in order',()=>{
   assert.ok(position>previous,`Missing or reordered passage: ${text.slice(0,55)}`);
   previous=position;
  }
- assert.match(founder,/<h1 id="founder-name">SONY<\/h1>/);
+ assert.match(founder,/<h1 id="founder-name">Sony Alexis<\/h1>/);
  assert.match(founder,/<article[^>]+aria-labelledby="founder-name"/);
  assert.equal((founder.match(/<h1\b/g)||[]).length,1);
  assert.equal((founder.match(/<main\b/g)||[]).length,1);
@@ -48,11 +48,11 @@ test('Founder: chapter anchors, metadata, canonical and current-page link are co
   assert.ok(founder.includes(`id="${chapter.id}"`));
   assert.ok(founder.includes(`aria-labelledby="${chapter.id}-title"`));
  }
- assert.ok(founder.includes('<title>Sony — The Person Behind the Vision | VitaFlex Business Group</title>'));
+ assert.ok(founder.includes('<title>Sony Alexis | Professional Profile &amp; Biography</title>'));
  assert.ok(founder.includes('rel="canonical" href="https://vitaflexbusinessgroup.com/sony/"'));
- assert.ok(founder.includes('property="og:title" content="Sony — The Person Behind the Vision"'));
+ assert.ok(founder.includes('property="og:title" content="Sony Alexis | Professional Profile &amp; Biography"'));
  assert.ok(founder.includes(`name="description" content="${escape(profile.description)}"`));
- assert.ok(founder.includes('<a href="/sony/" aria-current="page">Sony</a>'));
+ assert.ok(founder.includes('<a href="/sony/" aria-current="page">Meet Sony Alexis</a>'));
  assert.match(founder,/<main id="main" tabindex="-1">/);
 });
 
@@ -92,7 +92,7 @@ test('Founder: every group link, asset and fragment resolves without fabricated 
 
 test('Founder: offline upgrade is deduplicated and source content is not downloaded at runtime',()=>{
  const sw=read('public/sw.js');
- assert.match(sw,/montewo-core-v28-official-biography/);
+ assert.match(sw,/montewo-core-v29-sony-alexis-seo/);
  assert.equal(sw.split("'/sony/'").length-1,1);
  assert.equal(routes.filter(route=>route==='/sony/').length,1);
  assert.doesNotMatch(founder,/fetch\(|founder\.json/);

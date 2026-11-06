@@ -1,0 +1,79 @@
+{
+  "browser": "153.0.8010.0",
+  "accessibility": [
+    {
+      "route": "/",
+      "width": 320,
+      "violations": 0,
+      "incomplete": 1,
+      "passes": 17
+    },
+    {
+      "route": "/",
+      "width": 390,
+      "violations": 0,
+      "incomplete": 1,
+      "passes": 17
+    },
+    {
+      "route": "/",
+      "width": 768,
+      "violations": 0,
+      "incomplete": 1,
+      "passes": 17
+    },
+    {
+      "route": "/",
+      "width": 1440,
+      "violations": 0,
+      "incomplete": 1,
+      "passes": 17
+    },
+    {
+      "route": "/sony/",
+      "width": 320,
+      "violations": 0,
+      "incomplete": 0,
+      "passes": 17
+    },
+    {
+      "route": "/sony/",
+      "width": 390,
+      "violations": 0,
+      "incomplete": 0,
+      "passes": 17
+    },
+    {
+      "route": "/sony/",
+      "width": 768,
+      "violations": 0,
+      "incomplete": 0,
+      "passes": 17
+    },
+    {
+      "route": "/sony/",
+      "width": 1440,
+      "violations": 0,
+      "incomplete": 0,
+      "passes": 17
+    }
+  ],
+  "performance": [
+    {
+      "route": "/",
+      "lcp": 3488,
+      "cls": 0.0004242423870196087,
+      "domContentLoadedMs": 202.80000000004657,
+      "encodedResourceBytes": 623062,
+      "requests": 4
+    },
+    {
+      "route": "/sony/",
+      "lcp": 576,
+      "cls": 0.0010135013892896409,
+      "domContentLoadedMs": 221,
+      "encodedResourceBytes": 154248,
+      "requests": 3
+    }
+  ]
+}

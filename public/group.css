@@ -1,11 +1,11 @@
 @font-face {
   font-family: Inter;
-  src: url('/assets/inter-400.ttf');
+  src: url('/assets/inter-400.woff2') format('woff2'), url('/assets/inter-400.ttf') format('truetype');
   font-display: swap;
 }
 @font-face {
   font-family: Inter;
-  src: url('/assets/inter-600.ttf');
+  src: url('/assets/inter-600.woff2') format('woff2'), url('/assets/inter-600.ttf') format('truetype');
   font-weight: 600;
   font-display: swap;
 }

@@ -36,13 +36,8 @@ jobs:
           python3 -m http.server 8080 --bind 0.0.0.0 --directory public > /tmp/site.log 2>&1 &
           node tests/group-browser.mjs
           node tests/founder-browser.mjs
-      - name: Deploy via existing supported provisioning workflow
-        env:
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-        run: |
-          test -n "$CLOUDFLARE_API_TOKEN" || { echo 'Missing configured Cloudflare secret'; exit 3; }
-          set -o pipefail
-          node scripts/deploy-intelligence.mjs 2>&1 | tee evidence/deploy.log
+      - name: SEO and content regression tests
+        run: node --test tests/seo.test.js tests/founder.test.js tests/group.test.js
       - name: Publish to the existing main-domain project
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
@@ -52,12 +47,6 @@ jobs:
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
         run: node scripts/group-deployment-diagnostics.mjs
-      - name: Verify deployed Pages routes and API
-        env:
-          VERIFY_ORIGIN: https://vitaflex-monte-wo-live.pages.dev
-        run: |
-          set -o pipefail
-          node scripts/verify-group.mjs | tee evidence/pages-verification.txt
       - name: Verify domain-owning production project
         env:
           VERIFY_ORIGIN: https://vitaflex.pages.dev
