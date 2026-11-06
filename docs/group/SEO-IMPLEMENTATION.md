@@ -2,7 +2,7 @@
 
 ## Scope and status
 
-Owner-authorized SEO-only update of the existing VitaFlex Business Group site and `/sony/` profile. Ready for the existing publication workflow; final URLs and deployment results will be appended after publication.
+Owner-authorized SEO-only update of the existing VitaFlex Business Group site and `/sony/` profile. Published to the existing `vitaflex` Cloudflare Pages production project (`main`) at revision `f1b6654381e25d381f9f78491d3e69d12b16ec6b`. Fresh independent requests confirmed the production profile title/name, robots.txt sitemap declaration, and published sitemap.
 
 The newer Sony Alexis identity instruction supersedes the earlier first-name-only instruction. No biography paragraphs, closing or postscript were rewritten. The homepage main element is byte-for-byte unchanged. The four-venture registry and official logo files are unchanged. All visual CSS rules, layout, animations and typography are unchanged: only losslessly compressed copies of the same Inter fonts were added ahead of the original TTF fallbacks. Original fonts remain intact; decoded character maps and horizontal metrics were compared.
 
@@ -20,13 +20,13 @@ The newer Sony Alexis identity instruction supersedes the earlier first-name-onl
 - robots.txt permits public crawling and advertises the sitemap; existing API/admin restrictions retained.
 - No duplicate titles or descriptions among sitemap pages. Six pre-existing duplicated product-tool/methodology descriptions made route-specific without visible content changes.
 - Same Inter fonts delivered as WOFF2 with original TTF fallbacks and offline caching. Current 400-weight file: 324,820 → 108,212 bytes; 600-weight: 326,048 → 112,396 bytes. No new runtime dependencies.
-- Existing deployment workflow narrowed to **vitaflex only**: inspect existing domain ownership and production branch `main`, download/preserve current bindings, publish and verify preview in that same project, then publish production. No provisioning script, new project, Worker deployment, migration, DNS or WAF mutation. Root local config restored afterwards. Existing production bindings/variables and domain list compared after publication.
+- Existing deployment workflow narrowed to **vitaflex only**: inspect existing domain ownership and production branch `main`, download/preserve current bindings, publish and verify preview in that same project, then publish production. No provisioning script, new project, Worker deployment, migration, DNS or WAF mutation. Root local config restored afterwards. Existing production bindings/variables and domain list compared after publication. Fixed a Wrangler download bug that emitted invalid empty placement tables on repeat publication; only empty tables are omitted, explicit placement settings and bindings remain unchanged (unit tested).
 
 ## Validation and tests
 
 - Build passed.
-- SEO, profile and group static tests: **19/19 passed**.
-- Full suite: **229/231 passed**. Only the two pre-existing `wrangler.toml` checksum expectation failures remain; neither config nor assertions were weakened.
+- SEO, profile and group static tests: **20/20 passed**.
+- Full suite: **230/232 passed**. Only the two pre-existing `wrangler.toml` checksum expectation failures remain; neither config nor assertions were weakened.
 - `html-validate` passed for homepage, Sony profile and all four venture detail pages. This is local HTML validation, not an external W3C service claim.
 - JSON-LD parsed successfully; graph types, entity identity, resolved mainEntity reference, URLs, supported affiliation and omission of fabricated attributes checked in automated tests. Google's Rich Results Test and Schema.org's hosted validator were not run; Google eligibility/indexing is not certified by these local tests.
 - XML parsed successfully with Python ElementTree. Canonical/robots/sitemap uniqueness, existing destinations and indexability checked for all 55 sitemap URLs.
@@ -59,9 +59,22 @@ npx --yes --package html-validate html-validate public/sony/index.html public/in
 ## Remaining considerations
 
 - Search engine discovery, ranking and display of snippets are not guaranteed. Search Console URL inspection, Google-selected canonical and actual verified Googlebot access have not been checked: there is no authenticated Search Console access in this task.
-- The existing Cloudflare challenge previously blocked some GitHub-runner custom-domain requests, although independent live retrieval succeeded. No security setting was disabled to bypass that challenge. Source-level indexability is verified; edge behavior must also be considered when checking real Googlebot crawl status.
+- The existing Cloudflare challenge still blocks GitHub-runner custom-domain requests (HTTP 403), although fresh independent live retrieval succeeded. The workflow therefore ends red at its strict custom-domain verification step, not at publication. No security setting was disabled to bypass that challenge. Source-level indexability is verified; edge behavior must also be considered when checking real Googlebot crawl status.
 - Physical-device Safari/Firefox and VoiceOver/NVDA testing were not performed.
 - Two unrelated pre-existing protected-file checksum failures remain.
+
+## Deployment results
+
+- Preview: https://13ed5817.vitaflex.pages.dev/ (profile: https://13ed5817.vitaflex.pages.dev/sony/).
+- Immutable production deployment: https://b57f3ec4.vitaflex.pages.dev/.
+- Production domain: https://vitaflexbusinessgroup.com/; profile: https://vitaflexbusinessgroup.com/sony/.
+- Revision: `f1b6654381e25d381f9f78491d3e69d12b16ec6b`.
+- Workflow: https://github.com/vitaflexl4-ai/monte-wo/actions/runs/42249754662.
+- Build, responsive browser tests, 20 static regression tests, preview route/SEO/private-API checks, production publication, configuration preservation assertions, and production-alias route/SEO/private-API checks passed.
+- The final custom-domain check from GitHub receives the existing Cloudflare challenge (HTTP 403). Fresh independent custom-domain retrieval with `?verify=f1b6654` confirmed the new exact title, Sony Alexis signature and complete biography, robots sitemap declaration, and sitemap containing `/sony/`. Query parameters were used only to avoid stale responses in verification; canonical URLs remain query-free.
+- An earlier post-publication alias check saw stale content. Release verification now uses a revision query parameter and reuses its verified profile response. Intermediate repeat-publication attempts exposed Wrangler's empty placement-table download bug; that bug was corrected and the final publication passed.
+- Existing project's domain list, D1/KV/R2/service bindings and environment variables were compared before/after and preserved. No other project, Worker, DNS or WAF configuration was modified by the publication script.
+- Google Search Console submission, verified-Googlebot crawl status and hosted rich-result validation remain unverified; successful deployment does not establish actual Google indexing.
 
 ## Every modified or added file
 
@@ -138,6 +151,7 @@ npx --yes --package html-validate html-validate public/sony/index.html public/in
 - `scripts/build_group.py`
 - `scripts/build_website.py`
 - `scripts/founder_page.py`
+- `scripts/pages-config.mjs`
 - `scripts/publish-group-domain.mjs`
 - `scripts/verify-group.mjs`
 - `tests/founder-browser.mjs`

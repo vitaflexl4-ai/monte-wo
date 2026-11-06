@@ -75,5 +75,34 @@
       "encodedResourceBytes": 154248,
       "requests": 3
     }
-  ]
+  ],
+  "validation": {
+    "html": "html-validate passed: homepage, Sony profile, four venture pages",
+    "jsonLd": "JSON parsed; Person/ProfilePage types, identity, linked mainEntity and supported affiliation validated locally; hosted validators not used",
+    "sitemapUrls": 55,
+    "targetedTests": {
+      "passed": 20,
+      "failed": 0
+    },
+    "fullSuite": {
+      "total": 232,
+      "passed": 230,
+      "failed": 2,
+      "failures": "Existing wrangler.toml protected-file checksum expectations in lab.test.js and website.test.js"
+    }
+  },
+  "deployment": {
+    "revision": "f1b6654381e25d381f9f78491d3e69d12b16ec6b",
+    "project": "vitaflex",
+    "productionBranch": "main",
+    "preview": "https://13ed5817.vitaflex.pages.dev",
+    "production": "https://b57f3ec4.vitaflex.pages.dev",
+    "domain": "https://vitaflexbusinessgroup.com",
+    "workflow": "https://github.com/vitaflexl4-ai/monte-wo/actions/runs/42249754662",
+    "previewAndProductionAliasVerification": "Passed: eight routes, canonical, profile metadata markers, robots, sitemap and protected API",
+    "configurationPreserved": true,
+    "customDomainGithubRunner": "HTTP 403 Cloudflare challenge; workflow final gate remains red",
+    "independentLiveRetrieval": "Profile, robots and sitemap retrieved successfully using revision query parameter",
+    "googleIndexingVerified": false
+  }
 }
