@@ -2,7 +2,7 @@
 
 ## Scope and status
 
-Validated locally; publication pending the existing workflow. The user's final **no visible changes** instruction takes precedence over the earlier request for a new profile. This update is strictly behind the scenes and confined to the existing website/profile. No other project websites were edited.
+Published to the existing `vitaflex` Cloudflare Pages production project (`main`) at revision `ac3fe7340b14951bbe2a35fffff1759c13e2ac54`. Preview and production-alias SEO verification passed; fresh independent live-domain retrieval confirmed the unchanged profile, new robots rules and sitemap. The user's final **no visible changes** instruction takes precedence over the earlier request for a new profile. This update is strictly behind the scenes and confined to the existing website/profile. No other project websites were edited.
 
 Before editing: inspected the existing source, live `/sony/`, live robots.txt, metadata, renderer, source content and deployment workflow. The existing version is preserved in Git at `0fc7886`; `tests/fixtures/seo-visible-baseline.json` independently pins all 61 HTML bodies, 165 static files and visible profile source fields from that version.
 
@@ -47,12 +47,28 @@ No `llms.txt` was created. It would be an additional public document, duplicate 
 
 ## C. Deployment
 
-Pending validated deployment via the existing `vitaflex` workflow. The publication script requires the existing domain owner, production branch `main`, and preserved production bindings/variables and domains. It creates no project, Worker, migration or DNS/WAF change.
+- Project: **vitaflex**, production deployment branch **main**.
+- Preview: https://8237997d.vitaflex.pages.dev/ (profile `/sony/`).
+- Immutable production deployment: https://f4749640.vitaflex.pages.dev/.
+- Production website: https://vitaflexbusinessgroup.com/; profile: https://vitaflexbusinessgroup.com/sony/.
+- Deployed revision: `ac3fe7340b14951bbe2a35fffff1759c13e2ac54`.
+- Workflow: https://github.com/vitaflexl4-ai/monte-wo/actions/runs/42264336964.
+- CI build, responsive browser tests, all 22 SEO/profile/group tests, verified preview publication, production publication and production-alias verification passed. The verifier parsed actual served JSON-LD and confirmed one Person and both published degrees, current metadata, canonical, robots, sitemap and eight routes.
+- Private API: production returned **401**; preview returned **503** (fail-closed). This is protection testing, not an authenticated end-to-end workflow test. Existing production bindings and variables were preserved.
+- The final strict custom-domain check from GitHub still encounters **HTTP 403 / Cloudflare challenge**, leaving the overall workflow red. This is not a claim that the entire CI run passed. Publication and production-alias validation completed before that failure.
+- Independent fresh custom-domain requests to the profile, robots.txt and sitemap succeeded using `?verify=ac3fe73` to avoid stale verification responses. Public canonical URLs are unchanged and query-free.
+- The publication script verified the existing domain owner and production branch, preserved production bindings/variables and domains, and created no project, Worker, migration or DNS/WAF change.
+
+Actual CI verification receipt:
+
+```json
+{"origin":"https://vitaflex.pages.dev","profile":"Sony Alexis","canonical":"https://vitaflexbusinessgroup.com/sony/","routes":8,"robots":true,"sitemap":true,"personEntities":1,"publishedDegrees":2,"apiStatus":401}
+```
 
 ## D. Outstanding
 
 - Actual Google indexing, Google-selected canonical, sitemap submission and verified-Googlebot access require authenticated Google Search Console inspection. No Search Console access is available in this task; no search engine or AI inclusion/ranking is guaranteed.
-- Existing Cloudflare edge challenges previously blocked GitHub-runner custom-domain requests. Source-level indexability does not prove verified Googlebot/AI access through the edge. No security setting was weakened to bypass checks.
+- Existing Cloudflare edge challenges still block GitHub-runner custom-domain requests. Source-level indexability does not prove verified Googlebot/AI access through the edge. No security setting was weakened to bypass checks.
 - Existing domain ownership is checked through the deployed Pages project. No DNS change or new domain verification is required for this publication; a new Search Console property would require owner verification if not already established.
 - Unpublished institution/project/social details deliberately omitted as above; no unverified public URLs were added.
 - Physical-device Safari/Firefox and screen-reader testing were not performed.

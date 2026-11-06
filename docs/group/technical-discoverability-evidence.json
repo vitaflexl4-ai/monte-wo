@@ -1,5 +1,5 @@
 {
-  "status": "Validated locally; deployment pending workflow execution",
+  "status": "Published; preview and production-alias validation passed; final custom-domain CI check blocked by Cloudflare challenge",
   "metadata": {
     "title": "Sony Alexis | Professional Profile & Biography",
     "description": "Discover Sony Alexis — his background in business administration, leadership, fitness and technology, and reflections on learning, faith, Haiti and service.",
@@ -196,5 +196,24 @@
         "pixelIdentical": true
       }
     ]
+  },
+  "deployment": {
+    "project": "vitaflex",
+    "productionBranch": "main",
+    "revision": "ac3fe7340b14951bbe2a35fffff1759c13e2ac54",
+    "preview": "https://8237997d.vitaflex.pages.dev",
+    "productionDeployment": "https://f4749640.vitaflex.pages.dev",
+    "productionDomain": "https://vitaflexbusinessgroup.com",
+    "workflow": "https://github.com/vitaflexl4-ai/monte-wo/actions/runs/42264336964",
+    "buildAndBrowserAndStaticChecks": "passed",
+    "previewAndProductionAliasSEOChecks": "passed: current metadata, parsed JSON-LD, canonical, robots, sitemap, eight routes",
+    "productionBindingsAndDomainsPreserved": true,
+    "privateAPI": {
+      "production": 401,
+      "preview": 503
+    },
+    "finalCustomDomainCIGate": "failed: HTTP 403 Cloudflare challenge",
+    "independentCustomDomainRetrieval": "profile, robots and sitemap retrieved successfully with revision query parameter",
+    "googlebotOrSearchConsoleIndexingVerified": false
   }
 }
