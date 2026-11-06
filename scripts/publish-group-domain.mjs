@@ -2,6 +2,7 @@
 import {readFile,writeFile,mkdir} from 'node:fs/promises';
 import {spawnSync} from 'node:child_process';
 import assert from 'node:assert/strict';
+import {normalizeDownloadedPagesConfig} from './pages-config.mjs';
 process.on('uncaughtException',error=>{console.log('::error title=Production publication::'+error.message.replaceAll('\n',' '));process.exit(1);});
 const config=JSON.parse(await readFile('deploy.config.json','utf8'));
 const project='vitaflex';
@@ -37,6 +38,7 @@ try {
  const downloaded=await readFile('wrangler.toml','utf8');
  assert.match(downloaded,/name\s*=\s*"vitaflex"/);
  assert.match(downloaded,/pages_build_output_dir\s*=\s*"public"/);
+ await writeFile('wrangler.toml',normalizeDownloadedPagesConfig(downloaded));
  // Preview is a deployment within the same project, not a new Pages project.
  run(['pages','deploy','public','--project-name',project,'--branch',branch,'--commit-hash',expected,'--commit-dirty=true']);
  const deployments=await api('/deployments');

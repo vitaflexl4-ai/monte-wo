@@ -1,4 +1,5 @@
 import test from 'node:test';
+import {normalizeDownloadedPagesConfig} from '../scripts/pages-config.mjs';
 import assert from 'node:assert/strict';
 import {readFileSync,existsSync} from 'node:fs';
 const read=p=>readFileSync(p,'utf8');
@@ -75,4 +76,17 @@ test('SEO: publication is restricted to the existing project and preserves confi
  assert.match(publish,/Existing production \$\{key\} must remain unchanged/);
  assert.match(workflow,/node --test tests\/seo.test.js/);
  const sw=read('public/sw.js');for(const weight of [400,600])assert.equal(sw.split(`'/assets/inter-${weight}.woff2'`).length-1,1);
+});
+
+
+test('SEO deployment: empty downloaded placement tables are omitted, explicit modes and bindings preserved',()=>{
+ const source='name = "vitaflex"\n[placement]\n\n[env.production]\ncompatibility_date = "2025-01-01"\n[env.production.placement]\n# downloaded empty table\n\n[[env.production.d1_databases]]\nbinding = "DB"\ndatabase_id = "existing-db"\n[env.preview.placement]\nmode = "smart"\n';
+ const normalized=normalizeDownloadedPagesConfig(source);
+ assert.ok(!normalized.includes('[placement]'));
+ assert.ok(!normalized.includes('[env.production.placement]'));
+ assert.ok(normalized.includes('[env.preview.placement]\nmode = "smart"'));
+ assert.ok(normalized.includes('database_id = "existing-db"'));
+ assert.equal(normalizeDownloadedPagesConfig(normalized),normalized);
+ for(const mode of ['off','smart'])assert.equal(normalizeDownloadedPagesConfig(`[placement]\nmode = "${mode}"\n`),`[placement]\nmode = "${mode}"\n`);
+ assert.equal(normalizeDownloadedPagesConfig('[placement]\n'),'');
 });
