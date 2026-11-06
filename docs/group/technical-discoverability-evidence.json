@@ -1,0 +1,200 @@
+{
+  "status": "Validated locally; deployment pending workflow execution",
+  "metadata": {
+    "title": "Sony Alexis | Professional Profile & Biography",
+    "description": "Discover Sony Alexis — his background in business administration, leadership, fitness and technology, and reflections on learning, faith, Haiti and service.",
+    "h1": "Sony Alexis (unchanged)",
+    "canonical": "https://vitaflexbusinessgroup.com/sony/",
+    "robots": "index, follow, max-image-preview:large",
+    "og:type": "profile",
+    "og:title": "Sony Alexis | Professional Profile & Biography",
+    "og:description": "Discover Sony Alexis — his background in business administration, leadership, fitness and technology, and reflections on learning, faith, Haiti and service.",
+    "og:url": "https://vitaflexbusinessgroup.com/sony/",
+    "og:image": "https://vitaflexbusinessgroup.com/assets/group/vitaflex-business-group.png",
+    "twitter:card": "summary",
+    "twitter:title": "Sony Alexis | Professional Profile & Biography",
+    "twitter:description": "Discover Sony Alexis — his background in business administration, leadership, fitness and technology, and reflections on learning, faith, Haiti and service."
+  },
+  "jsonLd": {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "Person",
+        "@id": "https://vitaflexbusinessgroup.com/sony/#person",
+        "name": "Sony Alexis",
+        "url": "https://vitaflexbusinessgroup.com/sony/",
+        "description": "Discover Sony Alexis — his background in business administration, leadership, fitness and technology, and reflections on learning, faith, Haiti and service.",
+        "affiliation": {
+          "@id": "https://vitaflexbusinessgroup.com/#organization"
+        },
+        "mainEntityOfPage": {
+          "@id": "https://vitaflexbusinessgroup.com/sony/#profile"
+        },
+        "hasCredential": [
+          {
+            "@type": "EducationalOccupationalCredential",
+            "name": "Bachelor's degree in Business Administration",
+            "credentialCategory": "degree"
+          },
+          {
+            "@type": "EducationalOccupationalCredential",
+            "name": "Master of Business Administration (MBA)",
+            "credentialCategory": "degree"
+          }
+        ],
+        "knowsAbout": [
+          "Business administration",
+          "Leadership",
+          "Entrepreneurship",
+          "Fitness",
+          "Technology",
+          "Artificial intelligence",
+          "Continuous learning"
+        ]
+      },
+      {
+        "@type": "ProfilePage",
+        "@id": "https://vitaflexbusinessgroup.com/sony/#profile",
+        "url": "https://vitaflexbusinessgroup.com/sony/",
+        "name": "Sony Alexis | Professional Profile & Biography",
+        "description": "Discover Sony Alexis — his background in business administration, leadership, fitness and technology, and reflections on learning, faith, Haiti and service.",
+        "inLanguage": "en",
+        "mainEntity": {
+          "@id": "https://vitaflexbusinessgroup.com/sony/#person"
+        }
+      },
+      {
+        "@type": "Organization",
+        "@id": "https://vitaflexbusinessgroup.com/#organization",
+        "name": "VitaFlex Business Group",
+        "url": "https://vitaflexbusinessgroup.com/"
+      }
+    ]
+  },
+  "robotsTxt": "User-agent: *\nAllow: /\nDisallow: /api/\nDisallow: /strength/admin/\nDisallow: /intelligence/\nDisallow: /account/callback/\nSitemap: https://vitaflexbusinessgroup.com/sitemap.xml\n",
+  "sitemap": {
+    "urls": 55,
+    "sonyOccurrences": 1
+  },
+  "tests": {
+    "build": "passed",
+    "targeted": {
+      "passed": 22,
+      "failed": 0
+    },
+    "fullSuite": {
+      "total": 234,
+      "passed": 232,
+      "failed": 2,
+      "knownFailures": [
+        "Lab protected-source wrangler.toml checksum",
+        "Website protected-source wrangler.toml checksum"
+      ]
+    },
+    "htmlValidation": "passed: profile and homepage",
+    "responsiveBrowser": "passed: profile eight viewports and group seven routes/seven widths"
+  },
+  "preservation": {
+    "baselineRevision": "0fc7886",
+    "htmlBodiesUnchanged": 61,
+    "staticFilesUnchanged": 165,
+    "visibleContentChanges": 0
+  },
+  "browserAudit": {
+    "browser": "153.0.8010.0",
+    "accessibility": [
+      {
+        "route": "/",
+        "width": 320,
+        "violations": 0,
+        "incomplete": 1,
+        "passes": 17
+      },
+      {
+        "route": "/",
+        "width": 390,
+        "violations": 0,
+        "incomplete": 1,
+        "passes": 17
+      },
+      {
+        "route": "/",
+        "width": 768,
+        "violations": 0,
+        "incomplete": 1,
+        "passes": 17
+      },
+      {
+        "route": "/",
+        "width": 1440,
+        "violations": 0,
+        "incomplete": 1,
+        "passes": 17
+      },
+      {
+        "route": "/sony/",
+        "width": 320,
+        "violations": 0,
+        "incomplete": 0,
+        "passes": 17
+      },
+      {
+        "route": "/sony/",
+        "width": 390,
+        "violations": 0,
+        "incomplete": 0,
+        "passes": 17
+      },
+      {
+        "route": "/sony/",
+        "width": 768,
+        "violations": 0,
+        "incomplete": 0,
+        "passes": 17
+      },
+      {
+        "route": "/sony/",
+        "width": 1440,
+        "violations": 0,
+        "incomplete": 0,
+        "passes": 17
+      }
+    ],
+    "performance": [
+      {
+        "route": "/",
+        "lcp": 3476,
+        "cls": 0.0004242423870196087,
+        "domContentLoadedMs": 203.70000000001164,
+        "encodedResourceBytes": 623062,
+        "requests": 4
+      },
+      {
+        "route": "/sony/",
+        "lcp": 572,
+        "cls": 0.0010135013892896409,
+        "domContentLoadedMs": 201.89999999999418,
+        "encodedResourceBytes": 154248,
+        "requests": 3
+      }
+    ],
+    "visualComparison": [
+      {
+        "width": 320,
+        "pixelIdentical": true
+      },
+      {
+        "width": 390,
+        "pixelIdentical": true
+      },
+      {
+        "width": 768,
+        "pixelIdentical": true
+      },
+      {
+        "width": 1440,
+        "pixelIdentical": true
+      }
+    ]
+  }
+}

@@ -106,7 +106,7 @@ for file in paths:
  if private:meta+='<meta name="robots" content="noindex, nofollow">'
  elif origin:meta+=f'<link rel="canonical" href="{origin}{path}"><meta property="og:url" content="{origin}{path}">';canonical_routes.append(path)
  doc=doc.replace('</head>',meta+'</head>');doc=doc.replace('<img class="rank-emblem"','<img loading="lazy" decoding="async" class="rank-emblem"');file.write_text(doc)
-robots='User-agent: *\nAllow: /\nDisallow: /api/\nDisallow: /strength/admin/\n'
+robots='User-agent: *\nAllow: /\nDisallow: /api/\nDisallow: /strength/admin/\nDisallow: /intelligence/\nDisallow: /account/callback/\n'
 if origin:
  robots+='Sitemap: '+origin+'/sitemap.xml\n';(P/'sitemap.xml').write_text('<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'+''.join('<url><loc>'+esc(origin+p)+'</loc></url>' for p in canonical_routes)+'</urlset>\n')
 else:(P/'sitemap.xml').unlink(missing_ok=True)

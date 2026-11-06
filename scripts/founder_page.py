@@ -54,17 +54,29 @@ def render_founder(page):
     url = 'https://vitaflexbusinessgroup.com/sony/'
     # Only identity, affiliation and interests supported by the owner/biography.
     # No jobTitle, unverified sameAs links, portrait, dates or address.
+    # Institution/issuer names are omitted: none is currently published in the essay.
     structured_data = {
         '@context': 'https://schema.org',
         '@graph': [
             {'@type': 'Person', '@id': url + '#person', 'name': profile['name'],
              'url': url, 'description': profile['description'],
-             'affiliation': {'@type': 'Organization', 'name': 'VitaFlex Business Group',
-                             'url': 'https://vitaflexbusinessgroup.com/'},
-             'knowsAbout': ['Business', 'Entrepreneurship', 'Fitness', 'Technology']},
+             'affiliation': {'@id': 'https://vitaflexbusinessgroup.com/#organization'},
+             'mainEntityOfPage': {'@id': url + '#profile'},
+             'hasCredential': [
+                 {'@type': 'EducationalOccupationalCredential',
+                  'name': "Bachelor's degree in Business Administration",
+                  'credentialCategory': 'degree'},
+                 {'@type': 'EducationalOccupationalCredential',
+                  'name': 'Master of Business Administration (MBA)',
+                  'credentialCategory': 'degree'}],
+             'knowsAbout': ['Business administration', 'Leadership', 'Entrepreneurship',
+                            'Fitness', 'Technology', 'Artificial intelligence',
+                            'Continuous learning']},
             {'@type': 'ProfilePage', '@id': url + '#profile', 'url': url,
              'name': profile['seoTitle'], 'description': profile['description'],
-             'inLanguage': 'en', 'mainEntity': {'@id': url + '#person'}}
+             'inLanguage': 'en', 'mainEntity': {'@id': url + '#person'}},
+            {'@type': 'Organization', '@id': 'https://vitaflexbusinessgroup.com/#organization',
+             'name': 'VitaFlex Business Group', 'url': 'https://vitaflexbusinessgroup.com/'}
         ]
     }
     return page(profile['seoTitle'], profile['description'], body, '/sony/',

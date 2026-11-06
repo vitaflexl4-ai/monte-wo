@@ -13,7 +13,7 @@ const meta=(doc,key)=>[...head(doc).matchAll(/<meta (?:name|property)="([^"]+)" 
 test('SEO: exact owner-approved identity, metadata, H1 and canonical',()=>{
  assert.equal(unescape(profile.match(/<title>(.*?)<\/title>/)[1]),'Sony Alexis | Professional Profile & Biography');
  assert.deepEqual(meta(profile,'description'),[source.description]);
- assert.equal(source.description,'Discover the professional journey of Sony Alexis — his business interests, leadership, entrepreneurship, fitness, continuous learning, and work with VitaFlex Business Group.');
+ assert.equal(source.description,'Discover Sony Alexis — his background in business administration, leadership, fitness and technology, and reflections on learning, faith, Haiti and service.');
  assert.match(profile,/<h1 id="founder-name">Sony Alexis<\/h1>/);
  assert.equal((profile.match(/<h1\b/g)||[]).length,1);
  assert.match(profile,/rel="canonical" href="https:\/\/vitaflexbusinessgroup.com\/sony\/"/);
@@ -25,12 +25,24 @@ test('SEO: exact owner-approved identity, metadata, H1 and canonical',()=>{
 
 test('SEO: valid JSON-LD ProfilePage references the supported Person',()=>{
  const scripts=[...profile.matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g)];assert.equal(scripts.length,1);
- const data=JSON.parse(scripts[0][1]);assert.equal(data['@context'],'https://schema.org');assert.equal(data['@graph'].length,2);
+ const data=JSON.parse(scripts[0][1]);assert.equal(data['@context'],'https://schema.org');assert.equal(data['@graph'].length,3);
  const person=data['@graph'].find(n=>n['@type']==='Person');const page=data['@graph'].find(n=>n['@type']==='ProfilePage');
  assert.equal(person.name,'Sony Alexis');assert.equal(person.url,origin+'/sony/');assert.equal(page.url,person.url);assert.equal(page.mainEntity['@id'],person['@id']);
- assert.deepEqual(person.affiliation,{'@type':'Organization',name:'VitaFlex Business Group',url:origin+'/'});
+ assert.deepEqual(person.affiliation,{'@id':origin+'/#organization'});
+ const organization=data['@graph'].find(n=>n['@type']==='Organization');
+ assert.deepEqual(organization,{'@type':'Organization','@id':origin+'/#organization',name:'VitaFlex Business Group',url:origin+'/'});
+ assert.equal(person.mainEntityOfPage['@id'],page['@id']);
+ assert.equal(data['@graph'].filter(n=>n['@type']==='Person').length,1);
+ assert.equal(new Set(data['@graph'].map(n=>n['@id'])).size,3);
  assert.ok(!Object.keys(person).some(key=>['jobTitle','award','address','sameAs','image','worksFor','birthDate'].includes(key)));
- assert.deepEqual(person.knowsAbout,['Business','Entrepreneurship','Fitness','Technology']);
+ assert.deepEqual(person.knowsAbout,['Business administration','Leadership','Entrepreneurship','Fitness','Technology','Artificial intelligence','Continuous learning']);
+ assert.deepEqual(person.hasCredential,[
+  {'@type':'EducationalOccupationalCredential',name:"Bachelor's degree in Business Administration",credentialCategory:'degree'},
+  {'@type':'EducationalOccupationalCredential',name:'Master of Business Administration (MBA)',credentialCategory:'degree'}
+ ]);
+ const prose=source.chapters.flatMap(c=>c.paragraphs).join(' ');
+ assert.ok(prose.includes("bachelor's degree in Business Administration"));assert.ok(prose.includes('Master of Business Administration (MBA)'));
+ assert.doesNotMatch(scripts[0][1],/Liberty|CleanCap|CJVitaFlex|alumniOf|sameAs|nationality|jobTitle|birthDate|recognizedBy|credentialId/);
  assert.equal(page.name,source.seoTitle);assert.equal(page.inLanguage,'en');
 });
 
@@ -89,4 +101,29 @@ test('SEO deployment: empty downloaded placement tables are omitted, explicit mo
  assert.equal(normalizeDownloadedPagesConfig(normalized),normalized);
  for(const mode of ['off','smart'])assert.equal(normalizeDownloadedPagesConfig(`[placement]\nmode = "${mode}"\n`),`[placement]\nmode = "${mode}"\n`);
  assert.equal(normalizeDownloadedPagesConfig('[placement]\n'),'');
+});
+
+test('Technical-only SEO: all pre-existing HTML bodies and static assets are byte-identical',async()=>{
+ const {createHash}=await import('node:crypto');
+ const baseline=JSON.parse(read('tests/fixtures/seo-visible-baseline.json'));
+ const sha=value=>createHash('sha256').update(value).digest('hex');
+ for(const [file,expected] of Object.entries(baseline.htmlBodies)){
+  const html=read(file);const body=html.match(/<body\b[^>]*>[\s\S]*?<\/body>/)?.[0]||html;
+  assert.equal(sha(body),expected,file+' visible body changed');
+ }
+ for(const [file,expected] of Object.entries(baseline.staticFiles))assert.equal(sha(readFileSync(file)),expected,file+' asset changed');
+ const {description,...visibleSource}=source;assert.deepEqual(visibleSource,baseline.visibleProfileSource);
+ console.log(`Technical-only preservation: ${Object.keys(baseline.htmlBodies).length} HTML bodies and ${Object.keys(baseline.staticFiles).length} static files unchanged.`);
+});
+
+test('Technical-only SEO: AI/search crawlers share public access and private exclusions',()=>{
+ const robots=read('public/robots.txt');
+ assert.deepEqual([...robots.matchAll(/^User-agent: (.+)$/gm)].map(m=>m[1]),['*']);
+ assert.deepEqual([...robots.matchAll(/^Allow: (.+)$/gm)].map(m=>m[1]),['/']);
+ assert.deepEqual([...robots.matchAll(/^Disallow: (.+)$/gm)].map(m=>m[1]),['/api/','/strength/admin/','/intelligence/','/account/callback/']);
+ assert.ok(!existsSync('public/llms.txt'),'No unnecessary new public discovery document');
+ const headers=read('public/_headers');
+ assert.match(headers,/\/intelligence\/\*[\s\S]*?X-Robots-Tag: noindex, nofollow/);
+ assert.match(headers,/\/account\/callback\/\*[\s\S]*?X-Robots-Tag: noindex, nofollow/);
+ assert.doesNotMatch(headers,/\/sony\/\*[\s\S]*?noindex/);
 });

@@ -56,7 +56,7 @@ for file in P.rglob('index.html'):
  file.write_text(doc)
 (P/'group-routes.json').write_text(json.dumps(routes,indent=2)+'\n')
 # Existing MONTE WO service worker must not strand returning visitors on the old root.
-sw=P/'sw.js';text=sw.read_text();text=re.sub(r"const CORE='[^']+';","const CORE='montewo-core-v29-sony-alexis-seo';",text)
+sw=P/'sw.js';text=sw.read_text();text=re.sub(r"const CORE='[^']+';","const CORE='montewo-core-v30-technical-entities';",text)
 text=text.replace("'/group.css','/group-sculpture.svg','/group-mark.svg','/monte-wo/','/ventures/monte-wo/','/ventures/vitaflex-training/',", "")
 text=re.sub(r"'(?:/assets/group/[^']+|/group.css|/group-mark.svg|/group-sculpture.svg|/monte-wo/|/founder/|/sony/|/ventures/[^']+/)',", '', text)
 text=re.sub(r"'/assets/inter-(?:400|600)\.woff2',",'',text)

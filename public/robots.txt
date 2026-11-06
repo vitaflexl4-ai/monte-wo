@@ -2,4 +2,6 @@ User-agent: *
 Allow: /
 Disallow: /api/
 Disallow: /strength/admin/
+Disallow: /intelligence/
+Disallow: /account/callback/
 Sitemap: https://vitaflexbusinessgroup.com/sitemap.xml

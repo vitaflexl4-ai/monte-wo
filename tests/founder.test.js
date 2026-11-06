@@ -92,7 +92,7 @@ test('Founder: every group link, asset and fragment resolves without fabricated 
 
 test('Founder: offline upgrade is deduplicated and source content is not downloaded at runtime',()=>{
  const sw=read('public/sw.js');
- assert.match(sw,/montewo-core-v29-sony-alexis-seo/);
+ assert.match(sw,/montewo-core-v30-technical-entities/);
  assert.equal(sw.split("'/sony/'").length-1,1);
  assert.equal(routes.filter(route=>route==='/sony/').length,1);
  assert.doesNotMatch(founder,/fetch\(|founder\.json/);
