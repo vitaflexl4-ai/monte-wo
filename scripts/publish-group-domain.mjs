@@ -19,7 +19,13 @@ await mkdir('evidence',{recursive:true});
 const snapshot={project,domains:before.domains,deployment:before.canonical_deployment?.id,revision:before.canonical_deployment?.deployment_trigger?.metadata?.commit_hash,url:before.canonical_deployment?.url};
 await writeFile('evidence/domain-project-before.json',JSON.stringify(snapshot,null,2));
 console.log('::notice title=Existing domain owner::'+JSON.stringify(snapshot));
-const run=args=>{const result=spawnSync('npx',['wrangler',...args],{stdio:'inherit',env});assert.equal(result.status,0,'Wrangler command failed; no project creation or fallback is permitted');};
+const run=args=>{
+ const result=spawnSync('npx',['wrangler',...args],{encoding:'utf8',env});
+ const sanitize=text=>String(text||'').replaceAll(process.env.CLOUDFLARE_API_TOKEN||'__NO_TOKEN__','[redacted]');
+ process.stdout.write(sanitize(result.stdout));process.stderr.write(sanitize(result.stderr));
+ const detail=sanitize(result.stderr||result.stdout||result.error?.message).replace(/\x1b\[[0-9;]*m/g,'').slice(-1200);
+ assert.equal(result.status,0,`Wrangler ${args.slice(0,3).join(' ')} failed: ${detail}. No project creation or fallback is permitted`);
+};
 const expected=spawnSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).stdout.trim();
 const branch=process.env.GITHUB_REF_NAME||spawnSync('git',['branch','--show-current'],{encoding:'utf8'}).stdout.trim();
 assert.equal(branch,'arena/beb13e2a-monte-wo');
