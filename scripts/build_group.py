@@ -31,10 +31,23 @@ product=P/'monte-wo/index.html';product.parent.mkdir(exist_ok=True,parents=True)
 doc=(P/'index.html').read_text()
 doc=doc.replace('href="/" aria-label="Monte Wo home"','href="/monte-wo/" aria-label="Monte Wo home"')
 doc=re.sub(r'<link rel="canonical"[^>]*>','',doc)
+doc=re.sub(r'<meta property="og:url"[^>]*>',f'<meta property="og:url" content="{origin}/monte-wo/">',doc)
 doc=doc.replace('</head>',f'<link rel="canonical" href="{origin}/monte-wo/"></head>')
 product.write_text(doc)
 body='''<section class="hero frame"><div class="hero-heading"><span class="index-label">INDEPENDENT BY DESIGN</span><h1>Beyond<br><em>the obvious.</em></h1><span class="hero-signature">VITAFLEX BUSINESS GROUP</span></div><div class="hero-art"><img src="/assets/group/vitaflex-business-group.png" width="1024" height="1024" alt="VitaFlex Business Group — gold VF emblem inside a circular gold border" fetchpriority="high"></div><div class="hero-baseline"><span>WE BUILD VENTURES.<br>WE CREATE POSSIBILITIES.</span><a href="#ventures" class="scroll-link" aria-label="Discover our ventures"><span>DISCOVER</span><b aria-hidden="true">↓</b></a><span class="coordinate">A VISION WITHOUT LIMITS.</span></div></section><section class="portfolio frame" id="ventures"><div class="portfolio-heading"><span class="index-label">THE PORTFOLIO</span><span class="portfolio-count">01 — '''+f'{len(ventures):02d}'+'''</span></div>'''+''.join(portfolio_row(v,i+1) for i,v in enumerate(ventures))+'''<div class="portfolio-end"><span class="horizon-mark" aria-hidden="true"></span><span>THE HORIZON REMAINS OPEN.</span></div></section>'''
-(P/'index.html').write_text(page('Beyond the obvious.','VitaFlex Business Group. Independent ventures. A bigger vision.',body))
+# Stable IDs agree with the existing profile graph; no inferred legal or employment claims.
+site_schema={
+ '@context':'https://schema.org',
+ '@graph':[
+  {'@type':'Organization','@id':origin+'/#organization',
+   'name':'VitaFlex Business Group','url':origin+'/',
+   'logo':origin+'/assets/group/vitaflex-business-group.png'},
+  {'@type':'WebSite','@id':origin+'/#website',
+   'name':'VitaFlex Business Group','url':origin+'/',
+   'publisher':{'@id':origin+'/#organization'}}
+ ]
+}
+(P/'index.html').write_text(page('Beyond the obvious.','VitaFlex Business Group. Independent ventures. A bigger vision.',body,structured_data=site_schema))
 routes=['/','/monte-wo/']
 for v in ventures:
  path=f'/ventures/{v["slug"]}/';routes.append(path)

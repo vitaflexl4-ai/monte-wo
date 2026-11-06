@@ -127,3 +127,24 @@ test('Technical-only SEO: AI/search crawlers share public access and private exc
  assert.match(headers,/\/account\/callback\/\*[\s\S]*?X-Robots-Tag: noindex, nofollow/);
  assert.doesNotMatch(headers,/\/sony\/\*[\s\S]*?noindex/);
 });
+
+test('Entity recognition: homepage Organization/WebSite agree with existing Sony entity IDs',()=>{
+ const home=read('public/index.html');const blocks=[...home.matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g)];
+ assert.equal(blocks.length,1);const graph=JSON.parse(blocks[0][1]);assert.equal(graph['@context'],'https://schema.org');assert.equal(graph['@graph'].length,2);
+ const org=graph['@graph'].find(n=>n['@type']==='Organization');const site=graph['@graph'].find(n=>n['@type']==='WebSite');
+ assert.equal(org.name,'VitaFlex Business Group');assert.equal(org.url,origin+'/');assert.equal(org['@id'],origin+'/#organization');
+ assert.equal(site['@id'],origin+'/#website');assert.equal(site.url,org.url);assert.equal(site.name,org.name);assert.equal(site.publisher['@id'],org['@id']);
+ assert.ok(existsSync('public'+new URL(org.logo).pathname));
+ const profileGraph=JSON.parse(profile.match(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/)[1])['@graph'];
+ const profileOrg=profileGraph.find(n=>n['@type']==='Organization');for(const [key,value] of Object.entries(profileOrg))assert.equal(org[key],value);
+ assert.equal(profileGraph.find(n=>n['@type']==='Person').affiliation['@id'],org['@id']);
+ assert.doesNotMatch(blocks[0][1],/sameAs|founder|employee|foundingDate|legalName|taxID|award|address/);
+});
+
+test('Entity recognition: HTTP audit detects noindex, broken canonical and metadata duplication',async()=>{
+ const {inspectPublicHTML}=await import('../scripts/audit-public-seo.mjs');
+ const home=read('public/index.html');assert.deepEqual(inspectPublicHTML(home,origin+'/').problems,[]);
+ assert.ok(inspectPublicHTML(home.replace('index, follow','noindex, follow'),origin+'/').problems.some(p=>p.includes('blocks indexing')));
+ assert.ok(inspectPublicHTML(home,origin+'/wrong/').problems.some(p=>p.includes('Canonical')));
+ assert.ok(inspectPublicHTML(home.replace('</head>','<title>Duplicate</title></head>'),origin+'/').problems.includes('Title missing/duplicated'));
+});

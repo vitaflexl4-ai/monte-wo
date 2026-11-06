@@ -37,7 +37,9 @@ jobs:
           node tests/group-browser.mjs
           node tests/founder-browser.mjs
       - name: SEO and content regression tests
-        run: node --test tests/seo.test.js tests/founder.test.js tests/group.test.js
+        run: |
+          node --test tests/seo.test.js tests/founder.test.js tests/group.test.js
+          VERIFY_ORIGIN=http://127.0.0.1:8080 SEO_AUDIT_OUTPUT=evidence/local-sitemap-audit.json node scripts/audit-public-seo.mjs
       - name: Publish to the existing main-domain project
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
@@ -53,9 +55,11 @@ jobs:
         run: |
           set -o pipefail
           node scripts/verify-group.mjs | tee evidence/production-project-verification.txt
+          SEO_AUDIT_OUTPUT=evidence/production-sitemap-audit.json node scripts/audit-public-seo.mjs
       - name: Verify public domain and protected API
         run: |
           set -o pipefail
+          SEO_AUDIT_OUTPUT=evidence/preferred-domain-sitemap-audit.json node scripts/audit-public-seo.mjs
           node scripts/verify-group.mjs 2>&1 | tee evidence/verification.txt
           git rev-parse HEAD > evidence/revision.txt
       - uses: actions/upload-artifact@v4

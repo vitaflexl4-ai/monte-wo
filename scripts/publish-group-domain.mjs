@@ -46,6 +46,8 @@ try {
  assert.ok(preview?.url,'Could not identify the new preview deployment');
  const verify=spawnSync(process.execPath,['scripts/verify-group.mjs'],{stdio:'inherit',env:{...env,VERIFY_ORIGIN:preview.url}});
  assert.equal(verify.status,0,'Preview verification failed; production is not published');
+ const crawl=spawnSync(process.execPath,['scripts/audit-public-seo.mjs'],{stdio:'inherit',env:{...env,VERIFY_ORIGIN:preview.url,SEO_AUDIT_OUTPUT:'evidence/preview-sitemap-audit.json'}});
+ assert.equal(crawl.status,0,'Preview sitemap HTTP audit failed; production is not published');
  run(['pages','deploy','public','--project-name',project,'--branch','main','--commit-hash',expected,'--commit-dirty=true']);
  const after=await inspect();
  assert.equal(after.canonical_deployment?.deployment_trigger?.metadata?.commit_hash,expected,'Production revision must match this build');
