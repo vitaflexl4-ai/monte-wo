@@ -1,7 +1,9 @@
 {
   "name": "Sony Alexis",
   "title": "The Person Behind the Vision",
-  "description": "Discover Sony Alexis — his background in business administration, leadership, fitness and technology, and reflections on learning, faith, Haiti and service.",
+  "alternateName": "Sony Holmes",
+  "lead": "Sony Alexis, also known as Sony Holmes, shares here — in his own words — the path that shaped him, his work through VitaFlex Business Group, and his bond with Haiti.",
+  "description": "Discover Sony Alexis, also known as Sony Holmes — his work through VitaFlex Business Group, his background in business and leadership, and his bond with Haiti.",
   "chapters": [
     {
       "id": "roots",
@@ -36,9 +38,29 @@
         "My faith in God remains central to my life, providing guidance, perspective, and a reminder of the importance of humility. My love for Haiti is equally close to my heart. I remain hopeful about its future and believe that meaningful progress begins with responsibility, dignity, and a willingness to contribute.",
         "I am grateful to pursue life as one who serves. I remain ambitious, but I have come to understand that ambition is most meaningful when accompanied by patience, discipline, gratitude, and consideration for others. There is still much to learn, much to understand, and much to give."
       ]
+    },
+    {
+      "id": "haiti-senate-hearing",
+      "title": "Haiti 2026 & a Senate hearing",
+      "paragraphs": [
+        "On February 10, 2026, the U.S. Senate Appropriations Subcommittee on State, Foreign Operations, and Related Programs held a hearing titled “Haiti 2026: Security and Foreign Assistance Priorities.” Austin Holmes was among the witnesses and submitted written testimony. In it, he notes that he had been in Haiti the previous week, supporting the relocation of his foster son to Cap-Haïtien.",
+        "I am the foster son referred to in that sentence. The testimony does not mention me by name, and I did not testify or hold any role in the hearing. I note the connection here, on my own account, because it is part of my story and of my bond with Haiti."
+      ],
+      "sources": [
+        {
+          "label": "Hearing page: Haiti 2026 — Security and Foreign Assistance Priorities (U.S. Senate Committee on Appropriations)",
+          "url": "https://www.appropriations.senate.gov/hearings/haiti-2026-security-and-foreign-assistance-priorities",
+          "type": "WebPage"
+        },
+        {
+          "label": "Written testimony of Austin Holmes (PDF, senate.gov)",
+          "url": "https://www.appropriations.senate.gov/download/mr-austin-holmes-testimony",
+          "type": "DigitalDocument"
+        }
+      ]
     }
   ],
   "closing": "I hope to live with enough wisdom to keep learning, enough humility to keep listening, and enough conviction to keep serving.",
   "postscript": "The journey continues.",
-  "seoTitle": "Sony Alexis | Professional Profile & Biography"
+  "seoTitle": "Sony Alexis (Sony Holmes) | Professional Profile & Biography"
 }
