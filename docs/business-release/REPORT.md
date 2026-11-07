@@ -2,6 +2,19 @@
 
 Supersedes `docs/master-execution/REPORT.md` for the newly authorized corporate implementation and publication. The earlier report remains historical local-only evidence, not a current production-status claim.
 
+## Final outcome — published; preferred-domain verification blocked
+
+**Both corporate conversion and verified Sony SEO are deployed. End-to-end custom-domain acceptance is NOT complete.**
+
+- Final production revision: `e02f5b911ce540cff854ad1b6203a9f05e5776b5`.
+- Production deployment: https://ac0b5b50.vitaflex.pages.dev (not the staging preview).
+- Verified stable production origin: https://vitaflex.pages.dev/ ; Sony: https://vitaflex.pages.dev/sony/ ; corporate contact: https://vitaflex.pages.dev/business-contact/ .
+- Final release run: [42422300945](https://github.com/vitaflexl4-ai/monte-wo/actions/runs/42422300945), completed 2026-11-07T22:49:08Z. Build, all three browser suites, 32 targeted tests, preview publication/verification, production publication and production-origin verification succeeded.
+- Final production origin: **56/56 HTTP 200 with valid metadata**, nine targeted routes/structured-data checks, protected API **401**, product privacy page unchanged. Existing bindings/domains preserved by publisher assertions. Actual publication and production verification notices are retained in `evidence/final-production-release-annotations.json`.
+- Run conclusion is **failure**: subsequent custom-domain verification is challenged by Cloudflare. No suppression, security disablement or blanket green claim. The final all-domain verification step was skipped after that failure; its checks are NOT reported as passing. See read-only diagnosis below.
+- Remaining blocker: a Cloudflare zone-security administrator must identify the rule challenging public corporate pages. The existing connection cannot read those security settings/rules (403). No credentials should be sent in chat. Keep private APIs/customer routes protected and rerun custom-domain checks after a scoped, reviewed fix.
+- Remaining content limitation: required strategy/pricing documents were unavailable; missing package deliverables were not invented. Email form prepares a draft only. No indexing/ranking/GSC or real-email-delivery claim.
+
 ## Implementation and honest boundaries
 
 - Premium near-black/gold/off-white corporate home: clear digital-presence positioning, BUILD → ATTRACT → OPTIMIZE → GROW, six approved prices, Business Pro owner-supplied scope, corporate about and calls to action. Preserves four venture destinations and separate Sony identity/schema.
@@ -28,7 +41,7 @@ Existing corporate Cloudflare Pages project: `vitaflex`, direct upload; owns ape
 
 Approved rollback baseline: revision `cdd431502dcf20792ad2c9f5b18dc90c73bcc82c`, deployment `2f802a54-bd76-4364-881e-5b276dd93029`. Read-only confirmation is being refreshed before release. Publisher fails closed on revision drift, validates preview before production, preserves domain and existing binding configuration, and never provisions resources. Baseline deployment remains available for rollback. Do not disable security or bypass source guards to pass verification.
 
-**Current status: source built and tested; production publication and public-domain verification pending.** Subsequent evidence below will record actual run/revision/status. No claim of indexing, ranking, Google Search Console access, verified-bot traffic or independently verified credentials.
+**Pre-release status (historical): source built and tested; publication was pending at this point.** Final publication and verification results are summarized above and recorded below. No claim of indexing, ranking, Google Search Console access, verified-bot traffic or independently verified credentials.
 
 ## Fresh pre-release confirmation
 
@@ -48,6 +61,65 @@ Read-only [edge diagnosis 42421901973](https://github.com/vitaflexl4-ai/monte-wo
 - Zone lookup succeeds and confirms active status. Existing integration returns **403** for zone settings, bot-management and ruleset reads. Consequently the exact issuing rule cannot be established or safely changed through the available connection. No broad security disablement or blind exceptions were attempted.
 - A zone-security administrator must review the rule challenging these legitimate public corporate GETs, keep private API/customer protections intact, and then rerun preferred-domain verification. Do not send credentials in chat. The diagnostic workflow succeeding means inspection ran—not that the challenged domain passed.
 
-A final privacy-hardening follow-up keeps corporate form controls disabled until their JavaScript handlers attach. This prevents native no-JS GET submissions from putting email/business details or self-assessment answers in URLs. Working no-JS email links remain. Dedicated browser checks prove the fallback stays disabled and the normal JavaScript flow still works. Build, 32 targeted tests, all three browser suites and 56-URL local audit rerun successfully; full suite remains 242/244 with only the same unchanged-infrastructure checksum failures. The final follow-up publication is pending below.
+A final privacy-hardening follow-up keeps corporate form controls disabled until their JavaScript handlers attach. This prevents native no-JS GET submissions from putting email/business details or self-assessment answers in URLs. Working no-JS email links remain. Dedicated browser checks prove the fallback stays disabled and the normal JavaScript flow still works. Build, 32 targeted tests, all three browser suites and 56-URL local audit rerun successfully; full suite remains 242/244 with only the same unchanged-infrastructure checksum failures. The final follow-up was subsequently published and its production origin verified; see final outcome above.
 
 Final follow-up baseline reconfirmed by read-only [run 42422271558](https://github.com/vitaflexl4-ai/monte-wo/actions/runs/42422271558) at **2026-11-07T22:47:55.019Z**: successful production `20fc2e2e-0174-4e4f-92d4-5da2c051b2db`, revision `7693584e0edbe52b5dd75dbc143929b1d0ec27f8`, unchanged domains and binding presence. The publisher's revision guard now requires that exact verified baseline for the final follow-up, not the obsolete original revision. It remains fail-closed. Final implementation commit: `2a6166fff045856bc9ef2311b1aaf90aafbff1cb`.
+
+
+## Rollback and scope protection
+
+No rollback was performed: new production-origin content and functional checks pass, while the pre-existing zone-level challenge would not be repaired by reverting site files. Previous verified production `20fc2e2e-0174-4e4f-92d4-5da2c051b2db` (initial implementation) and original baseline `2f802a54-bd76-4364-881e-5b276dd93029` remain recorded rollback references in the existing `vitaflex` Pages deployment history. Rollback has not been executed or tested here. Never target the separate MONTE WO Pages projects or Workers. The next release must freshly inspect production and update the one-shot revision guard; do not remove the guard or blindly rerun against an obsolete baseline.
+
+The session remains on `arena/beb13e2a-monte-wo`; no main checkout, push or merge. Existing PR: https://github.com/vitaflexl4-ai/monte-wo/pull/24 . The final report-only follow-up commit is not another publication. Untracked `blog-cms/` remains excluded from all commits and deployments. All 225 protected existing public files remain byte-identical; Sony visible body is verbatim; only authorized home/routes/sitemap/Sony head/schema plus new corporate files differ. Product build source has only a corporate route exclusion; no product runtime or infrastructure changes.
+
+## Changed files (relative to pre-release branch baseline `d85ea39`)
+
+```text
+.github/workflows/deploy-group.yml
+.github/workflows/diagnose-corporate-edge.yml
+.github/workflows/diagnose-corporate-production.yml
+content/group/business.json
+content/group/founder.json
+docs/business-release/REPORT.md
+docs/business-release/evidence/business-browser.txt
+docs/business-release/evidence/edge-inspection-annotations.json
+docs/business-release/evidence/final-production-preflight-annotations.json
+docs/business-release/evidence/final-production-release-annotations.json
+docs/business-release/evidence/founder-browser.txt
+docs/business-release/evidence/full-suite.txt
+docs/business-release/evidence/group-browser.txt
+docs/business-release/evidence/local-sitemap-audit.json
+docs/business-release/evidence/production-preflight-annotations.json
+docs/business-release/evidence/production-release-annotations.json
+docs/business-release/evidence/targeted-tests.txt
+docs/master-execution/REPORT.md
+docs/master-execution/evidence/build-summary.txt
+docs/master-execution/evidence/full-suite-summary.txt
+docs/master-execution/evidence/local-http-audit.json
+docs/master-execution/evidence/production-diagnostic.json
+docs/master-execution/evidence/results.json
+public/business-contact/index.html
+public/business.css
+public/business.js
+public/group-routes.json
+public/index.html
+public/sitemap.xml
+public/sony/index.html
+scripts/audit-public-seo.mjs
+scripts/build_group.py
+scripts/build_website.py
+scripts/corporate_home.py
+scripts/founder_page.py
+scripts/inspect-corporate-edge.mjs
+scripts/probe-corporate-browser.mjs
+scripts/verify-group.mjs
+tests/business-browser.mjs
+tests/business.test.js
+tests/fixtures/master-protected-snapshot.json
+tests/founder.test.js
+tests/group.test.js
+tests/master-execution.test.js
+tests/seo.test.js
+```
+
+Evidence contains executed results and whitelisted public deployment annotations, not credentials or private customer data. Full-suite output has trailing whitespace normalized only; failing tests are retained.
