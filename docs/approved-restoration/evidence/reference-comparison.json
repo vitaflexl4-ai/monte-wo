@@ -1,0 +1,86 @@
+{
+  "reference": "https://2f802a54.vitaflex.pages.dev",
+  "referenceDeployment": "2f802a54-bd76-4364-881e-5b276dd93029",
+  "referenceRevision": "cdd431502dcf20792ad2c9f5b18dc90c73bcc82c",
+  "files": [
+    {
+      "path": "/",
+      "status": 200,
+      "sha256": "60dff9a625b092600b4d2e6076d0a54f7bca200b754d754457fd96224f6e400d",
+      "exactMatch": true
+    },
+    {
+      "path": "/ventures/monte-wo/",
+      "status": 200,
+      "sha256": "748cda842df3c771845b7cefa3381062db09adcc73f9c049407b22bf992b19d9",
+      "exactMatch": true
+    },
+    {
+      "path": "/ventures/vitaflex-training/",
+      "status": 200,
+      "sha256": "ee575b6b5b0582f48ec1c69f5cfe61214dcdce3ecbe83bc18d00c4ccac9bc449",
+      "exactMatch": true
+    },
+    {
+      "path": "/ventures/vitaflex-intelligence-corp/",
+      "status": 200,
+      "sha256": "41f56bd831ec45c00c0d7e83f57d45150a22befd5c041c3daf10008021ae3e55",
+      "exactMatch": true
+    },
+    {
+      "path": "/ventures/lifeline/",
+      "status": 200,
+      "sha256": "c7a0b0ab725087ee92d20894e641a333020a91426c3b03fe965ab85b9c6eea7b",
+      "exactMatch": true
+    },
+    {
+      "path": "/group.css",
+      "status": 200,
+      "sha256": "0dc8d6ef0cbf3b3495a76594fed317a39d85f5c507374ecdbce4433b7a35159e",
+      "exactMatch": true
+    },
+    {
+      "path": "/assets/inter-400.woff2",
+      "status": 200,
+      "sha256": "16baac80f5dfd27841cfbd510285eb8123a98401117075a59da3584b74aefb5b",
+      "exactMatch": true
+    },
+    {
+      "path": "/assets/inter-600.woff2",
+      "status": 200,
+      "sha256": "33e4f12e469c3cffa34e64449e4080b5acc3a2daad040c4a02b00a63a493376e",
+      "exactMatch": true
+    },
+    {
+      "path": "/assets/group/vitaflex-business-group.png",
+      "status": 200,
+      "sha256": "34e4f89f5dda20048b3c30974fef566db0ac4052ca76cb4a411ad6891c398d66",
+      "exactMatch": true
+    },
+    {
+      "path": "/assets/group/vitaflex-monogram.png",
+      "status": 200,
+      "sha256": "fbc07a8c47368661373ef96884ff67d8b081168d812dc8324c07abeb5641f7eb",
+      "exactMatch": true
+    },
+    {
+      "path": "/assets/group/favicon.png",
+      "status": 200,
+      "sha256": "e9ad4d8781df4f628dffe430107468a1ec3e24f293ffe9aa5a4103880b5c38ea",
+      "exactMatch": true
+    },
+    {
+      "path": "/group-routes.json",
+      "status": 200,
+      "sha256": "7b961925d6bf09ad960341df04201793aa337d0d6110c06f7f1c7fc3303ad280",
+      "exactMatch": true
+    },
+    {
+      "path": "/sitemap.xml",
+      "status": 200,
+      "sha256": "ce79700d4c0e1bd93e006cf814b3d81d86dd4b6acef7e705b26185f2fbad54cf",
+      "exactMatch": true
+    }
+  ],
+  "sonyPreserved": true
+}
