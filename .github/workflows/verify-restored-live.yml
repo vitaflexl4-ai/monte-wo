@@ -1,0 +1,37 @@
+name: Read-only restored live browser verification
+on:
+  push:
+    branches: [arena/beb13e2a-monte-wo]
+    paths: [.github/workflows/verify-restored-live.yml, scripts/verify-restored-browser.mjs]
+permissions:
+  contents: write
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with: {ref: arena/beb13e2a-monte-wo}
+      - uses: actions/setup-node@v4
+        with: {node-version: 22}
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - name: Compare approved and restored normal browser layouts after CSS, fonts and images finish loading
+        run: node scripts/verify-restored-browser.mjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: restored-live-browser-evidence
+          path: evidence/
+      - name: Retain public browser evidence without production publication, even when a domain is challenged
+        if: always()
+        run: |
+          test -f evidence/restored-live-browser.json
+          mkdir -p docs/approved-restoration/evidence/live
+          cp evidence/restored-live-* docs/approved-restoration/evidence/live/
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add docs/approved-restoration/evidence/live/
+          git diff --cached --quiet && exit 0
+          git commit -m 'Record actual approved and restored browser evidence without publication'
+          git push origin HEAD:arena/beb13e2a-monte-wo
