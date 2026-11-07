@@ -29,3 +29,9 @@ Existing corporate Cloudflare Pages project: `vitaflex`, direct upload; owns ape
 Approved rollback baseline: revision `cdd431502dcf20792ad2c9f5b18dc90c73bcc82c`, deployment `2f802a54-bd76-4364-881e-5b276dd93029`. Read-only confirmation is being refreshed before release. Publisher fails closed on revision drift, validates preview before production, preserves domain and existing binding configuration, and never provisions resources. Baseline deployment remains available for rollback. Do not disable security or bypass source guards to pass verification.
 
 **Current status: source built and tested; production publication and public-domain verification pending.** Subsequent evidence below will record actual run/revision/status. No claim of indexing, ranking, Google Search Console access, verified-bot traffic or independently verified credentials.
+
+## Fresh pre-release confirmation
+
+Read-only run [42421700468](https://github.com/vitaflexl4-ai/monte-wo/actions/runs/42421700468), observed **2026-11-07T22:40:29.238Z**, succeeded. Confirms `vitaflex` / direct-upload, the same apex/www/pages.dev domains, successful production `2f802a54-bd76-4364-881e-5b276dd93029`, revision `cdd431502dcf20792ad2c9f5b18dc90c73bcc82c`, existing D1 present and R2 absent. Public annotation evidence retained; no credentials recorded. Source implementation commit: `c382a0d8b259df6914fab2bf983b5ef94badb80b`.
+
+Production release requested with this report/evidence commit through the existing guarded workflow. Final verification is still pending and must not be inferred from a successful upload alone.

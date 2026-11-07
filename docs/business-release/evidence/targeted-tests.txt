@@ -1,0 +1,205 @@
+TAP version 13
+# Subtest: Business: score is calculated only from explicit self-reported known answers
+ok 1 - Business: score is calculated only from explicit self-reported known answers
+  ---
+  duration_ms: 1.146612
+  type: 'test'
+  ...
+# Subtest: Business: exact authorized prices, disclosure, contact and conversion sections
+ok 2 - Business: exact authorized prices, disclosure, contact and conversion sections
+  ---
+  duration_ms: 1.981022
+  type: 'test'
+  ...
+# Subtest: Business: no network scans, storage, tracking, generated scores or fake portal integration
+ok 3 - Business: no network scans, storage, tracking, generated scores or fake portal integration
+  ---
+  duration_ms: 0.513598
+  type: 'test'
+  ...
+# Subtest: Business: sitemap preserves every prior public route, adds contact only
+ok 4 - Business: sitemap preserves every prior public route, adds contact only
+  ---
+  duration_ms: 0.29086
+  type: 'test'
+  ...
+# Group links/assets/fragments checked: 153
+# Subtest: Founder: source uses owner-authorized identity and personal essay, not a resume or venture launch
+ok 5 - Founder: source uses owner-authorized identity and personal essay, not a resume or venture launch
+  ---
+  duration_ms: 2.171824
+  type: 'test'
+  ...
+# Subtest: Founder: every supplied paragraph is rendered verbatim and in order
+ok 6 - Founder: every supplied paragraph is rendered verbatim and in order
+  ---
+  duration_ms: 0.425221
+  type: 'test'
+  ...
+# Subtest: Founder: chapter anchors, metadata, canonical and current-page link are correct
+ok 7 - Founder: chapter anchors, metadata, canonical and current-page link are correct
+  ---
+  duration_ms: 0.269338
+  type: 'test'
+  ...
+# Subtest: Founder: added through the group footer, not the homepage portfolio or product navigation
+ok 8 - Founder: added through the group footer, not the homepage portfolio or product navigation
+  ---
+  duration_ms: 1.024974
+  type: 'test'
+  ...
+# Subtest: Founder: every group link, asset and fragment resolves without fabricated destinations
+ok 9 - Founder: every group link, asset and fragment resolves without fabricated destinations
+  ---
+  duration_ms: 6.764189
+  type: 'test'
+  ...
+# Subtest: Founder: offline upgrade is deduplicated and source content is not downloaded at runtime
+ok 10 - Founder: offline upgrade is deduplicated and source content is not downloaded at runtime
+  ---
+  duration_ms: 0.453263
+  type: 'test'
+  ...
+# Subtest: Biography update: only the definitive version is presented, with no duplicate profile
+ok 11 - Biography update: only the definitive version is presented, with no duplicate profile
+  ---
+  duration_ms: 0.372257
+  type: 'test'
+  ...
+# Subtest: Group: parent identity is explicit and separate from product runtime
+ok 12 - Group: parent identity is explicit and separate from product runtime
+  ---
+  duration_ms: 1.676633
+  type: 'test'
+  ...
+# Subtest: Group: venture registry provides honest, resolvable destinations
+ok 13 - Group: venture registry provides honest, resolvable destinations
+  ---
+  duration_ms: 0.4628
+  type: 'test'
+  ...
+# Subtest: Group: preserved product and offline upgrade remain available
+ok 14 - Group: preserved product and offline upgrade remain available
+  ---
+  duration_ms: 0.822841
+  type: 'test'
+  ...
+# Subtest: Group: supplied official logo replaces placeholders without changing originals
+ok 15 - Group: supplied official logo replaces placeholders without changing originals
+  ---
+  duration_ms: 0.602909
+  type: 'test'
+  ...
+# Subtest: Group: Intelligence Corp is a third development venture, not a renamed parent or private API link
+ok 16 - Group: Intelligence Corp is a third development venture, not a renamed parent or private API link
+  ---
+  duration_ms: 0.70276
+  type: 'test'
+  ...
+# Subtest: Group: Lifeline is a simulation venture in development, with no invented game launch
+ok 17 - Group: Lifeline is a simulation venture in development, with no invented game launch
+  ---
+  duration_ms: 0.522826
+  type: 'test'
+  ...
+# Protected public files: 228
+# Subtest: Master execution: protected public files except the explicitly authorized corporate home and route manifests are byte-identical
+ok 18 - Master execution: protected public files except the explicitly authorized corporate home and route manifests are byte-identical
+  ---
+  duration_ms: 15.483714
+  type: 'test'
+  ...
+# Subtest: Master execution: exact Sony delta is head titles and credential omission, never biography or assets
+ok 19 - Master execution: exact Sony delta is head titles and credential omission, never biography or assets
+  ---
+  duration_ms: 1.1243
+  type: 'test'
+  ...
+# Subtest: Master execution: zero-ambiguity graph retains owner-confirmed identity but no external matches or credential claims
+ok 20 - Master execution: zero-ambiguity graph retains owner-confirmed identity but no external matches or credential claims
+  ---
+  duration_ms: 0.438529
+  type: 'test'
+  ...
+# Technical-only preservation: 61 HTML bodies match baseline after only authorized footer normalization; 165 static files unchanged.
+# Subtest: SEO: exact owner-approved identity, metadata, H1 and canonical
+ok 21 - SEO: exact owner-approved identity, metadata, H1 and canonical
+  ---
+  duration_ms: 2.44963
+  type: 'test'
+  ...
+# Subtest: SEO: valid JSON-LD ProfilePage references the supported Person
+ok 22 - SEO: valid JSON-LD ProfilePage references the supported Person
+  ---
+  duration_ms: 0.668582
+  type: 'test'
+  ...
+# Subtest: SEO: group documents have unique titles/descriptions, complete social metadata, valid heading structure and alt attributes
+ok 23 - SEO: group documents have unique titles/descriptions, complete social metadata, valid heading structure and alt attributes
+  ---
+  duration_ms: 2.711465
+  type: 'test'
+  ...
+# Subtest: SEO: crawlable preferred-domain sitemap is deduplicated and excludes private surfaces
+ok 24 - SEO: crawlable preferred-domain sitemap is deduplicated and excludes private surfaces
+  ---
+  duration_ms: 3.88
+  type: 'test'
+  ...
+# Subtest: SEO: all sitemap pages have unique titles and descriptions
+ok 25 - SEO: all sitemap pages have unique titles and descriptions
+  ---
+  duration_ms: 3.737113
+  type: 'test'
+  ...
+# Subtest: SEO: publication is restricted to the existing project and preserves configuration
+ok 26 - SEO: publication is restricted to the existing project and preserves configuration
+  ---
+  duration_ms: 0.401637
+  type: 'test'
+  ...
+# Subtest: SEO deployment: empty downloaded placement tables are omitted, explicit modes and bindings preserved
+ok 27 - SEO deployment: empty downloaded placement tables are omitted, explicit modes and bindings preserved
+  ---
+  duration_ms: 0.435452
+  type: 'test'
+  ...
+# Subtest: Preservation: only corporate Privacy links may change in visible bodies
+ok 28 - Preservation: only corporate Privacy links may change in visible bodies
+  ---
+  duration_ms: 19.567752
+  type: 'test'
+  ...
+# Subtest: Technical-only SEO: AI/search crawlers share public access and private exclusions
+ok 29 - Technical-only SEO: AI/search crawlers share public access and private exclusions
+  ---
+  duration_ms: 1.755498
+  type: 'test'
+  ...
+# Subtest: Entity recognition: homepage Organization/WebSite agree with existing Sony entity IDs
+ok 30 - Entity recognition: homepage Organization/WebSite agree with existing Sony entity IDs
+  ---
+  duration_ms: 0.814754
+  type: 'test'
+  ...
+# Subtest: Entity recognition: HTTP audit detects noindex, broken canonical and metadata duplication
+ok 31 - Entity recognition: HTTP audit detects noindex, broken canonical and metadata duplication
+  ---
+  duration_ms: 3.264899
+  type: 'test'
+  ...
+# Subtest: Footer and alias release: corporate-only deletion, one identity, app policy untouched
+ok 32 - Footer and alias release: corporate-only deletion, one identity, app policy untouched
+  ---
+  duration_ms: 1.174768
+  type: 'test'
+  ...
+1..32
+# tests 32
+# suites 0
+# pass 32
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 385.860215
