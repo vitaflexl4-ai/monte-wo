@@ -34,8 +34,8 @@ jobs:
       - name: Browser and layout tests
         run: |
           python3 -m http.server 8080 --bind 0.0.0.0 --directory public > /tmp/site.log 2>&1 &
-          node tests/group-browser.mjs
-          node tests/founder-browser.mjs
+          node --input-type=module -e "import('./tests/group-browser.mjs').catch(e=>{console.error('::error title=Group browser validation::'+String(e.stack||e).replaceAll('\n',' | '));process.exit(1)})"
+          node --input-type=module -e "import('./tests/founder-browser.mjs').catch(e=>{console.error('::error title=Profile browser validation::'+String(e.stack||e).replaceAll('\n',' | '));process.exit(1)})"
       - name: SEO and content regression tests
         run: |
           node --test tests/seo.test.js tests/founder.test.js tests/group.test.js
