@@ -48,9 +48,9 @@ test('Founder: chapter anchors, metadata, canonical and current-page link are co
   assert.ok(founder.includes(`id="${chapter.id}"`));
   assert.ok(founder.includes(`aria-labelledby="${chapter.id}-title"`));
  }
- assert.ok(founder.includes('<title>Sony Alexis | Professional Profile &amp; Biography</title>'));
+ assert.ok(founder.includes('<title>Sony Alexis | VitaFlex Business Group</title>'));
  assert.ok(founder.includes('rel="canonical" href="https://vitaflexbusinessgroup.com/sony/"'));
- assert.ok(founder.includes('property="og:title" content="Sony Alexis | Professional Profile &amp; Biography"'));
+ assert.ok(founder.includes('property="og:title" content="Sony Alexis | VitaFlex Business Group"'));
  assert.ok(founder.includes(`name="description" content="${escape(profile.description)}"`));
  assert.ok(founder.includes('<a href="/sony/" aria-current="page">Meet Sony Alexis</a>'));
  assert.match(founder,/<main id="main" tabindex="-1">/);
@@ -58,7 +58,7 @@ test('Founder: chapter anchors, metadata, canonical and current-page link are co
 
 test('Founder: added through the group footer, not the homepage portfolio or product navigation',()=>{
  const home=docFor('/');const main=home.match(/<main\b[^>]*>([\s\S]*?)<\/main>/)[1];
- assert.doesNotMatch(main,/Sony|SONY|founder/);
+ assert.equal((main.match(/Meet Sony Alexis/g)||[]).length,1);assert.ok(!main.includes(profile.chapters[0].paragraphs[0]),'Corporate home must not become a biography');
  assert.equal((main.match(/class="venture-row /g)||[]).length,4);
  assert.ok(main.includes('01 — 04'));
  for(const route of routes.filter(p=>p!=='/monte-wo/')){
@@ -97,7 +97,7 @@ test('Founder: offline upgrade is deduplicated and source content is not downloa
  assert.equal(routes.filter(route=>route==='/sony/').length,1);
  assert.doesNotMatch(founder,/fetch\(|founder\.json/);
  const css=read('public/group.css');assert.match(css,/prefers-reduced-motion/);
- assert.ok(read('scripts/build_website.py').includes("{'monte-wo','ventures','founder','sony'}"));
+ assert.ok(read('scripts/build_website.py').includes("{'monte-wo','ventures','founder','sony','business-contact'}"));
 });
 
 test('Biography update: only the definitive version is presented, with no duplicate profile',()=>{

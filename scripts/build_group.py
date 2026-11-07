@@ -47,8 +47,14 @@ site_schema={
    'publisher':{'@id':origin+'/#organization'}}
  ]
 }
-(P/'index.html').write_text(page('Beyond the obvious.','VitaFlex Business Group. Independent ventures. A bigger vision.',body,structured_data=site_schema))
-routes=['/','/monte-wo/']
+from corporate_home import home as corporate_home, contact as corporate_contact, enhance, BUSINESS
+portfolio=body[body.index('<section class="portfolio frame"'):]
+home_doc=enhance(page('Digital Presence & Business Growth',BUSINESS['description'],corporate_home(portfolio),structured_data=site_schema))
+home_doc=home_doc.replace('<a class="nav-link" href="/#ventures">The portfolio <span aria-hidden="true">↗</span></a>', '<nav class="business-nav" aria-label="Business navigation"><a href="/#presence-score">Presence review</a><a href="/#packages">Packages</a><a href="/#about">About</a><a href="/#ventures">Ventures</a><a href="/business-contact/">Contact ↗</a></nav>')
+(P/'index.html').write_text(home_doc)
+contact_file=P/'business-contact/index.html';contact_file.parent.mkdir(parents=True,exist_ok=True)
+contact_file.write_text(enhance(page('Contact VitaFlex', 'Discuss your digital presence and business-growth priorities with VitaFlex Business Group.', corporate_contact(), '/business-contact/')))
+routes=['/','/monte-wo/','/business-contact/']
 for v in ventures:
  path=f'/ventures/{v["slug"]}/';routes.append(path)
  destination=f'<a class="explore" href="{E(v["destination"])}">Enter {E(v["name"])} <span aria-hidden="true">↗</span></a>' if v['destination'] else '<span class="availability">AVAILABILITY NOT ANNOUNCED</span>'
@@ -63,7 +69,7 @@ routes.append('/sony/')
 
 # Keep product home links and fragments connected to the product, not the parent.
 for file in P.rglob('index.html'):
- if file==P/'index.html' or set(file.relative_to(P).parts)&{'ventures','founder','sony'}: continue
+ if file==P/'index.html' or set(file.relative_to(P).parts)&{'ventures','founder','sony','business-contact'}: continue
  doc=file.read_text().replace('href="/#', 'href="/monte-wo/#')
  doc=doc.replace('href="/" aria-label="Monte Wo home"','href="/monte-wo/" aria-label="Monte Wo home"')
  file.write_text(doc)

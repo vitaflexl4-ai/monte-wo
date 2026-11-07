@@ -1,0 +1,4 @@
+Full suite: 238 passed / 240, 2 known failures.
+not ok 105 - Lab: protected sources unchanged except documented mobile binding/comment changes
+not ok 218 - Website: protected originals and explicitly pinned mobile API binding changes
+Both are wrangler.toml pinned checksum discrepancies; configuration left unchanged.

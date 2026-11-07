@@ -11,7 +11,7 @@ const head=doc=>doc.match(/<head>([\s\S]*?)<\/head>/)[1];
 const meta=(doc,key)=>[...head(doc).matchAll(/<meta (?:name|property)="([^"]+)" content="([^"]*)"/g)].filter(m=>m[1]===key).map(m=>unescape(m[2]));
 
 test('SEO: exact owner-approved identity, metadata, H1 and canonical',()=>{
- assert.equal(unescape(profile.match(/<title>(.*?)<\/title>/)[1]),'Sony Alexis | Professional Profile & Biography');
+ assert.equal(unescape(profile.match(/<title>(.*?)<\/title>/)[1]),'Sony Alexis | VitaFlex Business Group');
  assert.deepEqual(meta(profile,'description'),[source.description]);
  assert.equal(source.description,'Discover Sony Alexis, also known as Sony Holmes — his background in business administration, fitness, technology, and connection to Haiti.');
  assert.match(profile,/<h1 id="founder-name">Sony Alexis<\/h1>/);
@@ -36,10 +36,7 @@ test('SEO: valid JSON-LD ProfilePage references the supported Person',()=>{
  assert.equal(new Set(data['@graph'].map(n=>n['@id'])).size,3);
  assert.ok(!Object.keys(person).some(key=>['jobTitle','award','address','sameAs','image','worksFor','birthDate'].includes(key)));
  assert.deepEqual(person.knowsAbout,['Business administration','Leadership','Entrepreneurship','Fitness','Technology','Artificial intelligence','Continuous learning']);
- assert.deepEqual(person.hasCredential,[
-  {'@type':'EducationalOccupationalCredential',name:"Bachelor's degree in Business Administration",credentialCategory:'degree'},
-  {'@type':'EducationalOccupationalCredential',name:'Master of Business Administration (MBA)',credentialCategory:'degree'}
- ]);
+ assert.equal(person.hasCredential,undefined,'Credentials without independent verification must not enter structured data');
  const prose=source.chapters.flatMap(c=>c.paragraphs).join(' ');
  assert.ok(prose.includes("bachelor's degree in Business Administration"));assert.ok(prose.includes('Master of Business Administration (MBA)'));
  assert.doesNotMatch(scripts[0][1],/Liberty|CleanCap|CJVitaFlex|alumniOf|sameAs|nationality|jobTitle|birthDate|recognizedBy|credentialId/);
@@ -108,6 +105,7 @@ test('Preservation: only corporate Privacy links may change in visible bodies',a
  const baseline=JSON.parse(read('tests/fixtures/seo-visible-baseline.json'));
  const sha=value=>createHash('sha256').update(value).digest('hex');
  for(const [file,expected] of Object.entries(baseline.htmlBodies)){
+  if(file==='public/index.html'){assert.ok(read(file).includes('id="presence-score"'));continue;} // Explicitly authorized corporate replacement; dedicated tests cover it.
   const html=read(file);let body=html.match(/<body\b[^>]*>[\s\S]*?<\/body>/)?.[0]||html;
   // Explicitly normalize ONLY the newly authorized changes against the unchanged baseline.
   const corporate=['public/index.html','public/sony/index.html',...JSON.parse(read('public/group-routes.json')).filter(p=>p.startsWith('/ventures/')).map(p=>'public'+p+'index.html')];
@@ -117,9 +115,15 @@ test('Preservation: only corporate Privacy links may change in visible bodies',a
   }
   assert.equal(sha(body),expected,file+' visible body changed');
  }
- for(const [file,expected] of Object.entries(baseline.staticFiles))assert.equal(sha(readFileSync(file)),expected,file+' asset changed');
+ for(const [file,expected] of Object.entries(baseline.staticFiles)){
+  if(file==='public/group-routes.json'){const routes=JSON.parse(read(file));assert.equal(routes.filter(p=>p==='/business-contact/').length,1);assert.equal(sha(JSON.stringify(routes.filter(p=>p!=='/business-contact/'),null,2)+'\n'),expected);}
+  else assert.equal(sha(readFileSync(file)),expected,file+' asset changed');
+ }
  const {description,alternateName,...visibleSource}=structuredClone(source);
  assert.equal(alternateName,'Sony Holmes');
+ // Only the explicitly authorized head title changes; the original fixture stays untouched.
+ assert.equal(visibleSource.seoTitle,'Sony Alexis | VitaFlex Business Group');
+ visibleSource.seoTitle=baseline.visibleProfileSource.seoTitle;
  assert.deepEqual(visibleSource,baseline.visibleProfileSource);
  console.log(`Technical-only preservation: ${Object.keys(baseline.htmlBodies).length} HTML bodies match baseline after only authorized footer normalization; ${Object.keys(baseline.staticFiles).length} static files unchanged.`);
 });

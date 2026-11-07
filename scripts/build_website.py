@@ -75,7 +75,7 @@ exec(compile((ROOT/'scripts/build_downloads.py').read_text(),str(ROOT/'scripts/b
 # Private operator surfaces (the intelligence command center) are NOT public website routes:
 # never rewritten with public metadata, never listed in website-routes.json, never in the sitemap.
 PRIVATE_DIRS=frozenset({'intelligence'})
-paths=sorted(f for f in P.rglob('index.html') if not (set(f.parent.relative_to(P).parts)&(PRIVATE_DIRS|{'monte-wo','ventures','founder','sony'})))+[P/'404.html'];metadata={'/':copy['home'],'/app/':copy['app'],'/strength/':copy['ranking'],'/exercises/standards/':copy['standards'],'/tools/':{'title':'Free Strength & Fitness Calculators | MONTE WO','description':'Five strength calculators plus existing educational nutrition tools. Estimate 1RM, training percentages, balanced plates, kg/lb and warm-up loads locally, without an account.'}}
+paths=sorted(f for f in P.rglob('index.html') if not (set(f.parent.relative_to(P).parts)&(PRIVATE_DIRS|{'monte-wo','ventures','founder','sony','business-contact'})))+[P/'404.html'];metadata={'/':copy['home'],'/app/':copy['app'],'/strength/':copy['ranking'],'/exercises/standards/':copy['standards'],'/tools/':{'title':'Free Strength & Fitness Calculators | MONTE WO','description':'Five strength calculators plus existing educational nutrition tools. Estimate 1RM, training percentages, balanced plates, kg/lb and warm-up loads locally, without an account.'}}
 # Distinct descriptions for existing public tools; visible content is unchanged.
 description_overrides={
  '/methodology/': 'Read the draft MONTE WO Strength Index methodology: evidence, independent disciplines, transparent standards, and why official rank awards remain unavailable.',

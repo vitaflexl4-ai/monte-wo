@@ -54,7 +54,8 @@ def render_founder(page):
     url = 'https://vitaflexbusinessgroup.com/sony/'
     # Only identity, affiliation and interests supported by the owner/biography.
     # No jobTitle, unverified sameAs links, portrait, dates or address.
-    # Institution/issuer names are omitted: none is currently published in the essay.
+    # Zero-ambiguity policy: do not encode unverified credentials as entity facts.
+    # The separately approved visible essay remains unchanged.
     structured_data = {
         '@context': 'https://schema.org',
         '@graph': [
@@ -63,13 +64,6 @@ def render_founder(page):
              'url': url, 'description': profile['description'],
              'affiliation': {'@id': 'https://vitaflexbusinessgroup.com/#organization'},
              'mainEntityOfPage': {'@id': url + '#profile'},
-             'hasCredential': [
-                 {'@type': 'EducationalOccupationalCredential',
-                  'name': "Bachelor's degree in Business Administration",
-                  'credentialCategory': 'degree'},
-                 {'@type': 'EducationalOccupationalCredential',
-                  'name': 'Master of Business Administration (MBA)',
-                  'credentialCategory': 'degree'}],
              'knowsAbout': ['Business administration', 'Leadership', 'Entrepreneurship',
                             'Fitness', 'Technology', 'Artificial intelligence',
                             'Continuous learning']},

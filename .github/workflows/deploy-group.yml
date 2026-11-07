@@ -36,14 +36,15 @@ jobs:
           python3 -m http.server 8080 --bind 0.0.0.0 --directory public > /tmp/site.log 2>&1 &
           node --input-type=module -e "import('./tests/group-browser.mjs').catch(e=>{console.error('::error title=Group browser validation::'+String(e.stack||e).replaceAll('\n',' | '));process.exit(1)})"
           node --input-type=module -e "import('./tests/founder-browser.mjs').catch(e=>{console.error('::error title=Profile browser validation::'+String(e.stack||e).replaceAll('\n',' | '));process.exit(1)})"
+          node tests/business-browser.mjs
       - name: SEO and content regression tests
         run: |
-          node --test tests/seo.test.js tests/founder.test.js tests/group.test.js
+          node --test tests/seo.test.js tests/founder.test.js tests/group.test.js tests/master-execution.test.js tests/business.test.js
           VERIFY_ORIGIN=http://127.0.0.1:8080 SEO_AUDIT_OUTPUT=evidence/local-sitemap-audit.json node scripts/audit-public-seo.mjs
       - name: Publish to the existing main-domain project
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          EXPECTED_PRODUCTION_REVISION: de98ffdf952c5b896e798714c6a3d8bdb2c60ab3
+          EXPECTED_PRODUCTION_REVISION: cdd431502dcf20792ad2c9f5b18dc90c73bcc82c
         run: node scripts/publish-group-domain.mjs
       - name: Diagnose deployed origin and domain routing
         if: always()

@@ -1,4 +1,4 @@
-# Refresh public deployment metadata for the master execution inspection; still one GET only.
+# Refresh public production metadata before the authorized corporate + verified Sony release; one GET only.
 name: Read-only corporate production diagnostics
 on:
   push:

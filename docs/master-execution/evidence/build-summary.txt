@@ -1,0 +1,6 @@
+Generated Strength Index, four independent draft cards, methodology/rulebooks and authorized administration.
+Built Strength Lab hub + five calculators. No ranking/auth/database changes.
+Built /downloads/ with an internal Android preview link and official public-release status kept separate.
+Website foundation built: 51 routes + honest 404; canonical origin: https://vitaflexbusinessgroup.com
+Exercises cockpit built: 62 entries; source SVG; no fabricated nutrition values.
+Corporate group built: /, /monte-wo/, /ventures/monte-wo/, /ventures/vitaflex-training/, /ventures/vitaflex-intelligence-corp/, /ventures/lifeline/, /sony/
