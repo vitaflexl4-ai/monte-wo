@@ -1,3 +1,4 @@
+# Refresh public deployment metadata for the master execution inspection; still one GET only.
 name: Read-only corporate production diagnostics
 on:
   push:
