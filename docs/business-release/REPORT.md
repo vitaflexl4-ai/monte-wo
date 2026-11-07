@@ -35,3 +35,17 @@ Approved rollback baseline: revision `cdd431502dcf20792ad2c9f5b18dc90c73bcc82c`,
 Read-only run [42421700468](https://github.com/vitaflexl4-ai/monte-wo/actions/runs/42421700468), observed **2026-11-07T22:40:29.238Z**, succeeded. Confirms `vitaflex` / direct-upload, the same apex/www/pages.dev domains, successful production `2f802a54-bd76-4364-881e-5b276dd93029`, revision `cdd431502dcf20792ad2c9f5b18dc90c73bcc82c`, existing D1 present and R2 absent. Public annotation evidence retained; no credentials recorded. Source implementation commit: `c382a0d8b259df6914fab2bf983b5ef94badb80b`.
 
 Production release requested with this report/evidence commit through the existing guarded workflow. Final verification is still pending and must not be inferred from a successful upload alone.
+
+## Initial publication and edge diagnosis
+
+Initial production publication succeeded in [run 42421742837](https://github.com/vitaflexl4-ai/monte-wo/actions/runs/42421742837), revision `7693584e0edbe52b5dd75dbc143929b1d0ec27f8`, deployment `https://20fc2e2e.vitaflex.pages.dev`. Preview was verified before publication. Production `https://vitaflex.pages.dev` passed 56/56 status/metadata checks, all nine targeted routes and schema/alias/biography checks; private API returned 401 and the product privacy page matched unchanged bytes. Publication confirmed domains/bindings preserved. Run failed **after** publication at the custom-domain verification; upload alone is not an end-to-end success claim.
+
+Read-only [edge diagnosis 42421901973](https://github.com/vitaflexl4-ai/monte-wo/actions/runs/42421901973) at 2026-11-07T22:43:18.634Z confirmed:
+
+- Apex and www home, Sony, contact and sitemap requests return **403 / `cf-mitigated: challenge` / “Just a moment…”**; robots.txt returns 200. This predates this release.
+- Unmodified Chromium also fails to render all three main custom-domain pages after waiting for challenge completion. No UA spoof, challenge bypass, security change or false browser-success claim.
+- Equivalent production Pages routes and sitemap return 200 and contain the new content.
+- Zone lookup succeeds and confirms active status. Existing integration returns **403** for zone settings, bot-management and ruleset reads. Consequently the exact issuing rule cannot be established or safely changed through the available connection. No broad security disablement or blind exceptions were attempted.
+- A zone-security administrator must review the rule challenging these legitimate public corporate GETs, keep private API/customer protections intact, and then rerun preferred-domain verification. Do not send credentials in chat. The diagnostic workflow succeeding means inspection ran—not that the challenged domain passed.
+
+A final privacy-hardening follow-up keeps corporate form controls disabled until their JavaScript handlers attach. This prevents native no-JS GET submissions from putting email/business details or self-assessment answers in URLs. Working no-JS email links remain. Dedicated browser checks prove the fallback stays disabled and the normal JavaScript flow still works. Build, 32 targeted tests, all three browser suites and 56-URL local audit rerun successfully; full suite remains 242/244 with only the same unchanged-infrastructure checksum failures. The final follow-up publication is pending below.
