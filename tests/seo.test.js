@@ -103,7 +103,7 @@ test('SEO deployment: empty downloaded placement tables are omitted, explicit mo
  assert.equal(normalizeDownloadedPagesConfig('[placement]\n'),'');
 });
 
-test('Preservation: only corporate Privacy links and the approved alias sentence may change',async()=>{
+test('Preservation: only corporate Privacy links may change in visible bodies',async()=>{
  const {createHash}=await import('node:crypto');
  const baseline=JSON.parse(read('tests/fixtures/seo-visible-baseline.json'));
  const sha=value=>createHash('sha256').update(value).digest('hex');
@@ -115,17 +115,13 @@ test('Preservation: only corporate Privacy links and the approved alias sentence
    assert.ok(!body.includes('<a href="/privacy/">Privacy</a>'));
    body=body.replace(/(<a href="\/sony\/"(?: aria-current="page")?>Meet Sony Alexis<\/a>)/,'$1<a href="/privacy/">Privacy</a>');
   }
-  if(file==='public/sony/index.html')body=body.replace('My professional name is Sony Alexis, and I am also known as Sony Holmes. ','');
   assert.equal(sha(body),expected,file+' visible body changed');
  }
  for(const [file,expected] of Object.entries(baseline.staticFiles))assert.equal(sha(readFileSync(file)),expected,file+' asset changed');
  const {description,alternateName,...visibleSource}=structuredClone(source);
  assert.equal(alternateName,'Sony Holmes');
- const sentence='My professional name is Sony Alexis, and I am also known as Sony Holmes. ';
- assert.ok(visibleSource.chapters[0].paragraphs[0].startsWith(sentence));
- visibleSource.chapters[0].paragraphs[0]=visibleSource.chapters[0].paragraphs[0].slice(sentence.length);
  assert.deepEqual(visibleSource,baseline.visibleProfileSource);
- console.log(`Technical-only preservation: ${Object.keys(baseline.htmlBodies).length} HTML bodies match baseline after only authorized footer/alias normalization; ${Object.keys(baseline.staticFiles).length} static files unchanged.`);
+ console.log(`Technical-only preservation: ${Object.keys(baseline.htmlBodies).length} HTML bodies match baseline after only authorized footer normalization; ${Object.keys(baseline.staticFiles).length} static files unchanged.`);
 });
 
 test('Technical-only SEO: AI/search crawlers share public access and private exclusions',()=>{
@@ -167,7 +163,8 @@ test('Footer and alias release: corporate-only deletion, one identity, app polic
  const graph=JSON.parse(profile.match(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/)[1])['@graph'];
  const people=graph.filter(n=>n['@type']==='Person');assert.equal(people.length,1);
  assert.equal(people[0].name,'Sony Alexis');assert.equal(people[0].alternateName,'Sony Holmes');
- assert.match(profile,/My professional name is Sony Alexis, and I am also known as Sony Holmes\./);
+ assert.doesNotMatch(profile.match(/<body\b[\s\S]*?<\/body>/)[0],/Sony Holmes/i);
+ assert.match(profile.match(/<head>[\s\S]*?<\/head>/)[0],/Sony Holmes/);
  assert.doesNotMatch(profile,/Austin Holmes|foster son|senate\.gov/);
  assert.equal((profile.match(/<main\b/g)||[]).length,1);
  const corporate=JSON.parse(read('public/group-routes.json')).filter(p=>p!=='/monte-wo/');

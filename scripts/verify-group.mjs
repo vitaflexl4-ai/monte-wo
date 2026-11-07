@@ -40,7 +40,7 @@ assert.equal(schema['@graph'].length,3);
 for(const type of ['Person','ProfilePage','Organization'])assert.equal(schema['@graph'].filter(n=>n['@type']===type).length,1);
 const person=schema['@graph'].find(n=>n['@type']==='Person');
 const organization=schema['@graph'].find(n=>n['@type']==='Organization');
-assert.equal(person.name,'Sony Alexis');assert.equal(person.alternateName,'Sony Holmes');assert.ok(profile.includes('My professional name is Sony Alexis, and I am also known as Sony Holmes. '));assert.equal(person.affiliation['@id'],organization['@id']);
+assert.equal(person.name,'Sony Alexis');assert.equal(person.alternateName,'Sony Holmes');assert.ok(!/Sony Holmes/i.test(profile.match(/<body\b[\s\S]*?<\/body>/)[0]));assert.equal(person.affiliation['@id'],organization['@id']);
 assert.equal(person.hasCredential.length,2);
 assert.ok(!person.alumniOf&&!person.sameAs&&!person.jobTitle&&!person.nationality);
 mkdirSync('evidence',{recursive:true});

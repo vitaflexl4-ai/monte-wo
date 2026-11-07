@@ -78,3 +78,7 @@ The source revision guard intentionally still names the prior baseline. A future
 - `scripts/verify-group.mjs`
 - `tests/founder.test.js`
 - `tests/seo.test.js`
+
+## Follow-up: alternate name in SEO only
+
+The owner subsequently requested removal of Sony Holmes from the visible biography, retaining it only for SEO. Removed the added opening sentence and restored the original visible biography exactly. The head metadata description and Person.alternateName remain unchanged. Regression and deployed-content checks now require the alternate name to be absent from the visible body. Build and all 25 targeted tests passed; no app, policy, styling or other page changes resulted. This follow-up's guarded deployment expects the preceding production revision `de98ffdf952c5b896e798714c6a3d8bdb2c60ab3`. The receipt above describes the preceding release, not this follow-up.
