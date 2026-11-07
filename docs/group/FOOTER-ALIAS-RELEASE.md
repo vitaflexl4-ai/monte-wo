@@ -4,7 +4,7 @@
 
 Owner instructed “Forget 2, deploy,” omitting the Senate/testimony request. This release removes only the corporate footer Privacy link and adds the owner-confirmed alternate name Sony Holmes to Sony Alexis's existing profile. It introduces no Senate, Austin Holmes, foster-family, credential, title or unverified relationship claim.
 
-Status: validated locally; guarded deployment pending.
+Status: published to the existing production project; production Pages verification passed. Custom-domain verification remains incomplete because its post-publication check failed (see receipt below).
 
 ## Changes
 
@@ -45,7 +45,21 @@ Preview checks require: all six corporate footers exist, Privacy is absent, exis
 
 After publication, production Pages checks repeat these checks. A separate clearly labeled Googlebot **User-Agent probe** reads the custom-domain HTML to verify the actual footer and alias through the known edge behavior. This is content verification, not verified crawler traffic or proof of Google indexing. The existing default-request custom-domain audit is retained and may still fail at Cloudflare; no security setting or broad allow rule is changed to bypass it.
 
-Production URLs, actual source precondition result and deployment verification will be recorded after execution. No Google Search Console access or indexing request is claimed.
+## Deployment receipt
+
+- Workflow: https://github.com/vitaflexl4-ai/monte-wo/actions/runs/42413313336
+- Published revision: `de98ffdf952c5b896e798714c6a3d8bdb2c60ab3`.
+- Existing project: `vitaflex`; production branch: `main`; existing apex/www domains retained.
+- Actual source precondition passed against revision `6a1596d2715efea265147ece053109021aee9a5e`, deployment `f4c7468a-a221-4fc5-a7d0-fa127c081d34`.
+- Preview: https://56a98c1a.vitaflex.pages.dev — footer/alias/policy verification and all 55 HTTP/metadata checks passed before production publication.
+- Production deployment: https://26d880f0.vitaflex.pages.dev
+- Production origin: https://vitaflex.pages.dev — all 55 HTTP/metadata checks passed; six corporate footers lack Privacy and retain the Sony link; Sony Alexis remains primary with Sony Holmes as alternate; complete app policy bytes match unchanged source; protected API returned 401.
+- CI browser/layout and targeted SEO/content regression steps passed on this run without bypassing any tests. The previous attempt stopped before publication at the browser step; its exact transient failure was not recovered.
+- The Cloudflare API diagnostics after publication confirmed the new production URL and revision on the domain-owning project. Default-request apex diagnostics still returned HTTP 403 with the “Just a moment...” challenge page.
+- **Overall workflow conclusion: failure after successful publication**, at the custom-domain User-Agent content probe. The later default custom-domain/protected-API audit was skipped. The probe's precise assertion error could not be retrieved because GitHub's signed log download returned EOF. Therefore the alias/footer have been verified on production Pages, **not confirmed through the custom domain**. Do not interpret the deployment receipt as an all-green custom-domain audit.
+- No security/DNS changes were made to bypass the edge behavior. No Google Search Console access, genuine crawler visit or indexing result is claimed.
+
+The source revision guard intentionally still names the prior baseline. A future deployment must explicitly inspect and update it; blindly rerunning this release will fail closed now that production has advanced.
 
 ## Every changed file
 
