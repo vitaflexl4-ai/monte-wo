@@ -65,7 +65,7 @@ test('Founder: added through the group footer, not the homepage portfolio or pro
   const doc=docFor(route);
   const footer=doc.match(/<footer\b[\s\S]*?<\/footer>/)[0];
   assert.ok(footer.includes('href="/sony/"'),route);
-  assert.ok(footer.includes('href="/privacy/"'),route);
+  assert.ok(!footer.includes('href="/privacy/"'),route+' — the corporate footer no longer links the product privacy policy (owner request, 2026-11-06)');
   assert.ok(doc.includes('href="/#ventures"'),route);
  }
  const productManifest=JSON.parse(read('public/website-routes.json'));
