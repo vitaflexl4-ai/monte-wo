@@ -1,0 +1,232 @@
+[
+  {
+    "origin": "https://2f802a54.vitaflex.pages.dev",
+    "device": "desktop",
+    "width": 1440,
+    "height": 1000,
+    "routes": [
+      {
+        "path": "/ventures/monte-wo/",
+        "status": 200,
+        "passed": true
+      },
+      {
+        "path": "/ventures/vitaflex-training/",
+        "status": 200,
+        "passed": true
+      },
+      {
+        "path": "/ventures/vitaflex-intelligence-corp/",
+        "status": 200,
+        "passed": true
+      },
+      {
+        "path": "/ventures/lifeline/",
+        "status": 200,
+        "passed": true
+      },
+      {
+        "path": "/sony/",
+        "status": 200,
+        "passed": true
+      }
+    ],
+    "passed": true,
+    "homeStatus": 200,
+    "challenge": null,
+    "home": {
+      "title": "Beyond the obvious. | VitaFlex Business Group",
+      "ventures": 4,
+      "sonyLinks": 1,
+      "bottomSony": 1,
+      "hasRejectedPrototype": false,
+      "overflow": false,
+      "layout": {
+        "scrollWidth": 1440,
+        "viewport": 1440,
+        "styleLoaded": true,
+        "font": "Inter, Arial, sans-serif"
+      }
+    },
+    "pageErrors": []
+  },
+  {
+    "origin": "https://2f802a54.vitaflex.pages.dev",
+    "device": "mobile",
+    "width": 390,
+    "height": 844,
+    "routes": [
+      {
+        "path": "/ventures/monte-wo/",
+        "status": 200,
+        "passed": true
+      },
+      {
+        "path": "/ventures/vitaflex-training/",
+        "status": 200,
+        "passed": true
+      },
+      {
+        "path": "/ventures/vitaflex-intelligence-corp/",
+        "status": 200,
+        "passed": true
+      },
+      {
+        "path": "/ventures/lifeline/",
+        "status": 200,
+        "passed": true
+      },
+      {
+        "path": "/sony/",
+        "status": 200,
+        "passed": true
+      }
+    ],
+    "passed": true,
+    "homeStatus": 200,
+    "challenge": null,
+    "home": {
+      "title": "Beyond the obvious. | VitaFlex Business Group",
+      "ventures": 4,
+      "sonyLinks": 1,
+      "bottomSony": 1,
+      "hasRejectedPrototype": false,
+      "overflow": false,
+      "layout": {
+        "scrollWidth": 390,
+        "viewport": 390,
+        "styleLoaded": true,
+        "font": "Inter, Arial, sans-serif"
+      }
+    },
+    "pageErrors": []
+  },
+  {
+    "origin": "https://vitaflex.pages.dev",
+    "device": "desktop",
+    "width": 1440,
+    "height": 1000,
+    "routes": [
+      {
+        "path": "/ventures/monte-wo/",
+        "status": 200,
+        "passed": true
+      },
+      {
+        "path": "/ventures/vitaflex-training/",
+        "status": 200,
+        "passed": true
+      },
+      {
+        "path": "/ventures/vitaflex-intelligence-corp/",
+        "status": 200,
+        "passed": true
+      },
+      {
+        "path": "/ventures/lifeline/",
+        "status": 200,
+        "passed": true
+      },
+      {
+        "path": "/sony/",
+        "status": 200,
+        "passed": true
+      }
+    ],
+    "passed": true,
+    "homeStatus": 200,
+    "challenge": null,
+    "home": {
+      "title": "Beyond the obvious. | VitaFlex Business Group",
+      "ventures": 4,
+      "sonyLinks": 1,
+      "bottomSony": 1,
+      "hasRejectedPrototype": false,
+      "overflow": false,
+      "layout": {
+        "scrollWidth": 1440,
+        "viewport": 1440,
+        "styleLoaded": true,
+        "font": "Inter, Arial, sans-serif"
+      }
+    },
+    "pageErrors": []
+  },
+  {
+    "origin": "https://vitaflex.pages.dev",
+    "device": "mobile",
+    "width": 390,
+    "height": 844,
+    "routes": [
+      {
+        "path": "/ventures/monte-wo/",
+        "status": 200,
+        "passed": true
+      },
+      {
+        "path": "/ventures/vitaflex-training/",
+        "status": 200,
+        "passed": true
+      },
+      {
+        "path": "/ventures/vitaflex-intelligence-corp/",
+        "status": 200,
+        "passed": true
+      },
+      {
+        "path": "/ventures/lifeline/",
+        "status": 200,
+        "passed": true
+      },
+      {
+        "path": "/sony/",
+        "status": 200,
+        "passed": true
+      }
+    ],
+    "passed": true,
+    "homeStatus": 200,
+    "challenge": null,
+    "home": {
+      "title": "Beyond the obvious. | VitaFlex Business Group",
+      "ventures": 4,
+      "sonyLinks": 1,
+      "bottomSony": 1,
+      "hasRejectedPrototype": false,
+      "overflow": false,
+      "layout": {
+        "scrollWidth": 390,
+        "viewport": 390,
+        "styleLoaded": true,
+        "font": "Inter, Arial, sans-serif"
+      }
+    },
+    "pageErrors": []
+  },
+  {
+    "origin": "https://vitaflexbusinessgroup.com",
+    "device": "desktop",
+    "width": 1440,
+    "height": 1000,
+    "routes": [],
+    "passed": false,
+    "homeStatus": 403,
+    "challenge": "challenge",
+    "error": "locator.waitFor: Timeout 12000ms exceeded.\nCall log:\n  - waiting for locator('.venture-row').first() to be visible\n",
+    "title": "Just a moment...",
+    "pageErrors": []
+  },
+  {
+    "origin": "https://vitaflexbusinessgroup.com",
+    "device": "mobile",
+    "width": 390,
+    "height": 844,
+    "routes": [],
+    "passed": false,
+    "homeStatus": 403,
+    "challenge": "challenge",
+    "error": "locator.waitFor: Timeout 12000ms exceeded.\nCall log:\n  - waiting for locator('.venture-row').first() to be visible\n",
+    "title": "Just a moment...",
+    "pageErrors": []
+  }
+]
