@@ -13,7 +13,7 @@ const meta=(doc,key)=>[...head(doc).matchAll(/<meta (?:name|property)="([^"]+)" 
 test('SEO: exact owner-approved identity, metadata, H1 and canonical',()=>{
  assert.equal(unescape(profile.match(/<title>(.*?)<\/title>/)[1]),'Sony Alexis | Professional Profile & Biography');
  assert.deepEqual(meta(profile,'description'),[source.description]);
- assert.equal(source.description,'Discover Sony Alexis — his background in business administration, leadership, fitness and technology, and reflections on learning, faith, Haiti and service.');
+ assert.equal(source.description,'Discover Sony Alexis, also known as Sony Holmes — his background in business administration, fitness, technology, and connection to Haiti.');
  assert.match(profile,/<h1 id="founder-name">Sony Alexis<\/h1>/);
  assert.equal((profile.match(/<h1\b/g)||[]).length,1);
  assert.match(profile,/rel="canonical" href="https:\/\/vitaflexbusinessgroup.com\/sony\/"/);
@@ -103,17 +103,29 @@ test('SEO deployment: empty downloaded placement tables are omitted, explicit mo
  assert.equal(normalizeDownloadedPagesConfig('[placement]\n'),'');
 });
 
-test('Technical-only SEO: all pre-existing HTML bodies and static assets are byte-identical',async()=>{
+test('Preservation: only corporate Privacy links and the approved alias sentence may change',async()=>{
  const {createHash}=await import('node:crypto');
  const baseline=JSON.parse(read('tests/fixtures/seo-visible-baseline.json'));
  const sha=value=>createHash('sha256').update(value).digest('hex');
  for(const [file,expected] of Object.entries(baseline.htmlBodies)){
-  const html=read(file);const body=html.match(/<body\b[^>]*>[\s\S]*?<\/body>/)?.[0]||html;
+  const html=read(file);let body=html.match(/<body\b[^>]*>[\s\S]*?<\/body>/)?.[0]||html;
+  // Explicitly normalize ONLY the newly authorized changes against the unchanged baseline.
+  const corporate=['public/index.html','public/sony/index.html',...JSON.parse(read('public/group-routes.json')).filter(p=>p.startsWith('/ventures/')).map(p=>'public'+p+'index.html')];
+  if(corporate.includes(file)){
+   assert.ok(!body.includes('<a href="/privacy/">Privacy</a>'));
+   body=body.replace(/(<a href="\/sony\/"(?: aria-current="page")?>Meet Sony Alexis<\/a>)/,'$1<a href="/privacy/">Privacy</a>');
+  }
+  if(file==='public/sony/index.html')body=body.replace('My professional name is Sony Alexis, and I am also known as Sony Holmes. ','');
   assert.equal(sha(body),expected,file+' visible body changed');
  }
  for(const [file,expected] of Object.entries(baseline.staticFiles))assert.equal(sha(readFileSync(file)),expected,file+' asset changed');
- const {description,...visibleSource}=source;assert.deepEqual(visibleSource,baseline.visibleProfileSource);
- console.log(`Technical-only preservation: ${Object.keys(baseline.htmlBodies).length} HTML bodies and ${Object.keys(baseline.staticFiles).length} static files unchanged.`);
+ const {description,alternateName,...visibleSource}=structuredClone(source);
+ assert.equal(alternateName,'Sony Holmes');
+ const sentence='My professional name is Sony Alexis, and I am also known as Sony Holmes. ';
+ assert.ok(visibleSource.chapters[0].paragraphs[0].startsWith(sentence));
+ visibleSource.chapters[0].paragraphs[0]=visibleSource.chapters[0].paragraphs[0].slice(sentence.length);
+ assert.deepEqual(visibleSource,baseline.visibleProfileSource);
+ console.log(`Technical-only preservation: ${Object.keys(baseline.htmlBodies).length} HTML bodies match baseline after only authorized footer/alias normalization; ${Object.keys(baseline.staticFiles).length} static files unchanged.`);
 });
 
 test('Technical-only SEO: AI/search crawlers share public access and private exclusions',()=>{
@@ -147,4 +159,27 @@ test('Entity recognition: HTTP audit detects noindex, broken canonical and metad
  assert.ok(inspectPublicHTML(home.replace('index, follow','noindex, follow'),origin+'/').problems.some(p=>p.includes('blocks indexing')));
  assert.ok(inspectPublicHTML(home,origin+'/wrong/').problems.some(p=>p.includes('Canonical')));
  assert.ok(inspectPublicHTML(home.replace('</head>','<title>Duplicate</title></head>'),origin+'/').problems.includes('Title missing/duplicated'));
+});
+
+
+test('Footer and alias release: corporate-only deletion, one identity, app policy untouched',async()=>{
+ const {createHash}=await import('node:crypto');
+ const graph=JSON.parse(profile.match(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/)[1])['@graph'];
+ const people=graph.filter(n=>n['@type']==='Person');assert.equal(people.length,1);
+ assert.equal(people[0].name,'Sony Alexis');assert.equal(people[0].alternateName,'Sony Holmes');
+ assert.match(profile,/My professional name is Sony Alexis, and I am also known as Sony Holmes\./);
+ assert.doesNotMatch(profile,/Austin Holmes|foster son|senate\.gov/);
+ assert.equal((profile.match(/<main\b/g)||[]).length,1);
+ const corporate=JSON.parse(read('public/group-routes.json')).filter(p=>p!=='/monte-wo/');
+ for(const route of corporate){
+  const doc=read('public'+(route==='/'?'/index.html':route+'index.html'));const footer=doc.match(/<footer\b[\s\S]*?<\/footer>/)[0];
+  assert.ok(!footer.includes('href="/privacy/"'));assert.match(footer,/>Meet Sony Alexis<\/a>/);
+  assert.equal((footer.match(/<a\b/g)||[]).length,1);
+ }
+ const sha=path=>createHash('sha256').update(readFileSync(path)).digest('hex');
+ assert.equal(sha('public/monte-wo/index.html'),'65a339c207b7edf9784f8f98b9dfd81911f28433772816cd13cd8c361fc02ee3','Protected app/policy/style file changed');
+ assert.equal(sha('public/privacy/index.html'),'5ad88f6a2e5100afb503ecd176960cb1d7106b5d29f44176f9e1146709369afa','Protected app/policy/style file changed');
+ assert.equal(sha('public/group.css'),'0dc8d6ef0cbf3b3495a76594fed317a39d85f5c507374ecdbce4433b7a35159e','Protected app/policy/style file changed');
+ assert.match(read('public/monte-wo/index.html'),/href="\/privacy\/"/);
+ assert.ok(!existsSync('public/sony-holmes/index.html'));
 });

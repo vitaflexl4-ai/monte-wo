@@ -3,16 +3,22 @@ import {readFileSync,mkdirSync,writeFileSync} from 'node:fs';
 const origin=process.env.VERIFY_ORIGIN||'https://vitaflexbusinessgroup.com';
 // Avoid mistaking an older edge/tool cache response for the newly published build.
 const revision=process.env.VERIFY_REVISION||process.env.GITHUB_SHA||Date.now().toString();
-const current=(path,options={})=>fetch(origin+path+'?verify='+encodeURIComponent(revision),{signal:AbortSignal.timeout(30000),...options});
+const current=(path,options={})=>fetch(origin+path+'?verify='+encodeURIComponent(revision),{signal:AbortSignal.timeout(30000),...(process.env.VERIFY_USER_AGENT?{headers:{'User-Agent':process.env.VERIFY_USER_AGENT}}:{}),...options});
 let profile='',homepage='';
 for(const [route,marker] of [['/','/assets/group/vitaflex-business-group.png'],['/ventures/monte-wo/','In Development'],['/ventures/vitaflex-training/','AVAILABILITY NOT ANNOUNCED'],['/ventures/vitaflex-intelligence-corp/','VitaFlex Intelligence Corp'],['/ventures/lifeline/','Lifeline'],['/sony/','Sony Alexis | Professional Profile &amp; Biography'],['/monte-wo/','MONTE'],['/tools/','strength-tools']]){
  const response=await current(route);
  assert.equal(response.status,200,route);const body=await response.text();assert.ok(body.includes(marker),route+' missing deployed content');if(route==='/sony/')profile=body;if(route==='/')homepage=body;
+ if(route==='/'||route==='/sony/'||route.startsWith('/ventures/')){
+  const footer=body.match(/<footer\b[\s\S]*?<\/footer>/)?.[0];assert.ok(footer,'Corporate footer must exist');
+  assert.ok(!footer.includes('href="/privacy/"'),'Corporate Privacy link must be absent');assert.ok(footer.includes('>Meet Sony Alexis</a>'),'Existing profile link must remain');
+ }
  console.log('Verified deployed route:',origin+route,response.status,marker);
 }
 const response=await current('/api/intelligence/overview',{redirect:'manual'});
 assert.ok([301,302,303,307,308,401,403,503].includes(response.status),'Private API must remain protected');
 console.log('Verified API protection:',origin,response.status);
+const policy=await current('/privacy/');assert.equal(policy.status,200,'MONTE WO privacy policy remains available');
+assert.ok(Buffer.from(await policy.arrayBuffer()).equals(readFileSync('public/privacy/index.html')),'Served MONTE WO privacy policy must match unchanged build bytes');
 
 assert.ok(profile.includes('rel="canonical" href="https://vitaflexbusinessgroup.com/sony/"'));
 assert.ok(profile.includes('application/ld+json'));
@@ -34,7 +40,7 @@ assert.equal(schema['@graph'].length,3);
 for(const type of ['Person','ProfilePage','Organization'])assert.equal(schema['@graph'].filter(n=>n['@type']===type).length,1);
 const person=schema['@graph'].find(n=>n['@type']==='Person');
 const organization=schema['@graph'].find(n=>n['@type']==='Organization');
-assert.equal(person.name,'Sony Alexis');assert.equal(person.affiliation['@id'],organization['@id']);
+assert.equal(person.name,'Sony Alexis');assert.equal(person.alternateName,'Sony Holmes');assert.ok(profile.includes('My professional name is Sony Alexis, and I am also known as Sony Holmes. '));assert.equal(person.affiliation['@id'],organization['@id']);
 assert.equal(person.hasCredential.length,2);
 assert.ok(!person.alumniOf&&!person.sameAs&&!person.jobTitle&&!person.nationality);
 mkdirSync('evidence',{recursive:true});
@@ -44,4 +50,4 @@ for(const [path,marker] of [['/robots.txt','Sitemap: https://vitaflexbusinessgro
  if(path==='/robots.txt')for(const privatePath of ['/api/','/strength/admin/','/intelligence/','/account/callback/'])assert.ok(text.includes('Disallow: '+privatePath));
  console.log('Verified deployed SEO:',origin+path);
 }
-console.log('::notice title=Verified deployed SEO and routes::'+JSON.stringify({origin,profile:'Sony Alexis',canonical:'https://vitaflexbusinessgroup.com/sony/',routes:8,robots:true,sitemap:true,personEntities:1,publishedDegrees:2,homepageOrganization:true,websiteSchema:true,apiStatus:response.status}));
+console.log('::notice title=Verified deployed SEO and routes::'+JSON.stringify({origin,profile:'Sony Alexis',canonical:'https://vitaflexbusinessgroup.com/sony/',routes:8,robots:true,sitemap:true,personEntities:1,publishedDegrees:2,homepageOrganization:true,websiteSchema:true,corporatePrivacyLink:false,alternateName:'Sony Holmes',requestUserAgent:process.env.VERIFY_USER_AGENT||'Node default',notVerifiedCrawlerTraffic:true,appPrivacyUnchanged:true,apiStatus:response.status}));

@@ -43,6 +43,7 @@ jobs:
       - name: Publish to the existing main-domain project
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          EXPECTED_PRODUCTION_REVISION: 6a1596d2715efea265147ece053109021aee9a5e
         run: node scripts/publish-group-domain.mjs
       - name: Diagnose deployed origin and domain routing
         if: always()
@@ -56,6 +57,13 @@ jobs:
           set -o pipefail
           node scripts/verify-group.mjs | tee evidence/production-project-verification.txt
           SEO_AUDIT_OUTPUT=evidence/production-sitemap-audit.json node scripts/audit-public-seo.mjs
+      - name: Verify public corporate footer and alias (User-Agent probe, not verified crawler traffic)
+        env:
+          VERIFY_ORIGIN: https://vitaflexbusinessgroup.com
+          VERIFY_USER_AGENT: Googlebot
+        run: |
+          set -o pipefail
+          node scripts/verify-group.mjs | tee evidence/public-footer-alias-probe.txt
       - name: Verify public domain and protected API
         run: |
           set -o pipefail

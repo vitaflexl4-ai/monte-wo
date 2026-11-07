@@ -59,6 +59,7 @@ def render_founder(page):
         '@context': 'https://schema.org',
         '@graph': [
             {'@type': 'Person', '@id': url + '#person', 'name': profile['name'],
+             'alternateName': profile['alternateName'],
              'url': url, 'description': profile['description'],
              'affiliation': {'@id': 'https://vitaflexbusinessgroup.com/#organization'},
              'mainEntityOfPage': {'@id': url + '#profile'},

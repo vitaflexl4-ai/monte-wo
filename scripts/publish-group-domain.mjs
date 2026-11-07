@@ -15,6 +15,9 @@ const inspect=()=>api('');
 const before=await inspect();
 assert.ok(before.source == null,'Refuse direct publication to a git-connected project');
 assert.equal(before.production_branch,'main');
+// Fail closed rather than overwriting a production version not used as this release's baseline.
+assert.ok(process.env.EXPECTED_PRODUCTION_REVISION,'An explicit production source precondition is required');
+assert.equal(before.canonical_deployment?.deployment_trigger?.metadata?.commit_hash,process.env.EXPECTED_PRODUCTION_REVISION,'Production source differs from the approved baseline; stop before deploying');
 for(const host of ['vitaflexbusinessgroup.com','www.vitaflexbusinessgroup.com'])assert.ok(before.domains.includes(host),`Unexpected domain owner: ${host}`);
 await mkdir('evidence',{recursive:true});
 const snapshot={project,domains:before.domains,deployment:before.canonical_deployment?.id,revision:before.canonical_deployment?.deployment_trigger?.metadata?.commit_hash,url:before.canonical_deployment?.url};
@@ -48,6 +51,7 @@ try {
  assert.equal(verify.status,0,'Preview verification failed; production is not published');
  const crawl=spawnSync(process.execPath,['scripts/audit-public-seo.mjs'],{stdio:'inherit',env:{...env,VERIFY_ORIGIN:preview.url,SEO_AUDIT_OUTPUT:'evidence/preview-sitemap-audit.json'}});
  assert.equal(crawl.status,0,'Preview sitemap HTTP audit failed; production is not published');
+ assert.equal((await inspect()).canonical_deployment?.id,before.canonical_deployment?.id,'Production changed during preview; stop before publishing');
  run(['pages','deploy','public','--project-name',project,'--branch','main','--commit-hash',expected,'--commit-dirty=true']);
  const after=await inspect();
  assert.equal(after.canonical_deployment?.deployment_trigger?.metadata?.commit_hash,expected,'Production revision must match this build');
