@@ -1,0 +1,21 @@
+{
+  "reference": "https://2f802a54.vitaflex.pages.dev",
+  "deploymentId": "2f802a54-bd76-4364-881e-5b276dd93029",
+  "revision": "cdd431502dcf20792ad2c9f5b18dc90c73bcc82c",
+  "files": {
+    "/": "60dff9a625b092600b4d2e6076d0a54f7bca200b754d754457fd96224f6e400d",
+    "/ventures/monte-wo/": "748cda842df3c771845b7cefa3381062db09adcc73f9c049407b22bf992b19d9",
+    "/ventures/vitaflex-training/": "ee575b6b5b0582f48ec1c69f5cfe61214dcdce3ecbe83bc18d00c4ccac9bc449",
+    "/ventures/vitaflex-intelligence-corp/": "41f56bd831ec45c00c0d7e83f57d45150a22befd5c041c3daf10008021ae3e55",
+    "/ventures/lifeline/": "c7a0b0ab725087ee92d20894e641a333020a91426c3b03fe965ab85b9c6eea7b",
+    "/group.css": "0dc8d6ef0cbf3b3495a76594fed317a39d85f5c507374ecdbce4433b7a35159e",
+    "/assets/inter-400.woff2": "16baac80f5dfd27841cfbd510285eb8123a98401117075a59da3584b74aefb5b",
+    "/assets/inter-600.woff2": "33e4f12e469c3cffa34e64449e4080b5acc3a2daad040c4a02b00a63a493376e",
+    "/assets/group/vitaflex-business-group.png": "34e4f89f5dda20048b3c30974fef566db0ac4052ca76cb4a411ad6891c398d66",
+    "/assets/group/vitaflex-monogram.png": "fbc07a8c47368661373ef96884ff67d8b081168d812dc8324c07abeb5641f7eb",
+    "/assets/group/favicon.png": "e9ad4d8781df4f628dffe430107468a1ec3e24f293ffe9aa5a4103880b5c38ea",
+    "/group-routes.json": "7b961925d6bf09ad960341df04201793aa337d0d6110c06f7f1c7fc3303ad280",
+    "/sitemap.xml": "ce79700d4c0e1bd93e006cf814b3d81d86dd4b6acef7e705b26185f2fbad54cf"
+  },
+  "preservedSonySha256": "d5fbddf767cbdaab0ff64701a3ed34f7c9779152cd2eef43ea9e05443898d518"
+}

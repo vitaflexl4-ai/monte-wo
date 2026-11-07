@@ -58,7 +58,7 @@ test('Founder: chapter anchors, metadata, canonical and current-page link are co
 
 test('Founder: added through the group footer, not the homepage portfolio or product navigation',()=>{
  const home=docFor('/');const main=home.match(/<main\b[^>]*>([\s\S]*?)<\/main>/)[1];
- assert.equal((main.match(/Meet Sony Alexis/g)||[]).length,1);assert.ok(!main.includes(profile.chapters[0].paragraphs[0]),'Corporate home must not become a biography');
+ assert.doesNotMatch(main,/Sony|SONY|founder/);assert.equal((home.match(/>Meet Sony Alexis<\/a>/g)||[]).length,1);
  assert.equal((main.match(/class="venture-row /g)||[]).length,4);
  assert.ok(main.includes('01 — 04'));
  for(const route of routes.filter(p=>p!=='/monte-wo/')){

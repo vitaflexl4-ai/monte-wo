@@ -5,8 +5,8 @@ const read=p=>readFileSync(p,'utf8');
 const ventures=JSON.parse(read('content/group/ventures.json'));
 test('Group: parent identity is explicit and separate from product runtime',()=>{
  const doc=read('public/index.html');
- for(const text of ['Your business','digital','VITAFLEX BUSINESS GROUP','id="ventures"','data-design="noir"','id="presence-score"','id="packages"'])assert.ok(doc.includes(text),text);
- assert.match(doc,/mailto:vitaflexl4@gmail.com/);assert.ok(doc.includes('self-assessment'));
+ for(const text of ['Beyond','the obvious.','VITAFLEX BUSINESS GROUP','id="ventures"','data-design="noir"'])assert.ok(doc.includes(text),text);
+ assert.doesNotMatch(doc,/mailto:|id="contact"|id="about"|hero-intro/);
  assert.doesNotMatch(doc,/src="\/(app|phone-cockpit|cockpit)\.js/);
  assert.match(doc,/canonical" href="https:\/\/vitaflexbusinessgroup.com\/"/);
 });

@@ -36,15 +36,17 @@ jobs:
           python3 -m http.server 8080 --bind 0.0.0.0 --directory public > /tmp/site.log 2>&1 &
           node --input-type=module -e "import('./tests/group-browser.mjs').catch(e=>{console.error('::error title=Group browser validation::'+String(e.stack||e).replaceAll('\n',' | '));process.exit(1)})"
           node --input-type=module -e "import('./tests/founder-browser.mjs').catch(e=>{console.error('::error title=Profile browser validation::'+String(e.stack||e).replaceAll('\n',' | '));process.exit(1)})"
-          node tests/business-browser.mjs
+          node tests/approved-restoration-browser.mjs
       - name: SEO and content regression tests
         run: |
-          node --test tests/seo.test.js tests/founder.test.js tests/group.test.js tests/master-execution.test.js tests/business.test.js
+          node --test tests/seo.test.js tests/founder.test.js tests/group.test.js tests/master-execution.test.js tests/business.test.js tests/approved-restoration.test.js
           VERIFY_ORIGIN=http://127.0.0.1:8080 SEO_AUDIT_OUTPUT=evidence/local-sitemap-audit.json node scripts/audit-public-seo.mjs
+      - name: Compare restored corporate files against the exact owner-selected reference
+        run: node scripts/verify-approved-corporate.mjs
       - name: Publish to the existing main-domain project
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          EXPECTED_PRODUCTION_REVISION: 7693584e0edbe52b5dd75dbc143929b1d0ec27f8
+          EXPECTED_PRODUCTION_REVISION: e02f5b911ce540cff854ad1b6203a9f05e5776b5
         run: node scripts/publish-group-domain.mjs
       - name: Diagnose deployed origin and domain routing
         if: always()

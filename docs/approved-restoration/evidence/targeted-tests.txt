@@ -1,0 +1,217 @@
+TAP version 13
+# Subtest: Approved restoration: homepage, all four venture pages, CSS, fonts, logos, manifests and sitemap match exact selected revision
+ok 1 - Approved restoration: homepage, all four venture pages, CSS, fonts, logos, manifests and sitemap match exact selected revision
+  ---
+  duration_ms: 5.069409
+  type: 'test'
+  ...
+# Subtest: Approved restoration: existing Sony page preserved byte-for-byte with safe current metadata
+ok 2 - Approved restoration: existing Sony page preserved byte-for-byte with safe current metadata
+  ---
+  duration_ms: 0.486521
+  type: 'test'
+  ...
+# Subtest: Approved restoration: four ventures are centerpiece; exactly one bottom Sony link; rejected prototype not loaded
+ok 3 - Approved restoration: four ventures are centerpiece; exactly one bottom Sony link; rejected prototype not loaded
+  ---
+  duration_ms: 0.699045
+  type: 'test'
+  ...
+# Subtest: Business: score is calculated only from explicit self-reported known answers
+ok 4 - Business: score is calculated only from explicit self-reported known answers
+  ---
+  duration_ms: 1.842274
+  type: 'test'
+  ...
+# Subtest: Business: no network scans, storage, tracking, generated scores or fake portal integration
+ok 5 - Business: no network scans, storage, tracking, generated scores or fake portal integration
+  ---
+  duration_ms: 1.042651
+  type: 'test'
+  ...
+# Subtest: Restoration: approved sitemap has 55 URLs and does not advertise the rejected prototype
+ok 6 - Restoration: approved sitemap has 55 URLs and does not advertise the rejected prototype
+  ---
+  duration_ms: 2.174761
+  type: 'test'
+  ...
+# Group links/assets/fragments checked: 125
+# Subtest: Founder: source uses owner-authorized identity and personal essay, not a resume or venture launch
+ok 7 - Founder: source uses owner-authorized identity and personal essay, not a resume or venture launch
+  ---
+  duration_ms: 3.561236
+  type: 'test'
+  ...
+# Subtest: Founder: every supplied paragraph is rendered verbatim and in order
+ok 8 - Founder: every supplied paragraph is rendered verbatim and in order
+  ---
+  duration_ms: 0.740406
+  type: 'test'
+  ...
+# Subtest: Founder: chapter anchors, metadata, canonical and current-page link are correct
+ok 9 - Founder: chapter anchors, metadata, canonical and current-page link are correct
+  ---
+  duration_ms: 0.450405
+  type: 'test'
+  ...
+# Subtest: Founder: added through the group footer, not the homepage portfolio or product navigation
+ok 10 - Founder: added through the group footer, not the homepage portfolio or product navigation
+  ---
+  duration_ms: 1.426849
+  type: 'test'
+  ...
+# Subtest: Founder: every group link, asset and fragment resolves without fabricated destinations
+ok 11 - Founder: every group link, asset and fragment resolves without fabricated destinations
+  ---
+  duration_ms: 8.986548
+  type: 'test'
+  ...
+# Subtest: Founder: offline upgrade is deduplicated and source content is not downloaded at runtime
+ok 12 - Founder: offline upgrade is deduplicated and source content is not downloaded at runtime
+  ---
+  duration_ms: 0.671873
+  type: 'test'
+  ...
+# Subtest: Biography update: only the definitive version is presented, with no duplicate profile
+ok 13 - Biography update: only the definitive version is presented, with no duplicate profile
+  ---
+  duration_ms: 0.588362
+  type: 'test'
+  ...
+# Subtest: Group: parent identity is explicit and separate from product runtime
+ok 14 - Group: parent identity is explicit and separate from product runtime
+  ---
+  duration_ms: 1.725207
+  type: 'test'
+  ...
+# Subtest: Group: venture registry provides honest, resolvable destinations
+ok 15 - Group: venture registry provides honest, resolvable destinations
+  ---
+  duration_ms: 0.567916
+  type: 'test'
+  ...
+# Subtest: Group: preserved product and offline upgrade remain available
+ok 16 - Group: preserved product and offline upgrade remain available
+  ---
+  duration_ms: 2.57211
+  type: 'test'
+  ...
+# Subtest: Group: supplied official logo replaces placeholders without changing originals
+ok 17 - Group: supplied official logo replaces placeholders without changing originals
+  ---
+  duration_ms: 0.666243
+  type: 'test'
+  ...
+# Subtest: Group: Intelligence Corp is a third development venture, not a renamed parent or private API link
+ok 18 - Group: Intelligence Corp is a third development venture, not a renamed parent or private API link
+  ---
+  duration_ms: 0.717576
+  type: 'test'
+  ...
+# Subtest: Group: Lifeline is a simulation venture in development, with no invented game launch
+ok 19 - Group: Lifeline is a simulation venture in development, with no invented game launch
+  ---
+  duration_ms: 0.408636
+  type: 'test'
+  ...
+# Protected public files: 228
+# Subtest: Master execution: all 228 original public files including the approved homepage and route manifests are byte-identical
+ok 20 - Master execution: all 228 original public files including the approved homepage and route manifests are byte-identical
+  ---
+  duration_ms: 23.23659
+  type: 'test'
+  ...
+# Subtest: Master execution: exact Sony delta is head titles and credential omission, never biography or assets
+ok 21 - Master execution: exact Sony delta is head titles and credential omission, never biography or assets
+  ---
+  duration_ms: 1.935943
+  type: 'test'
+  ...
+# Subtest: Master execution: zero-ambiguity graph retains owner-confirmed identity but no external matches or credential claims
+ok 22 - Master execution: zero-ambiguity graph retains owner-confirmed identity but no external matches or credential claims
+  ---
+  duration_ms: 0.652867
+  type: 'test'
+  ...
+# Technical-only preservation: 61 HTML bodies match baseline after only authorized footer normalization; 165 static files unchanged.
+# Subtest: SEO: exact owner-approved identity, metadata, H1 and canonical
+ok 23 - SEO: exact owner-approved identity, metadata, H1 and canonical
+  ---
+  duration_ms: 4.127216
+  type: 'test'
+  ...
+# Subtest: SEO: valid JSON-LD ProfilePage references the supported Person
+ok 24 - SEO: valid JSON-LD ProfilePage references the supported Person
+  ---
+  duration_ms: 0.987429
+  type: 'test'
+  ...
+# Subtest: SEO: group documents have unique titles/descriptions, complete social metadata, valid heading structure and alt attributes
+ok 25 - SEO: group documents have unique titles/descriptions, complete social metadata, valid heading structure and alt attributes
+  ---
+  duration_ms: 3.982341
+  type: 'test'
+  ...
+# Subtest: SEO: crawlable preferred-domain sitemap is deduplicated and excludes private surfaces
+ok 26 - SEO: crawlable preferred-domain sitemap is deduplicated and excludes private surfaces
+  ---
+  duration_ms: 5.728306
+  type: 'test'
+  ...
+# Subtest: SEO: all sitemap pages have unique titles and descriptions
+ok 27 - SEO: all sitemap pages have unique titles and descriptions
+  ---
+  duration_ms: 5.659894
+  type: 'test'
+  ...
+# Subtest: SEO: publication is restricted to the existing project and preserves configuration
+ok 28 - SEO: publication is restricted to the existing project and preserves configuration
+  ---
+  duration_ms: 0.743082
+  type: 'test'
+  ...
+# Subtest: SEO deployment: empty downloaded placement tables are omitted, explicit modes and bindings preserved
+ok 29 - SEO deployment: empty downloaded placement tables are omitted, explicit modes and bindings preserved
+  ---
+  duration_ms: 0.799347
+  type: 'test'
+  ...
+# Subtest: Preservation: only corporate Privacy links may change in visible bodies
+ok 30 - Preservation: only corporate Privacy links may change in visible bodies
+  ---
+  duration_ms: 29.92969
+  type: 'test'
+  ...
+# Subtest: Technical-only SEO: AI/search crawlers share public access and private exclusions
+ok 31 - Technical-only SEO: AI/search crawlers share public access and private exclusions
+  ---
+  duration_ms: 1.415149
+  type: 'test'
+  ...
+# Subtest: Entity recognition: homepage Organization/WebSite agree with existing Sony entity IDs
+ok 32 - Entity recognition: homepage Organization/WebSite agree with existing Sony entity IDs
+  ---
+  duration_ms: 1.162582
+  type: 'test'
+  ...
+# Subtest: Entity recognition: HTTP audit detects noindex, broken canonical and metadata duplication
+ok 33 - Entity recognition: HTTP audit detects noindex, broken canonical and metadata duplication
+  ---
+  duration_ms: 6.519116
+  type: 'test'
+  ...
+# Subtest: Footer and alias release: corporate-only deletion, one identity, app policy untouched
+ok 34 - Footer and alias release: corporate-only deletion, one identity, app policy untouched
+  ---
+  duration_ms: 1.953616
+  type: 'test'
+  ...
+1..34
+# tests 34
+# suites 0
+# pass 34
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 653.969474

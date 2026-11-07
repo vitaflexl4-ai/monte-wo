@@ -5,12 +5,11 @@ const origin=process.env.VERIFY_ORIGIN||'https://vitaflexbusinessgroup.com';
 const revision=process.env.VERIFY_REVISION||process.env.GITHUB_SHA||Date.now().toString();
 const current=(path,options={})=>fetch(origin+path+'?verify='+encodeURIComponent(revision),{signal:AbortSignal.timeout(30000),...(process.env.VERIFY_USER_AGENT?{headers:{'User-Agent':process.env.VERIFY_USER_AGENT}}:{}),...options});
 let profile='',homepage='';
-for(const [route,marker] of [['/','/assets/group/vitaflex-business-group.png'],['/ventures/monte-wo/','In Development'],['/ventures/vitaflex-training/','AVAILABILITY NOT ANNOUNCED'],['/ventures/vitaflex-intelligence-corp/','VitaFlex Intelligence Corp'],['/ventures/lifeline/','Lifeline'],['/business-contact/','vitaflexl4@gmail.com'],['/sony/','Sony Alexis | VitaFlex Business Group'],['/monte-wo/','MONTE'],['/tools/','strength-tools']]){
+for(const [route,marker] of [['/','/assets/group/vitaflex-business-group.png'],['/ventures/monte-wo/','In Development'],['/ventures/vitaflex-training/','AVAILABILITY NOT ANNOUNCED'],['/ventures/vitaflex-intelligence-corp/','VitaFlex Intelligence Corp'],['/ventures/lifeline/','Lifeline'],['/sony/','Sony Alexis | VitaFlex Business Group'],['/monte-wo/','MONTE'],['/tools/','strength-tools']]){
  const response=await current(route);
  assert.equal(response.status,200,route);const body=await response.text();assert.ok(body.includes(marker),route+' missing deployed content');if(route==='/sony/')profile=body;if(route==='/')homepage=body;
- if(route==='/'){assert.ok(body.includes('id="presence-score"'));assert.ok(body.includes('/business.js'));assert.ok(body.includes('self-assessment, not an automated business audit'));}
- if(route==='/business-contact/'){assert.ok(body.includes('id="business-enquiry"'));assert.ok(body.includes('does not submit to a server'));}
- if(route==='/'||route==='/business-contact/'||route==='/sony/'||route.startsWith('/ventures/')){
+ if(route==='/'){assert.ok(body.includes('Beyond<br><em>the obvious.</em>'));assert.equal((body.match(/class="venture-row /g)||[]).length,4);assert.equal((body.match(/>Meet Sony Alexis<\/a>/g)||[]).length,1);assert.ok(!body.includes('id="presence-score"'));}
+ if(route==='/'||route==='/sony/'||route.startsWith('/ventures/')){
   const footer=body.match(/<footer\b[\s\S]*?<\/footer>/)?.[0];assert.ok(footer,'Corporate footer must exist');
   assert.ok(!footer.includes('href="/privacy/"'),'Corporate Privacy link must be absent');assert.ok(footer.includes('>Meet Sony Alexis</a>'),'Existing profile link must remain');
  }
@@ -52,4 +51,4 @@ for(const [path,marker] of [['/robots.txt','Sitemap: https://vitaflexbusinessgro
  if(path==='/robots.txt')for(const privatePath of ['/api/','/strength/admin/','/intelligence/','/account/callback/'])assert.ok(text.includes('Disallow: '+privatePath));
  console.log('Verified deployed SEO:',origin+path);
 }
-console.log('::notice title=Verified deployed SEO and routes::'+JSON.stringify({origin,profile:'Sony Alexis',canonical:'https://vitaflexbusinessgroup.com/sony/',routes:9,robots:true,sitemap:true,personEntities:1,publishedDegrees:0,homepageOrganization:true,websiteSchema:true,corporatePrivacyLink:false,alternateName:'Sony Holmes',requestUserAgent:process.env.VERIFY_USER_AGENT||'Node default',notVerifiedCrawlerTraffic:true,appPrivacyUnchanged:true,apiStatus:response.status}));
+console.log('::notice title=Verified deployed SEO and routes::'+JSON.stringify({origin,profile:'Sony Alexis',canonical:'https://vitaflexbusinessgroup.com/sony/',routes:8,robots:true,sitemap:true,personEntities:1,publishedDegrees:0,homepageOrganization:true,websiteSchema:true,corporatePrivacyLink:false,alternateName:'Sony Holmes',requestUserAgent:process.env.VERIFY_USER_AGENT||'Node default',notVerifiedCrawlerTraffic:true,appPrivacyUnchanged:true,apiStatus:response.status}));

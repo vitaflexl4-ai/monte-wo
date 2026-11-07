@@ -1,4 +1,4 @@
-# Refresh public production metadata before corporate no-JS privacy hardening; one GET only.
+# Refresh production before restoring the exact owner-approved 2f802a54 corporate reference.
 name: Read-only corporate production diagnostics
 on:
   push:

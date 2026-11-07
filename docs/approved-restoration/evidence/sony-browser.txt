@@ -1,0 +1,2 @@
+PASS: Founder via footer; eight desktop/tablet/mobile/landscape layouts; complete verbatim essay; no overflow/clipping; <=680px reading column; chapter anchors; keyboard skip/focus; reduced motion; no-JS reading/navigation; no JS errors or failed HTTP assets.
+Review screenshots: /tmp/vitaflex-founder-review

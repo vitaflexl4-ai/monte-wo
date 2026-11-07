@@ -105,7 +105,6 @@ test('Preservation: only corporate Privacy links may change in visible bodies',a
  const baseline=JSON.parse(read('tests/fixtures/seo-visible-baseline.json'));
  const sha=value=>createHash('sha256').update(value).digest('hex');
  for(const [file,expected] of Object.entries(baseline.htmlBodies)){
-  if(file==='public/index.html'){assert.ok(read(file).includes('id="presence-score"'));continue;} // Explicitly authorized corporate replacement; dedicated tests cover it.
   const html=read(file);let body=html.match(/<body\b[^>]*>[\s\S]*?<\/body>/)?.[0]||html;
   // Explicitly normalize ONLY the newly authorized changes against the unchanged baseline.
   const corporate=['public/index.html','public/sony/index.html',...JSON.parse(read('public/group-routes.json')).filter(p=>p.startsWith('/ventures/')).map(p=>'public'+p+'index.html')];
@@ -115,10 +114,7 @@ test('Preservation: only corporate Privacy links may change in visible bodies',a
   }
   assert.equal(sha(body),expected,file+' visible body changed');
  }
- for(const [file,expected] of Object.entries(baseline.staticFiles)){
-  if(file==='public/group-routes.json'){const routes=JSON.parse(read(file));assert.equal(routes.filter(p=>p==='/business-contact/').length,1);assert.equal(sha(JSON.stringify(routes.filter(p=>p!=='/business-contact/'),null,2)+'\n'),expected);}
-  else assert.equal(sha(readFileSync(file)),expected,file+' asset changed');
- }
+ for(const [file,expected] of Object.entries(baseline.staticFiles))assert.equal(sha(readFileSync(file)),expected,file+' asset changed');
  const {description,alternateName,...visibleSource}=structuredClone(source);
  assert.equal(alternateName,'Sony Holmes');
  // Only the explicitly authorized head title changes; the original fixture stays untouched.

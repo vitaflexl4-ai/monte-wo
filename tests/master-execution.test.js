@@ -1,7 +1,7 @@
 import test from 'node:test';import assert from 'node:assert/strict';import {readFileSync} from 'node:fs';import {createHash} from 'node:crypto';
 const baseline=JSON.parse(readFileSync(new URL('./fixtures/master-protected-snapshot.json',import.meta.url)));const sha=s=>createHash('sha256').update(s).digest('hex');
 const profile=readFileSync('public/sony/index.html','utf8');const source=JSON.parse(readFileSync('content/group/founder.json','utf8'));const schemaPattern=/<script type="application\/ld\+json">([\s\S]*?)<\/script>/;
-test('Master execution: protected public files except the explicitly authorized corporate home and route manifests are byte-identical',()=>{for(const [path,hash]of Object.entries(baseline.publicFiles)){if(['public/index.html','public/group-routes.json','public/sitemap.xml'].includes(path))continue;assert.equal(sha(readFileSync(path)),hash,path);}console.log('Protected public files:',Object.keys(baseline.publicFiles).length);});
+test('Master execution: all 228 original public files including the approved homepage and route manifests are byte-identical',()=>{for(const [path,hash]of Object.entries(baseline.publicFiles)){assert.equal(sha(readFileSync(path)),hash,path);}console.log('Protected public files:',Object.keys(baseline.publicFiles).length);});
 test('Master execution: exact Sony delta is head titles and credential omission, never biography or assets',()=>{
  assert.equal(sha(profile.match(/<body\b[\s\S]*?<\/body>/)[0]),baseline.profileBodySha256);
  const expected=JSON.parse(baseline.profileBeforeSchema);delete expected['@graph'].find(n=>n['@type']==='Person').hasCredential;expected['@graph'].find(n=>n['@type']==='ProfilePage').name=baseline.approvedTitle;

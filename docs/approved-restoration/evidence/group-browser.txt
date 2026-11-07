@@ -1,0 +1,1 @@
+PASS: all group/product routes, responsive layouts, all corporate links, keyboard skip, zero JS errors.
