@@ -11,9 +11,10 @@ const head=doc=>doc.match(/<head>([\s\S]*?)<\/head>/)[1];
 const meta=(doc,key)=>[...head(doc).matchAll(/<meta (?:name|property)="([^"]+)" content="([^"]*)"/g)].filter(m=>m[1]===key).map(m=>unescape(m[2]));
 
 test('SEO: exact owner-approved identity, metadata, H1 and canonical',()=>{
- assert.equal(unescape(profile.match(/<title>(.*?)<\/title>/)[1]),'Sony Alexis | Professional Profile & Biography');
+ assert.equal(unescape(profile.match(/<title>(.*?)<\/title>/)[1]),'Sony Alexis (Sony Holmes) | Professional Profile & Biography');
+ assert.ok(source.seoTitle.length<=60&&source.description.length<=160,'SERP-safe lengths');
  assert.deepEqual(meta(profile,'description'),[source.description]);
- assert.equal(source.description,'Discover Sony Alexis — his background in business administration, leadership, fitness and technology, and reflections on learning, faith, Haiti and service.');
+ assert.equal(source.description,'Discover Sony Alexis, also known as Sony Holmes — his work through VitaFlex Business Group, his background in business and leadership, and his bond with Haiti.');
  assert.match(profile,/<h1 id="founder-name">Sony Alexis<\/h1>/);
  assert.equal((profile.match(/<h1\b/g)||[]).length,1);
  assert.match(profile,/rel="canonical" href="https:\/\/vitaflexbusinessgroup.com\/sony\/"/);
@@ -27,7 +28,7 @@ test('SEO: valid JSON-LD ProfilePage references the supported Person',()=>{
  const scripts=[...profile.matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g)];assert.equal(scripts.length,1);
  const data=JSON.parse(scripts[0][1]);assert.equal(data['@context'],'https://schema.org');assert.equal(data['@graph'].length,3);
  const person=data['@graph'].find(n=>n['@type']==='Person');const page=data['@graph'].find(n=>n['@type']==='ProfilePage');
- assert.equal(person.name,'Sony Alexis');assert.equal(person.url,origin+'/sony/');assert.equal(page.url,person.url);assert.equal(page.mainEntity['@id'],person['@id']);
+ assert.equal(person.name,'Sony Alexis');assert.equal(person.alternateName,'Sony Holmes');assert.equal(person.url,origin+'/sony/');assert.equal(page.url,person.url);assert.equal(page.mainEntity['@id'],person['@id']);
  assert.deepEqual(person.affiliation,{'@id':origin+'/#organization'});
  const organization=data['@graph'].find(n=>n['@type']==='Organization');
  assert.deepEqual(organization,{'@type':'Organization','@id':origin+'/#organization',name:'VitaFlex Business Group',url:origin+'/'});
@@ -35,7 +36,7 @@ test('SEO: valid JSON-LD ProfilePage references the supported Person',()=>{
  assert.equal(data['@graph'].filter(n=>n['@type']==='Person').length,1);
  assert.equal(new Set(data['@graph'].map(n=>n['@id'])).size,3);
  assert.ok(!Object.keys(person).some(key=>['jobTitle','award','address','sameAs','image','worksFor','birthDate'].includes(key)));
- assert.deepEqual(person.knowsAbout,['Business administration','Leadership','Entrepreneurship','Fitness','Technology','Artificial intelligence','Continuous learning']);
+ assert.deepEqual(person.knowsAbout,['Business administration','Leadership','Entrepreneurship','Fitness','Technology','Artificial intelligence','Continuous learning','Haiti']);
  assert.deepEqual(person.hasCredential,[
   {'@type':'EducationalOccupationalCredential',name:"Bachelor's degree in Business Administration",credentialCategory:'degree'},
   {'@type':'EducationalOccupationalCredential',name:'Master of Business Administration (MBA)',credentialCategory:'degree'}
@@ -44,6 +45,10 @@ test('SEO: valid JSON-LD ProfilePage references the supported Person',()=>{
  assert.ok(prose.includes("bachelor's degree in Business Administration"));assert.ok(prose.includes('Master of Business Administration (MBA)'));
  assert.doesNotMatch(scripts[0][1],/Liberty|CleanCap|CJVitaFlex|alumniOf|sameAs|nationality|jobTitle|birthDate|recognizedBy|credentialId/);
  assert.equal(page.name,source.seoTitle);assert.equal(page.inLanguage,'en');
+ // Public-record citations live on the ProfilePage (a CreativeWork), never as Person claims.
+ assert.deepEqual(page.citation.map(c=>[c['@type'],c.url]),[['WebPage','https://www.appropriations.senate.gov/hearings/haiti-2026-security-and-foreign-assistance-priorities'],['DigitalDocument','https://www.appropriations.senate.gov/download/mr-austin-holmes-testimony']]);
+ assert.ok(!('citation' in person)&&!('subjectOf' in person)&&!('memberOf' in person)&&!('relatedTo' in person));
+ assert.equal(scripts[0][1].split('Sony Holmes').length-1,4,'alternateName plus the three descriptive fields that already carry the public name');
 });
 
 test('SEO: group documents have unique titles/descriptions, complete social metadata, valid heading structure and alt attributes',()=>{

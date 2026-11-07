@@ -16,9 +16,9 @@ test('Founder: source uses owner-authorized identity and personal essay, not a r
  assert.equal(profile.subtitle,undefined);
  assert.doesNotMatch(founder.replace(/(?:class|id|aria-labelledby)="[^"]*"/g,''),/founder/i);
  assert.doesNotMatch(founder,/A non-alien|A journey of purpose, gratitude, and service/);
- assert.equal(profile.chapters.length,4);
+ assert.equal(profile.chapters.length,5);
  const paragraphs=profile.chapters.flatMap(chapter=>chapter.paragraphs);
- assert.equal(paragraphs.length,10);
+ assert.equal(paragraphs.length,12);
  assert.ok(paragraphs.some(p=>p.includes("bachelor's degree in Business Administration")&&p.includes('Master of Business Administration (MBA)')));
  assert.ok(paragraphs.some(p=>p.includes('approximately eight years')));
  assert.ok(paragraphs.some(p=>p.includes('My faith in God')&&p.includes('Haiti')));
@@ -48,9 +48,9 @@ test('Founder: chapter anchors, metadata, canonical and current-page link are co
   assert.ok(founder.includes(`id="${chapter.id}"`));
   assert.ok(founder.includes(`aria-labelledby="${chapter.id}-title"`));
  }
- assert.ok(founder.includes('<title>Sony Alexis | Professional Profile &amp; Biography</title>'));
+ assert.ok(founder.includes('<title>Sony Alexis (Sony Holmes) | Professional Profile &amp; Biography</title>'));
  assert.ok(founder.includes('rel="canonical" href="https://vitaflexbusinessgroup.com/sony/"'));
- assert.ok(founder.includes('property="og:title" content="Sony Alexis | Professional Profile &amp; Biography"'));
+ assert.ok(founder.includes('property="og:title" content="Sony Alexis (Sony Holmes) | Professional Profile &amp; Biography"'));
  assert.ok(founder.includes(`name="description" content="${escape(profile.description)}"`));
  assert.ok(founder.includes('<a href="/sony/" aria-current="page">Meet Sony Alexis</a>'));
  assert.match(founder,/<main id="main" tabindex="-1">/);
@@ -113,4 +113,26 @@ test('Biography update: only the definitive version is presented, with no duplic
  assert.ok(!existsSync('public/founder/index.html'));
  assert.ok(read('public/_redirects').includes('/founder/ /sony/ 301'));
  assert.ok(founder.includes('<p class="founder-subtitle">The Person Behind the Vision</p>'));
+});
+
+test('Alternate name & Haiti 2026: one person, one profile, owner-worded public-record chapter with official sources only',()=>{
+ assert.equal(profile.alternateName,'Sony Holmes');
+ assert.match(founder,/<h1 id="founder-name">Sony Alexis<\/h1>/);
+ assert.ok(founder.includes('<p class="founder-lead">'+escape(profile.lead)+'</p>'));
+ assert.ok(profile.lead.includes('Sony Alexis, also known as Sony Holmes')&&profile.lead.includes('VitaFlex Business Group')&&profile.lead.includes('Haiti'));
+ const body=founder.match(/<body\b[^>]*>[\s\S]*<\/body>/)[0];
+ assert.equal((body.match(/Sony Holmes/g)||[]).length,1,'Visible body names the alternate name once, in the lead — no keyword stuffing');
+ assert.equal((body.match(/Sony Alexis/g)||[]).length,4,'H1, lead, signature and footer link only');
+ assert.ok(!existsSync('public/sony-holmes/index.html')&&!existsSync('public/holmes/index.html'),'No second profile page');
+ const chapter=profile.chapters.at(-1);assert.equal(chapter.id,'haiti-senate-hearing');
+ const text=chapter.paragraphs.join(' ');
+ for(const fact of ['February 10, 2026','Subcommittee on State, Foreign Operations, and Related Programs','Haiti 2026: Security and Foreign Assistance Priorities','Austin Holmes','foster son','Cap-Haïtien','The testimony does not mention me by name','I did not testify or hold any role in the hearing','on my own account'])assert.ok(text.includes(fact),fact);
+ assert.doesNotMatch(text,/I testified|my testimony|ambassador|endorse|appointed|official capacity|Senator Sony|named me/i);
+ assert.doesNotMatch(text,/[“"]I am the foster son|testimony (?:reads|states): [“"]/,'The testimony is paraphrased, not quoted');
+ assert.deepEqual(chapter.sources.map(s=>s.url),['https://www.appropriations.senate.gov/hearings/haiti-2026-security-and-foreign-assistance-priorities','https://www.appropriations.senate.gov/download/mr-austin-holmes-testimony']);
+ for(const source of chapter.sources)assert.ok(founder.includes(`<a href="${source.url}" rel="external">${escape(source.label)}</a>`));
+ assert.equal((founder.match(/href="https:\/\/www\.appropriations\.senate\.gov\//g)||[]).length,2,'Official senate.gov links only, once each in the body');
+ assert.doesNotMatch(founder,/rezonodwes|hillheat|target="_blank"/);
+ assert.ok(founder.includes('<p class="founder-sources">Sources: '));
+ const css=read('public/group.css');assert.match(css,/\.founder-lead \{/);assert.match(css,/\.founder-chapter \.founder-sources a \{/);
 });

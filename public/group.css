@@ -277,6 +277,13 @@ em { font-family: Georgia, 'Times New Roman', serif; font-weight: 400; color: #d
   text-wrap: balance;
   color: #d9c9aa;
 }
+.founder-lead {
+  max-width: 660px;
+  margin: 28px 0 0;
+  font-size: 17px;
+  line-height: 1.8;
+  color: #d1d0c7;
+}
 .founder-reading-layout {
   display: grid;
   grid-template-columns: minmax(190px, 1fr) minmax(0, 680px);
@@ -314,6 +321,8 @@ em { font-family: Georgia, 'Times New Roman', serif; font-weight: 400; color: #d
   color: #d1d0c7;
 }
 .founder-chapter p:last-child { margin-bottom: 0; }
+.founder-chapter .founder-sources { font-size: 14px; line-height: 1.8; color: var(--muted); }
+.founder-chapter .founder-sources a { color: var(--gold); text-decoration: underline; text-underline-offset: 3px; }
 .founder-chapter:first-child p:first-of-type {
   font: 400 24px/1.65 Georgia, 'Times New Roman', serif;
   color: #e2ded3;

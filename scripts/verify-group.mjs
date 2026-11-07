@@ -5,7 +5,7 @@ const origin=process.env.VERIFY_ORIGIN||'https://vitaflexbusinessgroup.com';
 const revision=process.env.VERIFY_REVISION||process.env.GITHUB_SHA||Date.now().toString();
 const current=(path,options={})=>fetch(origin+path+'?verify='+encodeURIComponent(revision),{signal:AbortSignal.timeout(30000),...options});
 let profile='',homepage='';
-for(const [route,marker] of [['/','/assets/group/vitaflex-business-group.png'],['/ventures/monte-wo/','In Development'],['/ventures/vitaflex-training/','AVAILABILITY NOT ANNOUNCED'],['/ventures/vitaflex-intelligence-corp/','VitaFlex Intelligence Corp'],['/ventures/lifeline/','Lifeline'],['/sony/','Sony Alexis | Professional Profile &amp; Biography'],['/monte-wo/','MONTE'],['/tools/','strength-tools']]){
+for(const [route,marker] of [['/','/assets/group/vitaflex-business-group.png'],['/ventures/monte-wo/','In Development'],['/ventures/vitaflex-training/','AVAILABILITY NOT ANNOUNCED'],['/ventures/vitaflex-intelligence-corp/','VitaFlex Intelligence Corp'],['/ventures/lifeline/','Lifeline'],['/sony/','Sony Alexis (Sony Holmes) | Professional Profile &amp; Biography'],['/monte-wo/','MONTE'],['/tools/','strength-tools']]){
  const response=await current(route);
  assert.equal(response.status,200,route);const body=await response.text();assert.ok(body.includes(marker),route+' missing deployed content');if(route==='/sony/')profile=body;if(route==='/')homepage=body;
  console.log('Verified deployed route:',origin+route,response.status,marker);

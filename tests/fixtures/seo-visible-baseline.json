@@ -37,7 +37,7 @@
     "public/methodology/index.html": "13bac5245d4d33854c78dead89136ca29a4352c69360ddc93277eb0166d58129",
     "public/monte-wo/index.html": "a81439c4b3037055e71f2603f3923a60b7a261ead73d89c81b1b1d26e8062f96",
     "public/privacy/index.html": "2c092653789b4d34d6eb1c289676838c60a44a7144f9323ce59b30f34e9c0122",
-    "public/sony/index.html": "48dfcd29eb974e34802a4a45fe0f3c8e27e84603127b0fb8d96859ef6861b975",
+    "public/sony/index.html": "e8bb5c9c2f6e0ca2f7920a01dcc0f55f28dc7d5ff742bba8144f886a6c10dfd5",
     "public/strength/admin/index.html": "e541c78b631ec462461f5e82fb7226bcdfaed04414ddf0d2ded1ca4446352bfc",
     "public/strength/index.html": "29dcd32a12f9069bae049be5b052cb0329d604aa222e24c988e207ee294db4a6",
     "public/strength-lab/converter/index.html": "fcfef10e5e54701fbe2df967d160123fa4a485d0003a79b95a5cc2f769f0d6e7",
@@ -174,7 +174,7 @@
     "public/group-mark.svg": "d8ba7fc098f614f4aa9a3794858faa500138a900f39163139dbd52a34657bbc3",
     "public/group-routes.json": "7b961925d6bf09ad960341df04201793aa337d0d6110c06f7f1c7fc3303ad280",
     "public/group-sculpture.svg": "e1b049f6e5e6ad47963157131719e50aebdcbbb17854ebff4aaf5cbef4b3e521",
-    "public/group.css": "0dc8d6ef0cbf3b3495a76594fed317a39d85f5c507374ecdbce4433b7a35159e",
+    "public/group.css": "afe74af9596293b9697dcc5341df0611d7159373f8c91a1dbc22189a461aa3da",
     "public/intelligence/competitors.json": "dcfa49e225673e02edfab700eaf25a5ca85b853207f07a3dd63820c9aeaecdb6",
     "public/intelligence/intelligence.css": "568d7e0eb226b4512c42d16fa8785ff0d2c3a62fa3e0f124db6fcc1745c1a36e",
     "public/intelligence/intelligence.js": "92e21cc328395f921d34088d0cbe6b493be7930b80997a43afcaa2939a0a0154",
@@ -233,6 +233,8 @@
   "visibleProfileSource": {
     "name": "Sony Alexis",
     "title": "The Person Behind the Vision",
+    "alternateName": "Sony Holmes",
+    "lead": "Sony Alexis, also known as Sony Holmes, shares here — in his own words — the path that shaped him, his work through VitaFlex Business Group, and his bond with Haiti.",
     "chapters": [
       {
         "id": "roots",
@@ -267,10 +269,30 @@
           "My faith in God remains central to my life, providing guidance, perspective, and a reminder of the importance of humility. My love for Haiti is equally close to my heart. I remain hopeful about its future and believe that meaningful progress begins with responsibility, dignity, and a willingness to contribute.",
           "I am grateful to pursue life as one who serves. I remain ambitious, but I have come to understand that ambition is most meaningful when accompanied by patience, discipline, gratitude, and consideration for others. There is still much to learn, much to understand, and much to give."
         ]
+      },
+      {
+        "id": "haiti-senate-hearing",
+        "title": "Haiti 2026 & a Senate hearing",
+        "paragraphs": [
+          "On February 10, 2026, the U.S. Senate Appropriations Subcommittee on State, Foreign Operations, and Related Programs held a hearing titled “Haiti 2026: Security and Foreign Assistance Priorities.” Austin Holmes was among the witnesses and submitted written testimony. In it, he notes that he had been in Haiti the previous week, supporting the relocation of his foster son to Cap-Haïtien.",
+          "I am the foster son referred to in that sentence. The testimony does not mention me by name, and I did not testify or hold any role in the hearing. I note the connection here, on my own account, because it is part of my story and of my bond with Haiti."
+        ],
+        "sources": [
+          {
+            "label": "Hearing page: Haiti 2026 — Security and Foreign Assistance Priorities (U.S. Senate Committee on Appropriations)",
+            "url": "https://www.appropriations.senate.gov/hearings/haiti-2026-security-and-foreign-assistance-priorities",
+            "type": "WebPage"
+          },
+          {
+            "label": "Written testimony of Austin Holmes (PDF, senate.gov)",
+            "url": "https://www.appropriations.senate.gov/download/mr-austin-holmes-testimony",
+            "type": "DigitalDocument"
+          }
+        ]
       }
     ],
     "closing": "I hope to live with enough wisdom to keep learning, enough humility to keep listening, and enough conviction to keep serving.",
     "postscript": "The journey continues.",
-    "seoTitle": "Sony Alexis | Professional Profile & Biography"
+    "seoTitle": "Sony Alexis (Sony Holmes) | Professional Profile & Biography"
   }
 }

@@ -1,5 +1,16 @@
 # Sony Alexis SEO implementation
 
+## Update 2026-11-07 — alternate name, Haiti 2026 chapter, footer Privacy link removed
+
+Owner-directed content update on the production source branch's tree (`ed4780d`), prepared on `arena/741de8f3-monte-wo` for merge into `arena/beb13e2a-monte-wo` (the only branch `deploy-group.yml` and `scripts/publish-group-domain.mjs` accept).
+
+- **Footer:** `scripts/build_group.py` no longer emits `<a href="/privacy/">Privacy</a>` in the "Group information" footer nav. Only the six corporate pages regenerate; `/privacy/` (the MONTE WO policy), the MONTE WO pages that link it, sitemap and robots.txt are unchanged.
+- **Identity:** `content/group/founder.json` gains `alternateName: "Sony Holmes"` and a header `lead` sentence ("Sony Alexis, also known as Sony Holmes, …"). H1 stays **Sony Alexis**; the URL stays `/sony/`; no second profile page. Title: **Sony Alexis (Sony Holmes) | Professional Profile & Biography** (60 chars). Description (159 chars) names both names, VitaFlex Business Group and Haiti.
+- **Haiti 2026 chapter (`#haiti-senate-hearing`):** states the public facts of the 2026-02-10 Senate Appropriations SFOPS hearing "Haiti 2026: Security and Foreign Assistance Priorities" and that Austin Holmes's written testimony refers to supporting his foster son's relocation to Cap-Haïtien (paraphrased, not quoted). The second paragraph is the owner's own account ("I am the foster son referred to in that sentence…") and states explicitly that the testimony does not name him and that he did not testify or hold any role. Two official senate.gov links are rendered as `<p class="founder-sources">` and mirrored as ProfilePage `citation` (`WebPage` + `DigitalDocument`). No `sameAs`, `nationality`, `birthPlace`, `jobTitle` or relationship claims were added to the Person.
+- **Structured data:** Person `alternateName`, `knowsAbout` + "Haiti"; everything else unchanged (one Person, one ProfilePage, one Organization `#organization`).
+- **CSS:** two additive rules (`.founder-lead`, `.founder-chapter .founder-sources`) in `public/group.css`; no existing rule changed.
+- **Verification plumbing:** `scripts/verify-group.mjs` `/sony/` marker = new title; `tests/founder.test.js`, `tests/seo.test.js` and `tests/fixtures/seo-visible-baseline.json` updated for exactly these intentional visible changes.
+
 ## Scope and status
 
 Owner-authorized SEO-only update of the existing VitaFlex Business Group site and `/sony/` profile. Published to the existing `vitaflex` Cloudflare Pages production project (`main`) at revision `f1b6654381e25d381f9f78491d3e69d12b16ec6b`. Fresh independent requests confirmed the production profile title/name, robots.txt sitemap declaration, and published sitemap.
