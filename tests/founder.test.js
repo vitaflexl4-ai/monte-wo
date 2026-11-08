@@ -1,10 +1,11 @@
+import {stripResourceHub} from './helpers/personal-preservation.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync,existsSync} from 'node:fs';
 
 const read=path=>readFileSync(path,'utf8');
 const profile=JSON.parse(read('content/group/founder.json'));
-const founder=read('public/sony/index.html');
+const founder=stripResourceHub(read('public/sony/index.html'));
 const routes=JSON.parse(read('public/group-routes.json'));
 const escape=text=>text.replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;').replaceAll("'",'&#x27;');
 const docFor=route=>read('public'+(route==='/'?'/index.html':route+'index.html'));

@@ -1,0 +1,50 @@
+[
+  {
+    "route": "daily-devotion",
+    "width": 390,
+    "browser": "153.0.8010.0",
+    "axe": "4.14.0",
+    "localUnthrottledCLS": 0,
+    "violations": []
+  },
+  {
+    "route": "three-daily-wins",
+    "width": 390,
+    "browser": "153.0.8010.0",
+    "axe": "4.14.0",
+    "localUnthrottledCLS": 0,
+    "violations": []
+  },
+  {
+    "route": "blog",
+    "width": 390,
+    "browser": "153.0.8010.0",
+    "axe": "4.14.0",
+    "localUnthrottledCLS": 0,
+    "violations": []
+  },
+  {
+    "route": "daily-devotion",
+    "width": 1440,
+    "browser": "153.0.8010.0",
+    "axe": "4.14.0",
+    "localUnthrottledCLS": 0,
+    "violations": []
+  },
+  {
+    "route": "three-daily-wins",
+    "width": 1440,
+    "browser": "153.0.8010.0",
+    "axe": "4.14.0",
+    "localUnthrottledCLS": 0,
+    "violations": []
+  },
+  {
+    "route": "blog",
+    "width": 1440,
+    "browser": "153.0.8010.0",
+    "axe": "4.14.0",
+    "localUnthrottledCLS": 0,
+    "violations": []
+  }
+]

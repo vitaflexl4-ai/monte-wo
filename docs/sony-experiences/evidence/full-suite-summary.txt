@@ -1,0 +1,11 @@
+1..252
+# tests 252
+# suites 0
+# pass 250
+# fail 2
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 80380.491083
+
+Known unchanged infrastructure-pin failures: tests/lab.test.js:28 and tests/website.test.js:7 (wrangler.toml checksum).

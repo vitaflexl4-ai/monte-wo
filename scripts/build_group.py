@@ -60,6 +60,8 @@ founder_file=P/'sony/index.html'
 founder_file.parent.mkdir(parents=True,exist_ok=True)
 founder_file.write_text(render_founder(page))
 routes.append('/sony/')
+from sony_experiences import build_experiences
+routes.extend(build_experiences(page))
 
 # Keep product home links and fragments connected to the product, not the parent.
 for file in P.rglob('index.html'):

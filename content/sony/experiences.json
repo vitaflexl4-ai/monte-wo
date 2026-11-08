@@ -1,0 +1,11 @@
+{
+  "scripture": {"reference": "Psalm 46:10", "version": "King James Version (public domain)", "excerpt": "Be still, and know that I am God", "note": "An excerpt for Scripture memorization, not a published devotion."},
+  "devotions": [],
+  "articles": [],
+  "categories": [
+    {"id": "faith", "name": "Faith & Christian Living", "description": "Faith considered with care. Scripture, conviction, and the everyday."},
+    {"id": "development", "name": "Personal Development", "description": "The patient work of learning, growing, and living with intention."},
+    {"id": "leadership", "name": "Leadership & Business", "description": "A space for thoughtful writing on responsibility and enterprise."},
+    {"id": "life", "name": "Life & Reflections", "description": "Room to pause, notice, and consider what matters."}
+  ]
+}

@@ -51,6 +51,8 @@ def render_founder(page):
         </div>
       </div>
     </article>'''
+    from sony_experiences import resource_hub
+    body += resource_hub()
     url = 'https://vitaflexbusinessgroup.com/sony/'
     # Only identity, affiliation and interests supported by the owner/biography.
     # No jobTitle, unverified sameAs links, portrait, dates or address.
@@ -74,5 +76,7 @@ def render_founder(page):
              'name': 'VitaFlex Business Group', 'url': 'https://vitaflexbusinessgroup.com/'}
         ]
     }
-    return page(profile['seoTitle'], profile['description'], body, '/sony/',
+    doc = page(profile['seoTitle'], profile['description'], body, '/sony/',
                 structured_data=structured_data, exact_title=True)
+
+    return doc.replace('</head>', '<link rel="stylesheet" href="/sony/experiences.css"></head>')

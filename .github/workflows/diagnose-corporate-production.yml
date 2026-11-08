@@ -1,4 +1,4 @@
-# Refresh production before restoring the exact owner-approved 2f802a54 corporate reference.
+# Refresh read-only production metadata before the owner-approved Sony experience release.
 name: Read-only corporate production diagnostics
 on:
   push:
