@@ -1,5 +1,7 @@
 # Sony Alexis — personal experiences / design review
 
+> **Historical pre-release review.** The owner subsequently approved publication. See [the release result](release/REPORT.md) for actual published URLs, verification and the unresolved custom-domain challenge. The statements below describe the earlier local-review stage.
+
 **Implemented locally for review. No Git push or production deployment.** The approved corporate homepage and four venture pages remain byte-for-byte unchanged. New personal experiences live below the existing biography through **PERSONAL REFLECTIONS & RESOURCES**, not on the corporate homepage.
 
 ## Working preview

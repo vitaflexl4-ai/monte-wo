@@ -1,0 +1,38 @@
+[
+  {
+    "title": "Restored live desktop and mobile browsers",
+    "message": "[{\"origin\":\"https://2f802a54.vitaflex.pages.dev\",\"device\":\"desktop\",\"width\":1440,\"height\":1000,\"routes\":[{\"path\":\"/ventures/monte-wo/\",\"status\":200,\"passed\":true},{\"path\":\"/ventures/vitaflex-training/\",\"status\":200,\"passed\":true},{\"path\":\"/ventures/vitaflex-intelligence-corp/\",\"status\":200,\"passed\":true},{\"path\":\"/ventures/lifeline/\",\"status\":200,\"passed\":true},{\"path\":\"/sony/\",\"status\":200,\"passed\":true}],\"passed\":true,\"homeStatus\":200,\"challenge\":null,\"home\":{\"title\":\"Beyond the obvious. | VitaFlex Business Group\",\"ventures\":4,\"sonyLinks\":1,\"bottomSony\":1,\"hasRejectedPrototype\":false,\"overflow\":false,\"layout\":{\"scrollWidth\":1440,\"viewport\":1440,\"styleLoaded\":true,\"font\":\"Inter, Arial, sans-serif\"}},\"pageErrors\":[]},{\"origin\":\"https://2f802a54.vitaflex.pages.dev\",\"device\":\"mobile\",\"width\":390,\"height\":844,\"routes\":[{\"path\":\"/ventures/monte-wo/\",\"status\":200,\"passed\":true},{\"path\":\"/ventures/vitaflex-training/\",\"status\":200,\"passed\":true},{\"path\":\"/ventures/vitaflex-intelligence-corp/\",\"status\":200,\"passed\":true},{\"path\":\"/ventures/lifeline/\",\"status\":200,\"passed\":true},{\"path\":\"/sony/\",\"status\":200,\"passed\":true}],\"passed\":true,\"homeStatus\":200,\"challenge\":null,\"home\":{\"title\":\"Beyond the obvious. | VitaFlex Business Group\",\"ventures\":4,\"sonyLinks\":1,\"bottomSony\":1,\"hasRejectedPrototype\":false,\"overflow\":false,\"layout\":{\"scrollWidth\":390,\"viewport\":390,\"styleLoaded\":true,\"font\":\"Inter, Arial, sans-serif\"}},\"pageErrors\":[]},{\"origin\":\"https://vitaflex.pages.dev\",\"device\":\"desktop\",\"width\":1440,\"height\":1000,\"routes\":[{\"path\":\"/ventures/monte-wo/\",\"status\":200,\"passed\":true},{\"path\":\"/ventures/vitaflex-training/\",\"status\":200,\"passed\":true},{\"path\":\"/ventures/vitaflex-intelligence-corp/\",\"status\":200,\"passed\":true},{\"path\":\"/ventures/lifeline/\",\"status\":200,\"passed\":true},{\"path\":\"/sony/\",\"status\":200,\"passed\":true}],\"passed\":true,\"homeStatus\":200,\"challenge\":null,\"home\":{\"title\":\"Beyond the obvious. | VitaFlex Business Group\",\"ventures\":4,\"sonyLinks\":1,\"bottomSony\":1,\"hasRejectedPrototype\":false,\"overflow\":false,\"layout\":{\"scrollWidth\":1440,\"viewport\":1440,\"styleLoaded\":true,\"font\":\"Inter, Arial, sans-serif\"}},\"pageErrors\":[]},{\"origin\":\"https://vitaflex.pages.dev\",\"device\":\"mobile\",\"width\":390,\"height\":844,\"routes\":[{\"path\":\"/ventures/monte-wo/\",\"status\":200,\"passed\":true},{\"path\":\"/ventures/vitaflex-training/\",\"status\":200,\"passed\":true},{\"path\":\"/ventures/vitaflex-intelligence-corp/\",\"status\":200,\"passed\":true},{\"path\":\"/ventures/lifeline/\",\"status\":200,\"passed\":true},{\"path\":\"/sony/\",\"status\":200,\"passed\":true}],\"passed\":true,\"homeStatus\":200,\"challenge\":null,\"home\":{\"title\":\"Beyond the obvious. | VitaFlex Business Group\",\"ventures\":4,\"sonyLinks\":1,\"bottomSony\":1,\"hasRejectedPrototype\":false,\"overflow\":false,\"layout\":{\"scrollWidth\":390,\"viewport\":390,\"styleLoaded\":true,\"font\":\"Inter, Arial, sans-serif\"}},\"pageErrors\":[]},{\"origin\":\"https://vitaflexbusinessgroup.com\",\"device\":\"desktop\",\"width\":1440,\"height\":1000,\"routes\":[],\"passed\":false,\"homeStatus\":403,\"challenge\":\"challenge\",\"error\":\"locator.waitFor: Timeout 12000ms exceeded.\\nCall log:\\n  - waiting for locator('.venture-row').first() to be visible\\n\",\"title\":\"Just a moment...\",\"pageErrors\":[]},{\"origin\":\"https://vitaflexbusinessgroup.com\",\"device\":\"mobile\",\"width\":390,\"height\":844,\"routes\":[],\"passed\":false,\"homeStatus\":403,\"challenge\":\"challenge\",\"error\":\"locator.waitFor: Timeout 12000ms exceeded.\\nCall log:\\n  - waiting for locator('.venture-row').first() to be visible\\n\",\"title\":\"Just a moment...\",\"pageErrors\":[]}]"
+  },
+  {
+    "title": "Sony live browser verification",
+    "message": "PASS all three published experiences at seven widths, memorization, completion, local midnight, storage fallback, category filters, no-JS and reduced motion; no page errors or external requests."
+  },
+  {
+    "title": "Public sitemap HTTP audit",
+    "message": "{\"origin\":\"https://vitaflex.pages.dev\",\"urls\":58,\"checked\":58,\"statuses\":{\"200\":58},\"robotsStatus\":200,\"sitemapStatus\":200,\"metadataValidated\":58,\"passed\":true,\"problems\":[],\"output\":\"evidence/production-sitemap-audit.json\"}"
+  },
+  {
+    "title": "Verified deployed SEO and routes",
+    "message": "{\"origin\":\"https://vitaflex.pages.dev\",\"profile\":\"Sony Alexis\",\"canonical\":\"https://vitaflexbusinessgroup.com/sony/\",\"routes\":11,\"robots\":true,\"sitemap\":true,\"personEntities\":1,\"publishedDegrees\":0,\"homepageOrganization\":true,\"websiteSchema\":true,\"corporatePrivacyLink\":false,\"alternateName\":\"Sony Holmes\",\"requestUserAgent\":\"Node default\",\"notVerifiedCrawlerTraffic\":true,\"appPrivacyUnchanged\":true,\"apiStatus\":401}"
+  },
+  {
+    "title": "Main-domain project deployed",
+    "message": "{\"project\":\"vitaflex\",\"revision\":\"4eee2ee2020a7eb802699ee3cf4dfab1d762fdbe\",\"preview\":\"https://b481482c.vitaflex.pages.dev\",\"production\":\"https://3e44a1ab.vitaflex.pages.dev\",\"domain\":\"https://vitaflexbusinessgroup.com\"}"
+  },
+  {
+    "title": "Sony hosted preview verification",
+    "message": "PASS three experiences at seven widths and all local-state/accessibility interaction regressions before production publication"
+  },
+  {
+    "title": "Public sitemap HTTP audit",
+    "message": "{\"origin\":\"https://b481482c.vitaflex.pages.dev\",\"urls\":58,\"checked\":58,\"statuses\":{\"200\":58},\"robotsStatus\":200,\"sitemapStatus\":200,\"metadataValidated\":58,\"passed\":true,\"problems\":[],\"output\":\"evidence/preview-sitemap-audit.json\"}"
+  },
+  {
+    "title": "Verified deployed SEO and routes",
+    "message": "{\"origin\":\"https://b481482c.vitaflex.pages.dev\",\"profile\":\"Sony Alexis\",\"canonical\":\"https://vitaflexbusinessgroup.com/sony/\",\"routes\":11,\"robots\":true,\"sitemap\":true,\"personEntities\":1,\"publishedDegrees\":0,\"homepageOrganization\":true,\"websiteSchema\":true,\"corporatePrivacyLink\":false,\"alternateName\":\"Sony Holmes\",\"requestUserAgent\":\"Node default\",\"notVerifiedCrawlerTraffic\":true,\"appPrivacyUnchanged\":true,\"apiStatus\":503}"
+  },
+  {
+    "title": "Public sitemap HTTP audit",
+    "message": "{\"origin\":\"http://127.0.0.1:8080\",\"urls\":58,\"checked\":58,\"statuses\":{\"200\":58},\"robotsStatus\":200,\"sitemapStatus\":200,\"metadataValidated\":58,\"passed\":true,\"problems\":[],\"output\":\"evidence/local-sitemap-audit.json\"}"
+  }
+]
