@@ -51,6 +51,9 @@ try {
  assert.equal(verify.status,0,'Preview verification failed; production is not published');
  const crawl=spawnSync(process.execPath,['scripts/audit-public-seo.mjs'],{stdio:'inherit',env:{...env,VERIFY_ORIGIN:preview.url,SEO_AUDIT_OUTPUT:'evidence/preview-sitemap-audit.json'}});
  assert.equal(crawl.status,0,'Preview sitemap HTTP audit failed; production is not published');
+ const sony=spawnSync(process.execPath,['tests/sony-experiences-browser.mjs'],{stdio:'inherit',env:{...env,TEST_ORIGIN:preview.url,SONY_SCREENSHOTS:'evidence/preview-sony-screenshots'}});
+ assert.equal(sony.status,0,'Sony preview interaction checks failed; production is not published');
+ console.log('::notice title=Sony hosted preview verification::PASS three experiences at seven widths and all local-state/accessibility interaction regressions before production publication');
  assert.equal((await inspect()).canonical_deployment?.id,before.canonical_deployment?.id,'Production changed during preview; stop before publishing');
  run(['pages','deploy','public','--project-name',project,'--branch','main','--commit-hash',expected,'--commit-dirty=true']);
  const after=await inspect();

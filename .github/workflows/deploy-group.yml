@@ -48,7 +48,7 @@ jobs:
         id: publish
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          EXPECTED_PRODUCTION_REVISION: e02f5b911ce540cff854ad1b6203a9f05e5776b5
+          EXPECTED_PRODUCTION_REVISION: 6268964ebb4c6b94609fdae2be10a69e41ea3515
         run: node scripts/publish-group-domain.mjs
       - name: Diagnose deployed origin and domain routing
         if: always()
@@ -62,6 +62,13 @@ jobs:
           set -o pipefail
           node scripts/verify-group.mjs | tee evidence/production-project-verification.txt
           SEO_AUDIT_OUTPUT=evidence/production-sitemap-audit.json node scripts/audit-public-seo.mjs
+      - name: Verify published Sony interactions on desktop and mobile
+        env:
+          TEST_ORIGIN: https://vitaflex.pages.dev
+          SONY_SCREENSHOTS: evidence/production-sony-screenshots
+        run: |
+          node tests/sony-experiences-browser.mjs
+          echo "::notice title=Sony live browser verification::PASS all three published experiences at seven widths, memorization, completion, local midnight, storage fallback, category filters, no-JS and reduced motion; no page errors or external requests."
       - name: Verify public corporate footer and alias (User-Agent probe, not verified crawler traffic)
         env:
           VERIFY_ORIGIN: https://vitaflexbusinessgroup.com
