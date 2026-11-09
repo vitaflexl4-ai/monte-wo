@@ -2,7 +2,7 @@
 
 ## Current status
 
-This Sony profile revision is **local only**. No push or production deployment was performed. Review `/sony/` in the running port-8098 preview and the desktop/mobile gallery before approving a release.
+Owner approved push and deployment. Revision `0af75cc3baadf9ef247ae462e33d9f48dcc21115` is published to the existing **vitaflex** production project. Production: https://0c1af40d.vitaflex.pages.dev/sony/ (stable alias https://vitaflex.pages.dev/sony/). Workflow run: https://github.com/vitaflexl4-ai/monte-wo/actions/runs/42670049202. Publication succeeded; the overall workflow failed afterward because the preferred domain still presents its pre-existing Cloudflare challenge. No DNS or security changes were made.
 
 Architecture is unchanged: Python static builders → `public/` → the existing Cloudflare Pages **vitaflex** project. Existing functions/bindings remain separate and unchanged. The fixed Git branch is `arena/beb13e2a-monte-wo`; do not switch to or push Git `main`.
 
