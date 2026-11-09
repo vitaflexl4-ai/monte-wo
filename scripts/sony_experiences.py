@@ -41,10 +41,13 @@ def render_article(article, articles):
     links=''.join(f'<a class="related-article" href="/sony/blog/{E(a["slug"])}/">{E(a["title"])}</a>' for a in related)
     return f'<div class="reading-progress" aria-hidden="true"><span></span></div><article class="editorial-article frame"><header><p class="exp-eyebrow">SONY ALEXIS / JOURNAL</p><h1>{E(article["title"])}</h1></header><div class="article-prose">{sections}</div></article><section class="related-reading frame"><h2>Continue reading.</h2>{links or "<p>No related articles published yet.</p>"}</section>'
 def build_experiences(page):
-    if DATA['devotions']: raise ValueError('Real devotion publishing requires a reviewed renderer; do not discard supplied entries.')
-    # Never seed unpublished CMS material or demonstration articles.
-    if DATA['articles']: raise ValueError('Connect reviewed publication data explicitly before publishing articles.')
-    entries=[('/sony/daily-devotion/','Daily Devotion','A quiet Scripture practice and space for future approved daily devotions.',devotion(),'devotion'),('/sony/three-daily-wins/','The Three Daily Wins','Spirit. Body. Mind. Three suggested practices, with browser-local daily completion.',wins(),'wins'),('/sony/blog/','Blog | Sony Alexis','A personal editorial journal: faith, growth, leadership and life. No articles published yet.',blog(),'journal')]
+    if DATA['devotions'] or DATA['articles']:
+        raise ValueError('Publication collections require an explicitly reviewed publishing connection.')
+    entries=[('/sony/daily-devotion/','Daily Devotion','A quiet Scripture practice and space for future approved daily devotions.',devotion(),'devotion'),('/sony/blog/','Blog | Sony Alexis','A personal editorial journal: faith, growth, leadership and life. No articles published yet.',blog(),'journal')]
     for path,title,description,body,kind in entries:
-        dest=ROOT/'public'/path.strip('/')/'index.html';dest.parent.mkdir(parents=True,exist_ok=True);dest.write_text(wrap(page,title,description,body,path,kind))
-    return [e[0] for e in entries]
+        dest=ROOT/'public'/path.strip('/')/'index.html'
+        dest.parent.mkdir(parents=True,exist_ok=True)
+        dest.write_text(wrap(page,title,description,body,path,kind))
+    from sony_book import build_book
+    build_book(page)
+    return [p for p,_ in NAV]

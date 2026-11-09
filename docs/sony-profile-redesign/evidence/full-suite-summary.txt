@@ -1,0 +1,11 @@
+1..261
+# tests 261
+# suites 0
+# pass 259
+# fail 2
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 48957.027222
+
+Unchanged historical failures: tests/lab.test.js:28 and tests/website.test.js:7, wrangler.toml checksum expectations.

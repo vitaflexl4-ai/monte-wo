@@ -53,7 +53,9 @@ try {
  assert.equal(crawl.status,0,'Preview sitemap HTTP audit failed; production is not published');
  const sony=spawnSync(process.execPath,['tests/sony-experiences-browser.mjs'],{stdio:'inherit',env:{...env,TEST_ORIGIN:preview.url,SONY_SCREENSHOTS:'evidence/preview-sony-screenshots'}});
  assert.equal(sony.status,0,'Sony preview interaction checks failed; production is not published');
- console.log('::notice title=Sony hosted preview verification::PASS three experiences at seven widths and all local-state/accessibility interaction regressions before production publication');
+ console.log('::notice title=Sony hosted preview verification::PASS passive cinematic book at seven widths, automatic sequence, no controls or storage, static reduced-motion/no-JS editions and corporate preservation before production publication');
+ const profileBrowser=spawnSync(process.execPath,['tests/sony-profile-browser.mjs'],{stdio:'inherit',env:{...env,TEST_ORIGIN:preview.url,PROFILE_SCREENSHOT_DIR:'evidence/preview-profile-screenshots'}});
+ assert.equal(profileBrowser.status,0,'Sony editorial profile hosted-preview verification failed; production is not published');
  assert.equal((await inspect()).canonical_deployment?.id,before.canonical_deployment?.id,'Production changed during preview; stop before publishing');
  run(['pages','deploy','public','--project-name',project,'--branch','main','--commit-hash',expected,'--commit-dirty=true']);
  const after=await inspect();

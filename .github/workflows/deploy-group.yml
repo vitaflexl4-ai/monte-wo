@@ -35,12 +35,12 @@ jobs:
         run: |
           python3 -m http.server 8080 --bind 0.0.0.0 --directory public > /tmp/site.log 2>&1 &
           node --input-type=module -e "import('./tests/group-browser.mjs').catch(e=>{console.error('::error title=Group browser validation::'+String(e.stack||e).replaceAll('\n',' | '));process.exit(1)})"
-          node --input-type=module -e "import('./tests/founder-browser.mjs').catch(e=>{console.error('::error title=Profile browser validation::'+String(e.stack||e).replaceAll('\n',' | '));process.exit(1)})"
+          PROFILE_SCREENSHOT_DIR=evidence/sony-profile-screenshots node --input-type=module -e "import('./tests/founder-browser.mjs').catch(e=>{console.error('::error title=Profile browser validation::'+String(e.stack||e).replaceAll('\n',' | '));process.exit(1)})"
           node tests/approved-restoration-browser.mjs
           TEST_ORIGIN=http://localhost:8080 SONY_SCREENSHOTS=evidence/sony-screenshots node tests/sony-experiences-browser.mjs
       - name: SEO and content regression tests
         run: |
-          node --test tests/seo.test.js tests/founder.test.js tests/group.test.js tests/master-execution.test.js tests/business.test.js tests/approved-restoration.test.js tests/sony-experiences.test.js
+          node --test tests/seo.test.js tests/founder.test.js tests/group.test.js tests/master-execution.test.js tests/business.test.js tests/approved-restoration.test.js tests/sony-experiences.test.js tests/sony-profile.test.js
           VERIFY_ORIGIN=http://127.0.0.1:8080 SEO_AUDIT_OUTPUT=evidence/local-sitemap-audit.json node scripts/audit-public-seo.mjs
       - name: Compare restored corporate files against the exact owner-selected reference
         run: node scripts/verify-approved-corporate.mjs
@@ -62,13 +62,13 @@ jobs:
           set -o pipefail
           node scripts/verify-group.mjs | tee evidence/production-project-verification.txt
           SEO_AUDIT_OUTPUT=evidence/production-sitemap-audit.json node scripts/audit-public-seo.mjs
-      - name: Verify published Sony interactions on desktop and mobile
+      - name: Verify published cinematic book on desktop and mobile
         env:
           TEST_ORIGIN: https://vitaflex.pages.dev
           SONY_SCREENSHOTS: evidence/production-sony-screenshots
         run: |
           node tests/sony-experiences-browser.mjs
-          echo "::notice title=Sony live browser verification::PASS all three published experiences at seven widths, memorization, completion, local midnight, storage fallback, category filters, no-JS and reduced motion; no page errors or external requests."
+          echo "::notice title=Sony live browser verification::PASS passive cinematic book at seven widths, automatic opening and chapter sequence, finite final hold, no controls or tracking, static no-JS/reduced-motion editions and preserved corporate homepage."
       - name: Verify public corporate footer and alias (User-Agent probe, not verified crawler traffic)
         env:
           VERIFY_ORIGIN: https://vitaflexbusinessgroup.com

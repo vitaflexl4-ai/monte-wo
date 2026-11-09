@@ -1,0 +1,12 @@
+{
+  "checked": 236,
+  "preserved": 232,
+  "changed": [
+    "public/group-routes.json",
+    "public/sitemap.xml",
+    "public/sony/experiences.css",
+    "public/sony/index.html"
+  ],
+  "unrelatedChanges": [],
+  "bookPreserved": true
+}

@@ -1,0 +1,30 @@
+[
+  {
+    "width": 390,
+    "reducedMotion": "no-preference",
+    "axe": "4.14.0",
+    "violations": [],
+    "initialLocalCLS": 0
+  },
+  {
+    "width": 390,
+    "reducedMotion": "reduce",
+    "axe": "4.14.0",
+    "violations": [],
+    "initialLocalCLS": 0
+  },
+  {
+    "width": 1440,
+    "reducedMotion": "no-preference",
+    "axe": "4.14.0",
+    "violations": [],
+    "initialLocalCLS": 0
+  },
+  {
+    "width": 1440,
+    "reducedMotion": "reduce",
+    "axe": "4.14.0",
+    "violations": [],
+    "initialLocalCLS": 0
+  }
+]

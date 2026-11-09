@@ -1,0 +1,10 @@
+{
+  "landscape": {
+    "width": 844,
+    "height": 390,
+    "overflow": false
+  },
+  "simulatedHiddenTabPause": true,
+  "resumeWithoutSkipping": true,
+  "liveReducedMotionSwitch": true
+}

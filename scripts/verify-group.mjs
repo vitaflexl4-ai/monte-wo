@@ -1,3 +1,4 @@
+import {assertSonyBiography} from './personal-preservation.mjs';
 import assert from 'node:assert/strict';
 import {readFileSync,mkdirSync,writeFileSync} from 'node:fs';
 const origin=process.env.VERIFY_ORIGIN||'https://vitaflexbusinessgroup.com';
@@ -9,7 +10,7 @@ for(const [route,marker] of [['/','/assets/group/vitaflex-business-group.png'],[
  const response=await current(route);
  assert.equal(response.status,200,route);const body=await response.text();assert.ok(body.includes(marker),route+' missing deployed content');if(route==='/sony/')profile=body;if(route==='/')homepage=body;
  if(route==='/'){assert.ok(body.includes('Beyond<br><em>the obvious.</em>'));assert.equal((body.match(/class="venture-row /g)||[]).length,4);assert.equal((body.match(/>Meet Sony Alexis<\/a>/g)||[]).length,1);assert.ok(!body.includes('id="presence-score"'));}
- if(route==='/'||route==='/sony/'||route.startsWith('/ventures/')){
+ if(route==='/'||route.startsWith('/ventures/')){
   const footer=body.match(/<footer\b[\s\S]*?<\/footer>/)?.[0];assert.ok(footer,'Corporate footer must exist');
   assert.ok(!footer.includes('href="/privacy/"'),'Corporate Privacy link must be absent');assert.ok(footer.includes('>Meet Sony Alexis</a>'),'Existing profile link must remain');
  }
@@ -23,7 +24,7 @@ assert.ok(Buffer.from(await policy.arrayBuffer()).equals(readFileSync('public/pr
 
 assert.ok(profile.includes('rel="canonical" href="https://vitaflexbusinessgroup.com/sony/"'));
 assert.ok(profile.includes('application/ld+json'));
-assert.ok(profile.includes('<h1 id="founder-name">Sony Alexis</h1>'));
+assertSonyBiography(profile);
 const homeBlocks=[...homepage.matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g)];
 assert.equal(homeBlocks.length,1,'One homepage graph, not duplicate schemas');
 const homeGraph=JSON.parse(homeBlocks[0][1]);assert.equal(homeGraph['@context'],'https://schema.org');assert.equal(homeGraph['@graph'].length,2);

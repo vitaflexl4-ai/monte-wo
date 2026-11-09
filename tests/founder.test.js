@@ -25,7 +25,7 @@ test('Founder: source uses owner-authorized identity and personal essay, not a r
  assert.ok(paragraphs.some(p=>p.includes('My faith in God')&&p.includes('Haiti')));
  assert.equal(profile.postscript,'The journey continues.');
  assert.doesNotMatch(founder,/<form\b|download=|mailto:|<iframe\b/);
- assert.equal((founder.match(/<img\b/g)||[]).length,1,'Only the existing group mark; no fabricated portrait');
+ assert.equal((founder.match(/<img\b/g)||[]).length,2,'Only the two supplied owner photographs');
 });
 
 test('Founder: every supplied paragraph is rendered verbatim and in order',()=>{
@@ -35,11 +35,11 @@ test('Founder: every supplied paragraph is rendered verbatim and in order',()=>{
   assert.ok(position>previous,`Missing or reordered passage: ${text.slice(0,55)}`);
   previous=position;
  }
- assert.match(founder,/<h1 id="founder-name">Sony Alexis<\/h1>/);
+ assert.match(founder,/<h1 id="founder-name"><span>Sony<\/span> <span>Alexis<\/span><\/h1>/);
  assert.match(founder,/<article[^>]+aria-labelledby="founder-name"/);
  assert.equal((founder.match(/<h1\b/g)||[]).length,1);
  assert.equal((founder.match(/<main\b/g)||[]).length,1);
- assert.equal((founder.match(/<h2\b/g)||[]).length,profile.chapters.length);
+ assert.equal((founder.match(/class="founder-chapter"/g)||[]).length,profile.chapters.length);
 });
 
 test('Founder: chapter anchors, metadata, canonical and current-page link are correct',()=>{
@@ -53,7 +53,7 @@ test('Founder: chapter anchors, metadata, canonical and current-page link are co
  assert.ok(founder.includes('rel="canonical" href="https://vitaflexbusinessgroup.com/sony/"'));
  assert.ok(founder.includes('property="og:title" content="Sony Alexis | VitaFlex Business Group"'));
  assert.ok(founder.includes(`name="description" content="${escape(profile.description)}"`));
- assert.ok(founder.includes('<a href="/sony/" aria-current="page">Meet Sony Alexis</a>'));
+ assert.ok(founder.includes('aria-label="Personal navigation"'));
  assert.match(founder,/<main id="main" tabindex="-1">/);
 });
 
@@ -62,7 +62,7 @@ test('Founder: added through the group footer, not the homepage portfolio or pro
  assert.doesNotMatch(main,/Sony|SONY|founder/);assert.equal((home.match(/>Meet Sony Alexis<\/a>/g)||[]).length,1);
  assert.equal((main.match(/class="venture-row /g)||[]).length,4);
  assert.ok(main.includes('01 — 04'));
- for(const route of routes.filter(p=>p!=='/monte-wo/')){
+ for(const route of routes.filter(p=>p!=='/monte-wo/'&&p!=='/sony/'&&p!=='/sony/three-daily-wins/')){
   const doc=docFor(route);
   const footer=doc.match(/<footer\b[\s\S]*?<\/footer>/)[0];
   assert.ok(footer.includes('href="/sony/"'),route);

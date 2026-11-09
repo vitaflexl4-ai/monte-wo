@@ -1,82 +1,43 @@
-"""A quiet, text-first founder essay, built with the existing group page shell.
-
-Content stays in content/group/founder.json. No invented portrait, contact CTA,
-resume widgets, external fonts, client JavaScript or unsupported biographical enrichment.
-"""
+"""Sony-only editorial profile. Original biography is rendered verbatim from its unchanged source."""
 from pathlib import Path
-import html
-import json
+import html, json
+ROOT=Path(__file__).resolve().parent.parent
+E=lambda value: html.escape(str(value),quote=True)
 
-ROOT = Path(__file__).resolve().parent.parent
-
+# Exact sentences excerpted from the existing biography, not newly attributed quotations.
+PHILOSOPHY=[
+ ('Discretion & substance','I value discretion over unnecessary attention, substance over appearances, and thoughtful action over the desire to be seen.'),
+ ('Judgment & character','I have come to appreciate that leadership is not measured solely by position, visibility, or influence, but by judgment, character, consistency, and the manner in which we treat others.'),
+ ('Ambition & humility','I remain ambitious, but I have come to understand that ambition is most meaningful when accompanied by patience, discipline, gratitude, and consideration for others.'),
+]
+RESOURCES=[('daily-devotion','Daily Devotion','THE QUIET PRACTICE','Scripture, reflection, application, prayer, and spiritual growth.'),('three-daily-wins','The Three Daily Wins','A WAY OF LIVING','Spiritual, physical, and intellectual development.'),('blog','Blog','THE PERSONAL JOURNAL','Personal reflections, essays, lessons, and ideas.')]
 
 def render_founder(page):
-    profile = json.loads((ROOT / 'content/group/founder.json').read_text())
-    escape = lambda value: html.escape(str(value), quote=True)
-    chapters = profile['chapters']
-    navigation = ''.join(
-        f'<a href="#{escape(chapter["id"])}"><span aria-hidden="true">{index:02d}</span>'
-        f'{escape(chapter["title"])}</a>'
-        for index, chapter in enumerate(chapters, 1)
-    )
-    sections = ''.join(
-        f'<section class="founder-chapter" id="{escape(chapter["id"])}" '
-        f'aria-labelledby="{escape(chapter["id"])}-title">'
-        f'<h2 id="{escape(chapter["id"])}-title">{escape(chapter["title"])}</h2>'
-        + ''.join(f'<p>{escape(paragraph)}</p>' for paragraph in chapter['paragraphs'])
-        + '</section>'
-        for chapter in chapters
-    )
-    body = f'''<article class="founder frame" aria-labelledby="founder-name">
-      <header class="founder-intro">
-        <p class="index-label">A PERSONAL NOTE</p>
-        <h1 id="founder-name">{escape(profile['name'])}</h1>
-        <p class="founder-subtitle">{escape(profile['title'])}</p>
-      </header>
-      <div class="founder-reading-layout">
-        <aside class="founder-aside">
-          <nav class="founder-chapters" aria-label="Biography chapters">
-            <p class="index-label">IN THIS NOTE</p>
-            {navigation}
-          </nav>
-        </aside>
-        <div class="founder-prose">
-          {sections}
-          <div class="founder-closing">
-            <p class="founder-conviction">{escape(profile['closing'])}</p>
-            <p class="founder-postscript"><em>{escape(profile['postscript'])}</em></p>
-            <p class="founder-signature">{escape(profile['name'])}</p>
-          </div>
-          <a class="back-link founder-return" href="/#ventures">Return to the portfolio</a>
-        </div>
-      </div>
-    </article>'''
-    from sony_experiences import resource_hub
-    body += resource_hub()
-    url = 'https://vitaflexbusinessgroup.com/sony/'
-    # Only identity, affiliation and interests supported by the owner/biography.
-    # No jobTitle, unverified sameAs links, portrait, dates or address.
-    # Zero-ambiguity policy: do not encode unverified credentials as entity facts.
-    # The separately approved visible essay remains unchanged.
-    structured_data = {
-        '@context': 'https://schema.org',
-        '@graph': [
-            {'@type': 'Person', '@id': url + '#person', 'name': profile['name'],
-             'alternateName': profile['alternateName'],
-             'url': url, 'description': profile['description'],
-             'affiliation': {'@id': 'https://vitaflexbusinessgroup.com/#organization'},
-             'mainEntityOfPage': {'@id': url + '#profile'},
-             'knowsAbout': ['Business administration', 'Leadership', 'Entrepreneurship',
-                            'Fitness', 'Technology', 'Artificial intelligence',
-                            'Continuous learning']},
-            {'@type': 'ProfilePage', '@id': url + '#profile', 'url': url,
-             'name': profile['seoTitle'], 'description': profile['description'],
-             'inLanguage': 'en', 'mainEntity': {'@id': url + '#person'}},
-            {'@type': 'Organization', '@id': 'https://vitaflexbusinessgroup.com/#organization',
-             'name': 'VitaFlex Business Group', 'url': 'https://vitaflexbusinessgroup.com/'}
-        ]
-    }
-    doc = page(profile['seoTitle'], profile['description'], body, '/sony/',
-                structured_data=structured_data, exact_title=True)
-
-    return doc.replace('</head>', '<link rel="stylesheet" href="/sony/experiences.css"></head>')
+    profile=json.loads((ROOT/'content/group/founder.json').read_text())
+    media=json.loads((ROOT/'content/sony/profile-media.json').read_text())
+    hero,secondary,social=media['hero'],media['secondary'],media['social']
+    source=' '.join(p for c in profile['chapters'] for p in c['paragraphs'])
+    for _,quote in PHILOSOPHY:
+        if quote not in source: raise ValueError('Philosophy excerpts must be exact biography wording')
+    chapters=''.join(f'<a href="#{E(c["id"])}"><span>0{i+1}</span>{E(c["title"])}</a>' for i,c in enumerate(profile['chapters']))
+    sections=''.join(f'<section class="founder-chapter" id="{E(c["id"])}" tabindex="-1" aria-labelledby="{E(c["id"])}-title"><span class="chapter-number" aria-hidden="true">0{i+1}</span><div class="chapter-prose"><h3 id="{E(c["id"])}-title">{E(c["title"])}</h3>'+''.join(f'<p>{E(p)}</p>' for p in c['paragraphs'])+'</div></section>' for i,c in enumerate(profile['chapters']))
+    excerpts=''.join(f'<div class="philosophy-excerpt"><span class="eyebrow">0{i+1} / {E(title)}</span><blockquote><p>{E(quote)}</p></blockquote></div>' for i,(title,quote) in enumerate(PHILOSOPHY))
+    cards=''.join(f'<a class="resource-card resource-{slug}" href="/sony/{slug}/"><div class="resource-top"><span class="eyebrow">RESOURCE 0{i+1}</span><span class="resource-symbol" aria-hidden="true">{["◯","III","Aa"][i]}</span></div><div><span class="resource-kicker">{kicker}</span><h3>{title}</h3><p>{description}</p></div><span class="resource-bottom">{["A moment for the Word","Spirit. Body. Mind.","A little more room to think"][i]}<span aria-hidden="true">↗</span></span></a>' for i,(slug,title,kicker,description) in enumerate(RESOURCES))
+    srcset=', '.join(f'{E(v["src"])} {v["width"]}w' for v in hero['variants'])
+    header='''<header class="personal-header"><div class="profile-frame header-inner"><a class="personal-brand" href="#top" aria-label="Sony Alexis home">Sony Alexis<span>A PERSONAL PERSPECTIVE</span></a><button class="menu-toggle" type="button" aria-expanded="false" aria-controls="personal-navigation" hidden><span>Menu</span><i aria-hidden="true"></i></button><nav id="personal-navigation" class="personal-nav" aria-label="Personal navigation"><a href="#top">Home</a><a href="#story">My Story</a><a href="#philosophy">Philosophy</a><a href="#personal-resources">Resources</a><a href="/sony/blog/">Blog <span aria-hidden="true">↗</span></a></nav></div></header>'''
+    body=f'''<article class="personal-publication" aria-labelledby="founder-name">
+<section class="personal-hero" id="top" tabindex="-1" aria-label="Introduction"><div class="hero-portrait"><img src="{E(hero['src'])}" srcset="{srcset}" sizes="(max-width: 760px) 100vw, 62vw" width="{hero['width']}" height="{hero['height']}" alt="{E(hero['alt'])}" style="object-position:{E(hero['position'])}" fetchpriority="high" decoding="async"></div><div class="hero-shade" aria-hidden="true"></div><div class="profile-frame hero-inner"><div class="hero-copy"><p class="eyebrow hero-values">Faith. Growth. Purpose.</p><h1 id="founder-name"><span>Sony</span> <span>Alexis</span></h1><p class="founder-subtitle">{E(profile['title'])}</p><a class="story-button" href="#story">Discover My Story <span aria-hidden="true">↗</span></a></div><div class="hero-baseline"><a class="scroll-cue" href="#story"><span class="scroll-line" aria-hidden="true"></span>SCROLL TO DISCOVER</a><span class="hero-caption">01 / THE PERSON BEHIND THE VISION</span></div></div></section>
+<section class="profile-section story-section profile-frame" id="story" tabindex="-1" aria-labelledby="story-title"><div class="section-intro"><p class="eyebrow">01 / MY STORY</p><h2 id="story-title">A life, still<br><em>being written.</em></h2><p class="section-note">Family. Faith. Perspective.<br>The things that shape a life.</p></div><div class="story-layout"><aside class="story-aside"><nav class="founder-chapters" aria-label="Biography chapters"><p class="eyebrow">IN THIS STORY</p>{chapters}</nav></aside><div class="founder-prose">{sections}<div class="story-coda"><p class="founder-conviction">{E(profile['closing'])}</p><p class="founder-postscript"><em>{E(profile['postscript'])}</em></p></div></div></div></section>
+<section class="philosophy-section" id="philosophy" tabindex="-1" aria-labelledby="philosophy-title"><div class="profile-frame"><div class="section-intro"><p class="eyebrow">02 / PERSONAL PHILOSOPHY</p><h2 id="philosophy-title">Substance over<br><em>appearances.</em></h2><p class="section-note">Excerpts from my story.<br>Principles I continue to return to.</p></div><div class="philosophy-layout"><figure class="perspective-portrait"><img src="{E(secondary['src'])}" width="{secondary['width']}" height="{secondary['height']}" alt="{E(secondary['alt'])}" loading="lazy" decoding="async"><figcaption>SONY ALEXIS / A PERSONAL PERSPECTIVE</figcaption></figure><div class="philosophy-copy">{excerpts}</div></div></div></section>
+<section class="profile-section resources-section profile-frame" id="personal-resources" tabindex="-1" aria-labelledby="resources-title"><div class="section-intro"><p class="eyebrow">03 / PERSONAL RESOURCES</p><h2 id="resources-title">Room to<br><em>grow.</em></h2><p class="section-note">Faith, discipline, and the ideas<br>that stay with us.</p></div><div class="personal-resources">{cards}</div></section><!-- end-personal-resources -->
+<section class="closing-section profile-frame" aria-labelledby="closing-title"><p class="eyebrow">THE JOURNEY CONTINUES</p><h2 id="closing-title">There is still much to learn,<br>much to understand,<br><em>and much to give.</em></h2><p class="founder-signature">Sony Alexis</p><a class="back-to-top" href="#top">Back to the beginning <span aria-hidden="true">↑</span></a></section></article>'''
+    footer='<footer class="personal-footer profile-frame"><span>© SONY ALEXIS <span class="footer-separator">/</span> A PERSONAL JOURNAL</span><a href="/">VitaFlex Business Group <span aria-hidden="true">↗</span></a></footer>'
+    url='https://vitaflexbusinessgroup.com/sony/'
+    structured_data={'@context':'https://schema.org','@graph':[
+      {'@type':'Person','@id':url+'#person','name':profile['name'],'alternateName':profile['alternateName'],'url':url,'description':profile['description'],'affiliation':{'@id':'https://vitaflexbusinessgroup.com/#organization'},'mainEntityOfPage':{'@id':url+'#profile'},'knowsAbout':['Business administration','Leadership','Entrepreneurship','Fitness','Technology','Artificial intelligence','Continuous learning']},
+      {'@type':'ProfilePage','@id':url+'#profile','url':url,'name':profile['seoTitle'],'description':profile['description'],'inLanguage':'en','mainEntity':{'@id':url+'#person'}},
+      {'@type':'Organization','@id':'https://vitaflexbusinessgroup.com/#organization','name':'VitaFlex Business Group','url':'https://vitaflexbusinessgroup.com/'}]}
+    head=page(profile['seoTitle'],profile['description'],'','/sony/',structured_data=structured_data,exact_title=True).split('</head>')[0]
+    head=head.replace('<link rel="stylesheet" href="/group.css">','<link rel="preload" href="/assets/inter-400.woff2" as="font" type="font/woff2" crossorigin><link rel="stylesheet" href="/sony/profile.css"><script type="module" src="/sony/profile.js"></script>')
+    head=head.replace('content="https://vitaflexbusinessgroup.com/assets/group/vitaflex-business-group.png"','content="https://vitaflexbusinessgroup.com'+E(social['src'])+'"').replace('content="VitaFlex Business Group — gold VF emblem"','content="'+E(social['alt'])+'"').replace('property="og:image:width" content="1024"','property="og:image:width" content="1200"').replace('property="og:image:height" content="1024"','property="og:image:height" content="630"').replace('name="twitter:card" content="summary"','name="twitter:card" content="summary_large_image"').replace('property="og:site_name" content="VitaFlex Business Group"','property="og:site_name" content="Sony Alexis"')
+    return head+'</head><body class="sony-profile"><a class="personal-skip" href="#main">Skip to content</a>'+header+'<main id="main" tabindex="-1">'+body+'</main>'+footer+'</body></html>'

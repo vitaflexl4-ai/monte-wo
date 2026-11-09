@@ -1,0 +1,773 @@
+{
+  "origin": "http://localhost:8098",
+  "preferred": "https://vitaflexbusinessgroup.com",
+  "rows": [
+    {
+      "url": "https://vitaflexbusinessgroup.com/",
+      "status": 200,
+      "redirect": null,
+      "xRobotsTag": null,
+      "canonical": "https://vitaflexbusinessgroup.com/",
+      "title": "Beyond the obvious. | VitaFlex Business Group",
+      "description": "VitaFlex Business Group. Independent ventures. A bigger vision.",
+      "robots": [
+        "index, follow, max-image-preview:large"
+      ],
+      "problems": []
+    },
+    {
+      "url": "https://vitaflexbusinessgroup.com/about/",
+      "status": 200,
+      "redirect": null,
+      "xRobotsTag": null,
+      "canonical": "https://vitaflexbusinessgroup.com/about/",
+      "title": "About Monte Wo | Monte Wo by VitaFlex",
+      "description": "About Monte Wo — Monte Wo, managed by VitaFlex Business Group.",
+      "robots": [],
+      "problems": []
+    },
+    {
+      "url": "https://vitaflexbusinessgroup.com/app/",
+      "status": 200,
+      "redirect": null,
+      "xRobotsTag": null,
+      "canonical": "https://vitaflexbusinessgroup.com/app/",
+      "title": "The MONTE WO App — Android Preview Build",
+      "description": "Explore the MONTE WO app and access the Android preview build for early testing. This is not an official public release. Strength standards remain draft, not official.",
+      "robots": [],
+      "problems": []
+    },
+    {
+      "url": "https://vitaflexbusinessgroup.com/contact/",
+      "status": 200,
+      "redirect": null,
+      "xRobotsTag": null,
+      "canonical": "https://vitaflexbusinessgroup.com/contact/",
+      "title": "Contact | Monte Wo by VitaFlex",
+      "description": "Contact — Monte Wo, managed by VitaFlex Business Group.",
+      "robots": [],
+      "problems": []
+    },
+    {
+      "url": "https://vitaflexbusinessgroup.com/delete-account/",
+      "status": 200,
+      "redirect": null,
+      "xRobotsTag": null,
+      "canonical": "https://vitaflexbusinessgroup.com/delete-account/",
+      "title": "Delete Account & Data | Monte Wo by VitaFlex",
+      "description": "Delete Account & Data — Monte Wo, managed by VitaFlex Business Group.",
+      "robots": [],
+      "problems": []
+    },
+    {
+      "url": "https://vitaflexbusinessgroup.com/downloads/",
+      "status": 200,
+      "redirect": null,
+      "xRobotsTag": null,
+      "canonical": "https://vitaflexbusinessgroup.com/downloads/",
+      "title": "Official App Downloads & Release Status | MONTE WO",
+      "description": "Official MONTE WO Android and iOS release status. No APK or store listing is published yet. Use the working website tools today.",
+      "robots": [],
+      "problems": []
+    },
+    {
+      "url": "https://vitaflexbusinessgroup.com/exercises/",
+      "status": 200,
+      "redirect": null,
+      "xRobotsTag": null,
+      "canonical": "https://vitaflexbusinessgroup.com/exercises/",
+      "title": "Movement Cockpit — MONTE WO",
+      "description": "Explore MONTE WO's interactive muscle map and 62 exercise entries. Preview movements, filter locally, and explore user-provided Haitian food macros.",
+      "robots": [],
+      "problems": []
+    },
+    {
+      "url": "https://vitaflexbusinessgroup.com/exercises/back-squat/",
+      "status": 200,
+      "redirect": null,
+      "xRobotsTag": null,
+      "canonical": "https://vitaflexbusinessgroup.com/exercises/back-squat/",
+      "title": "Back squat | Monte Wo",
+      "description": "Back squat. Browse muscle groups, equipment and written movement guides from Monte Wo. More workouts coming in the app.",
+      "robots": [],
+      "problems": []
+    },
+    {
+      "url": "https://vitaflexbusinessgroup.com/exercises/bench-press/",
+      "status": 200,
+      "redirect": null,
+      "xRobotsTag": null,
+      "canonical": "https://vitaflexbusinessgroup.com/exercises/bench-press/",
+      "title": "Bench press | Monte Wo",
+      "description": "Bench press. Browse muscle groups, equipment and written movement guides from Monte Wo. More workouts coming in the app.",
+      "robots": [],
+      "problems": []
+    },
+    {
+      "url": "https://vitaflexbusinessgroup.com/exercises/brisk-walk/",
+      "status": 200,
+      "redirect": null,
+      "xRobotsTag": null,
+      "canonical": "https://vitaflexbusinessgroup.com/exercises/brisk-walk/",
+      "title": "Brisk walk | Monte Wo",
+      "description": "Brisk walk. Browse muscle groups, equipment and written movement guides from Monte Wo. More workouts coming in the app.",
+      "robots": [],
+      "problems": []
+    },
+    {
+      "url": "https://vitaflexbusinessgroup.com/exercises/dead-bug/",
+      "status": 200,
+      "redirect": null,
+      "xRobotsTag": null,
+      "canonical": "https://vitaflexbusinessgroup.com/exercises/dead-bug/",
+      "title": "Dead bug | Monte Wo",
+      "description": "Dead bug. Browse muscle groups, equipment and written movement guides from Monte Wo. More workouts coming in the app.",
+      "robots": [],
+      "problems": []
+    },
+    {
+      "url": "https://vitaflexbusinessgroup.com/exercises/dumbbell-curl/",
+      "status": 200,
+      "redirect": null,
+      "xRobotsTag": null,
+      "canonical": "https://vitaflexbusinessgroup.com/exercises/dumbbell-curl/",
+      "title": "Dumbbell curl | Monte Wo",
+      "description": "Dumbbell curl. Browse muscle groups, equipment and written movement guides from Monte Wo. More workouts coming in the app.",
+      "robots": [],
+      "problems": []
+    },
+    {
+      "url": "https://vitaflexbusinessgroup.com/exercises/forearm-plank/",
+      "status": 200,
+      "redirect": null,
+      "xRobotsTag": null,
+      "canonical": "https://vitaflexbusinessgroup.com/exercises/forearm-plank/",
+      "title": "Forearm plank | Monte Wo",
+      "description": "Forearm plank. Browse muscle groups, equipment and written movement guides from Monte Wo. More workouts coming in the app.",
+      "robots": [],
+      "problems": []
+    },
+    {
+      "url": "https://vitaflexbusinessgroup.com/exercises/lat-pulldown/",
+      "status": 200,
+      "redirect": null,
+      "xRobotsTag": null,
+      "canonical": "https://vitaflexbusinessgroup.com/exercises/lat-pulldown/",
+      "title": "Lat pulldown | Monte Wo",
+      "description": "Lat pulldown. Browse muscle groups, equipment and written movement guides from Monte Wo. More workouts coming in the app.",
+      "robots": [],
+      "problems": []
+    },
+    {
+      "url": "https://vitaflexbusinessgroup.com/exercises/lateral-raise/",
+      "status": 200,
+      "redirect": null,
+      "xRobotsTag": null,
+      "canonical": "https://vitaflexbusinessgroup.com/exercises/lateral-raise/",
+      "title": "Lateral raise | Monte Wo",
+      "description": "Lateral raise. Browse muscle groups, equipment and written movement guides from Monte Wo. More workouts coming in the app.",
+      "robots": [],
+      "problems": []
+    },
+    {
+      "url": "https://vitaflexbusinessgroup.com/exercises/muscle/arms/",
+      "status": 200,
+      "redirect": null,
+      "xRobotsTag": null,
+      "canonical": "https://vitaflexbusinessgroup.com/exercises/muscle/arms/",
+      "title": "Arms exercises | Monte Wo",
+      "description": "Arms exercises. Browse muscle groups, equipment and written movement guides from Monte Wo. More workouts coming in the app.",
+      "robots": [],
+      "problems": []
+    },
+    {
+      "url": "https://vitaflexbusinessgroup.com/exercises/muscle/back/",
+      "status": 200,
+      "redirect": null,
+      "xRobotsTag": null,
+      "canonical": "https://vitaflexbusinessgroup.com/exercises/muscle/back/",
+      "title": "Back exercises | Monte Wo",
+      "description": "Back exercises. Browse muscle groups, equipment and written movement guides from Monte Wo. More workouts coming in the app.",
+      "robots": [],
+      "problems": []
+    },
+    {
+      "url": "https://vitaflexbusinessgroup.com/exercises/muscle/cardio/",
+      "status": 200,
+      "redirect": null,
+      "xRobotsTag": null,
+      "canonical": "https://vitaflexbusinessgroup.com/exercises/muscle/cardio/",
+      "title": "Cardio exercises | Monte Wo",
+      "description": "Cardio exercises. Browse muscle groups, equipment and written movement guides from Monte Wo. More workouts coming in the app.",
+      "robots": [],
+      "problems": []
+    },
+    {
+      "url": "https://vitaflexbusinessgroup.com/exercises/muscle/chest/",
+      "status": 200,
+      "redirect": null,
+      "xRobotsTag": null,
+      "canonical": "https://vitaflexbusinessgroup.com/exercises/muscle/chest/",
+      "title": "Chest exercises | Monte Wo",
+      "description": "Chest exercises. Browse muscle groups, equipment and written movement guides from Monte Wo. More workouts coming in the app.",
+      "robots": [],
+      "problems": []
+    },
+    {
+      "url": "https://vitaflexbusinessgroup.com/exercises/muscle/core/",
+      "status": 200,
+      "redirect": null,
+      "xRobotsTag": null,
+      "canonical": "https://vitaflexbusinessgroup.com/exercises/muscle/core/",
+      "title": "Core exercises | Monte Wo",
+      "description": "Core exercises. Browse muscle groups, equipment and written movement guides from Monte Wo. More workouts coming in the app.",
+      "robots": [],
+      "problems": []
+    },
+    {
+      "url": "https://vitaflexbusinessgroup.com/exercises/muscle/legs/",
+      "status": 200,
+      "redirect": null,
+      "xRobotsTag": null,
+      "canonical": "https://vitaflexbusinessgroup.com/exercises/muscle/legs/",
+      "title": "Legs exercises | Monte Wo",
+      "description": "Legs exercises. Browse muscle groups, equipment and written movement guides from Monte Wo. More workouts coming in the app.",
+      "robots": [],
+      "problems": []
+    },
+    {
+      "url": "https://vitaflexbusinessgroup.com/exercises/muscle/shoulders/",
+      "status": 200,
+      "redirect": null,
+      "xRobotsTag": null,
+      "canonical": "https://vitaflexbusinessgroup.com/exercises/muscle/shoulders/",
+      "title": "Shoulders exercises | Monte Wo",
+      "description": "Shoulders exercises. Browse muscle groups, equipment and written movement guides from Monte Wo. More workouts coming in the app.",
+      "robots": [],
+      "problems": []
+    },
+    {
+      "url": "https://vitaflexbusinessgroup.com/exercises/one-arm-dumbbell-row/",
+      "status": 200,
+      "redirect": null,
+      "xRobotsTag": null,
+      "canonical": "https://vitaflexbusinessgroup.com/exercises/one-arm-dumbbell-row/",
+      "title": "One-arm dumbbell row | Monte Wo",
+      "description": "One-arm dumbbell row. Browse muscle groups, equipment and written movement guides from Monte Wo. More workouts coming in the app.",
+      "robots": [],
+      "problems": []
+    },
+    {
+      "url": "https://vitaflexbusinessgroup.com/exercises/overhead-press/",
+      "status": 200,
+      "redirect": null,
+      "xRobotsTag": null,
+      "canonical": "https://vitaflexbusinessgroup.com/exercises/overhead-press/",
+      "title": "Overhead press | Monte Wo",
+      "description": "Overhead press. Browse muscle groups, equipment and written movement guides from Monte Wo. More workouts coming in the app.",
+      "robots": [],
+      "problems": []
+    },
+    {
+      "url": "https://vitaflexbusinessgroup.com/exercises/push-up/",
+      "status": 200,
+      "redirect": null,
+      "xRobotsTag": null,
+      "canonical": "https://vitaflexbusinessgroup.com/exercises/push-up/",
+      "title": "Push-up | Monte Wo",
+      "description": "Push-up. Browse muscle groups, equipment and written movement guides from Monte Wo. More workouts coming in the app.",
+      "robots": [],
+      "problems": []
+    },
+    {
+      "url": "https://vitaflexbusinessgroup.com/exercises/romanian-deadlift/",
+      "status": 200,
+      "redirect": null,
+      "xRobotsTag": null,
+      "canonical": "https://vitaflexbusinessgroup.com/exercises/romanian-deadlift/",
+      "title": "Romanian deadlift | Monte Wo",
+      "description": "Romanian deadlift. Browse muscle groups, equipment and written movement guides from Monte Wo. More workouts coming in the app.",
+      "robots": [],
+      "problems": []
+    },
+    {
+      "url": "https://vitaflexbusinessgroup.com/exercises/standards/",
+      "status": 200,
+      "redirect": null,
+      "xRobotsTag": null,
+      "canonical": "https://vitaflexbusinessgroup.com/exercises/standards/",
+      "title": "Launch Discipline Guide — Draft MONTE WO Variations",
+      "description": "Read the four proposed MONTE WO launch variations, equipment requirements and draft performance checks. These rules are not yet approved for official rank awards.",
+      "robots": [],
+      "problems": []
+    },
+    {
+      "url": "https://vitaflexbusinessgroup.com/exercises/stationary-bike/",
+      "status": 200,
+      "redirect": null,
+      "xRobotsTag": null,
+      "canonical": "https://vitaflexbusinessgroup.com/exercises/stationary-bike/",
+      "title": "Stationary bike | Monte Wo",
+      "description": "Stationary bike. Browse muscle groups, equipment and written movement guides from Monte Wo. More workouts coming in the app.",
+      "robots": [],
+      "problems": []
+    },
+    {
+      "url": "https://vitaflexbusinessgroup.com/exercises/triceps-pushdown/",
+      "status": 200,
+      "redirect": null,
+      "xRobotsTag": null,
+      "canonical": "https://vitaflexbusinessgroup.com/exercises/triceps-pushdown/",
+      "title": "Triceps pushdown | Monte Wo",
+      "description": "Triceps pushdown. Browse muscle groups, equipment and written movement guides from Monte Wo. More workouts coming in the app.",
+      "robots": [],
+      "problems": []
+    },
+    {
+      "url": "https://vitaflexbusinessgroup.com/faq/",
+      "status": 200,
+      "redirect": null,
+      "xRobotsTag": null,
+      "canonical": "https://vitaflexbusinessgroup.com/faq/",
+      "title": "Frequently Asked Questions | Monte Wo by VitaFlex",
+      "description": "Frequently Asked Questions — Monte Wo, managed by VitaFlex Business Group.",
+      "robots": [],
+      "problems": []
+    },
+    {
+      "url": "https://vitaflexbusinessgroup.com/methodology/",
+      "status": 200,
+      "redirect": null,
+      "xRobotsTag": null,
+      "canonical": "https://vitaflexbusinessgroup.com/methodology/",
+      "title": "MONTE Standard and methodology | MONTE WO",
+      "description": "Read the draft MONTE WO Strength Index methodology: evidence, independent disciplines, transparent standards, and why official rank awards remain unavailable.",
+      "robots": [],
+      "problems": []
+    },
+    {
+      "url": "https://vitaflexbusinessgroup.com/monte-wo/",
+      "status": 200,
+      "redirect": null,
+      "xRobotsTag": null,
+      "canonical": "https://vitaflexbusinessgroup.com/monte-wo/",
+      "title": "MONTE WO — Free Strength Tools & Earned Progress",
+      "description": "Free strength calculators, written exercise guides and the MONTE WO app concept. Four independent disciplines; ranking standards remain draft, not official.",
+      "robots": [],
+      "problems": []
+    },
+    {
+      "url": "https://vitaflexbusinessgroup.com/privacy/",
+      "status": 200,
+      "redirect": null,
+      "xRobotsTag": null,
+      "canonical": "https://vitaflexbusinessgroup.com/privacy/",
+      "title": "Privacy Policy | Monte Wo by VitaFlex",
+      "description": "Privacy Policy — Monte Wo, managed by VitaFlex Business Group.",
+      "robots": [],
+      "problems": []
+    },
+    {
+      "url": "https://vitaflexbusinessgroup.com/sony/",
+      "status": 200,
+      "redirect": null,
+      "xRobotsTag": null,
+      "canonical": "https://vitaflexbusinessgroup.com/sony/",
+      "title": "Sony Alexis | VitaFlex Business Group",
+      "description": "Discover Sony Alexis, also known as Sony Holmes — his background in business administration, fitness, technology, and connection to Haiti.",
+      "robots": [
+        "index, follow, max-image-preview:large"
+      ],
+      "problems": []
+    },
+    {
+      "url": "https://vitaflexbusinessgroup.com/sony/blog/",
+      "status": 200,
+      "redirect": null,
+      "xRobotsTag": null,
+      "canonical": "https://vitaflexbusinessgroup.com/sony/blog/",
+      "title": "Blog | Sony Alexis | VitaFlex Business Group",
+      "description": "A personal editorial journal: faith, growth, leadership and life. No articles published yet.",
+      "robots": [
+        "index, follow, max-image-preview:large"
+      ],
+      "problems": []
+    },
+    {
+      "url": "https://vitaflexbusinessgroup.com/sony/daily-devotion/",
+      "status": 200,
+      "redirect": null,
+      "xRobotsTag": null,
+      "canonical": "https://vitaflexbusinessgroup.com/sony/daily-devotion/",
+      "title": "Daily Devotion | VitaFlex Business Group",
+      "description": "A quiet Scripture practice and space for future approved daily devotions.",
+      "robots": [
+        "index, follow, max-image-preview:large"
+      ],
+      "problems": []
+    },
+    {
+      "url": "https://vitaflexbusinessgroup.com/sony/three-daily-wins/",
+      "status": 200,
+      "redirect": null,
+      "xRobotsTag": null,
+      "canonical": "https://vitaflexbusinessgroup.com/sony/three-daily-wins/",
+      "title": "The Three Daily Wins | VitaFlex Business Group",
+      "description": "A cinematic digital book in three chapters: Spiritual, Physical and Intellectual. A charcoal hardcover, warm ivory pages and an intentional way of living.",
+      "robots": [
+        "index, follow, max-image-preview:large"
+      ],
+      "problems": []
+    },
+    {
+      "url": "https://vitaflexbusinessgroup.com/strength-lab/",
+      "status": 200,
+      "redirect": null,
+      "xRobotsTag": null,
+      "canonical": "https://vitaflexbusinessgroup.com/strength-lab/",
+      "title": "Free strength calculators | MONTE WO Strength Lab",
+      "description": "Free strength calculators: estimate 1RM, training percentages, smart plates, kg/lb conversion and adjustable warm-up sets. No account or ranking.",
+      "robots": [],
+      "problems": []
+    },
+    {
+      "url": "https://vitaflexbusinessgroup.com/strength-lab/converter/",
+      "status": 200,
+      "redirect": null,
+      "xRobotsTag": null,
+      "canonical": "https://vitaflexbusinessgroup.com/strength-lab/converter/",
+      "title": "Kilogram/Pound Converter | MONTE WO Strength Lab",
+      "description": "Convert kilograms to pounds or pounds to kilograms with the MONTE WO Strength Lab. Use the exact conversion factor locally, without an account.",
+      "robots": [],
+      "problems": []
+    },
+    {
+      "url": "https://vitaflexbusinessgroup.com/strength-lab/one-rep-max/",
+      "status": 200,
+      "redirect": null,
+      "xRobotsTag": null,
+      "canonical": "https://vitaflexbusinessgroup.com/strength-lab/one-rep-max/",
+      "title": "One-Rep Max Calculator | MONTE WO Strength Lab",
+      "description": "Estimate a one-rep maximum from a recent working set with the Epley formula. A free MONTE WO planning tool, not an instruction to attempt a maximum.",
+      "robots": [],
+      "problems": []
+    },
+    {
+      "url": "https://vitaflexbusinessgroup.com/strength-lab/percentages/",
+      "status": 200,
+      "redirect": null,
+      "xRobotsTag": null,
+      "canonical": "https://vitaflexbusinessgroup.com/strength-lab/percentages/",
+      "title": "Training Percentage Calculator | MONTE WO Strength Lab",
+      "description": "Calculate training loads from a tested or estimated one-rep maximum with MONTE WO. Choose kilograms or pounds and optional load rounding.",
+      "robots": [],
+      "problems": []
+    },
+    {
+      "url": "https://vitaflexbusinessgroup.com/strength-lab/plates/",
+      "status": 200,
+      "redirect": null,
+      "xRobotsTag": null,
+      "canonical": "https://vitaflexbusinessgroup.com/strength-lab/plates/",
+      "title": "Smart Plate Calculator | MONTE WO Strength Lab",
+      "description": "Plan balanced barbell loading with the MONTE WO Smart Plate Calculator. Include your bar, collars and available plate inventory, in kilograms or pounds.",
+      "robots": [],
+      "problems": []
+    },
+    {
+      "url": "https://vitaflexbusinessgroup.com/strength-lab/warm-up/",
+      "status": 200,
+      "redirect": null,
+      "xRobotsTag": null,
+      "canonical": "https://vitaflexbusinessgroup.com/strength-lab/warm-up/",
+      "title": "Warm-Up Set Planner | MONTE WO Strength Lab",
+      "description": "Plan adjustable warm-up sets toward a working weight or estimated maximum with MONTE WO. Review the planning assumptions and adapt the example to your session.",
+      "robots": [],
+      "problems": []
+    },
+    {
+      "url": "https://vitaflexbusinessgroup.com/strength-ranks/",
+      "status": 200,
+      "redirect": null,
+      "xRobotsTag": null,
+      "canonical": "https://vitaflexbusinessgroup.com/strength-ranks/",
+      "title": "Nine earned Discipline Ranks | MONTE WO",
+      "description": "MONTE WO Strength Index. Four independent disciplines. Every rank earned. Draft standards, not official rankings.",
+      "robots": [],
+      "problems": []
+    },
+    {
+      "url": "https://vitaflexbusinessgroup.com/strength/",
+      "status": 200,
+      "redirect": null,
+      "xRobotsTag": null,
+      "canonical": "https://vitaflexbusinessgroup.com/strength/",
+      "title": "MONTE WO Strength Index — Four Disciplines, Draft Standards",
+      "description": "Nine earned rank identities across Squat, Bench Press, Deadlift and Strict Biceps Curl. No ranks from XP or streaks. Methodology is draft, not official.",
+      "robots": [],
+      "problems": []
+    },
+    {
+      "url": "https://vitaflexbusinessgroup.com/terms/",
+      "status": 200,
+      "redirect": null,
+      "xRobotsTag": null,
+      "canonical": "https://vitaflexbusinessgroup.com/terms/",
+      "title": "Terms and Conditions | Monte Wo by VitaFlex",
+      "description": "Terms and Conditions — Monte Wo, managed by VitaFlex Business Group.",
+      "robots": [],
+      "problems": []
+    },
+    {
+      "url": "https://vitaflexbusinessgroup.com/tools/",
+      "status": 200,
+      "redirect": null,
+      "xRobotsTag": null,
+      "canonical": "https://vitaflexbusinessgroup.com/tools/",
+      "title": "Free Strength & Fitness Calculators | MONTE WO",
+      "description": "Five strength calculators plus existing educational nutrition tools. Estimate 1RM, training percentages, balanced plates, kg/lb and warm-up loads locally, without an account.",
+      "robots": [],
+      "problems": []
+    },
+    {
+      "url": "https://vitaflexbusinessgroup.com/tools/body-fat/",
+      "status": 200,
+      "redirect": null,
+      "xRobotsTag": null,
+      "canonical": "https://vitaflexbusinessgroup.com/tools/body-fat/",
+      "title": "Body fat calculator | Monte Wo",
+      "description": "Body fat calculator — free, private, offline-ready training tools from Monte Wo by VitaFlex.",
+      "robots": [],
+      "problems": []
+    },
+    {
+      "url": "https://vitaflexbusinessgroup.com/tools/macros/",
+      "status": 200,
+      "redirect": null,
+      "xRobotsTag": null,
+      "canonical": "https://vitaflexbusinessgroup.com/tools/macros/",
+      "title": "Macro calculator | Monte Wo",
+      "description": "Macro calculator — free, private, offline-ready training tools from Monte Wo by VitaFlex.",
+      "robots": [],
+      "problems": []
+    },
+    {
+      "url": "https://vitaflexbusinessgroup.com/tools/one-rep-max/",
+      "status": 200,
+      "redirect": null,
+      "xRobotsTag": null,
+      "canonical": "https://vitaflexbusinessgroup.com/tools/one-rep-max/",
+      "title": "1RM calculator | Monte Wo",
+      "description": "1RM calculator — free, private, offline-ready training tools from Monte Wo by VitaFlex.",
+      "robots": [],
+      "problems": []
+    },
+    {
+      "url": "https://vitaflexbusinessgroup.com/tools/plates/",
+      "status": 200,
+      "redirect": null,
+      "xRobotsTag": null,
+      "canonical": "https://vitaflexbusinessgroup.com/tools/plates/",
+      "title": "Plate calculator | Monte Wo",
+      "description": "Plate calculator — free, private, offline-ready training tools from Monte Wo by VitaFlex.",
+      "robots": [],
+      "problems": []
+    },
+    {
+      "url": "https://vitaflexbusinessgroup.com/tools/protein/",
+      "status": 200,
+      "redirect": null,
+      "xRobotsTag": null,
+      "canonical": "https://vitaflexbusinessgroup.com/tools/protein/",
+      "title": "Protein calculator | Monte Wo",
+      "description": "Protein calculator — free, private, offline-ready training tools from Monte Wo by VitaFlex.",
+      "robots": [],
+      "problems": []
+    },
+    {
+      "url": "https://vitaflexbusinessgroup.com/tools/tdee/",
+      "status": 200,
+      "redirect": null,
+      "xRobotsTag": null,
+      "canonical": "https://vitaflexbusinessgroup.com/tools/tdee/",
+      "title": "TDEE calculator | Monte Wo",
+      "description": "TDEE calculator — free, private, offline-ready training tools from Monte Wo by VitaFlex.",
+      "robots": [],
+      "problems": []
+    },
+    {
+      "url": "https://vitaflexbusinessgroup.com/ventures/lifeline/",
+      "status": 200,
+      "redirect": null,
+      "xRobotsTag": null,
+      "canonical": "https://vitaflexbusinessgroup.com/ventures/lifeline/",
+      "title": "Lifeline | VitaFlex Business Group",
+      "description": "Lifeline. A game simulation in development under VitaFlex Business Group.",
+      "robots": [
+        "index, follow, max-image-preview:large"
+      ],
+      "problems": []
+    },
+    {
+      "url": "https://vitaflexbusinessgroup.com/ventures/monte-wo/",
+      "status": 200,
+      "redirect": null,
+      "xRobotsTag": null,
+      "canonical": "https://vitaflexbusinessgroup.com/ventures/monte-wo/",
+      "title": "MONTE WO | VitaFlex Business Group",
+      "description": "A strength-training platform focused on workout tracking, progression, and athlete rankings.",
+      "robots": [
+        "index, follow, max-image-preview:large"
+      ],
+      "problems": []
+    },
+    {
+      "url": "https://vitaflexbusinessgroup.com/ventures/vitaflex-intelligence-corp/",
+      "status": 200,
+      "redirect": null,
+      "xRobotsTag": null,
+      "canonical": "https://vitaflexbusinessgroup.com/ventures/vitaflex-intelligence-corp/",
+      "title": "VitaFlex Intelligence Corp | VitaFlex Business Group",
+      "description": "VitaFlex Intelligence Corp. A venture in development under VitaFlex Business Group.",
+      "robots": [
+        "index, follow, max-image-preview:large"
+      ],
+      "problems": []
+    },
+    {
+      "url": "https://vitaflexbusinessgroup.com/ventures/vitaflex-training/",
+      "status": 200,
+      "redirect": null,
+      "xRobotsTag": null,
+      "canonical": "https://vitaflexbusinessgroup.com/ventures/vitaflex-training/",
+      "title": "VitaFlex Training | VitaFlex Business Group",
+      "description": "Our fitness and mindset brand, helping people pursue their training and personal development goals.",
+      "robots": [
+        "index, follow, max-image-preview:large"
+      ],
+      "problems": []
+    },
+    {
+      "url": "https://vitaflexbusinessgroup.com/waitlist/",
+      "status": 200,
+      "redirect": null,
+      "xRobotsTag": null,
+      "canonical": "https://vitaflexbusinessgroup.com/waitlist/",
+      "title": "Join the Waitlist | Monte Wo by VitaFlex",
+      "description": "Join the Waitlist — Monte Wo, managed by VitaFlex Business Group.",
+      "robots": [],
+      "problems": []
+    }
+  ],
+  "crawlerProbes": [
+    {
+      "origin": "http://localhost:8098",
+      "agent": "Googlebot",
+      "path": "/",
+      "status": 200,
+      "xRobotsTag": null,
+      "challenge": null
+    },
+    {
+      "origin": "http://localhost:8098",
+      "agent": "Googlebot",
+      "path": "/sony/",
+      "status": 200,
+      "xRobotsTag": null,
+      "challenge": null
+    },
+    {
+      "origin": "http://localhost:8098",
+      "agent": "Googlebot",
+      "path": "/robots.txt",
+      "status": 200,
+      "xRobotsTag": null,
+      "challenge": null
+    },
+    {
+      "origin": "http://localhost:8098",
+      "agent": "Bingbot",
+      "path": "/",
+      "status": 200,
+      "xRobotsTag": null,
+      "challenge": null
+    },
+    {
+      "origin": "http://localhost:8098",
+      "agent": "Bingbot",
+      "path": "/sony/",
+      "status": 200,
+      "xRobotsTag": null,
+      "challenge": null
+    },
+    {
+      "origin": "http://localhost:8098",
+      "agent": "Bingbot",
+      "path": "/robots.txt",
+      "status": 200,
+      "xRobotsTag": null,
+      "challenge": null
+    },
+    {
+      "origin": "http://localhost:8098",
+      "agent": "OAI-SearchBot",
+      "path": "/",
+      "status": 200,
+      "xRobotsTag": null,
+      "challenge": null
+    },
+    {
+      "origin": "http://localhost:8098",
+      "agent": "OAI-SearchBot",
+      "path": "/sony/",
+      "status": 200,
+      "xRobotsTag": null,
+      "challenge": null
+    },
+    {
+      "origin": "http://localhost:8098",
+      "agent": "OAI-SearchBot",
+      "path": "/robots.txt",
+      "status": 200,
+      "xRobotsTag": null,
+      "challenge": null
+    },
+    {
+      "origin": "http://localhost:8098",
+      "agent": "PerplexityBot",
+      "path": "/",
+      "status": 200,
+      "xRobotsTag": null,
+      "challenge": null
+    },
+    {
+      "origin": "http://localhost:8098",
+      "agent": "PerplexityBot",
+      "path": "/sony/",
+      "status": 200,
+      "xRobotsTag": null,
+      "challenge": null
+    },
+    {
+      "origin": "http://localhost:8098",
+      "agent": "PerplexityBot",
+      "path": "/robots.txt",
+      "status": 200,
+      "xRobotsTag": null,
+      "challenge": null
+    }
+  ],
+  "problems": [],
+  "notes": [
+    "Alternate-origin path checks do not establish preferred-domain or verified Googlebot accessibility. User-Agent probes do not authenticate real search/AI crawlers."
+  ],
+  "robots": {
+    "status": 200,
+    "text": "User-agent: *\nAllow: /\nDisallow: /api/\nDisallow: /strength/admin/\nDisallow: /intelligence/\nDisallow: /account/callback/\nSitemap: https://vitaflexbusinessgroup.com/sitemap.xml\n"
+  },
+  "sitemapStatus": 200,
+  "sitemapSource": "remote",
+  "sitemapUrls": 58,
+  "redirectProbes": [],
+  "passed": true
+}

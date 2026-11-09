@@ -1,0 +1,15 @@
+{
+  "url": "https://vitaflexbusinessgroup.com/sony/",
+  "retrieval": "fetch_page reader tool, complete single chunk",
+  "pageTitle": "Sony Alexis | VitaFlex Business Group",
+  "paragraphs": 10,
+  "anchors": [
+    "roots",
+    "learning",
+    "perspective",
+    "service"
+  ],
+  "comparison": "All ten retrieved paragraphs, closing and postscript match unchanged content/group/founder.json; rendered DOM additionally checked verbatim at eight layouts.",
+  "sourceSha256": "9dba14a5e3530ae308062925f2c35e1766784101c38272521cf1b7f6a10bc94d",
+  "scope": "Reader retrieval is not a normal-browser preferred-domain availability or production release verification."
+}

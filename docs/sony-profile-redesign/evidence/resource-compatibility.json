@@ -1,0 +1,18 @@
+{
+  "public/sony/daily-devotion/index.html": {
+    "sha256": "9a06a4fb8912434d9ae630def8cd679e6108af4e85a752fe7a16a31385128d8d",
+    "matchesPublishedSource": true
+  },
+  "public/sony/blog/index.html": {
+    "sha256": "64ec186b0ff8b740de7663fa884c6e85acb38ab99b49e5b2e99f1d0082cb0055",
+    "matchesPublishedSource": true
+  },
+  "public/sony/experiences.css": {
+    "sha256": "2d3ec8c07dcf6fc6e8fb0d654e279dfdfa0eb4efd29feaece73b5685252635c3",
+    "matchesPublishedSource": true
+  },
+  "public/sony/experiences.js": {
+    "sha256": "c391e9d117191c65fcad00f272dacdee30a101bcf8625d2cce1b799b744eee1b",
+    "matchesPublishedSource": true
+  }
+}

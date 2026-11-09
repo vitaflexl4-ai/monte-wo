@@ -1,0 +1,1 @@
+PASS: Sony editorial profile at eight desktop/tablet/mobile/landscape layouts; complete original biography, four anchors, three real resource links, keyboard/mobile navigation, actual decoded portraits, no-JS/reduced-motion, no broken links or console errors; corporate journey unchanged.

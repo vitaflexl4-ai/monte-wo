@@ -1,4 +1,4 @@
-import {normalizePersonalAdditions,stripResourceHub} from './helpers/personal-preservation.mjs';
+import {normalizePersonalAdditions,stripResourceHub,assertSonyBiography} from './helpers/personal-preservation.mjs';
 import test from 'node:test';
 import {normalizeDownloadedPagesConfig} from '../scripts/pages-config.mjs';
 import assert from 'node:assert/strict';
@@ -15,11 +15,11 @@ test('SEO: exact owner-approved identity, metadata, H1 and canonical',()=>{
  assert.equal(unescape(profile.match(/<title>(.*?)<\/title>/)[1]),'Sony Alexis | VitaFlex Business Group');
  assert.deepEqual(meta(profile,'description'),[source.description]);
  assert.equal(source.description,'Discover Sony Alexis, also known as Sony Holmes — his background in business administration, fitness, technology, and connection to Haiti.');
- assert.match(profile,/<h1 id="founder-name">Sony Alexis<\/h1>/);
+ assert.match(profile,/<h1 id="founder-name"><span>Sony<\/span> <span>Alexis<\/span><\/h1>/);
  assert.equal((profile.match(/<h1\b/g)||[]).length,1);
  assert.match(profile,/rel="canonical" href="https:\/\/vitaflexbusinessgroup.com\/sony\/"/);
  assert.deepEqual(meta(profile,'robots'),['index, follow, max-image-preview:large']);
- for(const [key,value] of Object.entries({'og:title':source.seoTitle,'og:description':source.description,'og:url':origin+'/sony/','og:type':'profile','twitter:card':'summary','twitter:title':source.seoTitle,'twitter:description':source.description}))assert.deepEqual(meta(profile,key),[value],key);
+ for(const [key,value] of Object.entries({'og:title':source.seoTitle,'og:description':source.description,'og:url':origin+'/sony/','og:type':'profile','twitter:card':'summary_large_image','twitter:title':source.seoTitle,'twitter:description':source.description}))assert.deepEqual(meta(profile,key),[value],key);
  for(const key of ['og:image','twitter:image']){const [image]=meta(profile,key);assert.ok(image.startsWith(origin+'/'));assert.ok(existsSync('public'+new URL(image).pathname));}
  for(const key of ['og:image:alt','twitter:image:alt'])assert.equal(meta(profile,key).length,1);
 });
@@ -101,11 +101,12 @@ test('SEO deployment: empty downloaded placement tables are omitted, explicit mo
  assert.equal(normalizeDownloadedPagesConfig('[placement]\n'),'');
 });
 
-test('Preservation: only corporate Privacy links may change in visible bodies',async()=>{
+test('Preservation: other pages remain exact; authorized Sony redesign preserves original biography',async()=>{
  const {createHash}=await import('node:crypto');
  const baseline=JSON.parse(read('tests/fixtures/seo-visible-baseline.json'));
  const sha=value=>createHash('sha256').update(value).digest('hex');
  for(const [file,expected] of Object.entries(baseline.htmlBodies)){
+  if(file==='public/sony/index.html'){assertSonyBiography(read(file));continue;}
   const html=file==='public/sony/index.html'?stripResourceHub(read(file)):read(file);let body=html.match(/<body\b[^>]*>[\s\S]*?<\/body>/)?.[0]||html;
   // Explicitly normalize ONLY the newly authorized changes against the unchanged baseline.
   const corporate=['public/index.html','public/sony/index.html',...JSON.parse(read('public/group-routes.json')).filter(p=>p.startsWith('/ventures/')).map(p=>'public'+p+'index.html')];
@@ -168,7 +169,7 @@ test('Footer and alias release: corporate-only deletion, one identity, app polic
  assert.match(profile.match(/<head>[\s\S]*?<\/head>/)[0],/Sony Holmes/);
  assert.doesNotMatch(profile,/Austin Holmes|foster son|senate\.gov/);
  assert.equal((profile.match(/<main\b/g)||[]).length,1);
- const corporate=JSON.parse(read('public/group-routes.json')).filter(p=>p!=='/monte-wo/');
+ const corporate=JSON.parse(read('public/group-routes.json')).filter(p=>p!=='/monte-wo/'&&p!=='/sony/'&&p!=='/sony/three-daily-wins/');
  for(const route of corporate){
   const doc=read('public'+(route==='/'?'/index.html':route+'index.html'));const footer=doc.match(/<footer\b[\s\S]*?<\/footer>/)[0];
   assert.ok(!footer.includes('href="/privacy/"'));assert.match(footer,/>Meet Sony Alexis<\/a>/);

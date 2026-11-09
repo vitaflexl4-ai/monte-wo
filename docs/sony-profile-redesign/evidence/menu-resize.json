@@ -1,0 +1,6 @@
+{
+  "mobileOpenToDesktopVisible": true,
+  "desktopToMobileClosed": true,
+  "focusReturnedToMenu": true,
+  "note": "Waited for asynchronous matchMedia change events after viewport changes."
+}

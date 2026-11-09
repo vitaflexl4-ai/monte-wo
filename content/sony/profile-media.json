@@ -1,0 +1,38 @@
+{
+  "hero": {
+    "src": "/assets/sony/sony-alexis-portrait-1200.webp",
+    "width": 1200,
+    "height": 1798,
+    "variants": [
+      {
+        "src": "/assets/sony/sony-alexis-portrait-480.webp",
+        "width": 480,
+        "height": 719
+      },
+      {
+        "src": "/assets/sony/sony-alexis-portrait-768.webp",
+        "width": 768,
+        "height": 1150
+      },
+      {
+        "src": "/assets/sony/sony-alexis-portrait-1200.webp",
+        "width": 1200,
+        "height": 1798
+      }
+    ],
+    "position": "58% 25%",
+    "alt": "Sony Alexis, photographed outdoors in a burgundy jacket"
+  },
+  "secondary": {
+    "src": "/assets/sony/sony-alexis-perspective.webp",
+    "width": 720,
+    "height": 480,
+    "alt": "Sony Alexis smiling in a colorful patterned shirt"
+  },
+  "social": {
+    "src": "/assets/sony/sony-alexis-social.jpg",
+    "width": 1200,
+    "height": 630,
+    "alt": "Sony Alexis \u2014 The Person Behind the Vision"
+  }
+}

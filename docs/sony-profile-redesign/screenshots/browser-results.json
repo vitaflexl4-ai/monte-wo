@@ -1,0 +1,90 @@
+{
+  "layouts": [
+    {
+      "width": 320,
+      "height": 740,
+      "biographyExact": true,
+      "allStoryAnchorsVisible": true,
+      "menuAndKeyboard": true,
+      "portraitDecoded": true,
+      "noOverflow": true
+    },
+    {
+      "width": 390,
+      "height": 844,
+      "biographyExact": true,
+      "allStoryAnchorsVisible": true,
+      "menuAndKeyboard": true,
+      "portraitDecoded": true,
+      "noOverflow": true
+    },
+    {
+      "width": 600,
+      "height": 900,
+      "biographyExact": true,
+      "allStoryAnchorsVisible": true,
+      "menuAndKeyboard": true,
+      "portraitDecoded": true,
+      "noOverflow": true
+    },
+    {
+      "width": 768,
+      "height": 1024,
+      "biographyExact": true,
+      "allStoryAnchorsVisible": true,
+      "menuAndKeyboard": true,
+      "portraitDecoded": true,
+      "noOverflow": true
+    },
+    {
+      "width": 844,
+      "height": 390,
+      "biographyExact": true,
+      "allStoryAnchorsVisible": true,
+      "menuAndKeyboard": true,
+      "portraitDecoded": true,
+      "noOverflow": true
+    },
+    {
+      "width": 1024,
+      "height": 900,
+      "biographyExact": true,
+      "allStoryAnchorsVisible": true,
+      "menuAndKeyboard": true,
+      "portraitDecoded": true,
+      "noOverflow": true
+    },
+    {
+      "width": 1440,
+      "height": 1000,
+      "biographyExact": true,
+      "allStoryAnchorsVisible": true,
+      "menuAndKeyboard": true,
+      "portraitDecoded": true,
+      "noOverflow": true
+    },
+    {
+      "width": 1920,
+      "height": 1080,
+      "biographyExact": true,
+      "allStoryAnchorsVisible": true,
+      "menuAndKeyboard": true,
+      "portraitDecoded": true,
+      "noOverflow": true
+    }
+  ],
+  "checks": [
+    "all ten original paragraphs exact",
+    "four original anchors",
+    "three real resource card clicks and Blog navigation",
+    "mobile Enter/Escape/focus and disclosure close",
+    "Discover story and back-to-top/skip navigation",
+    "decoded owner portraits",
+    "all profile internal links HTTP 200",
+    "no-JS navigation and complete biography",
+    "reduced-motion",
+    "preserved corporate journey",
+    "no console errors, failed assets or external requests"
+  ],
+  "passed": true
+}

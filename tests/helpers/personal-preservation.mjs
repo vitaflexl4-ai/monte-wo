@@ -1,1 +1,1 @@
-export {personalRoutes,stripResourceHub,normalizePersonalAdditions} from '../../scripts/personal-preservation.mjs';
+export {personalRoutes,stripResourceHub,normalizePersonalAdditions,assertSonyBiography} from '../../scripts/personal-preservation.mjs';
