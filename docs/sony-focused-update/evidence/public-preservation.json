@@ -1,0 +1,26 @@
+{
+  "existing": 246,
+  "unchanged": 230,
+  "changed": [
+    "public/group-routes.json",
+    "public/index.html",
+    "public/sitemap.xml",
+    "public/sony/book.css",
+    "public/sony/index.html",
+    "public/sony/profile.css",
+    "public/sony/three-daily-wins/index.html",
+    "public/sw.js"
+  ],
+  "removed": [
+    "public/business-contact/index.html",
+    "public/business.css",
+    "public/business.js",
+    "public/sony/blog/index.html",
+    "public/sony/daily-devotion/index.html",
+    "public/sony/experiences.css",
+    "public/sony/experiences.js",
+    "public/ventures/lifeline/index.html"
+  ],
+  "homepageChange": "Only owner-authorized Lifeline row and portfolio count removal; original composition/style unchanged.",
+  "remainingVenturePagesUnchanged": true
+}

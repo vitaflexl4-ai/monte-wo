@@ -106,8 +106,8 @@ test('Preservation: other pages remain exact; authorized Sony redesign preserves
  const baseline=JSON.parse(read('tests/fixtures/seo-visible-baseline.json'));
  const sha=value=>createHash('sha256').update(value).digest('hex');
  for(const [file,expected] of Object.entries(baseline.htmlBodies)){
-  if(file==='public/sony/index.html'){assertSonyBiography(read(file));continue;}
-  const html=file==='public/sony/index.html'?stripResourceHub(read(file)):read(file);let body=html.match(/<body\b[^>]*>[\s\S]*?<\/body>/)?.[0]||html;
+  if(file==='public/ventures/lifeline/index.html'){assert.equal(existsSync(file),false);continue;}if(file==='public/sony/index.html'){assertSonyBiography(read(file));continue;}
+  const html=file==='public/index.html'?normalizePersonalAdditions(file,read(file)):read(file);let body=html.match(/<body\b[^>]*>[\s\S]*?<\/body>/)?.[0]||html;
   // Explicitly normalize ONLY the newly authorized changes against the unchanged baseline.
   const corporate=['public/index.html','public/sony/index.html',...JSON.parse(read('public/group-routes.json')).filter(p=>p.startsWith('/ventures/')).map(p=>'public'+p+'index.html')];
   if(corporate.includes(file)){

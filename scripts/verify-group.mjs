@@ -6,10 +6,10 @@ const origin=process.env.VERIFY_ORIGIN||'https://vitaflexbusinessgroup.com';
 const revision=process.env.VERIFY_REVISION||process.env.GITHUB_SHA||Date.now().toString();
 const current=(path,options={})=>fetch(origin+path+'?verify='+encodeURIComponent(revision),{signal:AbortSignal.timeout(30000),...(process.env.VERIFY_USER_AGENT?{headers:{'User-Agent':process.env.VERIFY_USER_AGENT}}:{}),...options});
 let profile='',homepage='';
-for(const [route,marker] of [['/','/assets/group/vitaflex-business-group.png'],['/ventures/monte-wo/','In Development'],['/ventures/vitaflex-training/','AVAILABILITY NOT ANNOUNCED'],['/ventures/vitaflex-intelligence-corp/','VitaFlex Intelligence Corp'],['/ventures/lifeline/','Lifeline'],['/sony/','Sony Alexis | VitaFlex Business Group'],['/sony/daily-devotion/','SCRIPTURE PRACTICE'],['/sony/three-daily-wins/','SPIRIT. BODY. MIND.'],['/sony/blog/','BLOG / ESSAYS'],['/monte-wo/','MONTE'],['/tools/','strength-tools']]){
+for(const [route,marker] of [['/','/assets/group/vitaflex-business-group.png'],['/ventures/monte-wo/','In Development'],['/ventures/vitaflex-training/','AVAILABILITY NOT ANNOUNCED'],['/ventures/vitaflex-intelligence-corp/','VitaFlex Intelligence Corp'],['/sony/','Sony Alexis | VitaFlex Business Group'],['/sony/three-daily-wins/','SPIRIT. BODY. MIND.'],['/monte-wo/','MONTE'],['/tools/','strength-tools']]){
  const response=await current(route);
  assert.equal(response.status,200,route);const body=await response.text();assert.ok(body.includes(marker),route+' missing deployed content');if(route==='/sony/')profile=body;if(route==='/')homepage=body;
- if(route==='/'){assert.ok(body.includes('Beyond<br><em>the obvious.</em>'));assert.equal((body.match(/class="venture-row /g)||[]).length,4);assert.equal((body.match(/>Meet Sony Alexis<\/a>/g)||[]).length,1);assert.ok(!body.includes('id="presence-score"'));}
+ if(route==='/'){assert.ok(body.includes('Beyond<br><em>the obvious.</em>'));assert.equal((body.match(/class="venture-row /g)||[]).length,3);assert.equal((body.match(/>Meet Sony Alexis<\/a>/g)||[]).length,1);assert.ok(!body.includes('id="presence-score"'));}
  if(route==='/'||route.startsWith('/ventures/')){
   const footer=body.match(/<footer\b[\s\S]*?<\/footer>/)?.[0];assert.ok(footer,'Corporate footer must exist');
   assert.ok(!footer.includes('href="/privacy/"'),'Corporate Privacy link must be absent');assert.ok(footer.includes('>Meet Sony Alexis</a>'),'Existing profile link must remain');

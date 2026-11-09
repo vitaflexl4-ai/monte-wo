@@ -84,6 +84,9 @@ if sitemap.exists():
  ns='http://www.sitemaps.org/schemas/sitemap/0.9'
  ET.register_namespace('',ns)
  tree=ET.parse(sitemap); root=tree.getroot()
+ for node in list(root):
+  loc=node.find('{'+ns+'}loc')
+  if loc is not None and any(x in loc.text for x in ['/sony/blog/','/sony/daily-devotion/','/sony/bible-study/','/business-contact/','/ventures/lifeline/']):root.remove(node)
  existing={node.text for node in root.findall('{'+ns+'}url/{'+ns+'}loc')}
  for path in routes:
   url=origin+path

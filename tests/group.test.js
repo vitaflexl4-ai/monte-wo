@@ -11,7 +11,7 @@ test('Group: parent identity is explicit and separate from product runtime',()=>
  assert.match(doc,/canonical" href="https:\/\/vitaflexbusinessgroup.com\/"/);
 });
 test('Group: venture registry provides honest, resolvable destinations',()=>{
- assert.equal(ventures.length,4);
+ assert.equal(ventures.length,3);
  for(const v of ventures){assert.ok(v.name&&v.category&&v.description&&v.slug);assert.ok(v.status===null||['Operating','In Development','Coming Soon'].includes(v.status));assert.ok(existsSync(`public/ventures/${v.slug}/index.html`));if(v.logo)assert.ok(existsSync('public'+v.logo));if(v.destination)assert.ok(existsSync('public'+v.destination+'index.html'));}
  assert.equal(ventures[1].destination,null);assert.equal(ventures[1].status,null);
 });
@@ -39,8 +39,4 @@ test('Group: Intelligence Corp is a third development venture, not a renamed par
  const sw=read('public/sw.js');for(const v of ventures)assert.equal(sw.split(`'/ventures/${v.slug}/'`).length-1,1);
 });
 
-test('Group: Lifeline is a simulation venture in development, with no invented game launch',()=>{
- const v=ventures.find(v=>v.slug==='lifeline');assert.equal(v.name,'Lifeline');assert.equal(v.category,'Game simulation');assert.equal(v.status,'In Development');assert.equal(v.destination,null);assert.equal(v.logo,null);
- const home=read('public/index.html');assert.ok(home.includes('href="/ventures/lifeline/"'));assert.ok(home.includes('01 — 04'));
- const detail=read('public/ventures/lifeline/index.html');assert.match(detail,/Game simulation/);assert.match(detail,/In Development/);assert.doesNotMatch(detail,/Play now|Download|<a[^>]+href="https:\/\//);
-});
+test('Group: Lifeline removed by owner; remaining registry and page count are preserved',()=>{assert.ok(!ventures.some(v=>v.slug==='lifeline'));assert.equal(existsSync('public/ventures/lifeline'),false);assert.ok(!read('public/index.html').includes('/ventures/lifeline/'));assert.ok(read('public/index.html').includes('01 — 03'));});

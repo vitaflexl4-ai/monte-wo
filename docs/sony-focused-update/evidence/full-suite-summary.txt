@@ -1,0 +1,1 @@
+Final npm test: 259/261. Only historical wrangler.toml checksum expectation failures in tests/lab.test.js:28 and tests/website.test.js:7. No infrastructure edits. Raw log /tmp/cleanup-full.txt.

@@ -7,7 +7,7 @@ import re
 ROOT = Path(__file__).resolve().parent.parent
 BOOK_PATH = '/sony/three-daily-wins/'
 E = lambda s: html.escape(str(s), quote=True)
-PROJECTS = [('I', 'SPIRITUAL', 'Bible Verse<br>Memory App', 'Strengthening faith through Scripture.', 'Memorizing Scripture, understanding biblical passages, and developing spiritual consistency.', 'Faith. Scripture. Consistency.'), ('II', 'PHYSICAL', 'MONTE WO', 'Strength built through discipline.', 'Physical discipline, measurable progress, strength development, and the commitment to becoming stronger.', 'Discipline. Progress. Strength.'), ('III', 'INTELLECTUAL', 'The Intelligence<br>Project', 'A deeper understanding of the world.', 'Expanding knowledge, improving critical thinking, and developing a deeper understanding of the world.', 'Knowledge. Thought. Understanding.')]
+PROJECTS = [('I', 'SPIRITUAL', 'Bible Verse<br>Memory App', 'Strengthening faith through Scripture.', 'Scripture memorization, biblical understanding, and spiritual development.', 'Faith. Scripture. Consistency.'), ('II', 'PHYSICAL', 'MONTE WO', 'Strength built through discipline.', 'Physical discipline, strength development, measurable progress, and personal growth.', 'Discipline. Progress. Strength.'), ('III', 'INTELLECTUAL', 'VitaFlex<br>Intelligence', 'A deeper understanding of the world.', 'Knowledge, critical thinking, research, strategic understanding, and intellectual development.', 'Knowledge. Thought. Understanding.')]
 CHAPTERS = [(n, dimension, name.replace("<br>", " "), description, closing)
             for n, dimension, name, line, description, closing in PROJECTS]
 
@@ -20,10 +20,11 @@ def cover():
 
 def chapter(i):
  n,dim,name,line,desc,foot=PROJECTS[i]
- return f'<div class="printed-page project-{i}"><div class="page-running">THE THREE DAILY WINS <span>CHAPTER {n}</span></div><div class="chapter-mark">{n}</div><div class="chapter-copy"><span class="page-kicker">{dim} / CHAPTER {n}</span><div class="project-emblem emblem-{i}" aria-hidden="true">{["✧","Ⅱ","◎"][i]}</div><div class="project-name">{name}</div><span class="chapter-rule"></span><p class="project-line">{line}</p><p class="project-description">{desc}</p></div><div class="page-bottom"><span>{foot}</span><span>0{i+1}</span></div></div>'
+ status = '<p class="project-status">UNDER DEVELOPMENT</p>' if i == 0 else ""
+ return f'<div class="printed-page project-{i}"><div class="page-running">THE THREE DAILY WINS <span>CHAPTER {n}</span></div><div class="chapter-mark">{n}</div><div class="chapter-copy"><span class="page-kicker">{dim} / CHAPTER {n}</span><div class="project-emblem emblem-{i}" aria-hidden="true">{["✧","Ⅱ","◎"][i]}</div><div class="project-name">{name}</div><span class="chapter-rule"></span>{status}<p class="project-line">{line}</p><p class="project-description">{desc}</p></div><div class="page-bottom"><span>{foot}</span><span>0{i+1}</span></div></div>'
 
 def final_page():
-    return '<div class="printed-page final-page"><div class="page-running">THE THREE DAILY WINS <span>THREE PROJECTS</span></div><span class="final-mark">III</span><div class="final-copy">FAITH.<br>STRENGTH.<br><em>UNDERSTANDING.</em></div><div class="final-rule"></div><div class="page-bottom"><span>SPIRITUAL. PHYSICAL. INTELLECTUAL.</span><span>04</span></div></div>'
+    return '<div class="printed-page final-page"><div class="page-running">THE THREE DAILY WINS <span>THREE PROJECTS</span></div><span class="final-mark">III</span><div class="final-copy">THREE WINS.<br>ONE DAY.<br><em>A BETTER YOU.</em></div><div class="final-rule"></div><div class="page-bottom"><span>SPIRITUAL. PHYSICAL. INTELLECTUAL.</span><span>04</span></div></div>'
 
 def verso(index):
     return f'<div class="printed-page verso-page"><span class="verso-arch"></span><span class="verso-numeral">{["I", "II", "III"][index]}</span><span class="verso-word">THE THREE DAILY WINS</span></div>'
@@ -39,12 +40,13 @@ def segmented_sheet(index):
 def book_body():
     accessible = '<div class="still-cover" aria-hidden="true">'+cover()+'</div>'
     for numeral, title, line, words, closing in CHAPTERS:
-        accessible += f'<section class="still-page"><span class="page-kicker">CHAPTER {numeral}</span><h2>{title}</h2><span class="chapter-rule"></span><p class="chapter-line">{line}</p><p>{words}</p><p class="still-closing">{closing}</p></section>'
-    accessible += '<section class="still-page still-final"><h2>FAITH.<br>STRENGTH.<br><em>UNDERSTANDING.</em></h2><p>SPIRIT. BODY. MIND.</p></section>'
+        status = '<p class="project-status">UNDER DEVELOPMENT</p>' if numeral == 'I' else ''
+        accessible += f'<section class="still-page"><span class="page-kicker">CHAPTER {numeral}</span><h2>{title}</h2>{status}<span class="chapter-rule"></span><p class="chapter-line">{line}</p><p>{words}</p><p class="still-closing">{closing}</p></section>'
+    accessible += '<section class="still-page still-final"><h2>THREE WINS.<br>ONE DAY.<br><em>A BETTER YOU.</em></h2><p>SPIRIT. BODY. MIND.</p></section>'
     return f'''<div class="book-edition"><header class="edition-heading"><span>SONY ALEXIS / PERSONAL</span><span>THREE DIMENSIONS / THREE PROJECTS</span></header><h1 class="sr-only">THE THREE DAILY WINS.</h1><div class="book-stage" aria-hidden="true"><div class="ambient-light"></div><div class="table-shadow"></div><div class="book"><div class="back-board"></div><div class="paper-block"></div><div class="fixed-page">{final_page()}</div>{''.join(segmented_sheet(i) for i in reversed(range(3)))}<div class="hardcover"><div class="cover-face cover-front">{cover()}</div><div class="cover-face cover-inside"><span class="endpaper-line"></span><span class="endpaper-mark">III</span></div><div class="cover-thickness"></div></div></div></div><div class="edition-colophon" aria-hidden="true"><span>SPIRIT. BODY. MIND.</span><span>FAITH. STRENGTH. UNDERSTANDING.</span></div><section class="text-edition" aria-label="The complete book in reading order">{accessible}</section><noscript><style>.book-stage,.edition-colophon{{display:none}}.text-edition{{position:static!important;width:auto!important;height:auto!important;clip-path:none!important;display:grid!important;overflow:visible!important;white-space:normal!important;max-width:650px;padding:24px;gap:24px;margin:40px auto!important}}</style></noscript></div>'''
 
 def build_book(page):
-    doc = page('The Three Daily Wins', 'Three projects in a cinematic digital book: Bible Verse Memory App, MONTE WO, and The Intelligence Project. Spiritual, physical, and intellectual development.', book_body(), BOOK_PATH)
+    doc = page('The Three Daily Wins', 'Three projects in a cinematic digital book: Bible Verse Memory App (under development), MONTE WO, and VitaFlex Intelligence. Spiritual, physical, and intellectual development.', book_body(), BOOK_PATH)
     doc = re.sub(r'<a class="skip"[^>]*>.*?</a>', '', doc)
     doc = re.sub(r'<header class="frame header">.*?</header>', '', doc)
     doc = re.sub(r'<footer class="frame footer">.*?</footer>', '', doc)

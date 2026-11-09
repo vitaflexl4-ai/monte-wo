@@ -60,8 +60,8 @@ test('Founder: chapter anchors, metadata, canonical and current-page link are co
 test('Founder: added through the group footer, not the homepage portfolio or product navigation',()=>{
  const home=docFor('/');const main=home.match(/<main\b[^>]*>([\s\S]*?)<\/main>/)[1];
  assert.doesNotMatch(main,/Sony|SONY|founder/);assert.equal((home.match(/>Meet Sony Alexis<\/a>/g)||[]).length,1);
- assert.equal((main.match(/class="venture-row /g)||[]).length,4);
- assert.ok(main.includes('01 — 04'));
+ assert.equal((main.match(/class="venture-row /g)||[]).length,3);
+ assert.ok(main.includes('01 — 03'));
  for(const route of routes.filter(p=>p!=='/monte-wo/'&&p!=='/sony/'&&p!=='/sony/three-daily-wins/')){
   const doc=docFor(route);
   const footer=doc.match(/<footer\b[\s\S]*?<\/footer>/)[0];
