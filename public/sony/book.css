@@ -15,3 +15,17 @@
 /* Unbroken ink at rest; the articulated mesh is exposed only during the fold. */
 .flat-face{position:absolute;inset:0;backface-visibility:hidden;transform:translateZ(.15px)}.flat-back{transform:rotateY(180deg) translateZ(.15px)}.turning-sheet[data-phase="turning"]>.flat-face{visibility:hidden}.turning-sheet:not([data-phase="turning"])>.segment{visibility:hidden}.still-page .page-kicker{color:#74603c}.still-closing{color:#6d634d}
 @media(max-height:540px) and (min-width:651px){:root{--leaf:min(230px,calc((100svh - 145px)/1.42))}.book-stage{height:calc(100svh - 110px);min-height:260px}}
+
+/* Approved three-project edition; gold-on-charcoal references, warm ivory paper. */
+:root{--gold:#c6a66a;--ivory:#f2e8d2;--ink:#34332d}
+.book-edition{background:radial-gradient(ellipse at 49% 46%,#292923 0,#1a1b18 28%,#0b0c0b 70%)}
+.cover-front{background-color:#191a17}.cover-frame{border-color:#c6a66a}.cover-seal{border:1px solid #c6a66a;border-radius:50%;width:calc(var(--leaf)*.12);height:calc(var(--leaf)*.12);display:grid;place-items:center;letter-spacing:0;padding:0}
+.project-name{font-size:calc(var(--leaf)*.096);font-weight:normal;line-height:1.08;letter-spacing:-.045em;color:#35362e;margin:calc(var(--leaf)*.035) 0 0}
+.project-1 .project-name{font-size:calc(var(--leaf)*.12);letter-spacing:-.045em}
+.project-line{font-size:calc(var(--leaf)*.038);line-height:1.5;margin:calc(var(--leaf)*.05) 0 calc(var(--leaf)*.028);color:#5d533e;font-style:italic}
+.project-description{font:calc(var(--leaf)*.031)/1.75 Arial,sans-serif;color:#575749;max-width:96%;margin:0}
+.project-emblem{color:#927242;font-size:calc(var(--leaf)*.09);line-height:1;margin-top:calc(var(--leaf)*.055)}
+.project-1 .project-emblem{font-family:Georgia,serif;font-weight:bold;letter-spacing:-.15em}.project-2 .project-emblem{font-size:calc(var(--leaf)*.085)}
+.chapter-copy{top:25%;left:12%;right:10%}.chapter-mark{opacity:.07}.page-bottom{font-size:calc(var(--leaf)*.022)}
+.final-copy{font-size:calc(var(--leaf)*.073)}.final-copy em{font-size:.78em}.page-kicker{color:#806c46}
+@media(max-width:650px){.project-name{font-size:calc(var(--leaf)*.098)}.project-description{font-size:calc(var(--leaf)*.034)}.page-bottom{font-size:calc(var(--leaf)*.024)}}

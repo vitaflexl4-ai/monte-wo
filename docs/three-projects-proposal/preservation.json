@@ -1,0 +1,9 @@
+{
+  "note": "Hashes before isolated design proposal; no production assets changed.",
+  "files": {
+    "public/index.html": "60dff9a625b092600b4d2e6076d0a54f7bca200b754d754457fd96224f6e400d",
+    "public/group.css": "0dc8d6ef0cbf3b3495a76594fed317a39d85f5c507374ecdbce4433b7a35159e",
+    "public/sony/three-daily-wins/index.html": "be73fa5cff261b2d08514b65d841cafbba7e80bf22004e33ab0f0ea1a7128df9",
+    "scripts/sony_book.py": "28560d02385c27e49199b7b078d63719692446054c66394987c029b65dffaecf"
+  }
+}

@@ -1,5 +1,5 @@
 // One passive, finite presentation. No controls, storage, cookies, requests or input handlers.
-export const TIMING = Object.freeze({open:3000, opening:2800, turns:[11200,19200,27200], turn:2800, end:30000});
+export const TIMING = Object.freeze({open:3000, opening:2800, turns:[15200,27200,39200], turn:2800, end:42000});
 const clamp = n => Math.max(0, Math.min(1, n));
 const ease = t => t*t*t*(t*(t*6-15)+10);
 export function poseAt(milliseconds) {
