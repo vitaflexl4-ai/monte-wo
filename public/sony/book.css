@@ -31,3 +31,6 @@
 @media(max-width:650px){.project-name{font-size:calc(var(--leaf)*.098)}.project-description{font-size:calc(var(--leaf)*.034)}.page-bottom{font-size:calc(var(--leaf)*.024)}}
 
 .project-status{font:bold calc(var(--leaf)*.024)/1.4 Arial,sans-serif;letter-spacing:.09em;color:#6b542e;margin:calc(var(--leaf)*.025) 0 0}.project-0 .project-line{margin-top:calc(var(--leaf)*.026)}.still-page .project-status{font:bold 11px/1.5 Arial,sans-serif}.final-copy{font-size:calc(var(--leaf)*.10)}
+
+/* Essential site navigation sits outside the passive book and remains visible. */
+.edition-heading{position:sticky;top:0;z-index:50;background:#0b0c0bf5}.book-return-nav{display:flex;gap:24px;align-items:center}.book-return-nav a{display:inline-flex;align-items:center;min-height:44px;color:#e2cc98;text-decoration:none;font:12px/1.5 Arial,sans-serif;letter-spacing:.04em;white-space:nowrap;border-bottom:1px solid transparent}.book-return-nav a:hover{border-bottom-color:#c6a66a}.book-return-nav a:focus-visible{outline:2px solid #c6a66a;outline-offset:4px}@media(max-width:650px){.edition-heading{align-items:center;padding-top:0;gap:12px}.book-return-nav{gap:16px}.edition-heading>span:last-child{max-width:105px;font-size:7px}.book-return-nav a{font-size:11px}}@media print{.book-return-nav{display:none}}
