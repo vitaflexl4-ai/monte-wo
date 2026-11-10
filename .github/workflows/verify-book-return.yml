@@ -1,0 +1,27 @@
+name: Read-only book return release verification
+on:
+  push:
+    branches: [arena/beb13e2a-monte-wo]
+    paths: [.github/workflows/verify-book-return.yml]
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: {node-version: 22}
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - name: Recheck production profile without publishing
+        env:
+          TEST_ORIGIN: https://vitaflex.pages.dev
+          PROFILE_SCREENSHOT_DIR: evidence/profile
+        run: node --input-type=module -e "import('./tests/sony-profile-browser.mjs').catch(e=>{console.error('::error title=Production profile recheck::'+String(e.stack||e).replaceAll('\n',' | '));process.exit(1)})"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: book-return-profile-recheck
+          path: evidence/
