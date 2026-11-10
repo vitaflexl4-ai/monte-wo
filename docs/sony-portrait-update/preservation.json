@@ -1,0 +1,10 @@
+{
+  "existingPublicFilesChecked": 238,
+  "changedExistingFiles": [
+    "public/sony/index.html",
+    "public/sony/profile.css"
+  ],
+  "otherExistingFilesByteIdentical": 236,
+  "originalBiographySourceUnchanged": true,
+  "rendererChange": "Only configurable responsive image sizes attribute; existing structure and wording unchanged."
+}

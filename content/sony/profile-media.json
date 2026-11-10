@@ -1,38 +1,39 @@
 {
   "hero": {
-    "src": "/assets/sony/sony-alexis-portrait-1200.webp",
-    "width": 1200,
-    "height": 1798,
+    "src": "/assets/sony/sony-executive-2026-1184.webp",
+    "width": 1184,
+    "height": 1328,
     "variants": [
       {
-        "src": "/assets/sony/sony-alexis-portrait-480.webp",
+        "src": "/assets/sony/sony-executive-2026-480.webp",
         "width": 480,
-        "height": 719
+        "height": 538
       },
       {
-        "src": "/assets/sony/sony-alexis-portrait-768.webp",
+        "src": "/assets/sony/sony-executive-2026-768.webp",
         "width": 768,
-        "height": 1150
+        "height": 861
       },
       {
-        "src": "/assets/sony/sony-alexis-portrait-1200.webp",
-        "width": 1200,
-        "height": 1798
+        "src": "/assets/sony/sony-executive-2026-1184.webp",
+        "width": 1184,
+        "height": 1328
       }
     ],
-    "position": "58% 25%",
-    "alt": "Sony Alexis, photographed outdoors in a burgundy jacket"
+    "sizes": "(max-width: 760px) 90svh, 62vw",
+    "position": "50% 28%",
+    "alt": "Sony Alexis in a black suit with a champagne-gold pocket square against a black-and-gold background"
   },
   "secondary": {
-    "src": "/assets/sony/sony-alexis-perspective.webp",
-    "width": 720,
-    "height": 480,
-    "alt": "Sony Alexis smiling in a colorful patterned shirt"
+    "src": "/assets/sony/sony-executive-perspective-2026.webp",
+    "width": 765,
+    "height": 505,
+    "alt": "Sony Alexis smiling in a black suit in a warmly lit interior"
   },
   "social": {
-    "src": "/assets/sony/sony-alexis-social.jpg",
+    "src": "/assets/sony/sony-executive-social-2026.jpg",
     "width": 1200,
     "height": 630,
-    "alt": "Sony Alexis \u2014 The Person Behind the Vision"
+    "alt": "Sony Alexis in a black suit against a black-and-gold background"
   }
 }

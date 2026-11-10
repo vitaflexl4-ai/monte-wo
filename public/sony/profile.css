@@ -18,3 +18,6 @@
 
 /* One central personal experience; corporate layout is unchanged. */
 .personal-resources{grid-template-columns:1fr}.resource-card{max-width:780px;width:100%}
+
+/* Keep the supplied portrait below the mobile header, preserving the full hairline. */
+@media(max-width:600px){.hero-portrait{top:88px;bottom:150px}}

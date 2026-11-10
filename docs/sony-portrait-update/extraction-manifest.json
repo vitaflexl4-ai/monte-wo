@@ -1,0 +1,203 @@
+{
+  "panels": [
+    {
+      "file": "collection-1-1.webp",
+      "source": "Cinematic Gold-Toned Portrait Portfolio.png",
+      "sourceSHA256": "2dc856b36ce254940c729e9c6be783b7d823eb4b50837cef74c02690b77bf38b",
+      "crop": [
+        310,
+        0,
+        766,
+        505
+      ],
+      "width": 456,
+      "height": 505
+    },
+    {
+      "file": "collection-1-2.webp",
+      "source": "Cinematic Gold-Toned Portrait Portfolio.png",
+      "sourceSHA256": "2dc856b36ce254940c729e9c6be783b7d823eb4b50837cef74c02690b77bf38b",
+      "crop": [
+        773,
+        0,
+        1325,
+        505
+      ],
+      "width": 552,
+      "height": 505
+    },
+    {
+      "file": "collection-1-3.webp",
+      "source": "Cinematic Gold-Toned Portrait Portfolio.png",
+      "sourceSHA256": "2dc856b36ce254940c729e9c6be783b7d823eb4b50837cef74c02690b77bf38b",
+      "crop": [
+        0,
+        514,
+        508,
+        1024
+      ],
+      "width": 508,
+      "height": 510
+    },
+    {
+      "file": "collection-1-4.webp",
+      "source": "Cinematic Gold-Toned Portrait Portfolio.png",
+      "sourceSHA256": "2dc856b36ce254940c729e9c6be783b7d823eb4b50837cef74c02690b77bf38b",
+      "crop": [
+        516,
+        514,
+        1021,
+        1024
+      ],
+      "width": 505,
+      "height": 510
+    },
+    {
+      "file": "collection-1-5.webp",
+      "source": "Cinematic Gold-Toned Portrait Portfolio.png",
+      "sourceSHA256": "2dc856b36ce254940c729e9c6be783b7d823eb4b50837cef74c02690b77bf38b",
+      "crop": [
+        1028,
+        514,
+        1536,
+        1024
+      ],
+      "width": 508,
+      "height": 510
+    },
+    {
+      "file": "collection-2-1.webp",
+      "source": "Luxury Black-and-Gold Portrait Portfolio-1 2.png",
+      "sourceSHA256": "fdfc93931a6dfd742ba2d32f3123a694d19bb7cd8a12db39e78bb9508fe5a4de",
+      "crop": [
+        5,
+        5,
+        690,
+        1018
+      ],
+      "width": 685,
+      "height": 1013
+    },
+    {
+      "file": "collection-2-2.webp",
+      "source": "Luxury Black-and-Gold Portrait Portfolio-1 2.png",
+      "sourceSHA256": "fdfc93931a6dfd742ba2d32f3123a694d19bb7cd8a12db39e78bb9508fe5a4de",
+      "crop": [
+        697,
+        5,
+        1125,
+        528
+      ],
+      "width": 428,
+      "height": 523
+    },
+    {
+      "file": "collection-2-3.webp",
+      "source": "Luxury Black-and-Gold Portrait Portfolio-1 2.png",
+      "sourceSHA256": "fdfc93931a6dfd742ba2d32f3123a694d19bb7cd8a12db39e78bb9508fe5a4de",
+      "crop": [
+        1133,
+        5,
+        1530,
+        528
+      ],
+      "width": 397,
+      "height": 523
+    },
+    {
+      "file": "collection-2-4.webp",
+      "source": "Luxury Black-and-Gold Portrait Portfolio-1 2.png",
+      "sourceSHA256": "fdfc93931a6dfd742ba2d32f3123a694d19bb7cd8a12db39e78bb9508fe5a4de",
+      "crop": [
+        697,
+        537,
+        1125,
+        1018
+      ],
+      "width": 428,
+      "height": 481
+    },
+    {
+      "file": "collection-2-5.webp",
+      "source": "Luxury Black-and-Gold Portrait Portfolio-1 2.png",
+      "sourceSHA256": "fdfc93931a6dfd742ba2d32f3123a694d19bb7cd8a12db39e78bb9508fe5a4de",
+      "crop": [
+        1133,
+        537,
+        1530,
+        1018
+      ],
+      "width": 397,
+      "height": 481
+    },
+    {
+      "file": "collection-3-1.webp",
+      "source": "Cinematic Luxury Portrait Collection.png",
+      "sourceSHA256": "3a911d2d9c065b259a77270cc57bca35466d586b8ef52762406e386b8b71d03d",
+      "crop": [
+        0,
+        0,
+        765,
+        505
+      ],
+      "width": 765,
+      "height": 505
+    },
+    {
+      "file": "collection-3-2.webp",
+      "source": "Cinematic Luxury Portrait Collection.png",
+      "sourceSHA256": "3a911d2d9c065b259a77270cc57bca35466d586b8ef52762406e386b8b71d03d",
+      "crop": [
+        774,
+        0,
+        1536,
+        505
+      ],
+      "width": 762,
+      "height": 505
+    },
+    {
+      "file": "collection-3-3.webp",
+      "source": "Cinematic Luxury Portrait Collection.png",
+      "sourceSHA256": "3a911d2d9c065b259a77270cc57bca35466d586b8ef52762406e386b8b71d03d",
+      "crop": [
+        0,
+        516,
+        507,
+        1024
+      ],
+      "width": 507,
+      "height": 508
+    },
+    {
+      "file": "collection-3-4.webp",
+      "source": "Cinematic Luxury Portrait Collection.png",
+      "sourceSHA256": "3a911d2d9c065b259a77270cc57bca35466d586b8ef52762406e386b8b71d03d",
+      "crop": [
+        517,
+        516,
+        1021,
+        1024
+      ],
+      "width": 504,
+      "height": 508
+    },
+    {
+      "file": "collection-3-5.webp",
+      "source": "Cinematic Luxury Portrait Collection.png",
+      "sourceSHA256": "3a911d2d9c065b259a77270cc57bca35466d586b8ef52762406e386b8b71d03d",
+      "crop": [
+        1031,
+        516,
+        1536,
+        1024
+      ],
+      "width": 505,
+      "height": 508
+    }
+  ],
+  "heroSource": "Black and Gold Executive Portrait.png",
+  "heroSourceSHA256": "1a57695b466a3d4574371c43cdf07b1b0367b5c5872681425fb824bd0c779ad6",
+  "selectedSecondary": "collection-3-1.webp",
+  "processing": "Panel extraction, proportional resizing, encoding and photo-only social crop. No retouching, facial edits, generated pixels or new overlays."
+}
