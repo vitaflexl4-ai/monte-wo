@@ -35,7 +35,7 @@ test('Group: Intelligence Corp is a third development venture, not a renamed par
  assert.equal(venture.name,'VitaFlex Intelligence Corp');assert.equal(venture.status,'In Development');assert.equal(venture.logo,null);assert.equal(venture.destination,null);
  const home=read('public/index.html');assert.ok(home.includes('01 — '+String(ventures.length).padStart(2,'0')));assert.equal((home.match(/class="venture-row /g)||[]).length,ventures.length);
  for(const v of ventures)assert.ok(home.includes(`/ventures/${v.slug}/`));
- const detail=read('public/ventures/vitaflex-intelligence-corp/index.html');assert.match(detail,/In Development/);assert.doesNotMatch(detail,/Fitness|Training|mailto:|href="\/intelligence|href="\/api\//);
+ const detail=read('public/ventures/vitaflex-intelligence-corp/index.html');assert.match(detail,/IN DEVELOPMENT|In Development/);assert.doesNotMatch(detail,/Fitness|Training|mailto:|href="\/intelligence|href="\/api\//);
  const sw=read('public/sw.js');for(const v of ventures)assert.equal(sw.split(`'/ventures/${v.slug}/'`).length-1,1);
 });
 

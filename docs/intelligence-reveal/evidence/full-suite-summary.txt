@@ -1,0 +1,1 @@
+npm test: 265 total, 263 pass, 2 historical wrangler.toml checksum failures (lab.test.js:28, website.test.js:7). Raw log /tmp/reveal-full-tests.txt. Infrastructure unchanged.

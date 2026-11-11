@@ -1,3 +1,4 @@
+import {assertIntelligenceAnnouncement,announcementPath} from '../scripts/intelligence-preservation.mjs';
 import {normalizePersonalAdditions,stripResourceHub,assertSonyBiography} from './helpers/personal-preservation.mjs';
 import test from 'node:test';
 import {normalizeDownloadedPagesConfig} from '../scripts/pages-config.mjs';
@@ -105,7 +106,7 @@ test('Preservation: other pages remain exact; authorized Sony redesign preserves
  const {createHash}=await import('node:crypto');
  const baseline=JSON.parse(read('tests/fixtures/seo-visible-baseline.json'));
  const sha=value=>createHash('sha256').update(value).digest('hex');
- for(const [file,expected] of Object.entries(baseline.htmlBodies)){
+ for(const [file,expected] of Object.entries(baseline.htmlBodies)){if(file===announcementPath){assertIntelligenceAnnouncement(read(file));continue;}
   if(file==='public/ventures/lifeline/index.html'){assert.equal(existsSync(file),false);continue;}if(file==='public/sony/index.html'){assertSonyBiography(read(file));continue;}
   const html=file==='public/index.html'?normalizePersonalAdditions(file,read(file)):read(file);let body=html.match(/<body\b[^>]*>[\s\S]*?<\/body>/)?.[0]||html;
   // Explicitly normalize ONLY the newly authorized changes against the unchanged baseline.
@@ -173,7 +174,7 @@ test('Footer and alias release: corporate-only deletion, one identity, app polic
  for(const route of corporate){
   const doc=read('public'+(route==='/'?'/index.html':route+'index.html'));const footer=doc.match(/<footer\b[\s\S]*?<\/footer>/)[0];
   assert.ok(!footer.includes('href="/privacy/"'));assert.match(footer,/>Meet Sony Alexis<\/a>/);
-  assert.equal((footer.match(/<a\b/g)||[]).length,1);
+  assert.equal((footer.match(/<a\b/g)||[]).length,route==='/ventures/vitaflex-intelligence-corp/'?2:1);
  }
  const sha=path=>createHash('sha256').update(readFileSync(path)).digest('hex');
  assert.equal(sha('public/monte-wo/index.html'),'65a339c207b7edf9784f8f98b9dfd81911f28433772816cd13cd8c361fc02ee3','Protected app/policy/style file changed');

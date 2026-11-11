@@ -53,7 +53,11 @@ for v in ventures:
  path=f'/ventures/{v["slug"]}/';routes.append(path)
  destination=f'<a class="explore" href="{E(v["destination"])}">Enter {E(v["name"])} <span aria-hidden="true">↗</span></a>' if v['destination'] else '<span class="availability">AVAILABILITY NOT ANNOUNCED</span>'
  detail=f'''<section class="frame venture-detail"><a class="back-link" href="/#ventures">← THE PORTFOLIO</a><div class="detail-label"><span class="index-label">A VITAFLEX BUSINESS GROUP VENTURE</span><span>{E(v['category'])}</span></div><h1>{E(v['name'])}</h1><div class="detail-art">{identity(v)}</div><div class="detail-bottom"><span class="availability">{E(v['status']) if v['status'] else v['category'].upper()}</span>{destination}</div></section>'''
- f=P/path.strip('/')/'index.html';f.parent.mkdir(parents=True,exist_ok=True);f.write_text(page(v['name'],v['description'],detail,path))
+ f=P/path.strip('/')/'index.html';f.parent.mkdir(parents=True,exist_ok=True)
+ if v['slug']=='vitaflex-intelligence-corp':
+  from intelligence_announcement import render_announcement
+  f.write_text(render_announcement(page))
+ else:f.write_text(page(v['name'],v['description'],detail,path))
 # A dedicated personal essay complements the portfolio; it does not replace it.
 from founder_page import render_founder
 founder_file=P/'sony/index.html'

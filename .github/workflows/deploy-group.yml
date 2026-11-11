@@ -40,7 +40,7 @@ jobs:
           TEST_ORIGIN=http://localhost:8080 SONY_SCREENSHOTS=evidence/sony-screenshots node tests/sony-experiences-browser.mjs
       - name: SEO and content regression tests
         run: |
-          node --test tests/seo.test.js tests/founder.test.js tests/group.test.js tests/master-execution.test.js tests/business.test.js tests/approved-restoration.test.js tests/sony-experiences.test.js tests/sony-profile.test.js
+          node --test tests/seo.test.js tests/founder.test.js tests/group.test.js tests/master-execution.test.js tests/business.test.js tests/approved-restoration.test.js tests/sony-experiences.test.js tests/sony-profile.test.js tests/intelligence-announcement.test.js
           VERIFY_ORIGIN=http://127.0.0.1:8080 SEO_AUDIT_OUTPUT=evidence/local-sitemap-audit.json node scripts/audit-public-seo.mjs
       - name: Compare restored corporate files against the exact owner-selected reference
         run: node scripts/verify-approved-corporate.mjs
@@ -73,7 +73,9 @@ jobs:
         env:
           TEST_ORIGIN: https://vitaflex.pages.dev
           PROFILE_SCREENSHOT_DIR: evidence/production-profile-screenshots
-        run: node tests/sony-profile-browser.mjs
+        run: |
+          node tests/sony-profile-browser.mjs
+          REVEAL_SCREENSHOTS=evidence/production-intelligence-screenshots node tests/intelligence-announcement-browser.mjs
       - name: Verify public corporate footer and alias (User-Agent probe, not verified crawler traffic)
         env:
           VERIFY_ORIGIN: https://vitaflexbusinessgroup.com

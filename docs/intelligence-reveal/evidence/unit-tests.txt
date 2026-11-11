@@ -1,0 +1,331 @@
+TAP version 13
+# Subtest: Approved restoration: corporate files match exact reference; manifests retain original bytes after only three route additions
+ok 1 - Approved restoration: corporate files match exact reference; manifests retain original bytes after only three route additions
+  ---
+  duration_ms: 3.958115
+  type: 'test'
+  ...
+# Subtest: Approved restoration: authorized Sony redesign preserves every biography paragraph and its original source
+ok 2 - Approved restoration: authorized Sony redesign preserves every biography paragraph and its original source
+  ---
+  duration_ms: 1.07752
+  type: 'test'
+  ...
+# Subtest: Approved restoration: four ventures are centerpiece; exactly one bottom Sony link; rejected prototype not loaded
+ok 3 - Approved restoration: four ventures are centerpiece; exactly one bottom Sony link; rejected prototype not loaded
+  ---
+  duration_ms: 0.246282
+  type: 'test'
+  ...
+# Subtest: Discontinued marketing: page, offers and exclusive implementations are removed
+ok 4 - Discontinued marketing: page, offers and exclusive implementations are removed
+  ---
+  duration_ms: 1.13595
+  type: 'test'
+  ...
+# Subtest: Focused sitemap: 55 unique public routes, no retired resources or marketing
+ok 5 - Focused sitemap: 55 unique public routes, no retired resources or marketing
+  ---
+  duration_ms: 0.391191
+  type: 'test'
+  ...
+# Group links/assets/fragments checked: 131
+# Subtest: Founder: source uses owner-authorized identity and personal essay, not a resume or venture launch
+ok 6 - Founder: source uses owner-authorized identity and personal essay, not a resume or venture launch
+  ---
+  duration_ms: 0.944196
+  type: 'test'
+  ...
+# Subtest: Founder: every supplied paragraph is rendered verbatim and in order
+ok 7 - Founder: every supplied paragraph is rendered verbatim and in order
+  ---
+  duration_ms: 0.368625
+  type: 'test'
+  ...
+# Subtest: Founder: chapter anchors, metadata, canonical and current-page link are correct
+ok 8 - Founder: chapter anchors, metadata, canonical and current-page link are correct
+  ---
+  duration_ms: 0.207887
+  type: 'test'
+  ...
+# Subtest: Founder: added through the group footer, not the homepage portfolio or product navigation
+ok 9 - Founder: added through the group footer, not the homepage portfolio or product navigation
+  ---
+  duration_ms: 0.586463
+  type: 'test'
+  ...
+# Subtest: Founder: every group link, asset and fragment resolves without fabricated destinations
+ok 10 - Founder: every group link, asset and fragment resolves without fabricated destinations
+  ---
+  duration_ms: 4.030811
+  type: 'test'
+  ...
+# Subtest: Founder: offline upgrade is deduplicated and source content is not downloaded at runtime
+ok 11 - Founder: offline upgrade is deduplicated and source content is not downloaded at runtime
+  ---
+  duration_ms: 0.278585
+  type: 'test'
+  ...
+# Subtest: Biography update: only the definitive version is presented, with no duplicate profile
+ok 12 - Biography update: only the definitive version is presented, with no duplicate profile
+  ---
+  duration_ms: 0.245062
+  type: 'test'
+  ...
+# Subtest: Group: parent identity is explicit and separate from product runtime
+ok 13 - Group: parent identity is explicit and separate from product runtime
+  ---
+  duration_ms: 0.950026
+  type: 'test'
+  ...
+# Subtest: Group: venture registry provides honest, resolvable destinations
+ok 14 - Group: venture registry provides honest, resolvable destinations
+  ---
+  duration_ms: 0.319097
+  type: 'test'
+  ...
+# Subtest: Group: preserved product and offline upgrade remain available
+ok 15 - Group: preserved product and offline upgrade remain available
+  ---
+  duration_ms: 1.533738
+  type: 'test'
+  ...
+# Subtest: Group: supplied official logo replaces placeholders without changing originals
+ok 16 - Group: supplied official logo replaces placeholders without changing originals
+  ---
+  duration_ms: 0.397488
+  type: 'test'
+  ...
+# Subtest: Group: Intelligence Corp is a third development venture, not a renamed parent or private API link
+ok 17 - Group: Intelligence Corp is a third development venture, not a renamed parent or private API link
+  ---
+  duration_ms: 0.446964
+  type: 'test'
+  ...
+# Subtest: Group: Lifeline removed by owner; remaining registry and page count are preserved
+ok 18 - Group: Lifeline removed by owner; remaining registry and page count are preserved
+  ---
+  duration_ms: 0.27251
+  type: 'test'
+  ...
+# Subtest: Announcement: exact owner copy, persistent equation and symbolic infinity
+ok 19 - Announcement: exact owner copy, persistent equation and symbolic infinity
+  ---
+  duration_ms: 1.414776
+  type: 'test'
+  ...
+# Subtest: Announcement: all unrelated existing public files preserved byte for byte
+ok 20 - Announcement: all unrelated existing public files preserved byte for byte
+  ---
+  duration_ms: 668.38397
+  type: 'test'
+  ...
+# Subtest: Book mystery: exact chapter order, development status, readable names and no cancellation claims
+ok 21 - Book mystery: exact chapter order, development status, readable names and no cancellation claims
+  ---
+  duration_ms: 0.628366
+  type: 'test'
+  ...
+# Protected public files: 228
+# Subtest: Master execution: 226 original public files are byte-identical; two manifests add only authorized personal routes
+ok 22 - Master execution: 226 original public files are byte-identical; two manifests add only authorized personal routes
+  ---
+  duration_ms: 13.849768
+  type: 'test'
+  ...
+# Subtest: Master execution: Sony presentation is explicitly redesigned; biography and safe graph remain exact
+ok 23 - Master execution: Sony presentation is explicitly redesigned; biography and safe graph remain exact
+  ---
+  duration_ms: 0.935525
+  type: 'test'
+  ...
+# Subtest: Master execution: zero-ambiguity graph retains owner-confirmed identity but no external matches or credential claims
+ok 24 - Master execution: zero-ambiguity graph retains owner-confirmed identity but no external matches or credential claims
+  ---
+  duration_ms: 0.320048
+  type: 'test'
+  ...
+# Technical-only preservation: 61 HTML bodies match baseline after only authorized footer normalization; 165 static files unchanged.
+# Subtest: SEO: exact owner-approved identity, metadata, H1 and canonical
+ok 25 - SEO: exact owner-approved identity, metadata, H1 and canonical
+  ---
+  duration_ms: 2.20564
+  type: 'test'
+  ...
+# Subtest: SEO: valid JSON-LD ProfilePage references the supported Person
+ok 26 - SEO: valid JSON-LD ProfilePage references the supported Person
+  ---
+  duration_ms: 0.47757
+  type: 'test'
+  ...
+# Subtest: SEO: group documents have unique titles/descriptions, complete social metadata, valid heading structure and alt attributes
+ok 27 - SEO: group documents have unique titles/descriptions, complete social metadata, valid heading structure and alt attributes
+  ---
+  duration_ms: 2.471198
+  type: 'test'
+  ...
+# Subtest: SEO: crawlable preferred-domain sitemap is deduplicated and excludes private surfaces
+ok 28 - SEO: crawlable preferred-domain sitemap is deduplicated and excludes private surfaces
+  ---
+  duration_ms: 3.197727
+  type: 'test'
+  ...
+# Subtest: SEO: all sitemap pages have unique titles and descriptions
+ok 29 - SEO: all sitemap pages have unique titles and descriptions
+  ---
+  duration_ms: 3.0515
+  type: 'test'
+  ...
+# Subtest: SEO: publication is restricted to the existing project and preserves configuration
+ok 30 - SEO: publication is restricted to the existing project and preserves configuration
+  ---
+  duration_ms: 0.424212
+  type: 'test'
+  ...
+# Subtest: SEO deployment: empty downloaded placement tables are omitted, explicit modes and bindings preserved
+ok 31 - SEO deployment: empty downloaded placement tables are omitted, explicit modes and bindings preserved
+  ---
+  duration_ms: 0.458271
+  type: 'test'
+  ...
+# Subtest: Preservation: other pages remain exact; authorized Sony redesign preserves original biography
+ok 32 - Preservation: other pages remain exact; authorized Sony redesign preserves original biography
+  ---
+  duration_ms: 18.563681
+  type: 'test'
+  ...
+# Subtest: Technical-only SEO: AI/search crawlers share public access and private exclusions
+ok 33 - Technical-only SEO: AI/search crawlers share public access and private exclusions
+  ---
+  duration_ms: 0.93144
+  type: 'test'
+  ...
+# Subtest: Entity recognition: homepage Organization/WebSite agree with existing Sony entity IDs
+ok 34 - Entity recognition: homepage Organization/WebSite agree with existing Sony entity IDs
+  ---
+  duration_ms: 0.736564
+  type: 'test'
+  ...
+# Subtest: Entity recognition: HTTP audit detects noindex, broken canonical and metadata duplication
+ok 35 - Entity recognition: HTTP audit detects noindex, broken canonical and metadata duplication
+  ---
+  duration_ms: 2.647454
+  type: 'test'
+  ...
+# Subtest: Footer and alias release: corporate-only deletion, one identity, app policy untouched
+ok 36 - Footer and alias release: corporate-only deletion, one identity, app policy untouched
+  ---
+  duration_ms: 1.094495
+  type: 'test'
+  ...
+# Subtest: Book: exact five-part sequence, one semantic title and complete reading edition
+ok 37 - Book: exact five-part sequence, one semantic title and complete reading edition
+  ---
+  duration_ms: 1.857988
+  type: 'test'
+  ...
+# Subtest: Book: zero controls, journal inputs, tracking, progress dashboard or book controls
+ok 38 - Book: zero controls, journal inputs, tracking, progress dashboard or book controls
+  ---
+  duration_ms: 0.337792
+  type: 'test'
+  ...
+# Subtest: Book: deterministic order, automatic opening, natural articulation and finite final hold
+ok 39 - Book: deterministic order, automatic opening, natural articulation and finite final hold
+  ---
+  duration_ms: 2.337377
+  type: 'test'
+  ...
+# Subtest: Book: articulated panels, hidden duplicate ink and lightweight original materials
+ok 40 - Book: articulated panels, hidden duplicate ink and lightweight original materials
+  ---
+  duration_ms: 0.378088
+  type: 'test'
+  ...
+# Subtest: Personal scope: profile retains only the book resource while the book remains passive
+ok 41 - Personal scope: profile retains only the book resource while the book remains passive
+  ---
+  duration_ms: 0.238578
+  type: 'test'
+  ...
+# Subtest: Corporate preservation: homepage, four ventures, biography source and infrastructure unchanged
+ok 42 - Corporate preservation: homepage, four ventures, biography source and infrastructure unchanged
+  ---
+  duration_ms: 14.172748
+  type: 'test'
+  ...
+# Subtest: Book: spiritual app explicitly under development in visual and static editions
+ok 43 - Book: spiritual app explicitly under development in visual and static editions
+  ---
+  duration_ms: 0.310885
+  type: 'test'
+  ...
+# Subtest: Book: exactly two essential return links outside the animated stage
+ok 44 - Book: exactly two essential return links outside the animated stage
+  ---
+  duration_ms: 0.254011
+  type: 'test'
+  ...
+# Subtest: Sony profile: every original biography paragraph, closing and postscript preserved
+ok 45 - Sony profile: every original biography paragraph, closing and postscript preserved
+  ---
+  duration_ms: 2.152941
+  type: 'test'
+  ...
+# Subtest: Sony profile: philosophy uses only exact existing sentences, never invented quotations
+ok 46 - Sony profile: philosophy uses only exact existing sentences, never invented quotations
+  ---
+  duration_ms: 0.34716
+  type: 'test'
+  ...
+# Subtest: Sony profile: four preserved story anchors and one central book destination
+ok 47 - Sony profile: four preserved story anchors and one central book destination
+  ---
+  duration_ms: 0.254888
+  type: 'test'
+  ...
+# Subtest: Sony profile: real configured photos, responsive hero, reserved geometry and lazy secondary image
+ok 48 - Sony profile: real configured photos, responsive hero, reserved geometry and lazy secondary image
+  ---
+  duration_ms: 0.485998
+  type: 'test'
+  ...
+# Subtest: Sony profile: portrait social preview and existing safe metadata retained
+ok 49 - Sony profile: portrait social preview and existing safe metadata retained
+  ---
+  duration_ms: 0.355134
+  type: 'test'
+  ...
+# Subtest: Sony profile: progressive accessible menu, reduced motion and no data collection
+ok 50 - Sony profile: progressive accessible menu, reduced motion and no data collection
+  ---
+  duration_ms: 1.483156
+  type: 'test'
+  ...
+# Subtest: Sony profile: all unrelated public bytes remain unchanged except the approved three-project book
+ok 51 - Sony profile: all unrelated public bytes remain unchanged except the approved three-project book
+  ---
+  duration_ms: 13.150195
+  type: 'test'
+  ...
+# Subtest: Sony profile: retired pages absent and visible Back to Ventures link targets existing portfolio
+ok 52 - Sony profile: retired pages absent and visible Back to Ventures link targets existing portfolio
+  ---
+  duration_ms: 0.258977
+  type: 'test'
+  ...
+# Subtest: Sony profile: every internal link and fragment resolves in the static build
+ok 53 - Sony profile: every internal link and fragment resolves in the static build
+  ---
+  duration_ms: 1.060428
+  type: 'test'
+  ...
+1..53
+# tests 53
+# suites 0
+# pass 53
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 1216.806338

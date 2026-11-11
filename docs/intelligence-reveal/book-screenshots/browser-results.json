@@ -1,0 +1,96 @@
+{
+  "viewports": [
+    {
+      "width": 320,
+      "returnLinks": true,
+      "sequence": true,
+      "articulatedTurn": true,
+      "zeroControls": true,
+      "finiteHold": true,
+      "noStorage": true,
+      "noOverflow": true
+    },
+    {
+      "width": 390,
+      "returnLinks": true,
+      "sequence": true,
+      "articulatedTurn": true,
+      "zeroControls": true,
+      "finiteHold": true,
+      "noStorage": true,
+      "noOverflow": true
+    },
+    {
+      "width": 600,
+      "returnLinks": true,
+      "sequence": true,
+      "articulatedTurn": true,
+      "zeroControls": true,
+      "finiteHold": true,
+      "noStorage": true,
+      "noOverflow": true
+    },
+    {
+      "width": 768,
+      "returnLinks": true,
+      "sequence": true,
+      "articulatedTurn": true,
+      "zeroControls": true,
+      "finiteHold": true,
+      "noStorage": true,
+      "noOverflow": true
+    },
+    {
+      "width": 1024,
+      "returnLinks": true,
+      "sequence": true,
+      "articulatedTurn": true,
+      "zeroControls": true,
+      "finiteHold": true,
+      "noStorage": true,
+      "noOverflow": true
+    },
+    {
+      "width": 1440,
+      "returnLinks": true,
+      "sequence": true,
+      "articulatedTurn": true,
+      "zeroControls": true,
+      "finiteHold": true,
+      "noStorage": true,
+      "noOverflow": true
+    },
+    {
+      "width": 1920,
+      "returnLinks": true,
+      "sequence": true,
+      "articulatedTurn": true,
+      "zeroControls": true,
+      "finiteHold": true,
+      "noStorage": true,
+      "noOverflow": true
+    }
+  ],
+  "captures": [
+    "390-cover.png",
+    "390-spiritual.png",
+    "390-turn.png",
+    "390-physical.png",
+    "390-intellectual.png",
+    "390-final.png",
+    "1440-cover.png",
+    "1440-spiritual.png",
+    "1440-turn.png",
+    "1440-physical.png",
+    "1440-intellectual.png",
+    "1440-final.png"
+  ],
+  "checks": [
+    "static reduced-motion edition",
+    "static no-JS edition",
+    "retired resources HTTP 404",
+    "corporate → exact biography in redesigned profile → book",
+    "no page errors or external requests"
+  ],
+  "passed": true
+}

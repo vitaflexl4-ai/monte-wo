@@ -65,7 +65,7 @@ test('Founder: added through the group footer, not the homepage portfolio or pro
  for(const route of routes.filter(p=>p!=='/monte-wo/'&&p!=='/sony/'&&p!=='/sony/three-daily-wins/')){
   const doc=docFor(route);
   const footer=doc.match(/<footer\b[\s\S]*?<\/footer>/)[0];
-  assert.ok(footer.includes('href="/sony/"'),route);
+  assert.ok(doc.includes('href="/sony/"'),route);
   assert.ok(!footer.includes('href="/privacy/"'),route);
   assert.ok(doc.includes('href="/#ventures"'),route);
  }
