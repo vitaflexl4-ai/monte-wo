@@ -1,6 +1,6 @@
 # Intelligence branding — preview review
 
-Status: local preview only. Not committed, pushed, or deployed. The previously published announcement remains unchanged in production.
+Status: approved by owner and published. Production revision: 64d1798309f9c5e48ac35bea44de61874fa07364. Immutable deployment: https://128b6eb3.vitaflex.pages.dev/.
 
 ## Changes
 - Corporate portfolio now lists MONTE WO, Bible Verse Memory App, and VitaFlex Intelligence. Bible Verse Memory App is marked Under Development and links to its existing book chapter experience; no app capabilities or launch dates have been invented.
@@ -24,4 +24,12 @@ Status: local preview only. Not committed, pushed, or deployed. The previously p
 
 Evidence is in evidence/; responsive captures are in screenshots/. Light and dark monogram proofs are monogram-light.png and monogram-dark.png.
 
-Publication requires approval of this branding preview. Live custom-domain verification is not implied by local checks.
+## Production publication
+
+Owner approved this revision. Workflow https://github.com/vitaflexl4-ai/monte-wo/actions/runs/43078555195 published to the existing vitaflex project after checking baseline 08dc85cb2aedefc338a7e2eb39a35ff468a1a429 and hosted-preview regressions.
+
+Live links: https://vitaflex.pages.dev/ and https://vitaflex.pages.dev/ventures/vitaflex-intelligence-corp/.
+
+Production project validation, all 55 sitemap URLs, book, Sony profile, Intelligence announcement, and production desktop/mobile navigation passed. Overall workflow remains failed because custom-domain probes receive Cloudflare HTTP 403 challenges and the historical reference preview has four ventures rather than the current expected three. Production itself passes the restored desktop/mobile route checks. Protected API check returned 401 in the production project verification; the subsequent combined public-domain/API step was skipped. No DNS/security changes or challenge bypass was attempted.
+
+GitHub annotations and step outcomes are saved in evidence/production-annotations.json and evidence/production-run.json. Full log/artifact download was blocked by this sandbox's outbound host restrictions; GitHub API annotations were available and confirm publication and checks.
