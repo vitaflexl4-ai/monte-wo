@@ -4,34 +4,8 @@
     "device": "desktop",
     "width": 1440,
     "height": 1000,
-    "routes": [
-      {
-        "path": "/ventures/monte-wo/",
-        "status": 200,
-        "passed": true
-      },
-      {
-        "path": "/ventures/vitaflex-training/",
-        "status": 200,
-        "passed": true
-      },
-      {
-        "path": "/ventures/vitaflex-intelligence-corp/",
-        "status": 200,
-        "passed": true
-      },
-      {
-        "path": "/ventures/lifeline/",
-        "status": 200,
-        "passed": true
-      },
-      {
-        "path": "/sony/",
-        "status": 200,
-        "passed": true
-      }
-    ],
-    "passed": true,
+    "routes": [],
+    "passed": false,
     "homeStatus": 200,
     "challenge": null,
     "home": {
@@ -48,6 +22,8 @@
         "font": "Inter, Arial, sans-serif"
       }
     },
+    "error": "Restored homepage check failed",
+    "title": "Beyond the obvious. | VitaFlex Business Group",
     "pageErrors": []
   },
   {
@@ -55,34 +31,8 @@
     "device": "mobile",
     "width": 390,
     "height": 844,
-    "routes": [
-      {
-        "path": "/ventures/monte-wo/",
-        "status": 200,
-        "passed": true
-      },
-      {
-        "path": "/ventures/vitaflex-training/",
-        "status": 200,
-        "passed": true
-      },
-      {
-        "path": "/ventures/vitaflex-intelligence-corp/",
-        "status": 200,
-        "passed": true
-      },
-      {
-        "path": "/ventures/lifeline/",
-        "status": 200,
-        "passed": true
-      },
-      {
-        "path": "/sony/",
-        "status": 200,
-        "passed": true
-      }
-    ],
-    "passed": true,
+    "routes": [],
+    "passed": false,
     "homeStatus": 200,
     "challenge": null,
     "home": {
@@ -99,6 +49,8 @@
         "font": "Inter, Arial, sans-serif"
       }
     },
+    "error": "Restored homepage check failed",
+    "title": "Beyond the obvious. | VitaFlex Business Group",
     "pageErrors": []
   },
   {
@@ -113,17 +65,12 @@
         "passed": true
       },
       {
-        "path": "/ventures/vitaflex-training/",
-        "status": 200,
-        "passed": true
-      },
-      {
         "path": "/ventures/vitaflex-intelligence-corp/",
         "status": 200,
         "passed": true
       },
       {
-        "path": "/ventures/lifeline/",
+        "path": "/ventures/vitaflex-training/",
         "status": 200,
         "passed": true
       },
@@ -138,7 +85,7 @@
     "challenge": null,
     "home": {
       "title": "Beyond the obvious. | VitaFlex Business Group",
-      "ventures": 4,
+      "ventures": 3,
       "sonyLinks": 1,
       "bottomSony": 1,
       "hasRejectedPrototype": false,
@@ -164,17 +111,12 @@
         "passed": true
       },
       {
-        "path": "/ventures/vitaflex-training/",
-        "status": 200,
-        "passed": true
-      },
-      {
         "path": "/ventures/vitaflex-intelligence-corp/",
         "status": 200,
         "passed": true
       },
       {
-        "path": "/ventures/lifeline/",
+        "path": "/ventures/vitaflex-training/",
         "status": 200,
         "passed": true
       },
@@ -189,7 +131,7 @@
     "challenge": null,
     "home": {
       "title": "Beyond the obvious. | VitaFlex Business Group",
-      "ventures": 4,
+      "ventures": 3,
       "sonyLinks": 1,
       "bottomSony": 1,
       "hasRejectedPrototype": false,
