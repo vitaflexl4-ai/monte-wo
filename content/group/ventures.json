@@ -11,6 +11,29 @@
     "destinationLabel": "Explore MONTE WO"
   },
   {
+    "slug": "bible-verse-memory-app",
+    "name": "Bible Verse Memory App",
+    "logo": null,
+    "category": "Scripture memorization \u00b7 Under Development",
+    "status": "In Development",
+    "description": "A project focused on Scripture memorization, biblical understanding, and spiritual development.",
+    "detail": "Under development. Not yet revealed.",
+    "destination": null,
+    "destinationLabel": null,
+    "portfolioHref": "/sony/three-daily-wins/"
+  },
+  {
+    "slug": "vitaflex-intelligence-corp",
+    "name": "VitaFlex Intelligence",
+    "logo": null,
+    "category": "Intelligence",
+    "status": "In Development",
+    "description": "VitaFlex Intelligence. A venture in development under VitaFlex Business Group.",
+    "detail": "A venture in development under VitaFlex Business Group.",
+    "destination": null,
+    "destinationLabel": null
+  },
+  {
     "slug": "vitaflex-training",
     "name": "VitaFlex Training",
     "logo": null,
@@ -19,17 +42,7 @@
     "description": "Our fitness and mindset brand, helping people pursue their training and personal development goals.",
     "detail": "A distinct brand within VitaFlex Business Group, focused on training and personal growth. A dedicated public destination and availability have not yet been announced.",
     "destination": null,
-    "destinationLabel": null
-  },
-  {
-    "slug": "vitaflex-intelligence-corp",
-    "name": "VitaFlex Intelligence Corp",
-    "logo": null,
-    "category": "Intelligence",
-    "status": "In Development",
-    "description": "VitaFlex Intelligence Corp. A venture in development under VitaFlex Business Group.",
-    "detail": "A venture in development under VitaFlex Business Group.",
-    "destination": null,
-    "destinationLabel": null
+    "destinationLabel": null,
+    "listed": false
   }
 ]

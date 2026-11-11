@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync,existsSync} from 'node:fs';
 const read=p=>readFileSync(p,'utf8');
-const ventures=JSON.parse(read('content/group/ventures.json'));
+const registry=JSON.parse(read('content/group/ventures.json'));const ventures=registry.filter(v=>v.listed!==false);
 test('Group: parent identity is explicit and separate from product runtime',()=>{
  const doc=read('public/index.html');
  for(const text of ['Beyond','the obvious.','VITAFLEX BUSINESS GROUP','id="ventures"','data-design="noir"'])assert.ok(doc.includes(text),text);
@@ -12,8 +12,8 @@ test('Group: parent identity is explicit and separate from product runtime',()=>
 });
 test('Group: venture registry provides honest, resolvable destinations',()=>{
  assert.equal(ventures.length,3);
- for(const v of ventures){assert.ok(v.name&&v.category&&v.description&&v.slug);assert.ok(v.status===null||['Operating','In Development','Coming Soon'].includes(v.status));assert.ok(existsSync(`public/ventures/${v.slug}/index.html`));if(v.logo)assert.ok(existsSync('public'+v.logo));if(v.destination)assert.ok(existsSync('public'+v.destination+'index.html'));}
- assert.equal(ventures[1].destination,null);assert.equal(ventures[1].status,null);
+ for(const v of ventures){assert.ok(v.name&&v.category&&v.description&&v.slug);assert.ok(v.status===null||['Operating','In Development','Coming Soon'].includes(v.status));assert.ok(existsSync(v.portfolioHref?'public'+v.portfolioHref+'index.html':`public/ventures/${v.slug}/index.html`));if(v.logo)assert.ok(existsSync('public'+v.logo));if(v.destination)assert.ok(existsSync('public'+v.destination+'index.html'));}
+ assert.equal(ventures[1].destination,null);assert.equal(ventures[1].status,'In Development');
 });
 test('Group: preserved product and offline upgrade remain available',()=>{
  assert.match(read('public/monte-wo/index.html'),/APP CONCEPT/);
@@ -32,11 +32,11 @@ test('Group: supplied official logo replaces placeholders without changing origi
 
 test('Group: Intelligence Corp is a third development venture, not a renamed parent or private API link',()=>{
  const venture=ventures.find(v=>v.slug==='vitaflex-intelligence-corp');
- assert.equal(venture.name,'VitaFlex Intelligence Corp');assert.equal(venture.status,'In Development');assert.equal(venture.logo,null);assert.equal(venture.destination,null);
+ assert.equal(venture.name,'VitaFlex Intelligence');assert.equal(venture.status,'In Development');assert.equal(venture.logo,null);assert.equal(venture.destination,null);
  const home=read('public/index.html');assert.ok(home.includes('01 — '+String(ventures.length).padStart(2,'0')));assert.equal((home.match(/class="venture-row /g)||[]).length,ventures.length);
- for(const v of ventures)assert.ok(home.includes(`/ventures/${v.slug}/`));
+ for(const v of ventures)assert.ok(home.includes(v.portfolioHref||`/ventures/${v.slug}/`));
  const detail=read('public/ventures/vitaflex-intelligence-corp/index.html');assert.match(detail,/IN DEVELOPMENT|In Development/);assert.doesNotMatch(detail,/Fitness|Training|mailto:|href="\/intelligence|href="\/api\//);
- const sw=read('public/sw.js');for(const v of ventures)assert.equal(sw.split(`'/ventures/${v.slug}/'`).length-1,1);
+ const sw=read('public/sw.js');for(const v of registry.filter(v=>!v.portfolioHref))assert.equal(sw.split(`'/ventures/${v.slug}/'`).length-1,1);
 });
 
 test('Group: Lifeline removed by owner; remaining registry and page count are preserved',()=>{assert.ok(!ventures.some(v=>v.slug==='lifeline'));assert.equal(existsSync('public/ventures/lifeline'),false);assert.ok(!read('public/index.html').includes('/ventures/lifeline/'));assert.ok(read('public/index.html').includes('01 — 03'));});

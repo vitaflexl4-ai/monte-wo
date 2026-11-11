@@ -1,0 +1,14 @@
+{
+  "checkedPublicFiles": 244,
+  "unchanged": 240,
+  "changed": [
+    "public/index.html",
+    "public/sony/intelligence-announcement.css",
+    "public/sony/three-daily-wins/index.html",
+    "public/ventures/vitaflex-intelligence-corp/index.html"
+  ],
+  "originalLogoSHA256": "fbc07a8c47368661373ef96884ff67d8b081168d812dc8324c07abeb5641f7eb",
+  "corporateOriginalLogoAndCSSUnchanged": true,
+  "trainingPageRetained": true,
+  "routesAndSitemapUnchanged": true
+}

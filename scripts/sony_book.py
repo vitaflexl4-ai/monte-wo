@@ -7,7 +7,7 @@ import re
 ROOT = Path(__file__).resolve().parent.parent
 BOOK_PATH = '/sony/three-daily-wins/'
 E = lambda s: html.escape(str(s), quote=True)
-PROJECTS = [('I', 'SPIRITUAL', 'Bible Verse<br>Memory App', 'Strengthening faith through Scripture.', 'Scripture memorization, biblical understanding, and spiritual development.', 'Faith. Scripture. Consistency.'), ('II', 'PHYSICAL', 'MONTE WO', 'Strength built through discipline.', 'Physical discipline, strength development, measurable progress, and personal growth.', 'Discipline. Progress. Strength.'), ('III', 'INTELLECTUAL', 'VitaFlex Intelligence<br>Corp', 'A deeper understanding of the world.', 'Knowledge, critical thinking, research, strategic understanding, and intellectual development.', 'Knowledge. Thought. Understanding.')]
+PROJECTS = [('I', 'SPIRITUAL', 'Bible Verse<br>Memory App', 'Strengthening faith through Scripture.', 'Scripture memorization, biblical understanding, and spiritual development.', 'Faith. Scripture. Consistency.'), ('II', 'PHYSICAL', 'MONTE WO', 'Strength built through discipline.', 'Physical discipline, strength development, measurable progress, and personal growth.', 'Discipline. Progress. Strength.'), ('III', 'INTELLECTUAL', 'VitaFlex<br>Intelligence', 'A deeper understanding of the world.', 'Knowledge, critical thinking, research, strategic understanding, and intellectual development.', 'Knowledge. Thought. Understanding.')]
 CHAPTERS = [(n, dimension, name.replace("<br>", " "), description, closing)
             for n, dimension, name, line, description, closing in PROJECTS]
 

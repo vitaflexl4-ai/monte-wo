@@ -1,0 +1,56 @@
+{
+  "layouts": [
+    {
+      "width": 320,
+      "height": 740,
+      "equationImmediateAndPermanent": true,
+      "noOverflow": true,
+      "animatedConvergence": true,
+      "returnJourneys": true
+    },
+    {
+      "width": 390,
+      "height": 844,
+      "equationImmediateAndPermanent": true,
+      "noOverflow": true,
+      "animatedConvergence": true,
+      "returnJourneys": true
+    },
+    {
+      "width": 768,
+      "height": 1024,
+      "equationImmediateAndPermanent": true,
+      "noOverflow": true,
+      "animatedConvergence": true,
+      "returnJourneys": true
+    },
+    {
+      "width": 844,
+      "height": 390,
+      "equationImmediateAndPermanent": true,
+      "noOverflow": true,
+      "animatedConvergence": true,
+      "returnJourneys": true
+    },
+    {
+      "width": 1440,
+      "height": 1000,
+      "equationImmediateAndPermanent": true,
+      "noOverflow": true,
+      "animatedConvergence": true,
+      "returnJourneys": true
+    },
+    {
+      "width": 1920,
+      "height": 1080,
+      "equationImmediateAndPermanent": true,
+      "noOverflow": true,
+      "animatedConvergence": true,
+      "returnJourneys": true
+    }
+  ],
+  "reducedMotion": true,
+  "noJs": true,
+  "pageErrors": [],
+  "passed": true
+}

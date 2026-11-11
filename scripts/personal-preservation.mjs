@@ -20,6 +20,7 @@ export function normalizeLifelineRemoval(html){
  assert.ok(!html.includes('/ventures/lifeline/'),'Lifeline must be removed');
  assert.equal((html.match(/class="venture-row /g)||[]).length,3);
  assert.ok(html.includes('01 — 03'));
+ html=html.replace(/<a class="venture-row bible-verse-memory-app"[\s\S]*?<\/a>/,"<a class=\"venture-row vitaflex-training\" href=\"/ventures/vitaflex-training/\"><span class=\"venture-index\">02</span><h2>VitaFlex <em>Training</em></h2><span class=\"venture-category\">FITNESS / MINDSET</span><span class=\"venture-arrow\" aria-hidden=\"true\">\u2197</span></a>").replace('VitaFlex <em>Intelligence</em>','VitaFlex <em>Intelligence Corp</em>');
  return html.replace('01 — 03','01 — 04').replace('<div class="portfolio-end">',LIFELINE_REFERENCE_ROW+'<div class="portfolio-end">');
 }
 const LIFELINE_REFERENCE_ROW="<a class=\"venture-row lifeline\" href=\"/ventures/lifeline/\"><span class=\"venture-index\">04</span><h2>Lifeline</h2><span class=\"venture-category\">GAME SIMULATION</span><span class=\"venture-arrow\" aria-hidden=\"true\">\u2197</span></a>";

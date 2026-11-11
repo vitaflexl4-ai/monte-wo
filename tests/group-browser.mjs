@@ -4,7 +4,7 @@ import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 const browser=await chromium.launch(browserOptions);
 const page=await browser.newPage();const errors=[];page.on('pageerror',e=>errors.push(e.message));
-const ventures=JSON.parse(readFileSync('content/group/ventures.json'));
+const ventures=JSON.parse(readFileSync('content/group/ventures.json')).filter(v=>v.listed!==false);
 const base=process.env.TEST_ORIGIN||'http://localhost:8080';
 for(const route of JSON.parse(readFileSync('public/group-routes.json'))){
  assert.equal((await page.goto(base+route)).status(),200);
