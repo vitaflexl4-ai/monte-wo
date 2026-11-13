@@ -1,0 +1,60 @@
+name: Read-only portfolio release verification
+on:
+  push:
+    branches: [arena/beb13e2a-monte-wo]
+    paths: [.github/workflows/verify-portfolio-release.yml]
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: {node-version: 22}
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - name: Confirm the existing production revision (one GET, no changes)
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: |
+          node --input-type=module <<'JS'
+          import{readFileSync,mkdirSync,writeFileSync}from'node:fs';import assert from'node:assert/strict';
+          const{account_id}=JSON.parse(readFileSync('deploy.config.json','utf8'));
+          const response=await fetch(`https://api.cloudflare.com/client/v4/accounts/${account_id}/pages/projects/vitaflex`,{headers:{Authorization:`Bearer ${process.env.CLOUDFLARE_API_TOKEN}`},signal:AbortSignal.timeout(30000)});
+          assert.ok(response.ok,'Existing project read failed');const data=await response.json();assert.ok(data.success);const p=data.result,d=p.canonical_deployment;
+          const result={project:p.name,revision:d?.deployment_trigger?.metadata?.commit_hash,url:d?.url,domains:p.domains};
+          assert.equal(result.project,'vitaflex');assert.equal(result.revision,'7c21af18c311f65ece1fc3e9f4ef5a9078c99f0e');
+          mkdirSync('evidence',{recursive:true});writeFileSync('evidence/production-metadata.json',JSON.stringify(result,null,2));console.log('::notice title=Portfolio production revision confirmed::'+JSON.stringify(result));
+          JS
+      - name: Verify production routes and metadata
+        env:
+          VERIFY_ORIGIN: https://vitaflex.pages.dev
+          SEO_AUDIT_OUTPUT: evidence/production-sitemap-audit.json
+        run: |
+          node scripts/verify-group.mjs
+          node scripts/audit-public-seo.mjs
+      - name: Verify live portfolio and all venture pages
+        env:
+          TEST_ORIGIN: https://vitaflex.pages.dev
+          PORTFOLIO_SCREENSHOTS: evidence/production-portfolio
+          REVEAL_SCREENSHOTS: evidence/production-intelligence
+        run: |
+          node --input-type=module -e "import('./tests/portfolio-chapters-browser.mjs').catch(e=>{console.error('::error title=Production portfolio verification::'+String(e.stack||e).replaceAll('\n',' | '));process.exit(1)})"
+          node tests/intelligence-announcement-browser.mjs
+          echo '::notice title=Production portfolio browser verified::PASS seven widths, all three venture pages, own Bible app URL, truthful statuses, lifecycle, decoded images, no overflow, focus and 44px targets, no-JS, reduced motion and live preference changes, pointer spotlight and all named journeys. Intelligence equation remains removed.'
+      - name: Verify unchanged Sony profile and book
+        env:
+          TEST_ORIGIN: https://vitaflex.pages.dev
+          SONY_SCREENSHOTS: evidence/production-book
+          PROFILE_SCREENSHOT_DIR: evidence/production-profile
+        run: |
+          node tests/sony-profile-browser.mjs
+          node tests/sony-experiences-browser.mjs
+          echo '::notice title=Production personal pages verified::PASS Sony profile at eight widths and passive book at seven widths, original biography, navigation, no-JS and reduced motion preserved.'
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: portfolio-production-verification
+          path: evidence/
