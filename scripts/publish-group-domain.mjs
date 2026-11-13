@@ -58,6 +58,8 @@ try {
  assert.equal(profileBrowser.status,0,'Sony editorial profile hosted-preview verification failed; production is not published');
  const intelligence=spawnSync(process.execPath,['tests/intelligence-announcement-browser.mjs'],{stdio:'inherit',env:{...env,TEST_ORIGIN:preview.url,REVEAL_SCREENSHOTS:'evidence/preview-intelligence-screenshots'}});
  assert.equal(intelligence.status,0,'Intelligence announcement hosted-preview verification failed; production is not published');
+ const chapters=spawnSync(process.execPath,['tests/portfolio-chapters-browser.mjs'],{stdio:'inherit',env:{...env,TEST_ORIGIN:preview.url,PORTFOLIO_SCREENSHOTS:'evidence/portfolio-preview'}});
+ assert.equal(chapters.status,0,'Portfolio hosted-preview checks failed; production is not published');
  assert.equal((await inspect()).canonical_deployment?.id,before.canonical_deployment?.id,'Production changed during preview; stop before publishing');
  run(['pages','deploy','public','--project-name',project,'--branch','main','--commit-hash',expected,'--commit-dirty=true']);
  const after=await inspect();

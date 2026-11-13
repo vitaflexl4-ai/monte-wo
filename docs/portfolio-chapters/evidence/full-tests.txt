@@ -1,0 +1,1691 @@
+
+> monte-wo-vitaflex@0.5.0 test
+> node --test tests/*.test.js
+
+TAP version 13
+# Subtest: account transfer preserves every set, explicit lb units and exact stable workout ID
+ok 1 - account transfer preserves every set, explicit lb units and exact stable workout ID
+  ---
+  duration_ms: 2.569447
+  type: 'test'
+  ...
+# Subtest: account transfer refuses unknown movements and unsupported bounds without truncation
+ok 2 - account transfer refuses unknown movements and unsupported bounds without truncation
+  ---
+  duration_ms: 1.103083
+  type: 'test'
+  ...
+# Subtest: acknowledgment must match the submitted ID; already-saved confirmation is accepted
+ok 3 - acknowledgment must match the submitted ID; already-saved confirmation is accepted
+  ---
+  duration_ms: 0.225345
+  type: 'test'
+  ...
+# Subtest: public readiness and PKCE are same-origin, credential-free, and do not post a workout
+ok 4 - public readiness and PKCE are same-origin, credential-free, and do not post a workout
+  ---
+  duration_ms: 27.947951
+  type: 'test'
+  ...
+# Subtest: PKCE rejects wrong state, replays, expired grants and malformed token responses
+ok 5 - PKCE rejects wrong state, replays, expired grants and malformed token responses
+  ---
+  duration_ms: 4.087998
+  type: 'test'
+  ...
+# Subtest: successful login uses S256 verifier binding and bearer only on private reads
+ok 6 - successful login uses S256 verifier binding and bearer only on private reads
+  ---
+  duration_ms: 2.811033
+  type: 'test'
+  ...
+# Subtest: retry after an ambiguous write sends identical ID and payload, not a new record
+ok 7 - retry after an ambiguous write sends identical ID and payload, not a new record
+  ---
+  duration_ms: 5.390832
+  type: 'test'
+  ...
+# Subtest: an unrelated receipt cannot clear a local workout as saved
+ok 8 - an unrelated receipt cannot clear a local workout as saved
+  ---
+  duration_ms: 1.753988
+  type: 'test'
+  ...
+# Subtest: expired or rejected sessions are cleared; stale async responses cannot restore private history
+ok 9 - expired or rejected sessions are cleared; stale async responses cannot restore private history
+  ---
+  duration_ms: 3.785136
+  type: 'test'
+  ...
+# Subtest: sign out clears memory before revocation and fails honestly if server is unreachable
+ok 10 - sign out clears memory before revocation and fails honestly if server is unreachable
+  ---
+  duration_ms: 4.622131
+  type: 'test'
+  ...
+# Subtest: history validates records and supports opaque cursor pagination
+ok 11 - history validates records and supports opaque cursor pagination
+  ---
+  duration_ms: 2.71599
+  type: 'test'
+  ...
+# Subtest: disabled/incompatible config never permits authentication
+ok 12 - disabled/incompatible config never permits authentication
+  ---
+  duration_ms: 1.336858
+  type: 'test'
+  ...
+# Subtest: publication mirrors shared contracts and excludes auth callbacks/private APIs from caching
+ok 13 - publication mirrors shared contracts and excludes auth callbacks/private APIs from caching
+  ---
+  duration_ms: 0.695279
+  type: 'test'
+  ...
+# Subtest: explicit device copy keeps source immutable, validates receipt, and refuses changed accounts
+ok 14 - explicit device copy keeps source immutable, validates receipt, and refuses changed accounts
+  ---
+  duration_ms: 0.765921
+  type: 'test'
+  ...
+# Subtest: native device-to-account copy requires confirmation and uses the shared session-bound save guard
+ok 15 - native device-to-account copy requires confirmation and uses the shared session-bound save guard
+  ---
+  duration_ms: 0.88224
+  type: 'test'
+  ...
+# Subtest: Approved restoration: corporate files match exact reference; manifests retain original bytes after only three route additions
+ok 16 - Approved restoration: corporate files match exact reference; manifests retain original bytes after only three route additions
+  ---
+  duration_ms: 4.388057
+  type: 'test'
+  ...
+# Subtest: Approved restoration: authorized Sony redesign preserves every biography paragraph and its original source
+ok 17 - Approved restoration: authorized Sony redesign preserves every biography paragraph and its original source
+  ---
+  duration_ms: 2.227629
+  type: 'test'
+  ...
+# Subtest: Approved restoration: four ventures are centerpiece; exactly one bottom Sony link; rejected prototype not loaded
+ok 18 - Approved restoration: four ventures are centerpiece; exactly one bottom Sony link; rejected prototype not loaded
+  ---
+  duration_ms: 0.305905
+  type: 'test'
+  ...
+# Subtest: Discontinued marketing: page, offers and exclusive implementations are removed
+ok 19 - Discontinued marketing: page, offers and exclusive implementations are removed
+  ---
+  duration_ms: 1.144072
+  type: 'test'
+  ...
+# Subtest: Focused sitemap: 56 unique public routes, no retired resources or marketing
+ok 20 - Focused sitemap: 56 unique public routes, no retired resources or marketing
+  ---
+  duration_ms: 0.459367
+  type: 'test'
+  ...
+# Subtest: cockpit uses current shared catalog and mobile filter inputs without a second merge engine
+ok 21 - cockpit uses current shared catalog and mobile filter inputs without a second merge engine
+  ---
+  duration_ms: 1.82538
+  type: 'test'
+  ...
+# Subtest: source filters retain original guide and animation boundaries
+ok 22 - source filters retain original guide and animation boundaries
+  ---
+  duration_ms: 11.0484
+  type: 'test'
+  ...
+# Subtest: user-provided serving macros are exact; no targets are invented
+ok 23 - user-provided serving macros are exact; no targets are invented
+  ---
+  duration_ms: 0.580685
+  type: 'test'
+  ...
+# Subtest: ring renderer supports verified records but never substitutes zero or default targets
+ok 24 - ring renderer supports verified records but never substitutes zero or default targets
+  ---
+  duration_ms: 0.254539
+  type: 'test'
+  ...
+# Subtest: nonfinite, negative and numeric strings cannot become food facts or goals
+ok 25 - nonfinite, negative and numeric strings cannot become food facts or goals
+  ---
+  duration_ms: 0.216276
+  type: 'test'
+  ...
+# Subtest: source SVG and approved tier names survive website publication
+ok 26 - source SVG and approved tier names survive website publication
+  ---
+  duration_ms: 0.96744
+  type: 'test'
+  ...
+# Subtest: license guard accepts only the original or exact whitespace-only snapshot, never changed license text
+ok 27 - license guard accepts only the original or exact whitespace-only snapshot, never changed license text
+  ---
+  duration_ms: 1.242197
+  type: 'test'
+  ...
+# Subtest: session sets calculate external-load volume without floating rounding drift
+ok 28 - session sets calculate external-load volume without floating rounding drift
+  ---
+  duration_ms: 0.911369
+  type: 'test'
+  ...
+# Subtest: invalid sets are rejected, not coerced into fabricated performances
+ok 29 - invalid sets are rejected, not coerced into fabricated performances
+  ---
+  duration_ms: 0.368315
+  type: 'test'
+  ...
+# Subtest: verified dish records and user-entered target ratios stay separate
+ok 30 - verified dish records and user-entered target ratios stay separate
+  ---
+  duration_ms: 1.351642
+  type: 'test'
+  ...
+# Subtest: all nine exact-ID guide videos use the source repository loop, no substituted movements
+ok 31 - all nine exact-ID guide videos use the source repository loop, no substituted movements
+  ---
+  duration_ms: 3.098801
+  type: 'test'
+  ...
+# Subtest: camera requests video only, with explicit stop and honest analysis disclosure
+ok 32 - camera requests video only, with explicit stop and honest analysis disclosure
+  ---
+  duration_ms: 0.640573
+  type: 'test'
+  ...
+# Group links/assets/fragments checked: 174
+# Subtest: Founder: source uses owner-authorized identity and personal essay, not a resume or venture launch
+ok 33 - Founder: source uses owner-authorized identity and personal essay, not a resume or venture launch
+  ---
+  duration_ms: 1.172936
+  type: 'test'
+  ...
+# Subtest: Founder: every supplied paragraph is rendered verbatim and in order
+ok 34 - Founder: every supplied paragraph is rendered verbatim and in order
+  ---
+  duration_ms: 0.405129
+  type: 'test'
+  ...
+# Subtest: Founder: chapter anchors, metadata, canonical and current-page link are correct
+ok 35 - Founder: chapter anchors, metadata, canonical and current-page link are correct
+  ---
+  duration_ms: 0.38567
+  type: 'test'
+  ...
+# Subtest: Founder: added through the group footer, not the homepage portfolio or product navigation
+ok 36 - Founder: added through the group footer, not the homepage portfolio or product navigation
+  ---
+  duration_ms: 1.903191
+  type: 'test'
+  ...
+# Subtest: Founder: every group link, asset and fragment resolves without fabricated destinations
+ok 37 - Founder: every group link, asset and fragment resolves without fabricated destinations
+  ---
+  duration_ms: 6.195626
+  type: 'test'
+  ...
+# Subtest: Founder: offline upgrade is deduplicated and source content is not downloaded at runtime
+ok 38 - Founder: offline upgrade is deduplicated and source content is not downloaded at runtime
+  ---
+  duration_ms: 0.404306
+  type: 'test'
+  ...
+# Subtest: Biography update: only the definitive version is presented, with no duplicate profile
+ok 39 - Biography update: only the definitive version is presented, with no duplicate profile
+  ---
+  duration_ms: 0.379319
+  type: 'test'
+  ...
+# Subtest: Group: parent identity is explicit and separate from product runtime
+ok 40 - Group: parent identity is explicit and separate from product runtime
+  ---
+  duration_ms: 1.052622
+  type: 'test'
+  ...
+# Subtest: Group: venture registry provides honest, resolvable destinations
+ok 41 - Group: venture registry provides honest, resolvable destinations
+  ---
+  duration_ms: 0.295351
+  type: 'test'
+  ...
+# Subtest: Group: preserved product and offline upgrade remain available
+ok 42 - Group: preserved product and offline upgrade remain available
+  ---
+  duration_ms: 1.551266
+  type: 'test'
+  ...
+# Subtest: Group: supplied official logo replaces placeholders without changing originals
+ok 43 - Group: supplied official logo replaces placeholders without changing originals
+  ---
+  duration_ms: 0.305554
+  type: 'test'
+  ...
+# Subtest: Group: Intelligence Corp is a third development venture, not a renamed parent or private API link
+ok 44 - Group: Intelligence Corp is a third development venture, not a renamed parent or private API link
+  ---
+  duration_ms: 0.571775
+  type: 'test'
+  ...
+# Subtest: Group: Lifeline removed by owner; remaining registry and page count are preserved
+ok 45 - Group: Lifeline removed by owner; remaining registry and page count are preserved
+  ---
+  duration_ms: 0.289469
+  type: 'test'
+  ...
+# Subtest: Announcement: exact owner copy, equation removed and remaining content preserved
+ok 46 - Announcement: exact owner copy, equation removed and remaining content preserved
+  ---
+  duration_ms: 1.27826
+  type: 'test'
+  ...
+# Subtest: Announcement: all unrelated existing public files preserved byte for byte
+ok 47 - Announcement: all unrelated existing public files preserved byte for byte
+  ---
+  duration_ms: 720.199369
+  type: 'test'
+  ...
+# Subtest: Book mystery: exact chapter order, development status, readable names and no cancellation claims
+ok 48 - Book mystery: exact chapter order, development status, readable names and no cancellation claims
+  ---
+  duration_ms: 0.705281
+  type: 'test'
+  ...
+# Subtest: Branding: correct visible venture trio, retained Training page and truthful app status
+ok 49 - Branding: correct visible venture trio, retained Training page and truthful app status
+  ---
+  duration_ms: 2.090394
+  type: 'test'
+  ...
+# Subtest: Branding: original logo pixels and corporate hero remain exact; orbit is separate
+ok 50 - Branding: original logo pixels and corporate hero remain exact; orbit is separate
+  ---
+  duration_ms: 21.734557
+  type: 'test'
+  ...
+# Subtest: migrations apply additively; automation rules seeded disabled; no operators by default; app tables are absent
+ok 51 - migrations apply additively; automation rules seeded disabled; no operators by default; app tables are absent
+  ---
+  duration_ms: 92.624524
+  type: 'test'
+  ...
+# Subtest: unconfigured access fails closed
+ok 52 - unconfigured access fails closed
+  ---
+  duration_ms: 22.673877
+  type: 'test'
+  ...
+# Subtest: public status endpoint reports honest component state without authentication
+ok 53 - public status endpoint reports honest component state without authentication
+  ---
+  duration_ms: 730.075036
+  type: 'test'
+  ...
+# Subtest: verifyAccessJwt falls back to redirect-follow when the strict certs fetch is rejected
+ok 54 - verifyAccessJwt falls back to redirect-follow when the strict certs fetch is rejected
+  ---
+  duration_ms: 28.870226
+  type: 'test'
+  ...
+# Subtest: verifyAccessJwt reports the failing stage when an unexpected error occurs
+ok 55 - verifyAccessJwt reports the failing stage when an unexpected error occurs
+  ---
+  duration_ms: 2.190223
+  type: 'test'
+  ...
+# Subtest: a quoted CF_Authorization cookie value still authenticates
+ok 56 - a quoted CF_Authorization cookie value still authenticates
+  ---
+  duration_ms: 26.063714
+  type: 'test'
+  ...
+# Subtest: fail-closed 503 carries an actionable hint pointing at the public status endpoint
+ok 57 - fail-closed 503 carries an actionable hint pointing at the public status endpoint
+  ---
+  duration_ms: 0.685075
+  type: 'test'
+  ...
+# Subtest: forged, expired, wrong-issuer and wrong-audience tokens are rejected
+ok 58 - forged, expired, wrong-issuer and wrong-audience tokens are rejected
+  ---
+  duration_ms: 32.305069
+  type: 'test'
+  ...
+# Subtest: authenticated identity without operator provisioning is refused; provisioned admin works; viewer cannot mutate
+ok 59 - authenticated identity without operator provisioning is refused; provisioned admin works; viewer cannot mutate
+  ---
+  duration_ms: 946.112529
+  type: 'test'
+  ...
+# Subtest: CF_Authorization cookie (the Access login cookie) is accepted as the JWT source
+ok 60 - CF_Authorization cookie (the Access login cookie) is accepted as the JWT source
+  ---
+  duration_ms: 839.602583
+  type: 'test'
+  ...
+# Subtest: local development bypass only works on localhost hostnames
+ok 61 - local development bypass only works on localhost hostnames
+  ---
+  duration_ms: 825.620403
+  type: 'test'
+  ...
+# Subtest: preview token gate: only valid bearer tokens on preview hosts, never without LOCAL_DEVELOPMENT
+ok 62 - preview token gate: only valid bearer tokens on preview hosts, never without LOCAL_DEVELOPMENT
+  ---
+  duration_ms: 2530.950329
+  type: 'test'
+  ...
+# Subtest: cross-origin mutations are rejected
+ok 63 - cross-origin mutations are rejected
+  ---
+  duration_ms: 27.729957
+  type: 'test'
+  ...
+# Subtest: telemetry validation rejects identifiers, free-form text and unknown fields
+ok 64 - telemetry validation rejects identifiers, free-form text and unknown fields
+  ---
+  duration_ms: 2.497666
+  type: 'test'
+  ...
+# Subtest: ingest requires the key, is idempotent and rate-limited
+ok 65 - ingest requires the key, is idempotent and rate-limited
+  ---
+  duration_ms: 309.129167
+  type: 'test'
+  ...
+# Subtest: website failure creates one deduplicated incident that escalates by streak, then verifies recovery
+ok 66 - website failure creates one deduplicated incident that escalates by streak, then verifies recovery
+  ---
+  duration_ms: 2530.051588
+  type: 'test'
+  ...
+# Subtest: a resolved incident that fails again reopens with preserved history
+ok 67 - a resolved incident that fails again reopens with preserved history
+  ---
+  duration_ms: 211.758705
+  type: 'test'
+  ...
+# MONTE WO Intelligence is not enabled/configured; no monitoring action was taken. Set INTELLIGENCE_ENABLED=true and bind INTEL_DB.
+# Subtest: 5xx is an outage; 4xx is a broken route needing human confirmation; slow streaks are performance incidents
+ok 68 - 5xx is an outage; 4xx is a broken route needing human confirmation; slow streaks are performance incidents
+  ---
+  duration_ms: 1216.600831
+  type: 'test'
+  ...
+# Subtest: missing SITE_URL records an explicit not-configured check instead of reporting healthy
+ok 69 - missing SITE_URL records an explicit not-configured check instead of reporting healthy
+  ---
+  duration_ms: 67.169141
+  type: 'test'
+  ...
+# Subtest: release regression detection: hypothesis-labelled, confidence-capped, with baseline evidence
+ok 70 - release regression detection: hypothesis-labelled, confidence-capped, with baseline evidence
+  ---
+  duration_ms: 1925.207541
+  type: 'test'
+  ...
+# Subtest: errors without a usage denominator are reported as missing data, not a regression
+ok 71 - errors without a usage denominator are reported as missing data, not a regression
+  ---
+  duration_ms: 495.005205
+  type: 'test'
+  ...
+# Subtest: login failure spike detection
+ok 72 - login failure spike detection
+  ---
+  duration_ms: 989.025258
+  type: 'test'
+  ...
+# Subtest: AU correlates temporally co-occurring website and app failures and follows member resolution
+ok 73 - AU correlates temporally co-occurring website and app failures and follows member resolution
+  ---
+  duration_ms: 577.861097
+  type: 'test'
+  ...
+# Subtest: daily briefing: deterministic, evidence-linked, challenges weak conclusions, flags decisions
+ok 74 - daily briefing: deterministic, evidence-linked, challenges weak conclusions, flags decisions
+  ---
+  duration_ms: 370.778482
+  type: 'test'
+  ...
+# Subtest: weekly briefing: recurring fingerprints, MTTR and week-over-week comparison
+ok 75 - weekly briefing: recurring fingerprints, MTTR and week-over-week comparison
+  ---
+  duration_ms: 223.395925
+  type: 'test'
+  ...
+# Subtest: health computation is honest about missing data
+ok 76 - health computation is honest about missing data
+  ---
+  duration_ms: 0.41038
+  type: 'test'
+  ...
+# Subtest: retention respects the approval rule and never deletes incidents or audit history
+ok 77 - retention respects the approval rule and never deletes incidents or audit history
+  ---
+  duration_ms: 339.675513
+  type: 'test'
+  ...
+# Subtest: overview reports agent states and configuration honestly
+ok 78 - overview reports agent states and configuration honestly
+  ---
+  duration_ms: 1076.901758
+  type: 'test'
+  ...
+# Subtest: incident list filters, detail view and status transitions with audit
+ok 79 - incident list filters, detail view and status transitions with audit
+  ---
+  duration_ms: 461.736909
+  type: 'test'
+  ...
+# Subtest: automation governance: typed confirmation, audit trail, revoke
+ok 80 - automation governance: typed confirmation, audit trail, revoke
+  ---
+  duration_ms: 315.982213
+  type: 'test'
+  ...
+# Subtest: manual verification endpoint runs real checks and records them
+ok 81 - manual verification endpoint runs real checks and records them
+  ---
+  duration_ms: 897.007859
+  type: 'test'
+  ...
+# Subtest: on-demand analysis and briefing endpoints work with rate limits and audit
+ok 82 - on-demand analysis and briefing endpoints work with rate limits and audit
+  ---
+  duration_ms: 1143.021097
+  type: 'test'
+  ...
+# Subtest: timeline merges incidents, runs, briefings and audit; audit endpoint lists events; unknown routes 404
+ok 83 - timeline merges incidents, runs, briefings and audit; audit endpoint lists events; unknown routes 404
+  ---
+  duration_ms: 118.644626
+  type: 'test'
+  ...
+# Subtest: operator rate limits apply
+ok 84 - operator rate limits apply
+  ---
+  duration_ms: 865.833128
+  type: 'test'
+  ...
+# Subtest: worker fails closed when not enabled and runs jobs when enabled
+ok 85 - worker fails closed when not enabled and runs jobs when enabled
+  ---
+  duration_ms: 1129.131615
+  type: 'test'
+  ...
+# Subtest: TITAN audit turns source + telemetry evidence into a prioritized backlog
+ok 86 - TITAN audit turns source + telemetry evidence into a prioritized backlog
+  ---
+  duration_ms: 609.880584
+  type: 'test'
+  ...
+# Subtest: TITAN findings require the source-fetch env; missing sources are reported, not fabricated
+ok 87 - TITAN findings require the source-fetch env; missing sources are reported, not fabricated
+  ---
+  duration_ms: 321.288979
+  type: 'test'
+  ...
+# Subtest: improvement backlog lists items and a detail includes full evidence + plans
+ok 88 - improvement backlog lists items and a detail includes full evidence + plans
+  ---
+  duration_ms: 90.722328
+  type: 'test'
+  ...
+# Subtest: ranking-affecting improvements cannot be approved without explicit acknowledgment
+ok 89 - ranking-affecting improvements cannot be approved without explicit acknowledgment
+  ---
+  duration_ms: 289.782199
+  type: 'test'
+  ...
+# Subtest: implementation + recheck loop: fix verified when the detector no longer fires
+ok 90 - implementation + recheck loop: fix verified when the detector no longer fires
+  ---
+  duration_ms: 1537.077369
+  type: 'test'
+  ...
+# Subtest: re-running the audit preserves human decisions (status and notes survive)
+ok 91 - re-running the audit preserves human decisions (status and notes survive)
+  ---
+  duration_ms: 505.213889
+  type: 'test'
+  ...
+# Subtest: overview reports the TITAN agent with honest state and next action
+ok 92 - overview reports the TITAN agent with honest state and next action
+  ---
+  duration_ms: 858.765748
+  type: 'test'
+  ...
+# Subtest: budget reports measured usage against documented free limits
+ok 93 - budget reports measured usage against documented free limits
+  ---
+  duration_ms: 1248.427829
+  type: 'test'
+  ...
+# Subtest: deploy script is fail-closed, credential-free, and idempotent; runbook documents the owner steps
+ok 94 - deploy script is fail-closed, credential-free, and idempotent; runbook documents the owner steps
+  ---
+  duration_ms: 1.75022
+  type: 'test'
+  ...
+# Subtest: AU ROOM module exists, is CSP-safe, wired into the app, and visualizes only real data
+ok 95 - AU ROOM module exists, is CSP-safe, wired into the app, and visualizes only real data
+  ---
+  duration_ms: 2.844189
+  type: 'test'
+  ...
+# Subtest: Lab: Epley examples, kg/lb equivalence and single provenance
+ok 96 - Lab: Epley examples, kg/lb equivalence and single provenance
+  ---
+  duration_ms: 1.535252
+  type: 'test'
+  ...
+# Subtest: Lab: invalid estimate inputs never produce plausible estimates
+ok 97 - Lab: invalid estimate inputs never produce plausible estimates
+  ---
+  duration_ms: 0.788665
+  type: 'test'
+  ...
+# Subtest: Lab: exact conversion factor, directions, zero and round-trip
+ok 98 - Lab: exact conversion factor, directions, zero and round-trip
+  ---
+  duration_ms: 0.310815
+  type: 'test'
+  ...
+# Subtest: Lab: percentage presets, sorting, provenance and no implicit rounding
+ok 99 - Lab: percentage presets, sorting, provenance and no implicit rounding
+  ---
+  duration_ms: 1.471415
+  type: 'test'
+  ...
+# Subtest: Lab: rational increment flooring avoids decimal underflow and upward rounding
+ok 100 - Lab: rational increment flooring avoids decimal underflow and upward rounding
+  ---
+  duration_ms: 0.382293
+  type: 'test'
+  ...
+# Subtest: Lab: invalid percentage sets, precision, max, type and increments
+ok 101 - Lab: invalid percentage sets, precision, max, type and increments
+  ---
+  duration_ms: 0.399946
+  type: 'test'
+  ...
+# Subtest: Lab: exact balanced plates, pairs and combined collars
+ok 102 - Lab: exact balanced plates, pairs and combined collars
+  ---
+  duration_ms: 0.968322
+  type: 'test'
+  ...
+# Subtest: Lab: closest below, nearest above, and lower tie preference
+ok 103 - Lab: closest below, nearest above, and lower tie preference
+  ---
+  duration_ms: 0.217785
+  type: 'test'
+  ...
+# Subtest: Lab: custom decimal sizes, precise under-target boundary and empty stock
+ok 104 - Lab: custom decimal sizes, precise under-target boundary and empty stock
+  ---
+  duration_ms: 0.574184
+  type: 'test'
+  ...
+# Subtest: Lab: pounds and minimum plate count
+ok 105 - Lab: pounds and minimum plate count
+  ---
+  duration_ms: 0.516593
+  type: 'test'
+  ...
+# Subtest: Lab: malformed inventory, duplicates and unsupported precision are rejected
+ok 106 - Lab: malformed inventory, duplicates and unsupported precision are rejected
+  ---
+  duration_ms: 0.501992
+  type: 'test'
+  ...
+# Subtest: Lab: plate solver agrees with exhaustive stock oracle (240 seeded cases)
+ok 107 - Lab: plate solver agrees with exhaustive stock oracle (240 seeded cases)
+  ---
+  duration_ms: 12.459633
+  type: 'test'
+  ...
+# Subtest: Lab: maximum supported custom stock remains bounded and balanced
+ok 108 - Lab: maximum supported custom stock remains bounded and balanced
+  ---
+  duration_ms: 15.430917
+  type: 'test'
+  ...
+# Subtest: Lab: default warm-up ramp is sub-working, decreasing-rep, stock-feasible
+ok 109 - Lab: default warm-up ramp is sub-working, decreasing-rep, stock-feasible
+  ---
+  duration_ms: 0.82212
+  type: 'test'
+  ...
+# Subtest: Lab: estimated-max basis and achievable working load rounding
+ok 110 - Lab: estimated-max basis and achievable working load rounding
+  ---
+  duration_ms: 0.435389
+  type: 'test'
+  ...
+# Subtest: Lab: bare-bar floor, duplicate omission, and no-lighter warnings
+ok 111 - Lab: bare-bar floor, duplicate omission, and no-lighter warnings
+  ---
+  duration_ms: 0.4672
+  type: 'test'
+  ...
+# Subtest: Lab: large jumps include the final transition to working sets
+ok 112 - Lab: large jumps include the final transition to working sets
+  ---
+  duration_ms: 1.01894
+  type: 'test'
+  ...
+# Subtest: Lab: warm-up input guardrails, not safety certification
+ok 113 - Lab: warm-up input guardrails, not safety certification
+  ---
+  duration_ms: 0.391484
+  type: 'test'
+  ...
+# Subtest: Lab: numeric helper rejects non-numeric primitives
+ok 114 - Lab: numeric helper rejects non-numeric primitives
+  ---
+  duration_ms: 0.620667
+  type: 'test'
+  ...
+# Subtest: Lab: protected sources unchanged except documented mobile binding/comment changes
+not ok 115 - Lab: protected sources unchanged except documented mobile binding/comment changes
+  ---
+  duration_ms: 4.148401
+  type: 'test'
+  location: '/home/user/monte-wo/tests/lab.test.js:28:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    Pinned authorized change: wrangler.toml
+    + actual - expected
+
+    + 'b7912b3f47a625a4d78c0fb54c69bb087cd9833e2703e7d960ebbe6394701bde'
+    - 'beab7b76ea6abe6467e927c9011cdb5efa893d3793f6a508468b20491d68c3e2'
+
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 'beab7b76ea6abe6467e927c9011cdb5efa893d3793f6a508468b20491d68c3e2'
+  actual: 'b7912b3f47a625a4d78c0fb54c69bb087cd9833e2703e7d960ebbe6394701bde'
+  operator: 'strictEqual'
+  stack: |-
+    assertProtectedSource (file:///home/user/monte-wo/tests/fixtures/protected-source.js:9:164)
+    TestContext.<anonymous> (file:///home/user/monte-wo/tests/lab.test.js:28:357)
+    Test.runInAsyncScope (node:async_hooks:214:14)
+    Test.run (node:internal/test_runner/test:1047:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:744:18)
+    Test.postRun (node:internal/test_runner/test:1173:19)
+    Test.run (node:internal/test_runner/test:1101:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: Lab: five catalog entries and generated localized copy match source
+ok 116 - Lab: five catalog entries and generated localized copy match source
+  ---
+  duration_ms: 2.028649
+  type: 'test'
+  ...
+# Subtest: Lab: warm-up decimal equipment and exact percentage boundaries use integer micro-units
+ok 117 - Lab: warm-up decimal equipment and exact percentage boundaries use integer micro-units
+  ---
+  duration_ms: 0.615056
+  type: 'test'
+  ...
+# Subtest: exercise metadata has unique stable ids, real groups, written guides and source records
+ok 118 - exercise metadata has unique stable ids, real groups, written guides and source records
+  ---
+  duration_ms: 1.02365
+  type: 'test'
+  ...
+# Subtest: generated library routes and offline route list stay in sync
+ok 119 - generated library routes and offline route list stay in sync
+  ---
+  duration_ms: 0.396002
+  type: 'test'
+  ...
+# Protected public files: 228
+# Subtest: Master execution: 226 original public files are byte-identical; two manifests add only authorized personal routes
+ok 120 - Master execution: 226 original public files are byte-identical; two manifests add only authorized personal routes
+  ---
+  duration_ms: 15.667393
+  type: 'test'
+  ...
+# Subtest: Master execution: Sony presentation is explicitly redesigned; biography and safe graph remain exact
+ok 121 - Master execution: Sony presentation is explicitly redesigned; biography and safe graph remain exact
+  ---
+  duration_ms: 0.982088
+  type: 'test'
+  ...
+# Subtest: Master execution: zero-ambiguity graph retains owner-confirmed identity but no external matches or credential claims
+ok 122 - Master execution: zero-ambiguity graph retains owner-confirmed identity but no external matches or credential claims
+  ---
+  duration_ms: 0.337732
+  type: 'test'
+  ...
+# Subtest: mobile: isolated application schema has no waitlist and no approved standards
+ok 123 - mobile: isolated application schema has no waitlist and no approved standards
+  ---
+  duration_ms: 95.304005
+  type: 'test'
+  ...
+# Subtest: mobile: disabled services are explicit; real catalog remains available
+ok 124 - mobile: disabled services are explicit; real catalog remains available
+  ---
+  duration_ms: 2.538219
+  type: 'test'
+  ...
+# Subtest: mobile: AES-GCM hides provider token, authenticates ciphertext and detects key changes
+ok 125 - mobile: AES-GCM hides provider token, authenticates ciphertext and detects key changes
+  ---
+  duration_ms: 6.164207
+  type: 'test'
+  ...
+# Subtest: mobile: S256 is required; access authorization cannot be forged
+ok 126 - mobile: S256 is required; access authorization cannot be forged
+  ---
+  duration_ms: 99.513722
+  type: 'test'
+  ...
+# Subtest: mobile: PKCE mismatch does not consume grant; successful exchange is single-use and tokens hashed
+ok 127 - mobile: PKCE mismatch does not consume grant; successful exchange is single-use and tokens hashed
+  ---
+  duration_ms: 476.37754
+  type: 'test'
+  ...
+# Subtest: mobile: expired grants and expired sessions are rejected
+ok 128 - mobile: expired grants and expired sessions are rejected
+  ---
+  duration_ms: 430.596355
+  type: 'test'
+  ...
+# Subtest: mobile: missing bearer, bad origins, unknown methods and disabled principals fail closed
+ok 129 - mobile: missing bearer, bad origins, unknown methods and disabled principals fail closed
+  ---
+  duration_ms: 363.319013
+  type: 'test'
+  ...
+# Subtest: mobile: strict workout validation rejects invalid calendar dates, forged ranks and unknown media/exercises
+ok 130 - mobile: strict workout validation rejects invalid calendar dates, forged ranks and unknown media/exercises
+  ---
+  duration_ms: 2.586033
+  type: 'test'
+  ...
+# Subtest: mobile: actual workout save, retry deduplication, privacy, ownership and deletion
+ok 131 - mobile: actual workout save, retry deduplication, privacy, ownership and deletion
+  ---
+  duration_ms: 1400.850503
+  type: 'test'
+  ...
+# Subtest: mobile: workout cursor pagination has no duplicate or missing equal-date rows
+ok 132 - mobile: workout cursor pagination has no duplicate or missing equal-date rows
+  ---
+  duration_ms: 1788.276731
+  type: 'test'
+  ...
+# Subtest: mobile: native bridge uses same profile, performance engine and role authorization
+ok 133 - mobile: native bridge uses same profile, performance engine and role authorization
+  ---
+  duration_ms: 2384.67667
+  type: 'test'
+  ...
+# Subtest: mobile: account deletion is an idempotent pending request, not a false erasure claim
+ok 134 - mobile: account deletion is an idempotent pending request, not a false erasure claim
+  ---
+  duration_ms: 586.876905
+  type: 'test'
+  ...
+# Subtest: mobile: JSON bodies are size bounded and error responses do not expose secrets
+ok 135 - mobile: JSON bodies are size bounded and error responses do not expose secrets
+  ---
+  duration_ms: 334.72953
+  type: 'test'
+  ...
+# Subtest: mobile: misbound aliases containing a waitlist table are unavailable even when binding objects differ
+ok 136 - mobile: misbound aliases containing a waitlist table are unavailable even when binding objects differ
+  ---
+  duration_ms: 98.319672
+  type: 'test'
+  ...
+# Subtest: mobile: private evidence forwarding preserves bytes, owner authorization and reviewer self-approval denial
+ok 137 - mobile: private evidence forwarding preserves bytes, owner authorization and reviewer self-approval denial
+  ---
+  duration_ms: 1691.017053
+  type: 'test'
+  ...
+# Subtest: mobile: website PKCE and native sessions share account workouts, not other accounts or rank awards
+ok 138 - mobile: website PKCE and native sessions share account workouts, not other accounts or rank awards
+  ---
+  duration_ms: 2632.542135
+  type: 'test'
+  ...
+# Subtest: mobile: bundled catalog and draft methodology are exact canonical copies, not a second engine
+ok 139 - mobile: bundled catalog and draft methodology are exact canonical copies, not a second engine
+  ---
+  duration_ms: 3.283316
+  type: 'test'
+  ...
+# Subtest: mobile: real native dependencies; no webview wrapper and no hardcoded private credentials
+ok 140 - mobile: real native dependencies; no webview wrapper and no hardcoded private credentials
+  ---
+  duration_ms: 0.458974
+  type: 'test'
+  ...
+# Subtest: mobile: unreleased channel manifest has no install/store URL and website retains five primary navigation entries
+ok 141 - mobile: unreleased channel manifest has no install/store URL and website retains five primary navigation entries
+  ---
+  duration_ms: 0.513379
+  type: 'test'
+  ...
+# Subtest: phone: load input only toggles a fixed illustrative badge, never computes a rank
+ok 142 - phone: load input only toggles a fixed illustrative badge, never computes a rank
+  ---
+  duration_ms: 2.88325
+  type: 'test'
+  ...
+# Subtest: phone: both published index pages contain one accessible three-tab phone with explicit mock data
+ok 143 - phone: both published index pages contain one accessible three-tab phone with explicit mock data
+  ---
+  duration_ms: 1.203918
+  type: 'test'
+  ...
+# Subtest: phone: original avatar geometry and tier assignments are reused
+ok 144 - phone: original avatar geometry and tier assignments are reused
+  ---
+  duration_ms: 0.787962
+  type: 'test'
+  ...
+# Subtest: phone: instant handlers, page guards, keyboard navigation and reduced-motion support
+ok 145 - phone: instant handlers, page guards, keyboard navigation and reduced-motion support
+  ---
+  duration_ms: 0.428239
+  type: 'test'
+  ...
+# Subtest: phone: lightweight publisher and normal site builder both preserve the shared component
+ok 146 - phone: lightweight publisher and normal site builder both preserve the shared component
+  ---
+  duration_ms: 1.412363
+  type: 'test'
+  ...
+# Subtest: Chapters: exactly three honest ventures with their own named destinations and four lifecycle steps
+ok 147 - Chapters: exactly three honest ventures with their own named destinations and four lifecycle steps
+  ---
+  duration_ms: 1.737365
+  type: 'test'
+  ...
+# Subtest: Chapters: only portfolio body changes; hero/header/footer, product and Sony pages remain exact
+ok 148 - Chapters: only portfolio body changes; hero/header/footer, product and Sony pages remain exact
+  ---
+  duration_ms: 23.018379
+  type: 'test'
+  ...
+# Subtest: Chapters: shared page layout, unique share images, metadata and truthful detail copy
+ok 149 - Chapters: shared page layout, unique share images, metadata and truthful detail copy
+  ---
+  duration_ms: 0.62575
+  type: 'test'
+  ...
+# Subtest: Chapters: local assets, Haitian Creole ranks in order, reduced-motion guard and small progressive enhancement
+ok 150 - Chapters: local assets, Haitian Creole ranks in order, reduced-motion guard and small progressive enhancement
+  ---
+  duration_ms: 0.484843
+  type: 'test'
+  ...
+# Subtest: Posters: exact approved mappings, no Romanian-deadlift substitution
+ok 151 - Posters: exact approved mappings, no Romanian-deadlift substitution
+  ---
+  duration_ms: 1.695766
+  type: 'test'
+  ...
+# Subtest: Posters: originals preserved; served copies only normalize namespace
+ok 152 - Posters: originals preserved; served copies only normalize namespace
+  ---
+  duration_ms: 0.76676
+  type: 'test'
+  ...
+# Subtest: Posters: homepage images available before JavaScript, with correct labels
+ok 153 - Posters: homepage images available before JavaScript, with correct labels
+  ---
+  duration_ms: 0.439388
+  type: 'test'
+  ...
+# Subtest: Posters: library posters never masquerade as technique demonstrations
+ok 154 - Posters: library posters never masquerade as technique demonstrations
+  ---
+  duration_ms: 0.70216
+  type: 'test'
+  ...
+# Subtest: Posters: contained artwork and offline assets remain explicit
+ok 155 - Posters: contained artwork and offline assets remain explicit
+  ---
+  duration_ms: 0.240824
+  type: 'test'
+  ...
+# Subtest: missing R2 is reported honestly
+ok 156 - missing R2 is reported honestly
+  ---
+  duration_ms: 22.035622
+  type: 'test'
+  ...
+# Subtest: R2 receives correct key and serves media type
+ok 157 - R2 receives correct key and serves media type
+  ---
+  duration_ms: 2.442911
+  type: 'test'
+  ...
+# Subtest: missing objects and unsafe extensions rejected
+ok 158 - missing objects and unsafe extensions rejected
+  ---
+  duration_ms: 0.844998
+  type: 'test'
+  ...
+# Subtest: official nine rank names/order/artwork remain intact without invented score bands
+ok 159 - official nine rank names/order/artwork remain intact without invented score bands
+  ---
+  duration_ms: 2.375851
+  type: 'test'
+  ...
+# Subtest: blue Fo artwork is preserved, but retired 488 never awards Fo
+ok 160 - blue Fo artwork is preserved, but retired 488 never awards Fo
+  ---
+  duration_ms: 0.858584
+  type: 'test'
+  ...
+# Subtest: retired demo preserves educational Epley estimate but returns no score or rank
+ok 161 - retired demo preserves educational Epley estimate but returns no score or rank
+  ---
+  duration_ms: 0.87824
+  type: 'test'
+  ...
+# Subtest: practice disciplines exactly match launch and one rep is actual load
+ok 162 - practice disciplines exactly match launch and one rep is actual load
+  ---
+  duration_ms: 0.714936
+  type: 'test'
+  ...
+# Subtest: practice kg/lb equivalent and no profile change generates rank
+ok 163 - practice kg/lb equivalent and no profile change generates rank
+  ---
+  duration_ms: 0.184687
+  type: 'test'
+  ...
+# Subtest: practice bad values rejected
+ok 164 - practice bad values rejected
+  ---
+  duration_ms: 1.335309
+  type: 'test'
+  ...
+# Technical-only preservation: 61 HTML bodies match baseline after only authorized footer normalization; 165 static files unchanged.
+# Subtest: SEO: exact owner-approved identity, metadata, H1 and canonical
+ok 165 - SEO: exact owner-approved identity, metadata, H1 and canonical
+  ---
+  duration_ms: 3.26512
+  type: 'test'
+  ...
+# Subtest: SEO: valid JSON-LD ProfilePage references the supported Person
+ok 166 - SEO: valid JSON-LD ProfilePage references the supported Person
+  ---
+  duration_ms: 0.575693
+  type: 'test'
+  ...
+# Subtest: SEO: group documents have unique titles/descriptions, complete social metadata, valid heading structure and alt attributes
+ok 167 - SEO: group documents have unique titles/descriptions, complete social metadata, valid heading structure and alt attributes
+  ---
+  duration_ms: 1.666505
+  type: 'test'
+  ...
+# Subtest: SEO: crawlable preferred-domain sitemap is deduplicated and excludes private surfaces
+ok 168 - SEO: crawlable preferred-domain sitemap is deduplicated and excludes private surfaces
+  ---
+  duration_ms: 4.501552
+  type: 'test'
+  ...
+# Subtest: SEO: all sitemap pages have unique titles and descriptions
+ok 169 - SEO: all sitemap pages have unique titles and descriptions
+  ---
+  duration_ms: 3.901403
+  type: 'test'
+  ...
+# Subtest: SEO: publication is restricted to the existing project and preserves configuration
+ok 170 - SEO: publication is restricted to the existing project and preserves configuration
+  ---
+  duration_ms: 0.552828
+  type: 'test'
+  ...
+# Subtest: SEO deployment: empty downloaded placement tables are omitted, explicit modes and bindings preserved
+ok 171 - SEO deployment: empty downloaded placement tables are omitted, explicit modes and bindings preserved
+  ---
+  duration_ms: 0.451735
+  type: 'test'
+  ...
+# Subtest: Preservation: other pages remain exact; authorized Sony redesign preserves original biography
+ok 172 - Preservation: other pages remain exact; authorized Sony redesign preserves original biography
+  ---
+  duration_ms: 17.10736
+  type: 'test'
+  ...
+# Subtest: Technical-only SEO: AI/search crawlers share public access and private exclusions
+ok 173 - Technical-only SEO: AI/search crawlers share public access and private exclusions
+  ---
+  duration_ms: 0.73575
+  type: 'test'
+  ...
+# Subtest: Entity recognition: homepage Organization/WebSite agree with existing Sony entity IDs
+ok 174 - Entity recognition: homepage Organization/WebSite agree with existing Sony entity IDs
+  ---
+  duration_ms: 0.750463
+  type: 'test'
+  ...
+# Subtest: Entity recognition: HTTP audit detects noindex, broken canonical and metadata duplication
+ok 175 - Entity recognition: HTTP audit detects noindex, broken canonical and metadata duplication
+  ---
+  duration_ms: 3.70985
+  type: 'test'
+  ...
+# Subtest: Footer and alias release: corporate-only deletion, one identity, app policy untouched
+ok 176 - Footer and alias release: corporate-only deletion, one identity, app policy untouched
+  ---
+  duration_ms: 1.18874
+  type: 'test'
+  ...
+# Subtest: connection contract requires a supported mobile version and explicit booleans
+ok 177 - connection contract requires a supported mobile version and explicit booleans
+  ---
+  duration_ms: 0.970758
+  type: 'test'
+  ...
+# Subtest: ready config never implies a signed-in account or proven synchronization
+ok 178 - ready config never implies a signed-in account or proven synchronization
+  ---
+  duration_ms: 1.319225
+  type: 'test'
+  ...
+# Subtest: missing routes, unsupported deployment and unavailable sync are distinguished
+ok 179 - missing routes, unsupported deployment and unavailable sync are distinguished
+  ---
+  duration_ms: 0.211394
+  type: 'test'
+  ...
+# Subtest: network, authorization and malformed availability fail closed
+ok 180 - network, authorization and malformed availability fail closed
+  ---
+  duration_ms: 0.175237
+  type: 'test'
+  ...
+# Subtest: waitlist readiness is separate from athlete enrollment and local test storage
+ok 181 - waitlist readiness is separate from athlete enrollment and local test storage
+  ---
+  duration_ms: 0.236595
+  type: 'test'
+  ...
+# Subtest: website and native app use the exact same readiness contract
+ok 182 - website and native app use the exact same readiness contract
+  ---
+  duration_ms: 0.921175
+  type: 'test'
+  ...
+# Subtest: readiness UI performs only credential-free public GET checks, not fake sign-in
+ok 183 - readiness UI performs only credential-free public GET checks, not fake sign-in
+  ---
+  duration_ms: 0.298464
+  type: 'test'
+  ...
+# Subtest: native unavailable-service paths clear stale account views but leave device archive separate
+ok 184 - native unavailable-service paths clear stale account views but leave device archive separate
+  ---
+  duration_ms: 0.719134
+  type: 'test'
+  ...
+# Subtest: preview launch supports app route and keeps home available in website mode
+ok 185 - preview launch supports app route and keeps home available in website mode
+  ---
+  duration_ms: 0.490018
+  type: 'test'
+  ...
+# Subtest: Book: exact five-part sequence, one semantic title and complete reading edition
+ok 186 - Book: exact five-part sequence, one semantic title and complete reading edition
+  ---
+  duration_ms: 2.166117
+  type: 'test'
+  ...
+# Subtest: Book: zero controls, journal inputs, tracking, progress dashboard or book controls
+ok 187 - Book: zero controls, journal inputs, tracking, progress dashboard or book controls
+  ---
+  duration_ms: 0.490949
+  type: 'test'
+  ...
+# Subtest: Book: deterministic order, automatic opening, natural articulation and finite final hold
+ok 188 - Book: deterministic order, automatic opening, natural articulation and finite final hold
+  ---
+  duration_ms: 3.061832
+  type: 'test'
+  ...
+# Subtest: Book: articulated panels, hidden duplicate ink and lightweight original materials
+ok 189 - Book: articulated panels, hidden duplicate ink and lightweight original materials
+  ---
+  duration_ms: 0.521977
+  type: 'test'
+  ...
+# Subtest: Personal scope: profile retains only the book resource while the book remains passive
+ok 190 - Personal scope: profile retains only the book resource while the book remains passive
+  ---
+  duration_ms: 0.39667
+  type: 'test'
+  ...
+# Subtest: Corporate preservation: homepage, four ventures, biography source and infrastructure unchanged
+ok 191 - Corporate preservation: homepage, four ventures, biography source and infrastructure unchanged
+  ---
+  duration_ms: 14.14046
+  type: 'test'
+  ...
+# Subtest: Book: spiritual app explicitly under development in visual and static editions
+ok 192 - Book: spiritual app explicitly under development in visual and static editions
+  ---
+  duration_ms: 0.495602
+  type: 'test'
+  ...
+# Subtest: Book: exactly two essential return links outside the animated stage
+ok 193 - Book: exactly two essential return links outside the animated stage
+  ---
+  duration_ms: 0.277225
+  type: 'test'
+  ...
+# Subtest: Sony profile: every original biography paragraph, closing and postscript preserved
+ok 194 - Sony profile: every original biography paragraph, closing and postscript preserved
+  ---
+  duration_ms: 2.368349
+  type: 'test'
+  ...
+# Subtest: Sony profile: philosophy uses only exact existing sentences, never invented quotations
+ok 195 - Sony profile: philosophy uses only exact existing sentences, never invented quotations
+  ---
+  duration_ms: 1.420935
+  type: 'test'
+  ...
+# Subtest: Sony profile: four preserved story anchors and one central book destination
+ok 196 - Sony profile: four preserved story anchors and one central book destination
+  ---
+  duration_ms: 0.267189
+  type: 'test'
+  ...
+# Subtest: Sony profile: real configured photos, responsive hero, reserved geometry and lazy secondary image
+ok 197 - Sony profile: real configured photos, responsive hero, reserved geometry and lazy secondary image
+  ---
+  duration_ms: 0.466591
+  type: 'test'
+  ...
+# Subtest: Sony profile: portrait social preview and existing safe metadata retained
+ok 198 - Sony profile: portrait social preview and existing safe metadata retained
+  ---
+  duration_ms: 0.282326
+  type: 'test'
+  ...
+# Subtest: Sony profile: progressive accessible menu, reduced motion and no data collection
+ok 199 - Sony profile: progressive accessible menu, reduced motion and no data collection
+  ---
+  duration_ms: 0.416538
+  type: 'test'
+  ...
+# Subtest: Sony profile: all unrelated public bytes remain unchanged except the approved three-project book
+ok 200 - Sony profile: all unrelated public bytes remain unchanged except the approved three-project book
+  ---
+  duration_ms: 14.656677
+  type: 'test'
+  ...
+# Subtest: Sony profile: retired pages absent and visible Back to Ventures link targets existing portfolio
+ok 201 - Sony profile: retired pages absent and visible Back to Ventures link targets existing portfolio
+  ---
+  duration_ms: 0.304794
+  type: 'test'
+  ...
+# Subtest: Sony profile: every internal link and fragment resolves in the static build
+ok 202 - Sony profile: every internal link and fragment resolves in the static build
+  ---
+  duration_ms: 1.554201
+  type: 'test'
+  ...
+# Subtest: migrations preserve waitlist and seed no approved standards
+ok 203 - migrations preserve waitlist and seed no approved standards
+  ---
+  duration_ms: 206.154357
+  type: 'test'
+  ...
+# Subtest: cryptographically verified auth: missing/forged/expired/wrong issuer/audience and unknown identity denied
+ok 204 - cryptographically verified auth: missing/forged/expired/wrong issuer/audience and unknown identity denied
+  ---
+  duration_ms: 62.162011
+  type: 'test'
+  ...
+# Subtest: CSRF, method, RBAC and extra verified/rank fields rejected server-side
+ok 205 - CSRF, method, RBAC and extra verified/rank fields rejected server-side
+  ---
+  duration_ms: 322.353458
+  type: 'test'
+  ...
+# Subtest: actual draft submission and immutable profile recalculation: no official rank
+ok 206 - actual draft submission and immutable profile recalculation: no official rank
+  ---
+  duration_ms: 1379.985098
+  type: 'test'
+  ...
+# Subtest: private evidence ownership, format checks, no public read and pending review
+ok 207 - private evidence ownership, format checks, no public read and pending review
+  ---
+  duration_ms: 733.634442
+  type: 'test'
+  ...
+# Subtest: reviewer denial, stale revision, rejected evidence then re-upload stays held
+ok 208 - reviewer denial, stale revision, rejected evidence then re-upload stays held
+  ---
+  duration_ms: 687.273738
+  type: 'test'
+  ...
+# Subtest: admin direct rank award is rejected and audit recorded
+ok 209 - admin direct rank award is rejected and audit recorded
+  ---
+  duration_ms: 98.25915
+  type: 'test'
+  ...
+# Subtest: self-approval prevented even for a reviewer; draft approvals fail
+ok 210 - self-approval prevented even for a reviewer; draft approvals fail
+  ---
+  duration_ms: 803.121274
+  type: 'test'
+  ...
+# Subtest: controlled rulebook publication, append-only history, independent review without fabricated official rank
+ok 211 - controlled rulebook publication, append-only history, independent review without fabricated official rank
+  ---
+  duration_ms: 1359.460721
+  type: 'test'
+  ...
+# Subtest: empty threshold publication rejected even with allowlisted digest, author cannot publish own new version
+ok 212 - empty threshold publication rejected even with allowlisted digest, author cannot publish own new version
+  ---
+  duration_ms: 309.8696
+  type: 'test'
+  ...
+# Subtest: database blocks cross-owner evidence, forged unofficial rank and stale decisions
+ok 213 - database blocks cross-owner evidence, forged unofficial rank and stale decisions
+  ---
+  duration_ms: 67.206955
+  type: 'test'
+  ...
+# Subtest: rate limits, inactive roles and unconfigured environment fail closed
+ok 214 - rate limits, inactive roles and unconfigured environment fail closed
+  ---
+  duration_ms: 149.912587
+  type: 'test'
+  ...
+# Subtest: stale calculation cannot resurrect an earlier evidence decision
+ok 215 - stale calculation cannot resurrect an earlier evidence decision
+  ---
+  duration_ms: 48.904476
+  type: 'test'
+  ...
+# Subtest: calibration diagnostic harness operates on synthetic data without generating standards
+ok 216 - calibration diagnostic harness operates on synthetic data without generating standards
+  ---
+  duration_ms: 56.53734
+  type: 'test'
+  ...
+# Subtest: exactly four independent disciplines and nine exact rank ids
+ok 217 - exactly four independent disciplines and nine exact rank ids
+  ---
+  duration_ms: 2.588706
+  type: 'test'
+  ...
+# Subtest: every boundary immediately below, exactly at, above: every rank in every discipline
+ok 218 - every boundary immediately below, exactly at, above: every rank in every discipline
+  ---
+  duration_ms: 12.211362
+  type: 'test'
+  ...
+# Subtest: all bundled production models stay draft with empty thresholds and no progress
+ok 219 - all bundled production models stay draft with empty thresholds and no progress
+  ---
+  duration_ms: 0.960385
+  type: 'test'
+  ...
+# Subtest: 100 workouts, streaks, XP and account age cannot change rank
+ok 220 - 100 workouts, streaks, XP and account age cannot change rank
+  ---
+  duration_ms: 4.831544
+  type: 'test'
+  ...
+# Subtest: valid performance meets next standard; 99 percent does not promote
+ok 221 - valid performance meets next standard; 99 percent does not promote
+  ---
+  duration_ms: 0.563415
+  type: 'test'
+  ...
+# Subtest: invalid, incomplete, future, wrong variation/equipment and failed form cannot qualify
+ok 222 - invalid, incomplete, future, wrong variation/equipment and failed form cannot qualify
+  ---
+  duration_ms: 0.631442
+  type: 'test'
+  ...
+# Subtest: tested single is actual load, estimate only within approved exercise-specific reps
+ok 223 - tested single is actual load, estimate only within approved exercise-specific reps
+  ---
+  duration_ms: 0.49737
+  type: 'test'
+  ...
+# Subtest: verification never increases numeric eligibility; no self approval or false verified label
+ok 224 - verification never increases numeric eligibility; no self approval or false verified label
+  ---
+  duration_ms: 0.532858
+  type: 'test'
+  ...
+# Subtest: Squat and Deadlift never share ranks; best verified remains separate from reported higher rank
+ok 225 - Squat and Deadlift never share ranks; best verified remains separate from reported higher rank
+  ---
+  duration_ms: 0.529053
+  type: 'test'
+  ...
+# Subtest: profile and model versions recalculate without mutating input/history
+ok 226 - profile and model versions recalculate without mutating input/history
+  ---
+  duration_ms: 0.726494
+  type: 'test'
+  ...
+# Subtest: exact pound arithmetic, deterministic calls, category edges and no extrapolation
+ok 227 - exact pound arithmetic, deterministic calls, category edges and no extrapolation
+  ---
+  duration_ms: 0.69875
+  type: 'test'
+  ...
+# Subtest: test fixtures cannot be approved for production; invalid configurations rejected
+ok 228 - test fixtures cannot be approved for production; invalid configurations rejected
+  ---
+  duration_ms: 0.606636
+  type: 'test'
+  ...
+# Subtest: same standard in Squat and Deadlift is independently evaluated; changing one leaves the other intact
+ok 229 - same standard in Squat and Deadlift is independently evaluated; changing one leaves the other intact
+  ---
+  duration_ms: 0.393878
+  type: 'test'
+  ...
+# Subtest: Epley example, single rep, percentages, high-rep flag
+ok 230 - Epley example, single rep, percentages, high-rep flag
+  ---
+  duration_ms: 1.33242
+  type: 'test'
+  ...
+# Subtest: protein estimate, range, portion math, unit equivalence
+ok 231 - protein estimate, range, portion math, unit equivalence
+  ---
+  duration_ms: 1.27848
+  type: 'test'
+  ...
+# Subtest: Mifflin–St Jeor references and activity
+ok 232 - Mifflin–St Jeor references and activity
+  ---
+  duration_ms: 0.406027
+  type: 'test'
+  ...
+# Subtest: macro energy conservation and impossible split
+ok 233 - macro energy conservation and impossible split
+  ---
+  duration_ms: 0.425007
+  type: 'test'
+  ...
+# Subtest: Navy male example, female reference, metric/inch equivalence
+ok 234 - Navy male example, female reference, metric/inch equivalence
+  ---
+  duration_ms: 0.45355
+  type: 'test'
+  ...
+# Subtest: plate exact match, bar and collar accounting
+ok 235 - plate exact match, bar and collar accounting
+  ---
+  duration_ms: 1.220631
+  type: 'test'
+  ...
+# Subtest: plate solver handles constrained stock, non-greedy solution, and unattainable targets
+ok 236 - plate solver handles constrained stock, non-greedy solution, and unattainable targets
+  ---
+  duration_ms: 0.62564
+  type: 'test'
+  ...
+# Subtest: pounds and fractional microplates
+ok 237 - pounds and fractional microplates
+  ---
+  duration_ms: 0.377333
+  type: 'test'
+  ...
+# Subtest: bounded plate solver matches independent brute-force optimum
+ok 238 - bounded plate solver matches independent brute-force optimum
+  ---
+  duration_ms: 7.191087
+  type: 'test'
+  ...
+# Subtest: email normalized and consent required
+ok 239 - email normalized and consent required
+  ---
+  duration_ms: 1.964239
+  type: 'test'
+  ...
+# Subtest: preview bypass cannot work on a public hostname
+ok 240 - preview bypass cannot work on a public hostname
+  ---
+  duration_ms: 0.283361
+  type: 'test'
+  ...
+# Subtest: unconfigured production is unavailable
+ok 241 - unconfigured production is unavailable
+  ---
+  duration_ms: 34.025539
+  type: 'test'
+  ...
+# Subtest: origin, content type, size and invalid JSON blocked
+ok 242 - origin, content type, size and invalid JSON blocked
+  ---
+  duration_ms: 3.37106
+  type: 'test'
+  ...
+# Subtest: storage failure is not a false success
+ok 243 - storage failure is not a false success
+  ---
+  duration_ms: 8.484243
+  type: 'test'
+  ...
+# Subtest: rate limits stop insert
+ok 244 - rate limits stop insert
+  ---
+  duration_ms: 2.494996
+  type: 'test'
+  ...
+# Subtest: production validates Turnstile hostname and action
+ok 245 - production validates Turnstile hostname and action
+  ---
+  duration_ms: 1.68099
+  type: 'test'
+  ...
+# Static internal references checked: 2112
+# Subtest: Website: same real navigation and identifiable page metadata on all 50 routes
+ok 246 - Website: same real navigation and identifiable page metadata on all 50 routes
+  ---
+  duration_ms: 8.609272
+  type: 'test'
+  ...
+# Subtest: Website: static internal links, fragments, scripts and assets resolve
+ok 247 - Website: static internal links, fragments, scripts and assets resolve
+  ---
+  duration_ms: 42.559286
+  type: 'test'
+  ...
+# Subtest: Website: no manufactured athlete results in homepage or app concept
+ok 248 - Website: no manufactured athlete results in homepage or app concept
+  ---
+  duration_ms: 0.949056
+  type: 'test'
+  ...
+# Subtest: Website: protected originals and explicitly pinned mobile API binding changes
+not ok 249 - Website: protected originals and explicitly pinned mobile API binding changes
+  ---
+  duration_ms: 1.840804
+  type: 'test'
+  location: '/home/user/monte-wo/tests/website.test.js:7:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    Pinned authorized change: wrangler.toml
+    + actual - expected
+
+    + 'b7912b3f47a625a4d78c0fb54c69bb087cd9833e2703e7d960ebbe6394701bde'
+    - 'beab7b76ea6abe6467e927c9011cdb5efa893d3793f6a508468b20491d68c3e2'
+
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 'beab7b76ea6abe6467e927c9011cdb5efa893d3793f6a508468b20491d68c3e2'
+  actual: 'b7912b3f47a625a4d78c0fb54c69bb087cd9833e2703e7d960ebbe6394701bde'
+  operator: 'strictEqual'
+  stack: |-
+    assertProtectedSource (file:///home/user/monte-wo/tests/fixtures/protected-source.js:9:164)
+    TestContext.<anonymous> (file:///home/user/monte-wo/tests/website.test.js:7:565)
+    Test.runInAsyncScope (node:async_hooks:214:14)
+    Test.run (node:internal/test_runner/test:1047:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:744:18)
+    Test.postRun (node:internal/test_runner/test:1173:19)
+    Test.run (node:internal/test_runner/test:1101:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: Website: draft variations quote source standards and link to correct variations
+ok 250 - Website: draft variations quote source standards and link to correct variations
+  ---
+  duration_ms: 0.480345
+  type: 'test'
+  ...
+# Subtest: Website: nine ranks stay ordered and pilot stays closed
+ok 251 - Website: nine ranks stay ordered and pilot stays closed
+  ---
+  duration_ms: 0.400027
+  type: 'test'
+  ...
+# Subtest: Website: locale overlays share keys and disclose English-first non-home pages
+ok 252 - Website: locale overlays share keys and disclose English-first non-home pages
+  ---
+  duration_ms: 0.390949
+  type: 'test'
+  ...
+# Subtest: Website: honest 404, private noindex and no fabricated canonical origin
+ok 253 - Website: honest 404, private noindex and no fabricated canonical origin
+  ---
+  duration_ms: 0.622267
+  type: 'test'
+  ...
+# Subtest: completed workout survives a new archive instance with exact sets and volume
+ok 254 - completed workout survives a new archive instance with exact sets and volume
+  ---
+  duration_ms: 4.036997
+  type: 'test'
+  ...
+# Subtest: filesystem history survives store recreation, not just in-memory state
+ok 255 - filesystem history survives store recreation, not just in-memory state
+  ---
+  duration_ms: 48.657386
+  type: 'test'
+  ...
+# Subtest: same ID and same payload retry is deduplicated; conflicting data cannot overwrite it
+ok 256 - same ID and same payload retry is deduplicated; conflicting data cannot overwrite it
+  ---
+  duration_ms: 1.264998
+  type: 'test'
+  ...
+# Subtest: concurrent saves are serialized without losing a workout
+ok 257 - concurrent saves are serialized without losing a workout
+  ---
+  duration_ms: 26.936358
+  type: 'test'
+  ...
+# Subtest: payload is captured before queued work; later edits do not change saved sets
+ok 258 - payload is captured before queued work; later edits do not change saved sets
+  ---
+  duration_ms: 0.392833
+  type: 'test'
+  ...
+# Subtest: quota errors preserve the last acknowledged workout and permit retry
+ok 259 - quota errors preserve the last acknowledged workout and permit retry
+  ---
+  duration_ms: 0.580572
+  type: 'test'
+  ...
+# Subtest: partial write is not acknowledged; restart recovers the readable copy with a warning
+ok 260 - partial write is not acknowledged; restart recovers the readable copy with a warning
+  ---
+  duration_ms: 0.785794
+  type: 'test'
+  ...
+# Subtest: two corrupt slots fail closed without overwriting either
+ok 261 - two corrupt slots fail closed without overwriting either
+  ---
+  duration_ms: 2.13155
+  type: 'test'
+  ...
+# Subtest: read errors never masquerade as empty history
+ok 262 - read errors never masquerade as empty history
+  ---
+  duration_ms: 1.154405
+  type: 'test'
+  ...
+# Subtest: confirmed deletion removes the record from both recovery slots and survives reopening
+ok 263 - confirmed deletion removes the record from both recovery slots and survives reopening
+  ---
+  duration_ms: 1.804984
+  type: 'test'
+  ...
+# Subtest: partial deletion is not reported complete and can be retried to clear the backup
+ok 264 - partial deletion is not reported complete and can be retried to clear the backup
+  ---
+  duration_ms: 3.774576
+  type: 'test'
+  ...
+# Subtest: caller cannot mutate returned history to alter stored records
+ok 265 - caller cannot mutate returned history to alter stored records
+  ---
+  duration_ms: 0.334167
+  type: 'test'
+  ...
+# Subtest: clock rollback does not make previously saved records unreadable
+ok 266 - clock rollback does not make previously saved records unreadable
+  ---
+  duration_ms: 0.341467
+  type: 'test'
+  ...
+# Subtest: mixed units stay separate and decimal volume is exact
+ok 267 - mixed units stay separate and decimal volume is exact
+  ---
+  duration_ms: 0.209695
+  type: 'test'
+  ...
+# Subtest: shared input validation rejects invalid date, future date, unknown exercise and forged fields
+ok 268 - shared input validation rejects invalid date, future date, unknown exercise and forged fields
+  ---
+  duration_ms: 0.567155
+  type: 'test'
+  ...
+# Subtest: shared set limits reject oversized load, fractional reps, negative weight and invalid units
+ok 269 - shared set limits reject oversized load, fractional reps, negative weight and invalid units
+  ---
+  duration_ms: 0.219389
+  type: 'test'
+  ...
+# Subtest: 20 sets is accepted; a 21st set is rejected before saving
+ok 270 - 20 sets is accepted; a 21st set is rejected before saving
+  ---
+  duration_ms: 0.338291
+  type: 'test'
+  ...
+# Subtest: history cap refuses new records without evicting old sessions
+ok 271 - history cap refuses new records without evicting old sessions
+  ---
+  duration_ms: 63.891207
+  type: 'test'
+  ...
+1..271
+# tests 271
+# suites 0
+# pass 269
+# fail 2
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 49287.843781

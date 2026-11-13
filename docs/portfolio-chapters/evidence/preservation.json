@@ -1,0 +1,17 @@
+{
+  "checkedExistingPublicFiles": 247,
+  "changedExistingPublicFiles": [
+    "public/group-routes.json",
+    "public/index.html",
+    "public/sitemap.xml",
+    "public/sw.js",
+    "public/ventures/monte-wo/index.html",
+    "public/ventures/vitaflex-intelligence-corp/index.html"
+  ],
+  "allOtherExistingPublicFilesByteExact": true,
+  "heroHeaderFooterByteExact": true,
+  "source": "site/group/ + scripts/portfolio_chapters.py + content/group/ventures.json",
+  "newRoutes": [
+    "/ventures/bible-verse-memory-app/"
+  ]
+}

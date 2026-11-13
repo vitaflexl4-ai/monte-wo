@@ -36,11 +36,12 @@ jobs:
           python3 -m http.server 8080 --bind 0.0.0.0 --directory public > /tmp/site.log 2>&1 &
           node --input-type=module -e "import('./tests/group-browser.mjs').catch(e=>{console.error('::error title=Group browser validation::'+String(e.stack||e).replaceAll('\n',' | '));process.exit(1)})"
           TEST_ORIGIN=http://localhost:8080 PROFILE_SCREENSHOT_DIR=evidence/sony-profile-screenshots node --input-type=module -e "import('./tests/founder-browser.mjs').catch(e=>{console.error('::error title=Profile browser validation::'+String(e.stack||e).replaceAll('\n',' | '));process.exit(1)})"
+          TEST_ORIGIN=http://localhost:8080 PORTFOLIO_SCREENSHOTS=evidence/portfolio-local node tests/portfolio-chapters-browser.mjs
           node tests/approved-restoration-browser.mjs
           TEST_ORIGIN=http://localhost:8080 SONY_SCREENSHOTS=evidence/sony-screenshots node tests/sony-experiences-browser.mjs
       - name: SEO and content regression tests
         run: |
-          node --test tests/seo.test.js tests/founder.test.js tests/group.test.js tests/master-execution.test.js tests/business.test.js tests/approved-restoration.test.js tests/sony-experiences.test.js tests/sony-profile.test.js tests/intelligence-announcement.test.js tests/intelligence-branding.test.js
+          node --test tests/seo.test.js tests/founder.test.js tests/group.test.js tests/master-execution.test.js tests/business.test.js tests/approved-restoration.test.js tests/sony-experiences.test.js tests/sony-profile.test.js tests/intelligence-announcement.test.js tests/intelligence-branding.test.js tests/portfolio-chapters.test.js
           VERIFY_ORIGIN=http://127.0.0.1:8080 SEO_AUDIT_OUTPUT=evidence/local-sitemap-audit.json node scripts/audit-public-seo.mjs
       - name: Compare restored corporate files against the exact owner-selected reference
         run: node scripts/verify-approved-corporate.mjs
@@ -48,7 +49,7 @@ jobs:
         id: publish
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          EXPECTED_PRODUCTION_REVISION: 64d1798309f9c5e48ac35bea44de61874fa07364
+          EXPECTED_PRODUCTION_REVISION: d9495f8678183163d7ba6c64145ea0bc48c1c259
         run: node scripts/publish-group-domain.mjs
       - name: Diagnose deployed origin and domain routing
         if: always()
@@ -76,6 +77,7 @@ jobs:
         run: |
           node tests/sony-profile-browser.mjs
           REVEAL_SCREENSHOTS=evidence/production-intelligence-screenshots node tests/intelligence-announcement-browser.mjs
+          PORTFOLIO_SCREENSHOTS=evidence/portfolio-production node tests/portfolio-chapters-browser.mjs
       - name: Verify public corporate footer and alias (User-Agent probe, not verified crawler traffic)
         env:
           VERIFY_ORIGIN: https://vitaflexbusinessgroup.com

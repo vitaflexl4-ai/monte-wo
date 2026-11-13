@@ -12,8 +12,8 @@ test('Group: parent identity is explicit and separate from product runtime',()=>
 });
 test('Group: venture registry provides honest, resolvable destinations',()=>{
  assert.equal(ventures.length,3);
- for(const v of ventures){assert.ok(v.name&&v.category&&v.description&&v.slug);assert.ok(v.status===null||['Operating','In Development','Coming Soon'].includes(v.status));assert.ok(existsSync(v.portfolioHref?'public'+v.portfolioHref+'index.html':`public/ventures/${v.slug}/index.html`));if(v.logo)assert.ok(existsSync('public'+v.logo));if(v.destination)assert.ok(existsSync('public'+v.destination+'index.html'));}
- assert.equal(ventures[1].destination,null);assert.equal(ventures[1].status,'In Development');
+ for(const v of ventures){assert.ok(v.name&&v.category&&v.description&&v.slug);assert.ok(v.status===null||['Launching soon','Under development','In development'].includes(v.status));assert.ok(existsSync(v.portfolioHref?'public'+v.portfolioHref+'index.html':`public/ventures/${v.slug}/index.html`));if(v.logo)assert.ok(existsSync('public'+v.logo));if(v.destination)assert.ok(existsSync('public'+v.destination+'index.html'));}
+ assert.equal(ventures[1].destination,null);assert.equal(ventures[1].status,'Under development');
 });
 test('Group: preserved product and offline upgrade remain available',()=>{
  assert.match(read('public/monte-wo/index.html'),/APP CONCEPT/);
@@ -32,10 +32,10 @@ test('Group: supplied official logo replaces placeholders without changing origi
 
 test('Group: Intelligence Corp is a third development venture, not a renamed parent or private API link',()=>{
  const venture=ventures.find(v=>v.slug==='vitaflex-intelligence-corp');
- assert.equal(venture.name,'VitaFlex Intelligence');assert.equal(venture.status,'In Development');assert.equal(venture.logo,null);assert.equal(venture.destination,null);
+ assert.equal(venture.name,'VitaFlex Intelligence');assert.equal(venture.status,'In development');assert.equal(venture.logo,null);assert.equal(venture.destination,null);
  const home=read('public/index.html');assert.ok(home.includes('01 — '+String(ventures.length).padStart(2,'0')));assert.equal((home.match(/class="venture-row /g)||[]).length,ventures.length);
  for(const v of ventures)assert.ok(home.includes(v.portfolioHref||`/ventures/${v.slug}/`));
- const detail=read('public/ventures/vitaflex-intelligence-corp/index.html');assert.match(detail,/IN DEVELOPMENT|In Development/);assert.doesNotMatch(detail,/Fitness|Training|mailto:|href="\/intelligence|href="\/api\//);
+ const detail=read('public/ventures/vitaflex-intelligence-corp/index.html');assert.match(detail,/IN DEVELOPMENT|In development/);assert.doesNotMatch(detail,/Fitness|Training|mailto:|href="\/intelligence|href="\/api\//);
  const sw=read('public/sw.js');for(const v of registry.filter(v=>!v.portfolioHref))assert.equal(sw.split(`'/ventures/${v.slug}/'`).length-1,1);
 });
 

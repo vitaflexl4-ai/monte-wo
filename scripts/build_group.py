@@ -1,6 +1,7 @@
 """Final corporate layer. Product engines, APIs and original routes stay intact."""
 from pathlib import Path
-import json, html, re
+import json, html, re, shutil
+from portfolio_chapters import gallery, resources, venture_page
 ROOT=Path(__file__).resolve().parent.parent
 P=ROOT/'public'
 E=lambda s:html.escape(str(s),quote=True)
@@ -24,9 +25,11 @@ def wordmark(v):
 def identity(v):
  return f'<img src="{E(v["logo"])}" width="260" height="100" alt="{E(v["name"])}" loading="lazy">' if v['logo'] else f'<span class="venture-wordmark">{wordmark(v)}</span>'
 
-def portfolio_row(v,i):
- return f'''<a class="venture-row {E(v['slug'])}" href="{E(v.get('portfolioHref', '/ventures/'+v['slug']+'/'))}"><span class="venture-index">{i:02d}</span><h2>{wordmark(v)}</h2><span class="venture-category">{E(v['category'].replace(' · ', ' / ').upper())}</span><span class="venture-arrow" aria-hidden="true">↗</span></a>'''
-
+# Copy authored portfolio assets; build outputs are never edited by hand.
+(P/'assets/ventures').mkdir(parents=True,exist_ok=True)
+for asset in (ROOT/'site/group').iterdir():
+ if asset.suffix in ['.css','.js']:shutil.copyfile(asset,P/asset.name)
+ else:shutil.copyfile(asset,P/'assets/ventures'/asset.name)
 # Preserve the generated, functional product homepage before replacing the root.
 product=P/'monte-wo/index.html';product.parent.mkdir(exist_ok=True,parents=True)
 doc=(P/'index.html').read_text()
@@ -35,7 +38,7 @@ doc=re.sub(r'<link rel="canonical"[^>]*>','',doc)
 doc=re.sub(r'<meta property="og:url"[^>]*>',f'<meta property="og:url" content="{origin}/monte-wo/">',doc)
 doc=doc.replace('</head>',f'<link rel="canonical" href="{origin}/monte-wo/"></head>')
 product.write_text(doc)
-body='''<section class="hero frame"><div class="hero-heading"><span class="index-label">INDEPENDENT BY DESIGN</span><h1>Beyond<br><em>the obvious.</em></h1><span class="hero-signature">VITAFLEX BUSINESS GROUP</span></div><div class="hero-art"><img src="/assets/group/vitaflex-business-group.png" width="1024" height="1024" alt="VitaFlex Business Group — gold VF emblem inside a circular gold border" fetchpriority="high"></div><div class="hero-baseline"><span>WE BUILD VENTURES.<br>WE CREATE POSSIBILITIES.</span><a href="#ventures" class="scroll-link" aria-label="Discover our ventures"><span>DISCOVER</span><b aria-hidden="true">↓</b></a><span class="coordinate">A VISION WITHOUT LIMITS.</span></div></section><section class="portfolio frame" id="ventures"><div class="portfolio-heading"><span class="index-label">THE PORTFOLIO</span><span class="portfolio-count">01 — '''+f'{len(listed_ventures):02d}'+'''</span></div>'''+''.join(portfolio_row(v,i+1) for i,v in enumerate(listed_ventures))+'''<div class="portfolio-end"><span class="horizon-mark" aria-hidden="true"></span><span>THE HORIZON REMAINS OPEN.</span></div></section>'''
+body='''<section class="hero frame"><div class="hero-heading"><span class="index-label">INDEPENDENT BY DESIGN</span><h1>Beyond<br><em>the obvious.</em></h1><span class="hero-signature">VITAFLEX BUSINESS GROUP</span></div><div class="hero-art"><img src="/assets/group/vitaflex-business-group.png" width="1024" height="1024" alt="VitaFlex Business Group — gold VF emblem inside a circular gold border" fetchpriority="high"></div><div class="hero-baseline"><span>WE BUILD VENTURES.<br>WE CREATE POSSIBILITIES.</span><a href="#ventures" class="scroll-link" aria-label="Discover our ventures"><span>DISCOVER</span><b aria-hidden="true">↓</b></a><span class="coordinate">A VISION WITHOUT LIMITS.</span></div></section>'''+gallery(listed_ventures)
 # Stable IDs agree with the existing profile graph; no inferred legal or employment claims.
 site_schema={
  '@context':'https://schema.org',
@@ -48,16 +51,15 @@ site_schema={
    'publisher':{'@id':origin+'/#organization'}}
  ]
 }
-(P/'index.html').write_text(page('Beyond the obvious.','VitaFlex Business Group. Independent ventures. A bigger vision.',body,structured_data=site_schema))
+(P/'index.html').write_text(resources(page('Beyond the obvious.','VitaFlex Business Group. Independent ventures. A bigger vision.',body,structured_data=site_schema)))
 routes=['/','/monte-wo/']
-for v in sorted([v for v in ventures if not v.get('portfolioHref')],key=lambda v:['monte-wo','vitaflex-training','vitaflex-intelligence-corp'].index(v['slug'])):
+for v in sorted(ventures,key=lambda v:['monte-wo','vitaflex-training','vitaflex-intelligence-corp','bible-verse-memory-app'].index(v['slug'])):
  path=f'/ventures/{v["slug"]}/';routes.append(path)
  destination=f'<a class="explore" href="{E(v["destination"])}">Enter {E(v["name"])} <span aria-hidden="true">↗</span></a>' if v['destination'] else '<span class="availability">AVAILABILITY NOT ANNOUNCED</span>'
  detail=f'''<section class="frame venture-detail"><a class="back-link" href="/#ventures">← THE PORTFOLIO</a><div class="detail-label"><span class="index-label">A VITAFLEX BUSINESS GROUP VENTURE</span><span>{E(v['category'])}</span></div><h1>{E(v['name'])}</h1><div class="detail-art">{identity(v)}</div><div class="detail-bottom"><span class="availability">{E(v['status']) if v['status'] else v['category'].upper()}</span>{destination}</div></section>'''
  f=P/path.strip('/')/'index.html';f.parent.mkdir(parents=True,exist_ok=True)
- if v['slug']=='vitaflex-intelligence-corp':
-  from intelligence_announcement import render_announcement
-  f.write_text(render_announcement(page))
+ if v.get('listed',True):
+  f.write_text(venture_page(v,listed_ventures.index(v)+1,page))
  else:f.write_text(page(v['name'],v['description'],detail,path))
 # A dedicated personal essay complements the portfolio; it does not replace it.
 from founder_page import render_founder
@@ -80,7 +82,7 @@ sw=P/'sw.js';text=sw.read_text();text=re.sub(r"const CORE='[^']+';","const CORE=
 text=text.replace("'/group.css','/group-sculpture.svg','/group-mark.svg','/monte-wo/','/ventures/monte-wo/','/ventures/vitaflex-training/',", "")
 text=re.sub(r"'(?:/assets/group/[^']+|/group.css|/group-mark.svg|/group-sculpture.svg|/monte-wo/|/founder/|/sony/|/ventures/[^']+/)',", '', text)
 text=re.sub(r"'/assets/inter-(?:400|600)\.woff2',",'',text)
-venture_assets=''.join(repr('/ventures/'+v['slug']+'/')+',' for v in sorted([v for v in ventures if not v.get('portfolioHref')],key=lambda v:['monte-wo','vitaflex-training','vitaflex-intelligence-corp'].index(v['slug'])))
+venture_assets=''.join(repr('/ventures/'+v['slug']+'/')+',' for v in sorted(ventures,key=lambda v:['monte-wo','vitaflex-training','vitaflex-intelligence-corp','bible-verse-memory-app'].index(v['slug'])))
 text=text.replace("const ASSETS=[", "const ASSETS=['/assets/inter-400.woff2','/assets/inter-600.woff2','/assets/group/vitaflex-business-group.png','/assets/group/vitaflex-monogram.png','/assets/group/favicon.png','/group.css','/group-sculpture.svg','/group-mark.svg','/monte-wo/','/sony/',"+venture_assets,1);sw.write_text(text)
 # Group metadata stays independent from product metadata.
 sitemap=P/'sitemap.xml'

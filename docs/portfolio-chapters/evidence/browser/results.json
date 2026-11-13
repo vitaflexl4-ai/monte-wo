@@ -1,0 +1,58 @@
+{
+  "passed": true,
+  "layouts": [
+    {
+      "width": 320,
+      "routes": 4,
+      "noOverflow": true,
+      "reducedMotion": true,
+      "targetsAndFocus": true
+    },
+    {
+      "width": 390,
+      "routes": 4,
+      "noOverflow": true,
+      "reducedMotion": true,
+      "targetsAndFocus": true
+    },
+    {
+      "width": 620,
+      "routes": 4,
+      "noOverflow": true,
+      "reducedMotion": true,
+      "targetsAndFocus": true
+    },
+    {
+      "width": 768,
+      "routes": 4,
+      "noOverflow": true,
+      "reducedMotion": true,
+      "targetsAndFocus": true
+    },
+    {
+      "width": 1024,
+      "routes": 4,
+      "noOverflow": true,
+      "reducedMotion": true,
+      "targetsAndFocus": true
+    },
+    {
+      "width": 1440,
+      "routes": 4,
+      "noOverflow": true,
+      "reducedMotion": true,
+      "targetsAndFocus": true
+    },
+    {
+      "width": 1920,
+      "routes": 4,
+      "noOverflow": true,
+      "reducedMotion": true,
+      "targetsAndFocus": true
+    }
+  ],
+  "noJs": true,
+  "liveMotionPreference": true,
+  "namedJourneys": true,
+  "pageErrors": []
+}

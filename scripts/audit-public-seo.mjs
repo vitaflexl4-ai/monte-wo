@@ -35,11 +35,11 @@ export async function audit({origin=preferred,probeOrigin=origin,output='/tmp/vi
   if(sitemapResponse.status!==200||!sitemap.includes('http://www.sitemaps.org/schemas/sitemap/0.9'))report.problems.push('Sitemap unavailable or invalid namespace');
   let urls=[...sitemap.matchAll(/<loc>([^<]+)<\/loc>/g)].map(m=>decode(m[1]));
   report.sitemapSource='remote';
-  // If the edge blocks the sitemap, still record HTTP responses for all 55
+  // If the edge blocks the sitemap, still record HTTP responses for all 56
   // already-validated canonical paths. This is NOT a remote sitemap success.
   if(!urls.length){urls=[...readFileSync('public/sitemap.xml','utf8').matchAll(/<loc>([^<]+)<\/loc>/g)].map(m=>decode(m[1]));report.sitemapSource='local fallback after remote failure';}
   report.sitemapUrls=urls.length;
-  if(urls.length!==55||new Set(urls).size!==urls.length)report.problems.push('Expected 55 distinct canonical public URLs');
+  if(urls.length!==56||new Set(urls).size!==urls.length)report.problems.push('Expected 56 distinct canonical public URLs');
   const disallowed=[...robots.matchAll(/^Disallow:\s*(\S+)\s*$/gm)].map(m=>m[1]);
   let index=0;
   await Promise.all(Array.from({length:4},async()=>{

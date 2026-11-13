@@ -1,0 +1,4 @@
+/** Optional asset preparation, not a build/runtime dependency. Uses existing Playwright. */
+import{chromium}from'@playwright/test';import{browserOptions}from'../tests/browser-config.mjs';import{execFileSync}from'node:child_process';import{readFileSync}from'node:fs';
+const ventures=JSON.parse(readFileSync('content/group/ventures.json')).filter(v=>v.listed!==false),b=await chromium.launch(browserOptions);
+try{const p=await b.newPage({viewport:{width:1200,height:630},deviceScaleFactor:1});for(const[i,v]of ventures.entries()){const svg=execFileSync('python3',['-c','import sys,json;sys.path.insert(0,"scripts");from portfolio_chapters import share_image;print(share_image(json.loads(sys.argv[1]),int(sys.argv[2])))',JSON.stringify(v),String(i+1)],{encoding:'utf8'});await p.setContent('<style>body{margin:0}</style>'+svg);await p.evaluate(()=>document.fonts.ready);await p.screenshot({path:`site/group/${v.slug}-share.png`})}}finally{await b.close()}

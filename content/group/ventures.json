@@ -1,43 +1,45 @@
 [
   {
     "slug": "monte-wo",
-    "name": "MONTE WO",
+    "name": "Monte Wo",
     "logo": "/assets/monte-wo-logo.webp",
-    "category": "Strength training \u00b7 Digital platform",
-    "status": "In Development",
-    "description": "A strength-training platform focused on workout tracking, progression, and athlete rankings.",
+    "category": "Strength training · Digital platform",
+    "status": "Launching soon",
+    "description": "Lift. Rank. Climb high.",
     "detail": "Free training tools and exercise guides are available today. The workout platform is in development; official rank awards and a public native app are not available.",
     "destination": "/monte-wo/",
-    "destinationLabel": "Explore MONTE WO"
+    "destinationLabel": "Explore MONTE WO",
+    "stage": 2
   },
   {
     "slug": "bible-verse-memory-app",
     "name": "Bible Verse Memory App",
     "logo": null,
-    "category": "Scripture memorization \u00b7 Under Development",
-    "status": "In Development",
-    "description": "A project focused on Scripture memorization, biblical understanding, and spiritual development.",
-    "detail": "Under development. Not yet revealed.",
+    "category": "Scripture memorization",
+    "status": "Under development",
+    "description": "Hide the Word in your heart. A scripture memory app, in development.",
+    "detail": "A project focused on Scripture memorization, biblical understanding, and spiritual development. The app is under development; public access has not been announced.",
     "destination": null,
     "destinationLabel": null,
-    "portfolioHref": "/sony/three-daily-wins/"
+    "stage": 1
   },
   {
     "slug": "vitaflex-intelligence-corp",
     "name": "VitaFlex Intelligence",
     "logo": null,
     "category": "Intelligence",
-    "status": "In Development",
-    "description": "VitaFlex Intelligence. A venture in development under VitaFlex Business Group.",
-    "detail": "A venture in development under VitaFlex Business Group.",
+    "status": "In development",
+    "description": "An independent venture exploring intelligence, strategic thinking, and deeper understanding.",
+    "detail": "To be introduced when it is ready.",
     "destination": null,
-    "destinationLabel": null
+    "destinationLabel": null,
+    "stage": 1
   },
   {
     "slug": "vitaflex-training",
     "name": "VitaFlex Training",
     "logo": null,
-    "category": "Fitness \u00b7 Mindset",
+    "category": "Fitness · Mindset",
     "status": null,
     "description": "Our fitness and mindset brand, helping people pursue their training and personal development goals.",
     "detail": "A distinct brand within VitaFlex Business Group, focused on training and personal growth. A dedicated public destination and availability have not yet been announced.",
