@@ -62,7 +62,12 @@ try {
  assert.equal(chapters.status,0,'Portfolio hosted-preview checks failed; production is not published');
  assert.equal((await inspect()).canonical_deployment?.id,before.canonical_deployment?.id,'Production changed during preview; stop before publishing');
  run(['pages','deploy','public','--project-name',project,'--branch','main','--commit-hash',expected,'--commit-dirty=true']);
- const after=await inspect();
+ // Pages canonical metadata may lag a successful upload. Keep the same exact
+ // revision assertion, allowing bounded read-only propagation checks only.
+ let after=await inspect();
+ for(let attempt=0;attempt<6&&after.canonical_deployment?.deployment_trigger?.metadata?.commit_hash!==expected;attempt++){
+  await new Promise(resolve=>setTimeout(resolve,5000));after=await inspect();
+ }
  assert.equal(after.canonical_deployment?.deployment_trigger?.metadata?.commit_hash,expected,'Production revision must match this build');
  assert.deepEqual([...after.domains].sort(),[...before.domains].sort(),'Domains must remain unchanged');
  for(const key of ['d1_databases','kv_namespaces','r2_buckets','services','env_vars']){
