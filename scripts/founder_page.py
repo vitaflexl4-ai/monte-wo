@@ -1,4 +1,4 @@
-"""Sony-only editorial profile. Original biography is rendered verbatim from its unchanged source."""
+"""Sony-only editorial profile. Owner-approved biography is rendered verbatim from its content source."""
 from pathlib import Path
 import html, json
 ROOT=Path(__file__).resolve().parent.parent

@@ -41,7 +41,7 @@ jobs:
           TEST_ORIGIN=http://localhost:8080 SONY_SCREENSHOTS=evidence/sony-screenshots node tests/sony-experiences-browser.mjs
       - name: SEO and content regression tests
         run: |
-          node --test tests/seo.test.js tests/founder.test.js tests/group.test.js tests/master-execution.test.js tests/business.test.js tests/approved-restoration.test.js tests/sony-experiences.test.js tests/sony-profile.test.js tests/intelligence-announcement.test.js tests/intelligence-branding.test.js tests/portfolio-chapters.test.js
+          node --test tests/seo.test.js tests/founder.test.js tests/group.test.js tests/master-execution.test.js tests/business.test.js tests/approved-restoration.test.js tests/sony-experiences.test.js tests/sony-profile.test.js tests/intelligence-announcement.test.js tests/intelligence-branding.test.js tests/portfolio-chapters.test.js tests/sony-biography-refinement.test.js
           VERIFY_ORIGIN=http://127.0.0.1:8080 SEO_AUDIT_OUTPUT=evidence/local-sitemap-audit.json node scripts/audit-public-seo.mjs
       - name: Compare restored corporate files against the exact owner-selected reference
         run: node scripts/verify-approved-corporate.mjs
@@ -49,7 +49,7 @@ jobs:
         id: publish
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          EXPECTED_PRODUCTION_REVISION: 7c21af18c311f65ece1fc3e9f4ef5a9078c99f0e
+          EXPECTED_PRODUCTION_REVISION: a05e6837423c7761c8e2898c4bf7409b7c67949c
         run: node scripts/publish-group-domain.mjs
       - name: Diagnose deployed origin and domain routing
         if: always()

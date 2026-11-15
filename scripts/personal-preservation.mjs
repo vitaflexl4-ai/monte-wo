@@ -5,7 +5,7 @@ export const personalRoutes=['/sony/three-daily-wins/'];
 const decode=s=>s.replaceAll('&#x27;',"'").replaceAll('&quot;','"').replaceAll('&lt;','<').replaceAll('&gt;','>').replaceAll('&amp;','&');
 export function assertSonyBiography(html){
  const source=JSON.parse(readFileSync('content/group/founder.json','utf8'));
- const baseline=JSON.parse(readFileSync('tests/fixtures/seo-visible-baseline.json','utf8')).visibleProfileSource;
+ const baseline=JSON.parse(readFileSync('tests/fixtures/sony-biography-approved.json','utf8'));
  for(const key of['chapters','closing','postscript'])assert.deepEqual(source[key],baseline[key],'Original biography source: '+key);
  const chapters=[...html.matchAll(/<section class="founder-chapter" id="([^"]+)"[^>]*>([\s\S]*?)<\/section>/g)];
  assert.deepEqual(chapters.map(m=>m[1]),source.chapters.map(c=>c.id),'All four story anchors, in original order');

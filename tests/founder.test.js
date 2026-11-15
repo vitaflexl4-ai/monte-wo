@@ -19,10 +19,10 @@ test('Founder: source uses owner-authorized identity and personal essay, not a r
  assert.doesNotMatch(founder,/A non-alien|A journey of purpose, gratitude, and service/);
  assert.equal(profile.chapters.length,4);
  const paragraphs=profile.chapters.flatMap(chapter=>chapter.paragraphs);
- assert.equal(paragraphs.length,10);
- assert.ok(paragraphs.some(p=>p.includes("bachelor's degree in Business Administration")&&p.includes('Master of Business Administration (MBA)')));
- assert.ok(paragraphs.some(p=>p.includes('approximately eight years')));
- assert.ok(paragraphs.some(p=>p.includes('My faith in God')&&p.includes('Haiti')));
+ assert.equal(paragraphs.length,11);
+ assert.ok(paragraphs.some(p=>p.includes("bachelor's degree")&&p.includes('Master of Business Administration (MBA)')));
+ assert.ok(paragraphs.some(p=>p.includes('long-term vision for VitaFlex Intelligence Corp')));
+ assert.ok(paragraphs.some(p=>p.includes('My Christian faith')&&p.includes('Haiti')));
  assert.equal(profile.postscript,'The journey continues.');
  assert.doesNotMatch(founder,/<form\b|download=|mailto:|<iframe\b/);
  assert.equal((founder.match(/<img\b/g)||[]).length,2,'Only the two supplied owner photographs');
