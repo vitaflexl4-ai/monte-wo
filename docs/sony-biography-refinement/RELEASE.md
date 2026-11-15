@@ -20,3 +20,13 @@ Owner requested a content refinement and immediate deployment. Only /sony/ chang
 Local review: https://8098-ie8s956z9wej49f1dgjlj.e2b.app/sony/
 
 Deployment uses existing guarded workflow with previous published source a05e6837423c7761c8e2898c4bf7409b7c67949c. No infrastructure provisioning, DNS/security changes or database operations authorized or performed. Publication evidence to follow.
+
+## Published
+
+Production revision: 1bca581d0597f59a2305a2540bf86490fc165490.
+Live page: https://vitaflex.pages.dev/sony/
+Immutable production: https://283460f7.vitaflex.pages.dev/sony/
+Hosted review: https://5ebebe4f.vitaflex.pages.dev/sony/
+Workflow: https://github.com/vitaflexl4-ai/monte-wo/actions/runs/43750854619
+
+Publication succeeded. Hosted preview profile regression passed before production, and production profile/Intelligence/portfolio/book and 56-URL metadata checks passed after production. Overall workflow failed afterward at the existing custom-domain Cloudflare challenge and historical-reference browser probes; these are not publication failures. Public API annotations and step outcomes are retained in evidence/production-*.json. No security/DNS/database changes or challenge bypass occurred.
