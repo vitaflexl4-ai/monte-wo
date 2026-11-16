@@ -1,3 +1,4 @@
+process.on('uncaughtException',error=>{console.error('::error title=Launch hold verification detail::'+String(error.stack||error).replaceAll('\n',' | '));process.exit(1)});
 import assert from'node:assert/strict';import{readFileSync}from'node:fs';import{assertSonyBiography}from'./personal-preservation.mjs';
 const base=process.env.VERIFY_ORIGIN||'https://vitaflex.pages.dev',vs=JSON.parse(readFileSync('content/group/ventures.json')),routes=['/',...vs.map(v=>'/ventures/'+v.slug+'/')];
 for(const route of routes){const r=await fetch(base+route+'?verify='+encodeURIComponent(process.env.GITHUB_SHA||Date.now()),{signal:AbortSignal.timeout(30000)});assert.equal(r.status,200,route);const doc=await r.text();assert.ok(doc.includes('>Launching soon<'));for(const v of vs)assert.ok(!doc.includes(v.name),route+' identity leak');assert.doesNotMatch(doc,/<form\b|<input\b|mailto:|class="venture-row|href="\/ventures\//);assert.ok(doc.includes('href="/sony/"'))}
