@@ -49,7 +49,7 @@ jobs:
         id: publish
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          EXPECTED_PRODUCTION_REVISION: a05e6837423c7761c8e2898c4bf7409b7c67949c
+          EXPECTED_PRODUCTION_REVISION: 1bca581d0597f59a2305a2540bf86490fc165490
         run: node scripts/publish-group-domain.mjs
       - name: Diagnose deployed origin and domain routing
         if: always()
