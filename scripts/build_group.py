@@ -59,7 +59,7 @@ for v in sorted(ventures,key=lambda v:['monte-wo','vitaflex-training','vitaflex-
  destination=f'<a class="explore" href="{E(v["destination"])}">Enter {E(v["name"])} <span aria-hidden="true">↗</span></a>' if v['destination'] else '<span class="availability">AVAILABILITY NOT ANNOUNCED</span>'
  detail=f'''<section class="frame venture-detail"><a class="back-link" href="/#ventures">← THE PORTFOLIO</a><div class="detail-label"><span class="index-label">A VITAFLEX BUSINESS GROUP VENTURE</span><span>{E(v['category'])}</span></div><h1>{E(v['name'])}</h1><div class="detail-art">{identity(v)}</div><div class="detail-bottom"><span class="availability">{E(v['status']) if v['status'] else v['category'].upper()}</span>{destination}</div></section>'''
  f=P/path.strip('/')/'index.html';f.parent.mkdir(parents=True,exist_ok=True)
- f.write_text(locked_page(page,path))
+ f.write_text(locked_page(page,path,ventures.index(v)+1))
 # A dedicated personal essay complements the portfolio; it does not replace it.
 from founder_page import render_founder
 founder_file=P/'sony/index.html'
