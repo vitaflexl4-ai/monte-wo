@@ -30,7 +30,7 @@ jobs:
       - name: Publish to the existing project with exact baseline and binding guards
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          EXPECTED_PRODUCTION_REVISION: 5773364cdd5c14bc38824b047266d8d187c1fcf6
+          EXPECTED_PRODUCTION_REVISION: efd58a446f1e332b0f01f8757fa8944e367522f0
         run: node scripts/publish-group-domain.mjs
       - name: Verify production hold and preserved personal/product pages
         env:

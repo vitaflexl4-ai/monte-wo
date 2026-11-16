@@ -39,7 +39,7 @@ doc=re.sub(r'<link rel="canonical"[^>]*>','',doc)
 doc=re.sub(r'<meta property="og:url"[^>]*>',f'<meta property="og:url" content="{origin}/monte-wo/">',doc)
 doc=doc.replace('</head>',f'<link rel="canonical" href="{origin}/monte-wo/"></head>')
 product.write_text(doc)
-body='''<section class="hero frame"><div class="hero-heading"><span class="index-label">INDEPENDENT BY DESIGN</span><h1>Beyond<br><em>the obvious.</em></h1><span class="hero-signature">VITAFLEX BUSINESS GROUP</span></div><div class="hero-art"><img src="/assets/group/vitaflex-business-group.png" width="1024" height="1024" alt="VitaFlex Business Group — gold VF emblem inside a circular gold border" fetchpriority="high"></div><div class="hero-baseline"><span>WE BUILD VENTURES.<br>WE CREATE POSSIBILITIES.</span><a href="#ventures" class="scroll-link" aria-label="Discover our ventures"><span>DISCOVER</span><b aria-hidden="true">↓</b></a><span class="coordinate">A VISION WITHOUT LIMITS.</span></div></section>'''+locked_gallery()
+body=locked_gallery()
 # Stable IDs agree with the existing profile graph; no inferred legal or employment claims.
 site_schema={
  '@context':'https://schema.org',
@@ -52,7 +52,7 @@ site_schema={
    'publisher':{'@id':origin+'/#organization'}}
  ]
 }
-(P/'index.html').write_text(resources(page('Beyond the obvious.','VitaFlex Business Group. Independent ventures. A bigger vision.',body,structured_data=site_schema)))
+(P/'index.html').write_text(resources(page('VitaFlex Business Group','VitaFlex Business Group.',body,structured_data=site_schema)))
 routes=['/','/monte-wo/']
 for v in sorted(ventures,key=lambda v:['monte-wo','vitaflex-training','vitaflex-intelligence-corp','bible-verse-memory-app'].index(v['slug'])):
  path=f'/ventures/{v["slug"]}/';routes.append(path)
