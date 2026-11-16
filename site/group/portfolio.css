@@ -35,3 +35,12 @@
 @media(max-width:900px){.chapter-panel.venture-row{gap:24px;padding:32px}.chapter-panel h3{font-size:42px}.rank-gems{grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}.rank-gems img{max-width:40px}.rank-gems span{font-size:10px}.chapter-logo{margin-bottom:16px}.chapter-visual{min-height:340px}}
 @media(max-width:620px){.chapter-panel.venture-row{grid-template-columns:1fr;padding:28px 22px;gap:24px}.chapter-gallery h2{font-size:54px}.chapter-panel .venture-index{font-size:64px;margin-bottom:24px}.chapter-panel h3{font-size:44px}.chapter-visual{min-height:310px}.rank-gems{grid-template-columns:repeat(3,minmax(0,1fr))}.chapter-gallery .portfolio-heading{align-items:center;gap:12px}.chapter-gallery .index-label{font-size:8px;letter-spacing:.1em}.chapter-gallery .portfolio-count{white-space:nowrap}.venture-page-heading{margin-top:45px}.venture-chapter>.chapter-visual{min-height:330px}.venture-chapter .venture-intro{font-size:15px}.chapter-network{height:320px}}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.chapter-gallery *, .venture-chapter *{animation:none!important;transition:none!important;transform:none!important}.chapter-panel.reveal-ready:not(.is-visible){opacity:1}.chapter-logo:after,.intelligence-veil:after{display:none}.chapter-network{opacity:.4}.rank-gems img,.memory-verse p span{opacity:1;filter:none}.visual-drift{will-change:auto}}
+
+/* Public launch hold: no venture names, product links, tracking or signup. */
+.launch-hold{padding-block:100px 120px;text-align:center;border-top:1px solid #C9A96A44}
+.launch-hold h1,.launch-hold h2{font:400 clamp(48px,7vw,96px)/1.1 'Cormorant Garamond',Georgia,serif;color:#E7CF98;letter-spacing:-.025em;margin:28px 0}
+.launch-rule{display:block;width:48px;height:1px;background:#C9A96A;margin:32px auto}
+.launch-page{min-height:65svh;display:flex;flex-direction:column;align-items:center;justify-content:center;border-top:0}
+.launch-return{display:inline-flex;align-items:center;min-height:44px;padding:10px;color:#E7CF98;border-bottom:1px solid #C9A96A77}
+.launch-return:focus-visible{outline:2px solid #E7CF98;outline-offset:5px}
+@media(max-width:620px){.launch-hold{padding-block:72px 88px}.launch-hold h1,.launch-hold h2{font-size:52px}}

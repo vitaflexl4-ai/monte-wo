@@ -2,6 +2,7 @@
 from pathlib import Path
 import json, html, re, shutil
 from portfolio_chapters import gallery, resources, venture_page
+from venture_lock import locked_gallery, locked_page
 ROOT=Path(__file__).resolve().parent.parent
 P=ROOT/'public'
 E=lambda s:html.escape(str(s),quote=True)
@@ -38,7 +39,7 @@ doc=re.sub(r'<link rel="canonical"[^>]*>','',doc)
 doc=re.sub(r'<meta property="og:url"[^>]*>',f'<meta property="og:url" content="{origin}/monte-wo/">',doc)
 doc=doc.replace('</head>',f'<link rel="canonical" href="{origin}/monte-wo/"></head>')
 product.write_text(doc)
-body='''<section class="hero frame"><div class="hero-heading"><span class="index-label">INDEPENDENT BY DESIGN</span><h1>Beyond<br><em>the obvious.</em></h1><span class="hero-signature">VITAFLEX BUSINESS GROUP</span></div><div class="hero-art"><img src="/assets/group/vitaflex-business-group.png" width="1024" height="1024" alt="VitaFlex Business Group — gold VF emblem inside a circular gold border" fetchpriority="high"></div><div class="hero-baseline"><span>WE BUILD VENTURES.<br>WE CREATE POSSIBILITIES.</span><a href="#ventures" class="scroll-link" aria-label="Discover our ventures"><span>DISCOVER</span><b aria-hidden="true">↓</b></a><span class="coordinate">A VISION WITHOUT LIMITS.</span></div></section>'''+gallery(listed_ventures)
+body='''<section class="hero frame"><div class="hero-heading"><span class="index-label">INDEPENDENT BY DESIGN</span><h1>Beyond<br><em>the obvious.</em></h1><span class="hero-signature">VITAFLEX BUSINESS GROUP</span></div><div class="hero-art"><img src="/assets/group/vitaflex-business-group.png" width="1024" height="1024" alt="VitaFlex Business Group — gold VF emblem inside a circular gold border" fetchpriority="high"></div><div class="hero-baseline"><span>WE BUILD VENTURES.<br>WE CREATE POSSIBILITIES.</span><a href="#ventures" class="scroll-link" aria-label="Discover our ventures"><span>DISCOVER</span><b aria-hidden="true">↓</b></a><span class="coordinate">A VISION WITHOUT LIMITS.</span></div></section>'''+locked_gallery()
 # Stable IDs agree with the existing profile graph; no inferred legal or employment claims.
 site_schema={
  '@context':'https://schema.org',
@@ -58,9 +59,7 @@ for v in sorted(ventures,key=lambda v:['monte-wo','vitaflex-training','vitaflex-
  destination=f'<a class="explore" href="{E(v["destination"])}">Enter {E(v["name"])} <span aria-hidden="true">↗</span></a>' if v['destination'] else '<span class="availability">AVAILABILITY NOT ANNOUNCED</span>'
  detail=f'''<section class="frame venture-detail"><a class="back-link" href="/#ventures">← THE PORTFOLIO</a><div class="detail-label"><span class="index-label">A VITAFLEX BUSINESS GROUP VENTURE</span><span>{E(v['category'])}</span></div><h1>{E(v['name'])}</h1><div class="detail-art">{identity(v)}</div><div class="detail-bottom"><span class="availability">{E(v['status']) if v['status'] else v['category'].upper()}</span>{destination}</div></section>'''
  f=P/path.strip('/')/'index.html';f.parent.mkdir(parents=True,exist_ok=True)
- if v.get('listed',True):
-  f.write_text(venture_page(v,listed_ventures.index(v)+1,page))
- else:f.write_text(page(v['name'],v['description'],detail,path))
+ f.write_text(locked_page(page,path))
 # A dedicated personal essay complements the portfolio; it does not replace it.
 from founder_page import render_founder
 founder_file=P/'sony/index.html'

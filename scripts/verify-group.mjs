@@ -1,6 +1,7 @@
 import {assertSonyBiography} from './personal-preservation.mjs';
 import assert from 'node:assert/strict';
 import {readFileSync,mkdirSync,writeFileSync} from 'node:fs';
+if(readFileSync('public/index.html','utf8').includes('launch-hold')){await import('./verify-venture-lock.mjs');process.exit(0);}
 const origin=process.env.VERIFY_ORIGIN||'https://vitaflexbusinessgroup.com';
 // Avoid mistaking an older edge/tool cache response for the newly published build.
 const revision=process.env.VERIFY_REVISION||process.env.GITHUB_SHA||Date.now().toString();
