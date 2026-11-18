@@ -54,6 +54,10 @@ try {
  if((await readFile('public/index.html','utf8')).includes('launch-hold')){
   const locked=spawnSync(process.execPath,['tests/venture-lock-browser.mjs'],{stdio:'inherit',env:{...env,TEST_ORIGIN:preview.url,LOCK_SCREENSHOTS:'evidence/lock-preview'}});
   assert.equal(locked.status,0,'Hosted launch hold checks failed; production is not published');
+  for(const [script,key,dir] of [['tests/sony-experiences-browser.mjs','SONY_SCREENSHOTS','evidence/book-preview'],['tests/sony-profile-browser.mjs','PROFILE_SCREENSHOT_DIR','evidence/profile-preview']]){
+   const personal=spawnSync(process.execPath,[script],{stdio:'inherit',env:{...env,TEST_ORIGIN:preview.url,[key]:dir}});
+   assert.equal(personal.status,0,'Hosted personal-page verification failed; stop before production');
+  }
  }else{
  const sony=spawnSync(process.execPath,['tests/sony-experiences-browser.mjs'],{stdio:'inherit',env:{...env,TEST_ORIGIN:preview.url,SONY_SCREENSHOTS:'evidence/preview-sony-screenshots'}});
  assert.equal(sony.status,0,'Sony preview interaction checks failed; production is not published');

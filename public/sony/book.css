@@ -51,3 +51,6 @@
 @media print{.win-encouragement{color:#222;break-before:page}.win-encouragement h2,.win-encouragement .page-kicker,.win-encouragement .biblical-reference{color:#544324}}
 /* One focus paragraph per chapter, without a repeated summary line or footer collision. */
 .project-description{margin-top:calc(var(--leaf)*.035)}
+
+/* Personal practices, not unrevealed products. */
+.project-0 .project-name::after,.project-1 .project-name::after{display:none}

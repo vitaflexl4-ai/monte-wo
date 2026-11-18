@@ -10,7 +10,7 @@ PHILOSOPHY=[
  ('Judgment & character','I have come to appreciate that leadership is not measured solely by position, visibility, or influence, but by judgment, character, consistency, and the manner in which we treat others.'),
  ('Ambition & humility','I remain ambitious, but I have come to understand that ambition is most meaningful when accompanied by patience, discipline, gratitude, and consideration for others.'),
 ]
-RESOURCES=[('three-daily-wins','The Three Daily Wins','THREE PROJECTS','Spiritual, physical, and intellectual development.')]
+RESOURCES=[('three-daily-wins','The Three Daily Wins','THREE DAILY COMMITMENTS','Spiritual, physical, and intellectual development.')]
 
 def render_founder(page):
     profile=json.loads((ROOT/'content/group/founder.json').read_text())

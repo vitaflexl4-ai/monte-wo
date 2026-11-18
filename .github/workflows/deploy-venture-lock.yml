@@ -20,7 +20,7 @@ jobs:
         with: {python-version: '3.12'}
       - run: npm ci
       - run: npm run build
-      - run: node --test tests/venture-lock.test.js tests/sony-biography-refinement.test.js
+      - run: node --test tests/venture-lock.test.js tests/sony-biography-refinement.test.js tests/quiet-presence.test.js
       - run: npx playwright install --with-deps chromium
       - name: Local responsive and navigation checks
         run: |
@@ -30,7 +30,7 @@ jobs:
       - name: Publish to the existing project with exact baseline and binding guards
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          EXPECTED_PRODUCTION_REVISION: efd58a446f1e332b0f01f8757fa8944e367522f0
+          EXPECTED_PRODUCTION_REVISION: 83c3db26b8fe362137fa098e4a5dfa124594f1a6
         run: node scripts/publish-group-domain.mjs
       - name: Verify production hold and preserved personal/product pages
         env:
@@ -42,6 +42,8 @@ jobs:
           node scripts/verify-venture-lock.mjs
           node tests/venture-lock-browser.mjs
           node scripts/audit-public-seo.mjs
+          SONY_SCREENSHOTS=evidence/book-production node tests/sony-experiences-browser.mjs
+          PROFILE_SCREENSHOT_DIR=evidence/profile-production node tests/sony-profile-browser.mjs
       - name: Diagnose existing production routing without changes
         if: always()
         env:

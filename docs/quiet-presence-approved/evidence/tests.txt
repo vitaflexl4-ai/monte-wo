@@ -1,0 +1,64 @@
+TAP version 13
+# Subtest: Quiet presence: public corporate and personal pages omit project names, launch promises and signup
+ok 1 - Quiet presence: public corporate and personal pages omit project names, launch promises and signup
+  ---
+  duration_ms: 1.023339
+  type: 'test'
+  ...
+# Subtest: Quiet presence: main homepage link is personal and holding message is patient
+ok 2 - Quiet presence: main homepage link is personal and holding message is patient
+  ---
+  duration_ms: 0.198747
+  type: 'test'
+  ...
+# Subtest: Quiet presence: exact family paragraph and conclusion remain intact
+ok 3 - Quiet presence: exact family paragraph and conclusion remain intact
+  ---
+  duration_ms: 0.190209
+  type: 'test'
+  ...
+# Subtest: Quiet presence: book retains three practices, encouragement, navigation and original engine
+ok 4 - Quiet presence: book retains three practices, encouragement, navigation and original engine
+  ---
+  duration_ms: 0.772588
+  type: 'test'
+  ...
+# Subtest: Sony refinement: approved personal copy, accurate credentials and patient entrepreneurial vision
+ok 5 - Sony refinement: approved personal copy, accurate credentials and patient entrepreneurial vision
+  ---
+  duration_ms: 1.24785
+  type: 'test'
+  ...
+# Subtest: Sony refinement: only biography paragraphs change; layout, metadata, links and functionality remain identical
+ok 6 - Sony refinement: only biography paragraphs change; layout, metadata, links and functionality remain identical
+  ---
+  duration_ms: 0.573158
+  type: 'test'
+  ...
+# Subtest: Launch hold: homepage and every venture route contain no venture identity, details, signup or email
+ok 7 - Launch hold: homepage and every venture route contain no venture identity, details, signup or email
+  ---
+  duration_ms: 1.032473
+  type: 'test'
+  ...
+# Subtest: Launch hold: all other public files including Sony, book, products and infrastructure remain exact
+ok 8 - Launch hold: all other public files including Sony, book, products and infrastructure remain exact
+  ---
+  duration_ms: 10.858042
+  type: 'test'
+  ...
+# Subtest: Quiet homepage: no promotional hero, slogans or discovery prompt
+ok 9 - Quiet homepage: no promotional hero, slogans or discovery prompt
+  ---
+  duration_ms: 0.197023
+  type: 'test'
+  ...
+1..9
+# tests 9
+# suites 0
+# pass 9
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 148.325418
